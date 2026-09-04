@@ -1,6 +1,8 @@
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { getLocalizedPageMetadata } from "@/i18n/metadata";
+import { getNewsArticleMetadata } from "@/i18n/news-metadata";
 import { SiteLayout } from "@/components/templates/SiteLayout";
 import { HomePageView } from "@/views/HomePageView";
 import { ServicesPageView } from "@/views/ServicesPageView";
@@ -9,7 +11,13 @@ import { TrackingPageView } from "@/views/TrackingPageView";
 import { RequestPricePageView } from "@/views/RequestPricePageView";
 import { AboutPageView } from "@/views/AboutPageView";
 import { ContactsPageView } from "@/views/ContactsPageView";
+import { NewsListPageView } from "@/views/NewsListPageView";
+import { NewsArticlePageView } from "@/views/NewsArticlePageView";
 import { PrivacyPageView, TermsPageView } from "@/views/LegalPageViews";
+import {
+  getNewsBySlug,
+  listPublishedSlugs,
+} from "@/lib/news/repository";
 import { pageContainer, section } from "@/styles/ui";
 
 const suspenseFallback = (
@@ -95,6 +103,50 @@ export function createAboutPage(locale: Locale) {
       return (
         <SiteLayout locale={locale}>
           <AboutPageView locale={locale} />
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createNewsListPage(locale: Locale) {
+  return {
+    generateMetadata: () => getLocalizedPageMetadata(locale, "news"),
+    Page: async function NewsListPage() {
+      return (
+        <SiteLayout locale={locale}>
+          <NewsListPageView locale={locale} />
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createNewsArticlePage(locale: Locale) {
+  return {
+    generateStaticParams: () =>
+      listPublishedSlugs().map((slug) => ({ slug })),
+    generateMetadata: async ({
+      params,
+    }: {
+      params: Promise<{ slug: string }>;
+    }) => {
+      const { slug } = await params;
+      const article = getNewsBySlug(locale, slug);
+      if (!article) return getLocalizedPageMetadata(locale, "news");
+      return getNewsArticleMetadata(locale, article);
+    },
+    Page: async function NewsArticlePage({
+      params,
+    }: {
+      params: Promise<{ slug: string }>;
+    }) {
+      const { slug } = await params;
+      const article = getNewsBySlug(locale, slug);
+      if (!article) notFound();
+      return (
+        <SiteLayout locale={locale}>
+          <NewsArticlePageView locale={locale} article={article} />
         </SiteLayout>
       );
     },

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { pagePaths } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
+import { listPublishedSlugs } from "@/lib/news/repository";
 import { getCanonicalSiteUrl, isIndexableDeployment } from "@/utils/seo/indexing";
 
 const indexablePages = [
@@ -8,6 +9,7 @@ const indexablePages = [
   "services",
   "business",
   "about",
+  "news",
   "contacts",
   "privacy",
   "terms",
@@ -24,8 +26,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const locale of ["uz", "ru"] as const) {
       entries.push({
         url: `${base}${localePath(locale, path)}`,
-        changeFrequency: key === "home" ? "weekly" : "monthly",
-        priority: key === "home" ? 1 : 0.7,
+        changeFrequency: key === "home" || key === "news" ? "weekly" : "monthly",
+        priority: key === "home" ? 1 : key === "news" ? 0.6 : 0.7,
+      });
+    }
+  }
+
+  for (const slug of listPublishedSlugs()) {
+    const path = `/news/${slug}/`;
+    for (const locale of ["uz", "ru"] as const) {
+      entries.push({
+        url: `${base}${localePath(locale, path)}`,
+        changeFrequency: "weekly",
+        priority: 0.55,
       });
     }
   }

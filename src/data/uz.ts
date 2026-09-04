@@ -19,6 +19,9 @@ export const uzCopy: SiteCopy = {
     aboutTitle: "Kompaniya haqida",
     aboutDescription:
       "EPOS POCHTA — Oʻzbekiston Respublikasi hududida yetkazib berish xizmatlarini taqdim etuvchi zamonaviy kuryerlik kompaniyasi.",
+    newsTitle: "Yangiliklar",
+    newsDescription:
+      "EPOS POCHTA yangiliklari va eʼlonlari — xizmat ishga tushishi, yetkazib berish geografiyasi va biznes yechimlari.",
     contactsTitle: "Aloqa",
     contactsDescription: "EPOS POCHTA telefoni, manzili va aloqa shakli.",
     privacyTitle: "Maxfiylik siyosati",
@@ -51,14 +54,13 @@ export const uzCopy: SiteCopy = {
     placeholderEmail: "Email kelishuvdan keyin eʼlon qilinadi",
     placeholderHours: "Ish vaqti kelishuvdan keyin eʼlon qilinadi",
     placeholderTelegram: "Telegram havolasi kelishuvdan keyin qoʻshiladi",
-    floatingPhone: "Qoʻngʻiroq",
-    floatingTelegram: "Telegram",
   },
   nav: [
     { label: "Xizmatlar", href: "/services/" },
     { label: "Biznes uchun", href: "/business/" },
     { label: "Kuzatish", href: "/tracking/" },
     { label: "Kompaniya", href: "/about/" },
+    { label: "Yangiliklar", href: "/news/" },
     { label: "Aloqa", href: "/contacts/" },
   ],
   footer: {
@@ -202,6 +204,9 @@ export const uzCopy: SiteCopy = {
           "«Biznes uchun» sahifasida korporativ ariza qoldiring. Jarayonlarni aniqlab, ulanish shartlarini taklif qilamiz.",
       },
     ],
+    newsTitle: "Yangiliklar",
+    newsLead: "Xizmat eʼlonlari, geografiya va biznes yechimlari",
+    newsAll: "Barcha yangiliklar",
     finalTitle: "Pochta yuborish kerakmi?",
     finalLead: "Maʼlumot qoldiring — yetkazib berish narxini hisoblaymiz",
   },
@@ -394,6 +399,7 @@ export const uzCopy: SiteCopy = {
     placeholder: "Trek-raqam",
     emptyHint:
       "Trek-raqam odatda topshirish kvitansiyasida yoki SMS da koʻrsatiladi.",
+    demoHint: "Interfeys demosi uchun 000000 raqamini kiriting.",
     unavailableTitle: "Kuzatuv tez orada ochiladi",
     unavailableText:
       "Sahifa EPOS POCHTA status tizimiga ulashga tayyor. API ulanmaguncha joriy statusni telefon orqali aniqlashingiz mumkin.",
@@ -407,6 +413,7 @@ export const uzCopy: SiteCopy = {
     timelinePreviewTitle: "Statuslar qanday koʻrinadi",
     timelinePreviewNote:
       "Bu faqat interfeys namunasi. Haqiqiy statuslar faqat API ulanganidan keyin chiqadi.",
+    resultTitle: "Joʻnatma statusi",
     sampleStatuses: [
       "Qabul qilindi",
       "Yoʻlda",
@@ -417,6 +424,14 @@ export const uzCopy: SiteCopy = {
   requestPrice: {
     title: "Narx soʻrash",
     lead: "Menejer narx va taxminiy muddatni hisoblaydi. Saytda avtomatik narx koʻrsatilmaydi.",
+    priceNote:
+      "Saytda ochiq tariflar va avtohisob yoʻq — narx faqat menejer soʻrovni koʻrib chiqgach.",
+    trustTitle: "Keyin nima boʻladi",
+    trustItems: [
+      "Telefon, Telegram yoki email orqali javob beramiz",
+      "Yoʻnalish, ogʻirlik va yetkazish usulini aniqlaymiz",
+      "Narx va taxminiy muddatni xabar qilamiz",
+    ],
     steps: ["Yoʻnalish", "Joʻnatma", "Aloqa"],
     successTitle: "Soʻrov qabul qilindi",
     successText:
@@ -463,6 +478,14 @@ export const uzCopy: SiteCopy = {
     geo: "Oʻzbekiston hududi boʻylab yetkazamiz. Aniq muddatlar hisobda tasdiqlanadi.",
     benefitsTitle: "Operatsion imkoniyatlar",
     legalTitle: "Yuridik maʼlumotlar",
+  },
+  news: {
+    title: "Yangiliklar",
+    lead: "Xizmat eʼlonlari, yetkazib berish geografiyasi va biznes yechimlari.",
+    readMore: "Oʻqish",
+    backToNews: "Barcha yangiliklar",
+    empty: "Hozircha eʼlon qilingan yangiliklar yoʻq.",
+    otherNews: "Boshqa yangiliklar",
   },
   contacts: {
     title: "Aloqa",

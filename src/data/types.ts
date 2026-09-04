@@ -37,6 +37,8 @@ export interface SiteCopy {
     requestPriceDescription: string;
     aboutTitle: string;
     aboutDescription: string;
+    newsTitle: string;
+    newsDescription: string;
     contactsTitle: string;
     contactsDescription: string;
     privacyTitle: string;
@@ -68,8 +70,6 @@ export interface SiteCopy {
     placeholderEmail: string;
     placeholderHours: string;
     placeholderTelegram: string;
-    floatingPhone: string;
-    floatingTelegram: string;
   };
   nav: NavItem[];
   footer: {
@@ -106,6 +106,9 @@ export interface SiteCopy {
     geoAvailable: string;
     faqTitle: string;
     faq: Array<{ question: string; answer: string }>;
+    newsTitle: string;
+    newsLead: string;
+    newsAll: string;
     finalTitle: string;
     finalLead: string;
   };
@@ -132,6 +135,7 @@ export interface SiteCopy {
     lead: string;
     placeholder: string;
     emptyHint: string;
+    demoHint: string;
     unavailableTitle: string;
     unavailableText: string;
     formatErrorTitle: string;
@@ -141,11 +145,15 @@ export interface SiteCopy {
     supportCta: string;
     timelinePreviewTitle: string;
     timelinePreviewNote: string;
+    resultTitle: string;
     sampleStatuses: string[];
   };
   requestPrice: {
     title: string;
     lead: string;
+    priceNote: string;
+    trustTitle: string;
+    trustItems: string[];
     steps: [string, string, string];
     successTitle: string;
     successText: string;
@@ -160,6 +168,14 @@ export interface SiteCopy {
     geo: string;
     benefitsTitle: string;
     legalTitle: string;
+  };
+  news: {
+    title: string;
+    lead: string;
+    readMore: string;
+    backToNews: string;
+    empty: string;
+    otherNews: string;
   };
   contacts: {
     title: string;

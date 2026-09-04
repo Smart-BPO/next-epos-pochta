@@ -149,9 +149,12 @@ export const pageCta =
 export const trackShell =
   "grid max-w-[40rem] gap-6 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]";
 export const trackTimeline =
-  "pointer-events-none grid gap-[1.1rem] border-l-2 border-black/10 pl-5 opacity-55";
+  "grid gap-[1.1rem] border-l-2 border-black/10 pl-5";
+export const trackTimelineMuted = `${trackTimeline} pointer-events-none opacity-55`;
 export const trackTimelineItem =
   "relative before:absolute before:left-[-1.55rem] before:top-[0.35rem] before:h-[0.65rem] before:w-[0.65rem] before:rounded-full before:border-2 before:border-white before:bg-black/20";
+export const trackTimelineItemActive =
+  "relative before:absolute before:left-[-1.55rem] before:top-[0.35rem] before:h-[0.65rem] before:w-[0.65rem] before:rounded-full before:border-2 before:border-white before:bg-primary";
 
 export const mapPlaceholder =
   "grid min-h-64 place-items-center rounded-3xl border border-dashed border-black/20 bg-[linear-gradient(135deg,var(--color-surface-muted),white),repeating-linear-gradient(-45deg,transparent,transparent_8px,rgb(211_2_3/0.04)_8px,rgb(211_2_3/0.04)_16px)] p-6 text-center text-ink-muted";

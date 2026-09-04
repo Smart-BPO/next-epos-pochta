@@ -3,18 +3,16 @@ import { SiteLayout } from "@/components/templates/SiteLayout";
 import { NotFoundView } from "@/views/NotFoundView";
 import { getContent } from "@/i18n/get-content";
 
-const copy = getContent("uz");
-
 export const metadata: Metadata = {
-  title: copy.meta.notFoundTitle,
+  title: getContent("ru").meta.notFoundTitle,
   robots: { index: false, follow: false },
 };
 
-/** Default-locale 404 (unprefixed paths). /ru/* uses app/ru/not-found.tsx */
-export default function NotFound() {
+/** Segment 404 when notFound() runs under /ru/* */
+export default function RuNotFound() {
   return (
-    <SiteLayout locale="uz">
-      <NotFoundView locale="uz" />
+    <SiteLayout locale="ru">
+      <NotFoundView locale="ru" />
     </SiteLayout>
   );
 }

@@ -4,9 +4,11 @@ import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { ContactForm } from "@/components/organisms/ContactForm";
+import { PageCta } from "@/components/organisms/PageCta";
 import { SITE_CONFIG } from "@/utils/consts";
 import {
   heroActions,
+  homeSectionTitle,
   mapPlaceholder,
   pageIntro,
   pageIntroTitle,
@@ -93,17 +95,18 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={sectionMuted}>
-        <PageContainer>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <PageContainer className="flex flex-col gap-6 md:gap-9">
+          <h2 className={homeSectionTitle}>{copy.footer.contacts}</h2>
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {cards.map((card) => (
               <article
                 key={card.title}
-                className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
+                className="flex h-full flex-col gap-2 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
               >
-                <h3 className="m-0 mb-2 text-lg font-semibold text-black">
+                <h3 className="m-0 text-lg font-semibold text-black">
                   {card.title}
                 </h3>
-                <p className="m-0 min-w-0 break-words text-sm text-black/60">
+                <p className="m-0 min-w-0 flex-1 break-words text-base text-black/60">
                   {card.body}
                 </p>
               </article>
@@ -127,7 +130,7 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
               src={`https://www.openstreetmap.org/export/embed.html?bbox=${Number(mapLng) - 0.02}%2C${Number(mapLat) - 0.01}%2C${Number(mapLng) + 0.02}%2C${Number(mapLat) + 0.01}&layer=mapnik&marker=${mapLat}%2C${mapLng}`}
             />
           ) : (
-            <div className={mapPlaceholder}>
+            <div className={`${mapPlaceholder} rounded-3xl`}>
               <p>
                 {locale === "uz"
                   ? "Xarita koordinatalari env orqali ulanadi"
@@ -139,11 +142,15 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={sectionMuted}>
-        <PageContainer>
+        <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={sectionTitle}>{copy.contacts.formTitle}</h2>
-          <ContactForm locale={locale} content={copy} />
+          <div className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
+            <ContactForm locale={locale} content={copy} />
+          </div>
         </PageContainer>
       </section>
+
+      <PageCta locale={locale} content={copy} />
     </>
   );
 }

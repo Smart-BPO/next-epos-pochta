@@ -6,8 +6,10 @@ import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { FaqList } from "@/components/molecules/FaqList";
 import { GeoSearch } from "@/components/molecules/GeoSearch";
+import { NewsCard } from "@/components/molecules/NewsCard";
 import { QuickTrackForm } from "@/components/molecules/QuickTrackForm";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getLatestNews } from "@/lib/news/repository";
 import { getFaqSchema } from "@/utils/seo/json-ld";
 import {
   homeHero,
@@ -22,6 +24,7 @@ import {
   homeSectionLead,
   homeSectionTitle,
   section,
+  sectionMuted,
 } from "@/styles/ui";
 
 const NEED_IMAGES: Record<string, string> = {
@@ -44,6 +47,7 @@ const BENEFIT_ICONS = [
 
 export function HomePageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
+  const latestNews = getLatestNews(locale, 3);
 
   return (
     <>
@@ -248,7 +252,10 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="relative isolate overflow-hidden py-[var(--section-y)]">
+      <section
+        id="geo"
+        className="relative isolate scroll-mt-[var(--header-height)] overflow-hidden py-[var(--section-y)]"
+      >
         <Image
           src="/images/hero/uzbekistan-map.svg"
           alt=""
@@ -265,6 +272,31 @@ export function HomePageView({ locale }: { locale: Locale }) {
           <GeoSearch locale={locale} copy={copy} variant="home" />
         </PageContainer>
       </section>
+
+      {latestNews.length > 0 ? (
+        <section className={sectionMuted}>
+          <PageContainer className="flex flex-col gap-6 md:gap-9">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex max-w-xl flex-col gap-2">
+                <h2 className={homeSectionTitle}>{copy.home.newsTitle}</h2>
+                <p className={homeSectionLead}>{copy.home.newsLead}</p>
+              </div>
+              <Button
+                href={localePath(locale, "/news/")}
+                variant="secondary"
+                className="shrink-0 self-start sm:self-auto"
+              >
+                {copy.home.newsAll}
+              </Button>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+              {latestNews.map((article) => (
+                <NewsCard key={article.id} locale={locale} article={article} />
+              ))}
+            </div>
+          </PageContainer>
+        </section>
+      ) : null}
 
       <section id="faq" className={`${section} scroll-mt-[var(--header-height)]`}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
