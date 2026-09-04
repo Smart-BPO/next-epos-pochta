@@ -167,6 +167,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     id,
     ok: true,
-    // Never return calculated price
+    // Never return a calculated price as a quote response; estimates live only in the client form / lead payload.
   });
 }

@@ -2,7 +2,8 @@ import type { Locale } from "@/i18n/config";
 import type { TrackingLookupResult, TrackingShipment } from "./types";
 import { isValidTrackingNumber, normalizeTrackingNumber } from "./types";
 
-const DEMO_NUMBER = "000000";
+export const DEMO_TRACK_NUMBER = "000000";
+export const DEMO_NOT_FOUND_NUMBER = "999999";
 
 function demoShipment(locale: Locale): TrackingShipment {
   const now = Date.now();
@@ -29,7 +30,7 @@ function demoShipment(locale: Locale): TrackingShipment {
         };
 
   return {
-    number: DEMO_NUMBER,
+    number: DEMO_TRACK_NUMBER,
     status: "delivered",
     updatedAt: new Date(now - day).toISOString(),
     events: [
@@ -74,7 +75,7 @@ function demoShipment(locale: Locale): TrackingShipment {
 /**
  * Client adapter for shipment lookup.
  * TODO(tracking-api): replace stub with real EPOS tracking HTTP client.
- * Demo number 000000 returns a local success timeline until the API is live.
+ * Demo: 000000 → found; 999999 → not_found; other valid → unavailable.
  */
 export async function lookupTracking(
   rawNumber: string,
@@ -85,10 +86,13 @@ export async function lookupTracking(
     return { ok: false, error: "invalid_format" };
   }
 
-  if (number === DEMO_NUMBER) {
+  if (number === DEMO_TRACK_NUMBER) {
     return { ok: true, shipment: demoShipment(locale) };
   }
 
-  // Honest stub: never invent delivery history for real-looking numbers.
+  if (number === DEMO_NOT_FOUND_NUMBER) {
+    return { ok: false, error: "not_found" };
+  }
+
   return { ok: false, error: "unavailable" };
 }

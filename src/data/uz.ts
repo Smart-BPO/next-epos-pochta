@@ -13,9 +13,12 @@ export const uzCopy: SiteCopy = {
       "Muntazam olib ketish, ommaviy joʻnatmalar, qaytarishlar, yetkazib berishda toʻlov, API va hisobotlar.",
     trackingTitle: "Joʻnatmani kuzatish",
     trackingDescription: "EPOS POCHTA trek-raqami boʻyicha statusni tekshiring.",
-    requestPriceTitle: "Narx soʻrash",
+    requestPriceTitle: "Narxni hisoblash",
     requestPriceDescription:
-      "Joʻnatma parametrlarini qoldiring — menejer narx va taxminiy muddatni aytadi.",
+      "Yoʻnalish va yuk parametrlari boʻyicha taxminiy hisob. Yakuniy narxni menejer tasdiqlaydi.",
+    businessConnectTitle: "Biznes uchun ulanish",
+    businessConnectDescription:
+      "Muntazam yetkazib berish, API va korporativ shartlarni ulash uchun bosqichma-bosqich ariza.",
     aboutTitle: "Kompaniya haqida",
     aboutDescription:
       "EPOS POCHTA — Oʻzbekiston Respublikasi hududida yetkazib berish xizmatlarini taqdim etuvchi zamonaviy kuryerlik kompaniyasi.",
@@ -32,10 +35,12 @@ export const uzCopy: SiteCopy = {
   },
   ui: {
     requestPrice: "Narx soʻrash",
+    calculate: "Hisoblash",
     callCourier: "Kuryer chaqirish",
     track: "Kuzatish",
     forBusiness: "Biznes uchun",
     getOffer: "Taklif olish",
+    startConnect: "Ulanishni boshlash",
     learnApi: "API haqida",
     geoCheck: "Tekshirish",
     call: "Qoʻngʻiroq",
@@ -86,7 +91,8 @@ export const uzCopy: SiteCopy = {
     quoteCategory: "Nima yuboramiz",
     quoteSwap: "Manzillarni almashtirish",
     quoteCta: "Hisoblash",
-    quoteNote: "Saytda narx hisoblanmaydi — menejer soʻrovdan keyin xabar qiladi.",
+    quoteNote:
+      "Keyingi qadamda taxminiy hisob. Yakuniy narxni menejer tasdiqlaydi.",
     needsTitle: "Nima yetkazish kerak?",
     needs: [
       {
@@ -398,6 +404,21 @@ export const uzCopy: SiteCopy = {
     apiLead:
       "API orqali joʻnatma yaratish, status olish va hisobot yuritish mumkin. Yopiq texnik tafsilotlar kelishuvdan keyin beriladi.",
     formTitle: "Korporativ ariza",
+    connectCtaTitle: "Yetkazib berishni ulashga tayyormisiz?",
+    connectCtaLead:
+      "Qisqa ariza toʻldiring — jarayonlarni aniqlaymiz va taklif tayyorlaymiz.",
+  },
+  businessConnect: {
+    title: "Biznes uchun ulanish",
+    lead: "Uch qadam: kompaniya, hajmlar va tafsilotlar — menejer onboarding uchun bogʻlanadi.",
+    steps: ["Kompaniya", "Hajmlar", "Tafsilotlar"],
+    successTitle: "Ulanish arizasi qabul qilindi",
+    successText:
+      "EPOS POCHTA menejeri siz bilan bogʻlanib, jarayonlarni aniqlaydi va shartlarni taklif qiladi.",
+    fields: {
+      regularPickup: "Muntazam olib ketish kerak",
+      needCod: "Yetkazib berishda toʻlov kerak",
+    },
   },
   tracking: {
     title: "Joʻnatmani kuzatish",
@@ -405,7 +426,10 @@ export const uzCopy: SiteCopy = {
     placeholder: "Trek-raqam",
     emptyHint:
       "Trek-raqam odatda topshirish kvitansiyasida yoki SMS da koʻrsatiladi.",
-    demoHint: "Interfeys demosi uchun 000000 raqamini kiriting.",
+    demoHint:
+      "Demo: 000000 — muvaffaqiyatli status; 999999 — «topilmadi». Haqiqiy API hali ulanmagan.",
+    tryDemoCta: "000000 ni sinab koʻrish",
+    loadingText: "Joʻnatma qidirilmoqda…",
     unavailableTitle: "Kuzatuv tez orada ochiladi",
     unavailableText:
       "Sahifa EPOS POCHTA status tizimiga ulashga tayyor. API ulanmaguncha joriy statusni telefon orqali aniqlashingiz mumkin.",
@@ -428,20 +452,27 @@ export const uzCopy: SiteCopy = {
     ],
   },
   requestPrice: {
-    title: "Narx soʻrash",
-    lead: "Menejer narx va taxminiy muddatni hisoblaydi. Saytda avtomatik narx koʻrsatilmaydi.",
+    title: "Narxni hisoblash",
+    lead: "Yoʻnalish va yuk parametrlarini kiriting — taxminiy smetani koʻrsatamiz. Yakuniy narxni menejer tasdiqlaydi.",
     priceNote:
-      "Saytda ochiq tariflar va avtohisob yoʻq — narx faqat menejer soʻrovni koʻrib chiqgach.",
+      "Saytdagi hisob taxminiydir va oferta emas. Yakuniy narx va muddatni menejer arizadan keyin tasdiqlaydi.",
+    estimateTitle: "Taxminiy smeta",
+    estimateRangeLabel: "Narx boʻyicha orientir",
+    estimateEtaLabel: "Taxminiy muddat",
+    estimateDisclaimer:
+      "Yakuniy narx emas. Menejer yoʻnalish va yukni tekshirgach tarifni aniqlaydi.",
+    estimateUnknownDimsNote:
+      "Oʻlchamlar koʻrsatilmagan — smeta 1 kg minimal ogʻirlik boʻyicha. Menejer tortishdan keyin aniqlaydi.",
     trustTitle: "Keyin nima boʻladi",
     trustItems: [
+      "Narx va muddat orientiri allaqachon ekranda",
+      "Aloqa qoldiring — yakuniy hisobni tasdiqlaymiz",
       "Telefon, Telegram yoki email orqali javob beramiz",
-      "Yoʻnalish, ogʻirlik va yetkazish usulini aniqlaymiz",
-      "Narx va taxminiy muddatni xabar qilamiz",
     ],
-    steps: ["Yoʻnalish", "Joʻnatma", "Aloqa"],
+    steps: ["Yoʻnalish va yuk", "Smeta", "Aloqa"],
     successTitle: "Soʻrov qabul qilindi",
     successText:
-      "EPOS POCHTA menejeri siz bilan bogʻlanib, narx va muddatni xabar qiladi.",
+      "EPOS POCHTA menejeri siz bilan bogʻlanib, narx va muddatni tasdiqlaydi.",
     fields: {
       fromRegion: "Yuborish viloyati",
       fromCity: "Yuborish shahri yoki tumani",

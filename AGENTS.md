@@ -11,9 +11,10 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 
 ## Product rules
 
-- Never publish tariffs or auto-calculated prices
-- Price only via «Запросить стоимость» / lead forms
-- Tracking page stays a stub until tracking API is connected
+- Client-side **non-binding estimates** are allowed (A→B + weight/dims) with a clear “not final / manager confirms” disclaimer
+- Never publish official tariffs or present estimates as final prices / оферта
+- Final price only via manager confirmation after a lead («Запросить стоимость» / contacts on estimate)
+- Tracking page stays a stub until tracking API is connected (`TODO(tracking-api)`)
 
 <!-- BEGIN:nextjs-agent-rules -->
 

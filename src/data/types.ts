@@ -35,6 +35,8 @@ export interface SiteCopy {
     trackingDescription: string;
     requestPriceTitle: string;
     requestPriceDescription: string;
+    businessConnectTitle: string;
+    businessConnectDescription: string;
     aboutTitle: string;
     aboutDescription: string;
     newsTitle: string;
@@ -49,10 +51,12 @@ export interface SiteCopy {
   };
   ui: {
     requestPrice: string;
+    calculate: string;
     callCourier: string;
     track: string;
     forBusiness: string;
     getOffer: string;
+    startConnect: string;
     learnApi: string;
     geoCheck: string;
     call: string;
@@ -136,6 +140,19 @@ export interface SiteCopy {
     apiTitle: string;
     apiLead: string;
     formTitle: string;
+    connectCtaTitle: string;
+    connectCtaLead: string;
+  };
+  businessConnect: {
+    title: string;
+    lead: string;
+    steps: [string, string, string];
+    successTitle: string;
+    successText: string;
+    fields: {
+      regularPickup: string;
+      needCod: string;
+    };
   };
   tracking: {
     title: string;
@@ -143,6 +160,8 @@ export interface SiteCopy {
     placeholder: string;
     emptyHint: string;
     demoHint: string;
+    tryDemoCta: string;
+    loadingText: string;
     unavailableTitle: string;
     unavailableText: string;
     formatErrorTitle: string;
@@ -159,6 +178,11 @@ export interface SiteCopy {
     title: string;
     lead: string;
     priceNote: string;
+    estimateTitle: string;
+    estimateRangeLabel: string;
+    estimateEtaLabel: string;
+    estimateDisclaimer: string;
+    estimateUnknownDimsNote: string;
     trustTitle: string;
     trustItems: string[];
     steps: [string, string, string];

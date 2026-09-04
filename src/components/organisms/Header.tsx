@@ -105,7 +105,7 @@ export function Header({ locale, content }: HeaderProps) {
             href={requestHref}
             className="!min-h-9 !px-3 !py-2 text-sm lg:!min-h-[var(--tap-min)] lg:!px-6 lg:!py-4 lg:text-base"
           >
-            {content.ui.requestPrice}
+            {content.ui.calculate}
           </Button>
           <button
             type="button"
@@ -163,7 +163,7 @@ export function Header({ locale, content }: HeaderProps) {
             <LanguageSwitcher locale={locale} />
           </div>
           <Button href={requestHref} onClick={() => setOpen(false)}>
-            {content.ui.requestPrice}
+            {content.ui.calculate}
           </Button>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { SiteLayout } from "@/components/templates/SiteLayout";
 import { HomePageView } from "@/views/HomePageView";
 import { ServicesPageView } from "@/views/ServicesPageView";
 import { BusinessPageView } from "@/views/BusinessPageView";
+import { BusinessConnectPageView } from "@/views/BusinessConnectPageView";
 import { TrackingPageView } from "@/views/TrackingPageView";
 import { RequestPricePageView } from "@/views/RequestPricePageView";
 import { AboutPageView } from "@/views/AboutPageView";
@@ -57,6 +58,20 @@ export function createBusinessPage(locale: Locale) {
       return (
         <SiteLayout locale={locale}>
           <BusinessPageView locale={locale} />
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createBusinessConnectPage(locale: Locale) {
+  return {
+    generateMetadata: () =>
+      getLocalizedPageMetadata(locale, "businessConnect", { noIndex: true }),
+    Page: async function BusinessConnectPage() {
+      return (
+        <SiteLayout locale={locale}>
+          <BusinessConnectPageView locale={locale} />
         </SiteLayout>
       );
     },

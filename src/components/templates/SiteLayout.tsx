@@ -22,7 +22,7 @@ export function SiteLayout({ locale, children }: SiteLayoutProps) {
         <main id="main-content">{children}</main>
       </div>
       <SiteFooter locale={locale} content={content} />
-      <MobileStickyCta locale={locale} label={content.ui.requestPrice} />
+      <MobileStickyCta locale={locale} label={content.ui.calculate} />
       <CookieConsentBanner
         text={content.ui.cookieText}
         acceptLabel={content.ui.cookieAccept}

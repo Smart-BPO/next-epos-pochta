@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
@@ -9,7 +9,10 @@ import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { trackEvent } from "@/lib/analytics/events";
-import { lookupTracking } from "@/lib/tracking/client";
+import {
+  DEMO_TRACK_NUMBER,
+  lookupTracking,
+} from "@/lib/tracking/client";
 import type { TrackingShipment } from "@/lib/tracking/types";
 import {
   alertInfo,
@@ -30,7 +33,13 @@ import {
   trackTimelineMuted,
 } from "@/styles/ui";
 
-type UiState = "idle" | "invalid" | "unavailable" | "not_found" | "found";
+type UiState =
+  | "idle"
+  | "loading"
+  | "invalid"
+  | "unavailable"
+  | "not_found"
+  | "found";
 
 function formatEventTime(iso: string, locale: Locale) {
   return new Intl.DateTimeFormat(locale === "uz" ? "uz-UZ" : "ru-RU", {
@@ -44,12 +53,12 @@ function formatEventTime(iso: string, locale: Locale) {
 
 export function TrackingPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
+  const router = useRouter();
+  const pathname = usePathname();
   const params = useSearchParams();
   const queryNumber = params.get("number") ?? "";
   const [number, setNumber] = useState(queryNumber);
-  const [edited, setEdited] = useState(false);
-  const displayNumber = edited ? number : queryNumber;
-  const [state, setState] = useState<UiState>("idle");
+  const [state, setState] = useState<UiState>(queryNumber ? "loading" : "idle");
   const [shipment, setShipment] = useState<TrackingShipment | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -76,9 +85,31 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
     trackEvent("track_search_unavailable");
   }
 
+  function runLookup(raw: string, syncUrl: boolean) {
+    const trimmed = raw.trim();
+    setState("loading");
+    startTransition(async () => {
+      trackEvent("track_search_submit");
+      const result = await lookupTracking(trimmed, locale);
+      applyResult(result);
+      if (syncUrl) {
+        const qs = trimmed
+          ? `?number=${encodeURIComponent(trimmed)}`
+          : "";
+        router.replace(`${pathname}${qs}`, { scroll: false });
+      }
+    });
+  }
+
   useEffect(() => {
-    if (!queryNumber) return;
+    setNumber(queryNumber);
+    if (!queryNumber) {
+      setState("idle");
+      setShipment(null);
+      return;
+    }
     let cancelled = false;
+    setState("loading");
     startTransition(async () => {
       const result = await lookupTracking(queryNumber, locale);
       if (!cancelled) applyResult(result);
@@ -87,6 +118,9 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
       cancelled = true;
     };
   }, [queryNumber, locale]);
+
+  const showPreview =
+    state === "idle" || state === "invalid" || state === "unavailable";
 
   return (
     <section className={pageIntro}>
@@ -99,11 +133,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
             className="flex flex-col gap-4 sm:flex-row sm:items-end"
             onSubmit={(e) => {
               e.preventDefault();
-              startTransition(async () => {
-                trackEvent("track_search_submit");
-                const result = await lookupTracking(displayNumber, locale);
-                applyResult(result);
-              });
+              runLookup(number, true);
             }}
           >
             <div className={`${field} mb-0 min-w-0 flex-1`}>
@@ -112,11 +142,10 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
               </label>
               <input
                 id="track-number"
-                value={displayNumber}
+                value={number}
                 onChange={(e) => {
-                  setEdited(true);
                   setNumber(e.target.value);
-                  if (state !== "idle") setState("idle");
+                  if (state !== "idle" && state !== "loading") setState("idle");
                   setShipment(null);
                 }}
                 placeholder={copy.tracking.placeholder}
@@ -131,10 +160,27 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
           </form>
 
           {state === "idle" ? (
-            <div className="grid gap-2">
+            <div className="grid gap-3">
               <div className={alertInfo}>{copy.tracking.emptyHint}</div>
               <p className="m-0 text-sm text-black/50">{copy.tracking.demoHint}</p>
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  setNumber(DEMO_TRACK_NUMBER);
+                  runLookup(DEMO_TRACK_NUMBER, true);
+                }}
+              >
+                {copy.tracking.tryDemoCta}
+              </Button>
             </div>
+          ) : null}
+
+          {state === "loading" ? (
+            <p className="m-0 text-base text-black/60" role="status">
+              {copy.tracking.loadingText}
+            </p>
           ) : null}
 
           {state === "invalid" ? (
@@ -148,14 +194,6 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
             <div className={alertWarning} role="status">
               <strong>{copy.tracking.errorTitle}</strong>
               <p>{copy.tracking.errorText}</p>
-            </div>
-          ) : null}
-
-          {state === "unavailable" ? (
-            <div className={alertWarning} role="status">
-              <strong>{copy.tracking.unavailableTitle}</strong>
-              <p>{copy.tracking.unavailableText}</p>
-              <p className="mt-2 text-sm">{copy.tracking.demoHint}</p>
               <div className={`${heroActions} mt-3.5`}>
                 <Button
                   href={`tel:${SITE_CONFIG.phone}`}
@@ -166,6 +204,38 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                 <Button
                   href={localePath(locale, "/contacts/")}
                   variant="secondary"
+                >
+                  {copy.ui.write}
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          {state === "unavailable" ? (
+            <div className={alertWarning} role="status">
+              <strong>{copy.tracking.unavailableTitle}</strong>
+              <p>{copy.tracking.unavailableText}</p>
+              <p className="mt-2 text-sm">{copy.tracking.demoHint}</p>
+              <div className={`${heroActions} mt-3.5`}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setNumber(DEMO_TRACK_NUMBER);
+                    runLookup(DEMO_TRACK_NUMBER, true);
+                  }}
+                >
+                  {copy.tracking.tryDemoCta}
+                </Button>
+                <Button
+                  href={`tel:${SITE_CONFIG.phone}`}
+                  onClick={() => trackEvent("track_support_call_click")}
+                >
+                  {copy.tracking.supportCta}
+                </Button>
+                <Button
+                  href={localePath(locale, "/contacts/")}
+                  variant="ghost"
                 >
                   {copy.ui.write}
                 </Button>
@@ -201,7 +271,9 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                 ))}
               </div>
             </div>
-          ) : (
+          ) : null}
+
+          {showPreview ? (
             <div>
               <h2 className={sectionTitle}>
                 {copy.tracking.timelinePreviewTitle}
@@ -216,7 +288,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                 ))}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </PageContainer>
     </section>

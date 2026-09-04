@@ -20,6 +20,8 @@ export function RequestPricePageView({ locale }: { locale: Locale }) {
   const params = useSearchParams();
   const category = params.get("category") || params.get("service") || "";
   const pickup = params.get("pickup") === "1";
+  const fromQuery = params.get("from") || "";
+  const toQuery = params.get("to") || "";
 
   return (
     <>
@@ -83,6 +85,8 @@ export function RequestPricePageView({ locale }: { locale: Locale }) {
                     : ""
             }
             initialPickup={pickup}
+            initialFromQuery={fromQuery}
+            initialToQuery={toQuery}
           />
 
           <aside className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">

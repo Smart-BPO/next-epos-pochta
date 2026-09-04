@@ -1,10 +1,10 @@
 import Image from "next/image";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
+import { localePath } from "@/i18n/paths";
 import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
-import { BusinessForm } from "@/components/organisms/BusinessForm";
 import { PageCta } from "@/components/organisms/PageCta";
 import { cn } from "@/lib/cn";
 import {
@@ -40,6 +40,7 @@ const SEGMENT_IMAGES = [
 
 export function BusinessPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
+  const connectHref = localePath(locale, "/business/connect/");
 
   return (
     <>
@@ -58,8 +59,8 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
           <h1 className={heroTitle}>{copy.business.heroTitle}</h1>
           <p className={heroLead}>{copy.business.heroLead}</p>
           <div className={heroActions}>
-            <Button href="#business-form" variant="primary">
-              {copy.ui.getOffer}
+            <Button href={connectHref} variant="primary">
+              {copy.ui.startConnect}
             </Button>
             <Button href="#api" variant="secondary">
               {copy.ui.learnApi}
@@ -180,8 +181,8 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
                 {copy.business.apiLead}
               </p>
               <div className="mt-2">
-                <Button href="#business-form" variant="primary">
-                  {copy.ui.getOffer}
+                <Button href={connectHref} variant="primary">
+                  {copy.ui.startConnect}
                 </Button>
               </div>
             </div>
@@ -190,12 +191,14 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={cn(sectionMuted, anchorSection)} id="business-form">
-        <PageContainer className="flex flex-col gap-6 md:gap-9">
-          <div>
-            <h2 className={sectionTitle}>{copy.business.formTitle}</h2>
-            <p className={sectionLead}>{copy.business.heroLead}</p>
+        <PageContainer>
+          <div className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
+            <h2 className={sectionTitle}>{copy.business.connectCtaTitle}</h2>
+            <p className={sectionLead}>{copy.business.connectCtaLead}</p>
+            <Button href={connectHref} variant="primary">
+              {copy.ui.startConnect}
+            </Button>
           </div>
-          <BusinessForm locale={locale} content={copy} />
         </PageContainer>
       </section>
 

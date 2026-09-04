@@ -66,7 +66,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
                 variant="heroPrimary"
                 className="w-full sm:w-auto"
               >
-                {copy.ui.requestPrice}
+                {copy.ui.calculate}
               </Button>
               <Button
                 href={`${localePath(locale, "/request-price/")}?pickup=1`}
@@ -261,7 +261,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
               variant="primary"
               className="w-full self-stretch"
             >
-              {copy.ui.getOffer}
+              {copy.ui.startConnect}
             </Button>
           </div>
         </PageContainer>

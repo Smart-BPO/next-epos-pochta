@@ -23,6 +23,7 @@ export type PageKey =
   | "home"
   | "services"
   | "business"
+  | "businessConnect"
   | "tracking"
   | "requestPrice"
   | "about"
@@ -36,6 +37,7 @@ export const pagePaths: Record<PageKey, string> = {
   home: "/",
   services: "/services/",
   business: "/business/",
+  businessConnect: "/business/connect/",
   tracking: "/tracking/",
   requestPrice: "/request-price/",
   about: "/about/",

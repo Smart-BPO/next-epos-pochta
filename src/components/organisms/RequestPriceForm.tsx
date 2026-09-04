@@ -1,7 +1,7 @@
 "use client";
 
 import { Form, Formik, useFormikContext } from "formik";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import * as Yup from "yup";
 import type { Locale } from "@/i18n/config";
 import type { SiteCopy } from "@/data/types";
@@ -28,8 +28,15 @@ import {
 } from "@/lib/form/schemas";
 import { submitLead } from "@/lib/form/submitLead";
 import { createRequestId, yesNoOptions } from "@/lib/form/utils";
+import {
+  estimateQuote,
+  formatUzs,
+  type QuoteEstimate,
+} from "@/lib/pricing/estimate";
+import { matchCityQuery } from "@/lib/pricing/matchCity";
 import { cn } from "@/lib/cn";
 import {
+  alertInfo,
   alertSuccess,
   card,
   formShell,
@@ -44,60 +51,61 @@ interface PriceFormProps {
   content: SiteCopy;
   initialCategory?: string;
   initialPickup?: boolean;
+  initialFromQuery?: string;
+  initialToQuery?: string;
 }
 
-const stepSchemas = [
-  Yup.object({
-    fromRegion: requiredString(),
-    fromCity: requiredString(),
-    toRegion: requiredString(),
-    toCity: requiredString(),
-    pickup: yesNoRequired(),
-    doorDelivery: yesNoRequired(),
+const routeParcelSchema = Yup.object({
+  fromRegion: requiredString(),
+  fromCity: requiredString(),
+  toRegion: requiredString(),
+  toCity: requiredString(),
+  pickup: yesNoRequired(),
+  doorDelivery: yesNoRequired(),
+  category: requiredString(),
+  description: requiredString().min(2),
+  places: Yup.number().integer().min(1).required(),
+  unknownDims: Yup.boolean(),
+  weight: Yup.number().when("unknownDims", {
+    is: false,
+    then: (s) => s.positive().required(),
+    otherwise: (s) => s.notRequired(),
   }),
-  Yup.object({
-    category: requiredString(),
-    description: requiredString().min(2),
-    places: Yup.number().integer().min(1).required(),
-    unknownDims: Yup.boolean(),
-    weight: Yup.number().when("unknownDims", {
-      is: false,
-      then: (s) => s.positive().required(),
-      otherwise: (s) => s.notRequired(),
-    }),
-    length: Yup.number().positive().nullable(),
-    width: Yup.number().positive().nullable(),
-    height: Yup.number().positive().nullable(),
-    urgent: yesNo(),
-    cod: yesNo(),
-    declaredValue: Yup.number().when("cod", {
-      is: "true",
-      then: (s) => s.positive().required(),
-      otherwise: (s) => s.notRequired(),
-    }),
-    preferredDate: Yup.string(),
+  length: Yup.number().positive().nullable(),
+  width: Yup.number().positive().nullable(),
+  height: Yup.number().positive().nullable(),
+  urgent: yesNo(),
+  cod: yesNo(),
+  declaredValue: Yup.number().when("cod", {
+    is: "true",
+    then: (s) => s.positive().required(),
+    otherwise: (s) => s.notRequired(),
   }),
-  Yup.object({
-    clientType: Yup.string().oneOf(["person", "company"]).required(),
-    name: requiredString(),
-    phone: phoneRequired(),
-    email: optionalEmail(),
-    contactMethod: Yup.string()
-      .oneOf(["call", "telegram", "email"])
-      .required(),
-    company: Yup.string().when("clientType", {
-      is: "company",
-      then: (s) => s.required(),
-      otherwise: (s) => s.notRequired(),
-    }),
-    inn: Yup.string(),
-    monthlyVolume: Yup.number().integer().min(1),
-    needApi: yesNo(),
-    comment: Yup.string(),
-    consent: consentRequired(),
-    website: Yup.string(),
+  preferredDate: Yup.string(),
+});
+
+const contactsSchema = Yup.object({
+  clientType: Yup.string().oneOf(["person", "company"]).required(),
+  name: requiredString(),
+  phone: phoneRequired(),
+  email: optionalEmail(),
+  contactMethod: Yup.string()
+    .oneOf(["call", "telegram", "email"])
+    .required(),
+  company: Yup.string().when("clientType", {
+    is: "company",
+    then: (s) => s.required(),
+    otherwise: (s) => s.notRequired(),
   }),
-];
+  inn: Yup.string(),
+  monthlyVolume: Yup.number().integer().min(1),
+  needApi: yesNo(),
+  comment: Yup.string(),
+  consent: consentRequired(),
+  website: Yup.string(),
+});
+
+const stepSchemas = [routeParcelSchema, Yup.object({}), contactsSchema];
 
 type PriceValues = {
   fromRegion: string;
@@ -142,16 +150,84 @@ function localeOptions(
   }));
 }
 
+function numOrNull(value: string | number) {
+  if (value === "" || value == null) return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function buildEstimate(values: PriceValues): QuoteEstimate {
+  return estimateQuote({
+    fromRegionId: values.fromRegion,
+    fromCityId: values.fromCity,
+    toRegionId: values.toRegion,
+    toCityId: values.toCity,
+    weightKg: values.unknownDims ? null : numOrNull(values.weight),
+    lengthCm: values.unknownDims ? null : numOrNull(values.length),
+    widthCm: values.unknownDims ? null : numOrNull(values.width),
+    heightCm: values.unknownDims ? null : numOrNull(values.height),
+    unknownDims: values.unknownDims,
+    pickup: values.pickup === "true",
+    doorDelivery: values.doorDelivery === "true",
+    places: Number(values.places) || 1,
+    urgent: values.urgent === "true",
+    category: values.category,
+  });
+}
+
+function EstimatePanel({
+  locale,
+  content,
+  estimate,
+  unknownDims,
+}: {
+  locale: Locale;
+  content: SiteCopy;
+  estimate: QuoteEstimate;
+  unknownDims: boolean;
+}) {
+  const rp = content.requestPrice;
+  const daysLabel =
+    locale === "uz"
+      ? `${estimate.etaDaysMin}–${estimate.etaDaysMax} kun`
+      : `${estimate.etaDaysMin}–${estimate.etaDaysMax} дн.`;
+
+  return (
+    <div className="grid gap-4 rounded-2xl border border-black/10 bg-surface-muted p-5">
+      <h3 className="m-0 font-display text-xl font-semibold uppercase text-black">
+        {rp.estimateTitle}
+      </h3>
+      <div>
+        <p className="m-0 text-sm text-black/50">{rp.estimateRangeLabel}</p>
+        <p className="m-0 mt-1 font-display text-2xl font-semibold text-black">
+          {formatUzs(estimate.min, locale)} – {formatUzs(estimate.max, locale)}{" "}
+          {estimate.currency}
+        </p>
+      </div>
+      <div>
+        <p className="m-0 text-sm text-black/50">{rp.estimateEtaLabel}</p>
+        <p className="m-0 mt-1 text-lg font-medium text-black">{daysLabel}</p>
+      </div>
+      {unknownDims ? (
+        <p className="m-0 text-sm text-black/60">{rp.estimateUnknownDimsNote}</p>
+      ) : null}
+      <div className={`${alertInfo} mb-0 rounded-xl`}>{rp.estimateDisclaimer}</div>
+    </div>
+  );
+}
+
 function PriceSteps({
   step,
   setStep,
   locale,
   content,
+  estimate,
 }: {
   step: number;
   setStep: (updater: (s: number) => number) => void;
   locale: Locale;
   content: SiteCopy;
+  estimate: QuoteEstimate | null;
 }) {
   const { values } = useFormikContext<PriceValues>();
   const f = content.requestPrice.fields;
@@ -208,11 +284,6 @@ function PriceSteps({
               includeEmpty={false}
             />
           </FormRow>
-        </>
-      ) : null}
-
-      {step === 1 ? (
-        <>
           <SelectField
             name="category"
             label={f.category}
@@ -298,8 +369,25 @@ function PriceSteps({
         </>
       ) : null}
 
+      {step === 1 && estimate ? (
+        <EstimatePanel
+          locale={locale}
+          content={content}
+          estimate={estimate}
+          unknownDims={values.unknownDims}
+        />
+      ) : null}
+
       {step === 2 ? (
         <>
+          {estimate ? (
+            <EstimatePanel
+              locale={locale}
+              content={content}
+              estimate={estimate}
+              unknownDims={values.unknownDims}
+            />
+          ) : null}
           <SelectField
             name="clientType"
             label={f.clientType}
@@ -352,7 +440,13 @@ function PriceSteps({
       ) : null}
 
       <FormActions
-        submitLabel={step < 2 ? content.ui.next : content.ui.getQuote}
+        submitLabel={
+          step === 0
+            ? content.ui.calculate
+            : step === 1
+              ? content.ui.next
+              : content.ui.getQuote
+        }
         showBack={step > 0}
         backLabel={content.ui.back}
         onBack={() => setStep((s) => s - 1)}
@@ -361,15 +455,41 @@ function PriceSteps({
   );
 }
 
+function resolveInitialRoute(
+  locale: Locale,
+  fromQuery?: string,
+  toQuery?: string,
+) {
+  const from = matchCityQuery(fromQuery ?? "", locale);
+  const to = matchCityQuery(toQuery ?? "", locale);
+  return {
+    fromRegion: from?.regionId ?? "",
+    fromCity: from?.id ?? "",
+    toRegion: to?.regionId ?? "",
+    toCity: to?.id ?? "",
+    routeNote: [fromQuery, toQuery]
+      .map((v) => v?.trim())
+      .filter(Boolean)
+      .join(" → "),
+  };
+}
+
 export function RequestPriceForm({
   locale,
   content,
   initialCategory = "",
   initialPickup = false,
+  initialFromQuery = "",
+  initialToQuery = "",
 }: PriceFormProps) {
   const [step, setStep] = useState(0);
+  const [estimate, setEstimate] = useState<QuoteEstimate | null>(null);
   const [successId, setSuccessId] = useState<string | null>(null);
   const [requestId] = useState(() => createRequestId("req"));
+  const routeSeed = useMemo(
+    () => resolveInitialRoute(locale, initialFromQuery, initialToQuery),
+    [locale, initialFromQuery, initialToQuery],
+  );
 
   if (successId) {
     return (
@@ -401,10 +521,10 @@ export function RequestPriceForm({
 
       <Formik<PriceValues>
         initialValues={{
-          fromRegion: "",
-          fromCity: "",
-          toRegion: "",
-          toCity: "",
+          fromRegion: routeSeed.fromRegion,
+          fromCity: routeSeed.fromCity,
+          toRegion: routeSeed.toRegion,
+          toCity: routeSeed.toCity,
           pickup: initialPickup ? "true" : "false",
           doorDelivery: "false",
           category: initialCategory || "",
@@ -428,20 +548,39 @@ export function RequestPriceForm({
           inn: "",
           monthlyVolume: "",
           needApi: "false",
-          comment: "",
+          comment: routeSeed.routeNote
+            ? locale === "uz"
+              ? `Home quote: ${routeSeed.routeNote}`
+              : `Маршрут с главной: ${routeSeed.routeNote}`
+            : "",
           consent: false,
           website: "",
         }}
         validationSchema={stepSchemas[step]}
         onSubmit={async (values, helpers) => {
-          if (step < 2) {
-            trackEvent("price_form_step_complete", { step });
-            setStep((s) => s + 1);
+          if (step === 0) {
+            const nextEstimate = buildEstimate(values);
+            setEstimate(nextEstimate);
+            trackEvent("price_form_step_complete", { step: 0 });
+            trackEvent("price_estimate_shown", {
+              zone: nextEstimate.zone,
+              formulaVersion: nextEstimate.formulaVersion,
+            });
+            setStep(1);
             helpers.setTouched({});
             helpers.setSubmitting(false);
             return;
           }
 
+          if (step === 1) {
+            trackEvent("price_form_step_complete", { step: 1 });
+            setStep(2);
+            helpers.setTouched({});
+            helpers.setSubmitting(false);
+            return;
+          }
+
+          const finalEstimate = estimate ?? buildEstimate(values);
           const result = await submitLead({
             type: "price",
             locale,
@@ -461,6 +600,7 @@ export function RequestPriceForm({
               monthlyVolume: values.monthlyVolume
                 ? Number(values.monthlyVolume)
                 : null,
+              estimate: finalEstimate,
             },
             successTitle: content.requestPrice.successTitle,
             successText: content.requestPrice.successText,
@@ -476,6 +616,7 @@ export function RequestPriceForm({
             setStep={setStep}
             locale={locale}
             content={content}
+            estimate={estimate}
           />
         </Form>
       </Formik>
