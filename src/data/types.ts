@@ -102,6 +102,7 @@ export interface SiteCopy {
     needsTitle: string;
     needs: Array<{ id: ShipmentCategory; title: string; description: string }>;
     modesTitle: string;
+    chainSteps: [string, string, string, string, string];
     modes: Array<{ id: DeliveryMode; title: string; description: string }>;
     benefitsTitle: string;
     benefits: string[];

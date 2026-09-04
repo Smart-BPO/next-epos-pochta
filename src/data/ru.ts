@@ -121,6 +121,13 @@ export const ruCopy: SiteCopy = {
       },
     ],
     modesTitle: "Способы доставки",
+    chainSteps: [
+      "Заказ",
+      "Склад",
+      "В пути",
+      "Пункт EPOS",
+      "До двери",
+    ],
     modes: [
       {
         id: "warehouse-warehouse",

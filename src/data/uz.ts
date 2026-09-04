@@ -117,6 +117,13 @@ export const uzCopy: SiteCopy = {
       },
     ],
     modesTitle: "Yetkazib berish usullari",
+    chainSteps: [
+      "Buyurtma",
+      "Ombor",
+      "Yoʻlda",
+      "EPOS punkti",
+      "Eshikgacha",
+    ],
     modes: [
       {
         id: "warehouse-warehouse",

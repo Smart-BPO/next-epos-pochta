@@ -4,6 +4,7 @@ import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
+import { DeliveryChain } from "@/components/molecules/DeliveryChain";
 import { FaqList } from "@/components/molecules/FaqList";
 import { GeoSearch } from "@/components/molecules/GeoSearch";
 import { HomeQuoteTeaser } from "@/components/molecules/HomeQuoteTeaser";
@@ -147,6 +148,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
       <section className={section}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.home.modesTitle}</h2>
+          <DeliveryChain locale={locale} />
           <div className="flex flex-col gap-4 md:gap-6">
             {copy.home.modes.map((mode, index) => (
               <article
