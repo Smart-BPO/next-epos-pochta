@@ -6,12 +6,12 @@ export const pageContainer =
 export const section = "py-[var(--section-y)]";
 export const sectionMuted = `${section} bg-surface-muted`;
 export const sectionTitle =
-  "m-0 mb-3 font-display text-[clamp(1.5rem,3vw,2rem)] font-bold leading-tight tracking-[-0.02em] text-ink";
-export const sectionLead = "mb-6 max-w-xl text-ink-muted";
+  "m-0 mb-4 font-display text-[length:var(--home-title)] font-semibold uppercase leading-tight tracking-[-0.02em] text-black";
+export const sectionLead = "mb-6 max-w-xl text-[length:var(--home-lead)] text-black/60";
 
-export const pageIntro = "py-[clamp(2rem,5vw,3.25rem)]";
+export const pageIntro = "py-[var(--section-y)]";
 export const pageIntroTitle =
-  "m-0 mb-3 font-display text-[clamp(1.75rem,4vw,2.5rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink";
+  "m-0 mb-4 font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold uppercase leading-[1.15] tracking-[-0.02em] text-black";
 
 export const anchorSection = "scroll-mt-[var(--header-height)]";
 
@@ -94,7 +94,7 @@ export const homeSectionLead =
   "m-0 max-w-[30rem] text-[length:var(--home-lead)] text-black/60";
 
 export const card =
-  "rounded-lg border border-border bg-surface p-[var(--card-pad)] shadow-sm";
+  "rounded-3xl border border-black/20 bg-surface p-[var(--card-pad)] shadow-none";
 
 export const featureList = "m-0 grid list-none gap-0 border-t border-border p-0";
 export const featureItem =
@@ -144,16 +144,17 @@ export const alertWarning = `${alert} bg-[#fff7ed] text-warning`;
 export const alertInfo = `${alert} bg-primary-soft text-primary`;
 
 export const pageCta =
-  "rounded-lg bg-surface-deep p-[clamp(1.5rem,4vw,2.5rem)] text-white";
+  "relative overflow-hidden rounded-3xl border border-black/20 bg-black p-6 text-white sm:p-8 md:p-12";
 
-export const trackShell = "grid max-w-[40rem] gap-6";
+export const trackShell =
+  "grid max-w-[40rem] gap-6 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]";
 export const trackTimeline =
-  "pointer-events-none grid gap-[1.1rem] border-l-2 border-border pl-5 opacity-55";
+  "pointer-events-none grid gap-[1.1rem] border-l-2 border-black/10 pl-5 opacity-55";
 export const trackTimelineItem =
-  "relative before:absolute before:left-[-1.55rem] before:top-[0.35rem] before:h-[0.65rem] before:w-[0.65rem] before:rounded-full before:border-2 before:border-surface before:bg-border";
+  "relative before:absolute before:left-[-1.55rem] before:top-[0.35rem] before:h-[0.65rem] before:w-[0.65rem] before:rounded-full before:border-2 before:border-white before:bg-black/20";
 
 export const mapPlaceholder =
-  "grid min-h-64 place-items-center rounded-lg border border-dashed border-border bg-[linear-gradient(135deg,var(--color-surface-muted),white),repeating-linear-gradient(-45deg,transparent,transparent_8px,rgb(211_2_3/0.04)_8px,rgb(211_2_3/0.04)_16px)] p-6 text-center text-ink-muted";
+  "grid min-h-64 place-items-center rounded-3xl border border-dashed border-black/20 bg-[linear-gradient(135deg,var(--color-surface-muted),white),repeating-linear-gradient(-45deg,transparent,transparent_8px,rgb(211_2_3/0.04)_8px,rgb(211_2_3/0.04)_16px)] p-6 text-center text-ink-muted";
 
 export const legalContent =
-  "[&_h2]:mt-8 [&_li]:text-ink-muted [&_p]:text-ink-muted";
+  "[&_h2]:mt-8 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:uppercase [&_li]:text-black/60 [&_p]:text-black/60";

@@ -17,7 +17,7 @@ export function MobileStickyCta({
   if (path.startsWith("/request-price")) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-[35] grid border-t border-border bg-white/94 px-[var(--page-padding)] py-2.5 pb-[calc(0.65rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgb(15_18_24/0.08)] backdrop-blur-md md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-[35] border-t border-black/10 bg-white/94 px-[var(--page-padding)] py-2.5 pb-[calc(0.65rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgb(15_18_24/0.08)] backdrop-blur-md md:hidden">
       <Button href={localePath(locale, "/request-price/")} className="w-full">
         {label}
       </Button>

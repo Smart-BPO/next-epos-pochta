@@ -49,6 +49,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
 
         <div className={trackShell}>
           <form
+            className="flex flex-col gap-4 sm:flex-row sm:items-end"
             onSubmit={(e) => {
               e.preventDefault();
               startTransition(async () => {
@@ -69,7 +70,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
               });
             }}
           >
-            <div className={field}>
+            <div className={`${field} mb-0 min-w-0 flex-1`}>
               <label htmlFor="track-number" className={fieldLabel}>
                 {copy.tracking.placeholder}
               </label>
@@ -87,7 +88,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                 className={fieldControl}
               />
             </div>
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" disabled={pending} className="shrink-0">
               {copy.ui.track}
             </Button>
           </form>

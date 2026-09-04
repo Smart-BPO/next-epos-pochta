@@ -6,10 +6,6 @@ import { PageContainer } from "@/components/atoms/PageContainer";
 import { ContactForm } from "@/components/organisms/ContactForm";
 import { SITE_CONFIG } from "@/utils/consts";
 import {
-  featureItem,
-  featureItemText,
-  featureItemTitle,
-  featureList,
   heroActions,
   mapPlaceholder,
   pageIntro,
@@ -24,6 +20,56 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   const mapLat = process.env.NEXT_PUBLIC_MAP_LAT;
   const mapLng = process.env.NEXT_PUBLIC_MAP_LNG;
+
+  const cards = [
+    {
+      title: copy.ui.call,
+      body: (
+        <a href={`tel:${SITE_CONFIG.phone}`}>{SITE_CONFIG.phoneDisplay}</a>
+      ),
+    },
+    {
+      title: "Email",
+      body: SITE_CONFIG.email || copy.ui.placeholderEmail,
+    },
+    {
+      title: "Telegram",
+      body: (
+        <a
+          href={SITE_CONFIG.telegramUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="break-all"
+        >
+          {SITE_CONFIG.telegramUrl}
+        </a>
+      ),
+    },
+    {
+      title: "Instagram",
+      body: (
+        <a href={SITE_CONFIG.instagramUrl} target="_blank" rel="noreferrer">
+          @epos_pochta
+        </a>
+      ),
+    },
+    {
+      title: "Facebook",
+      body: (
+        <a href={SITE_CONFIG.facebookUrl} target="_blank" rel="noreferrer">
+          EPOS POCHTA
+        </a>
+      ),
+    },
+    {
+      title: locale === "uz" ? "Ish vaqti" : "Режим работы",
+      body: SITE_CONFIG.hours || copy.ui.placeholderHours,
+    },
+    {
+      title: locale === "uz" ? "Manzil" : "Адрес",
+      body: SITE_CONFIG.address.line,
+    },
+  ];
 
   return (
     <>
@@ -48,73 +94,21 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
 
       <section className={sectionMuted}>
         <PageContainer>
-          <ul className={featureList}>
-            <li className={featureItem}>
-              <h3 className={featureItemTitle}>{copy.ui.call}</h3>
-              <p className={featureItemText}>
-                <a href={`tel:${SITE_CONFIG.phone}`}>
-                  {SITE_CONFIG.phoneDisplay}
-                </a>
-              </p>
-            </li>
-            <li className={featureItem}>
-              <h3 className={featureItemTitle}>Email</h3>
-              <p className={featureItemText}>
-                {SITE_CONFIG.email || copy.ui.placeholderEmail}
-              </p>
-            </li>
-            <li className={featureItem}>
-              <h3 className={featureItemTitle}>Telegram</h3>
-              <p className={featureItemText}>
-                <a
-                  href={SITE_CONFIG.telegramUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="break-all"
-                >
-                  {SITE_CONFIG.telegramUrl}
-                </a>
-              </p>
-            </li>
-            <li className={featureItem}>
-              <h3 className={featureItemTitle}>Instagram</h3>
-              <p className={featureItemText}>
-                <a
-                  href={SITE_CONFIG.instagramUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  @epos_pochta
-                </a>
-              </p>
-            </li>
-            <li className={featureItem}>
-              <h3 className={featureItemTitle}>Facebook</h3>
-              <p className={featureItemText}>
-                <a
-                  href={SITE_CONFIG.facebookUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  EPOS POCHTA
-                </a>
-              </p>
-            </li>
-            <li className={featureItem}>
-              <h3 className={featureItemTitle}>
-                {locale === "uz" ? "Ish vaqti" : "Режим работы"}
-              </h3>
-              <p className={featureItemText}>
-                {SITE_CONFIG.hours || copy.ui.placeholderHours}
-              </p>
-            </li>
-            <li className={featureItem}>
-              <h3 className={featureItemTitle}>
-                {locale === "uz" ? "Manzil" : "Адрес"}
-              </h3>
-              <p className={featureItemText}>{SITE_CONFIG.address.line}</p>
-            </li>
-          </ul>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {cards.map((card) => (
+              <article
+                key={card.title}
+                className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
+              >
+                <h3 className="m-0 mb-2 text-lg font-semibold text-black">
+                  {card.title}
+                </h3>
+                <p className="m-0 min-w-0 break-words text-sm text-black/60">
+                  {card.body}
+                </p>
+              </article>
+            ))}
+          </div>
         </PageContainer>
       </section>
 
