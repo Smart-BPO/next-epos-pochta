@@ -15,18 +15,18 @@ export const pageIntroTitle =
 
 export const anchorSection = "scroll-mt-[var(--header-height)]";
 
-/** Home hero — Figma desktop: white ground, left copy, right map + tracker. */
+/** Home hero — Figma: mobile stacked (copy → CTAs → map); desktop copy + map/tracker. */
 export const homeHero =
-  "relative isolate min-h-[min(100dvh-var(--header-height),52rem)] overflow-hidden bg-white max-md:min-h-0";
+  "relative isolate overflow-hidden bg-white max-lg:min-h-0 lg:min-h-[min(100dvh-var(--header-height),52rem)]";
 
 export const homeHeroGrid =
-  "relative grid min-h-[inherit] items-center gap-8 py-8 md:gap-10 md:py-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:gap-8 lg:py-12 lg:min-h-[min(100dvh-var(--header-height),52rem)]";
+  "relative grid items-start gap-6 py-6 max-lg:grid-cols-1 md:gap-8 md:py-8 lg:min-h-[min(100dvh-var(--header-height),52rem)] lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:py-12";
 
 export const homeHeroCopy =
-  "relative z-10 flex max-w-[32rem] flex-col items-start gap-6 lg:gap-9";
+  "relative z-10 flex max-w-[32rem] flex-col items-stretch gap-5 lg:items-start lg:gap-9";
 
 export const homeHeroTitle =
-  "m-0 animate-hero-rise font-display text-[clamp(1.75rem,4.2vw,3rem)] font-black uppercase leading-[1.05] tracking-[-0.02em] text-black";
+  "m-0 animate-hero-rise font-display text-[clamp(1.75rem,4.2vw,3rem)] font-black uppercase leading-[1.05] tracking-[-0.02em] text-black max-lg:text-[2rem]";
 
 export const homeHeroLead =
   "m-0 animate-hero-rise text-[clamp(1.05rem,2vw,1.5rem)] leading-normal text-black [animation-delay:80ms]";
@@ -35,16 +35,22 @@ export const homeHeroNote =
   "m-0 animate-hero-rise text-base text-black/60 [animation-delay:140ms]";
 
 export const homeHeroActions =
-  "flex flex-wrap gap-3 sm:gap-4 animate-hero-rise [animation-delay:180ms]";
+  "flex w-full flex-col gap-3 animate-hero-rise [animation-delay:180ms] sm:flex-row sm:flex-wrap lg:w-auto";
 
 export const homeHeroVisual =
-  "relative z-0 min-h-[14rem] w-full sm:min-h-[16rem] lg:min-h-[28rem] lg:justify-self-end";
+  "relative z-0 order-last w-full min-h-[12.5rem] sm:min-h-[16rem] lg:order-none lg:min-h-[28rem] lg:justify-self-end";
 
 export const homeHeroMap =
-  "pointer-events-none absolute inset-y-0 right-0 w-[min(100%,40rem)] max-w-none select-none object-contain object-right opacity-90 lg:w-[min(110%,46rem)] lg:opacity-100";
+  "pointer-events-none relative mx-auto block h-auto w-full max-w-[22rem] select-none object-contain opacity-90 sm:max-w-[28rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,46rem)] lg:max-w-none lg:object-right lg:opacity-100";
 
 export const homeHeroTracker =
-  "relative z-10 ml-auto mt-[min(42%,8rem)] w-full max-w-[29.5rem] rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] lg:absolute lg:bottom-8 lg:right-0 lg:mt-0";
+  "relative z-10 hidden w-full max-w-[29.5rem] rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] lg:absolute lg:bottom-8 lg:right-0 lg:ml-auto lg:mt-0 lg:block";
+
+export const homeTrackCard =
+  "rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] lg:hidden";
+
+export const homeQuoteCard =
+  "rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]";
 
 export const homeHeroTrackerTitle =
   "m-0 mb-4 font-display text-xl font-semibold uppercase leading-normal text-black sm:text-2xl";

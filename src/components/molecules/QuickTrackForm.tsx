@@ -12,6 +12,7 @@ import {
   fieldControl,
   homeHeroTracker,
   homeHeroTrackerTitle,
+  homeTrackCard,
 } from "@/styles/ui";
 
 export function QuickTrackForm({
@@ -21,10 +22,11 @@ export function QuickTrackForm({
 }: {
   locale: Locale;
   copy: SiteCopy;
-  variant?: "default" | "hero";
+  variant?: "default" | "hero" | "card";
 }) {
   const router = useRouter();
   const [value, setValue] = useState("");
+  const stacked = variant === "hero" || variant === "card";
 
   const form = (
     <form
@@ -37,10 +39,12 @@ export function QuickTrackForm({
         );
       }}
       className={cn(
-        "flex w-full gap-4",
-        variant === "hero"
-          ? "flex-col sm:flex-row sm:items-center"
-          : "flex-wrap",
+        "flex w-full gap-3",
+        variant === "card"
+          ? "flex-col"
+          : stacked
+            ? "flex-col sm:flex-row sm:items-center sm:gap-4"
+            : "flex-wrap",
       )}
     >
       <input
@@ -51,15 +55,13 @@ export function QuickTrackForm({
         className={cn(
           fieldControl,
           "min-w-0",
-          variant === "hero"
-            ? "flex-1 placeholder:text-black/40"
-            : "flex-[1_1_12rem]",
+          stacked ? "flex-1 placeholder:text-black/40" : "flex-[1_1_12rem]",
         )}
       />
       <Button
         type="submit"
-        variant={variant === "hero" ? "heroSecondary" : "primary"}
-        className="shrink-0"
+        variant={stacked ? "heroSecondary" : "primary"}
+        className={cn("shrink-0", variant === "card" && "w-full")}
       >
         {copy.ui.track}
       </Button>
@@ -69,6 +71,16 @@ export function QuickTrackForm({
   if (variant === "hero") {
     return (
       <div className={homeHeroTracker}>
+        <h2 className={homeHeroTrackerTitle}>{copy.home.trackTitle}</h2>
+        {form}
+        <p className="mt-4 text-base text-black/60">{copy.home.trackHint}</p>
+      </div>
+    );
+  }
+
+  if (variant === "card") {
+    return (
+      <div className={homeTrackCard}>
         <h2 className={homeHeroTrackerTitle}>{copy.home.trackTitle}</h2>
         {form}
         <p className="mt-4 text-base text-black/60">{copy.home.trackHint}</p>

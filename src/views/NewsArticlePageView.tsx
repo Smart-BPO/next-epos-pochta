@@ -63,7 +63,7 @@ export function NewsArticlePageView({
                 src={article.coverImage}
                 alt=""
                 fill
-                className="object-cover"
+                className="object-contain object-center p-6 sm:p-10"
                 sizes="(max-width: 1232px) 100vw, 1232px"
                 priority
               />
@@ -74,9 +74,12 @@ export function NewsArticlePageView({
 
       <section className={sectionMuted}>
         <PageContainer className={legalContent}>
-          {article.body.map((paragraph) => (
-            <p key={paragraph.slice(0, 40)}>{paragraph}</p>
-          ))}
+          {article.body.map((block) => {
+            if (block.startsWith("## ")) {
+              return <h2 key={block}>{block.slice(3)}</h2>;
+            }
+            return <p key={block.slice(0, 48)}>{block}</p>;
+          })}
         </PageContainer>
       </section>
 

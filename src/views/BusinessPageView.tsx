@@ -195,9 +195,7 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
             <h2 className={sectionTitle}>{copy.business.formTitle}</h2>
             <p className={sectionLead}>{copy.business.heroLead}</p>
           </div>
-          <div className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
-            <BusinessForm locale={locale} content={copy} />
-          </div>
+          <BusinessForm locale={locale} content={copy} />
         </PageContainer>
       </section>
 

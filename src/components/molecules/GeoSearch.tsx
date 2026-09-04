@@ -26,9 +26,9 @@ export function GeoSearch({
 
   if (variant === "home") {
     return (
-      <div className="w-full max-w-[29.5rem] rounded-3xl border border-black/20 bg-white p-6">
+      <div className="w-full max-w-[29.5rem] rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
         <form
-          className="flex flex-col gap-4 sm:flex-row sm:items-center"
+          className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
           onSubmit={(e) => {
             e.preventDefault();
             setSubmitted(query);
@@ -41,7 +41,7 @@ export function GeoSearch({
             aria-label={copy.home.geoSearchPlaceholder}
             className={`${fieldControl} min-w-0 flex-1 placeholder:text-black/40`}
           />
-          <Button type="submit" variant="secondary" className="shrink-0">
+          <Button type="submit" variant="secondary" className="w-full shrink-0 sm:w-auto">
             {copy.ui.geoCheck}
           </Button>
         </form>

@@ -62,7 +62,6 @@ export const ruCopy: SiteCopy = {
   nav: [
     { label: "Услуги", href: "/services/" },
     { label: "Для бизнеса", href: "/business/" },
-    { label: "Отследить", href: "/tracking/" },
     { label: "О компании", href: "/about/" },
     { label: "Новости", href: "/news/" },
     { label: "Контакты", href: "/contacts/" },
@@ -85,6 +84,11 @@ export const ruCopy: SiteCopy = {
     trackTitle: "Где моя посылка?",
     trackPlaceholder: "Введите трек-номер",
     trackHint: "Трек-номер указан в квитанции или SMS",
+    quoteTitle: "Рассчитайте стоимость и срок доставки",
+    quoteFrom: "Откуда",
+    quoteTo: "Куда",
+    quoteWeight: "Вес, кг",
+    quoteNote: "Цена на сайте не считается — менеджер сообщит стоимость после запроса.",
     needsTitle: "Что нужно доставить?",
     needs: [
       {
@@ -511,8 +515,11 @@ export const ruCopy: SiteCopy = {
     title: "Контакты",
     lead: "Свяжитесь с нами по телефону или оставьте короткое сообщение.",
     formTitle: "Форма обратной связи",
-    mapNote:
-      "Карта будет подключена после согласования сервиса карт и актуальных координат.",
+    channelsTitle: "Как связаться",
+    addressTitle: "Адрес",
+    socialTitle: "Соцсети",
+    telegramLabel: "Написать в Telegram",
+    mapNote: "Офис в Ташкенте — уточните визит заранее по телефону или в Telegram.",
   },
   privacy: {
     title: "Политика конфиденциальности",

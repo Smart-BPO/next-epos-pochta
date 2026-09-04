@@ -6,6 +6,7 @@ import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { FaqList } from "@/components/molecules/FaqList";
 import { GeoSearch } from "@/components/molecules/GeoSearch";
+import { HomeQuoteTeaser } from "@/components/molecules/HomeQuoteTeaser";
 import { NewsCard } from "@/components/molecules/NewsCard";
 import { QuickTrackForm } from "@/components/molecules/QuickTrackForm";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -63,12 +64,14 @@ export function HomePageView({ locale }: { locale: Locale }) {
               <Button
                 href={localePath(locale, "/request-price/")}
                 variant="heroPrimary"
+                className="w-full sm:w-auto"
               >
                 {copy.ui.requestPrice}
               </Button>
               <Button
                 href={`${localePath(locale, "/request-price/")}?pickup=1`}
                 variant="heroSecondary"
+                className="w-full sm:w-auto"
               >
                 {copy.ui.callCourier}
               </Button>
@@ -87,6 +90,13 @@ export function HomePageView({ locale }: { locale: Locale }) {
             />
             <QuickTrackForm locale={locale} copy={copy} variant="hero" />
           </div>
+        </PageContainer>
+      </section>
+
+      <section className="bg-surface-muted py-4 lg:hidden">
+        <PageContainer className="flex flex-col gap-4">
+          <QuickTrackForm locale={locale} copy={copy} variant="card" />
+          <HomeQuoteTeaser locale={locale} copy={copy} />
         </PageContainer>
       </section>
 
@@ -136,7 +146,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
             {copy.home.modes.map((mode, index) => (
               <article
                 key={mode.id}
-                className="relative overflow-hidden rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] pr-16 sm:pr-20 md:pr-28"
+                className="relative overflow-hidden rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] pr-20 sm:pr-24 md:pr-28"
               >
                 <h3 className="relative z-10 m-0 max-w-[18ch] font-display text-xl font-semibold uppercase text-black md:max-w-none md:text-2xl">
                   {mode.title}
@@ -146,7 +156,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
                 </p>
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rotate-[15deg] font-display text-[4.5rem] font-black leading-none text-black/20 sm:right-6 sm:text-[6rem] md:right-12 md:text-[10rem]"
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rotate-[15deg] font-display text-[5.5rem] font-black leading-none text-black/15 sm:right-6 sm:text-[6rem] md:right-12 md:text-[10rem]"
                 >
                   {index + 1}
                 </span>
@@ -225,7 +235,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
             </h2>
             <p className={homeSectionLead}>{copy.home.businessLead}</p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto_auto] lg:items-stretch">
             {copy.home.businessItems.map((item) => (
               <div
                 key={item}
@@ -270,6 +280,14 @@ export function HomePageView({ locale }: { locale: Locale }) {
             <p className={homeSectionLead}>{copy.home.geoLead}</p>
           </div>
           <GeoSearch locale={locale} copy={copy} variant="home" />
+          <Image
+            src="/images/hero/uzbekistan-map.svg"
+            alt=""
+            width={1000}
+            height={652}
+            className="pointer-events-none relative mx-auto h-auto w-full max-w-sm select-none object-contain opacity-90 md:hidden"
+            unoptimized
+          />
         </PageContainer>
       </section>
 

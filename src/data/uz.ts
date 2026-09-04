@@ -58,7 +58,6 @@ export const uzCopy: SiteCopy = {
   nav: [
     { label: "Xizmatlar", href: "/services/" },
     { label: "Biznes uchun", href: "/business/" },
-    { label: "Kuzatish", href: "/tracking/" },
     { label: "Kompaniya", href: "/about/" },
     { label: "Yangiliklar", href: "/news/" },
     { label: "Aloqa", href: "/contacts/" },
@@ -81,6 +80,11 @@ export const uzCopy: SiteCopy = {
     trackTitle: "Pochta qayerda?",
     trackPlaceholder: "Trek-raqamni kiriting",
     trackHint: "Trek-raqam kvitansiyada yoki SMS da koʻrsatiladi",
+    quoteTitle: "Yetkazib berish narxi va muddatini bilib oling",
+    quoteFrom: "Qayerdan",
+    quoteTo: "Qayerga",
+    quoteWeight: "Ogʻirlik, kg",
+    quoteNote: "Saytda narx hisoblanmaydi — menejer soʻrovdan keyin xabar qiladi.",
     needsTitle: "Nima yetkazish kerak?",
     needs: [
       {
@@ -491,8 +495,11 @@ export const uzCopy: SiteCopy = {
     title: "Aloqa",
     lead: "Telefon orqali bogʻlaning yoki qisqa xabar qoldiring.",
     formTitle: "Aloqa shakli",
-    mapNote:
-      "Xarita xizmati va koordinatalar kelishilgandan keyin ulanadi.",
+    channelsTitle: "Qanday bogʻlanish",
+    addressTitle: "Manzil",
+    socialTitle: "Ijtimoiy tarmoqlar",
+    telegramLabel: "Telegramda yozish",
+    mapNote: "Ofis Toshkentda — tashrifni oldindan telefon yoki Telegram orqali kelishing.",
   },
   privacy: {
     title: "Maxfiylik siyosati",

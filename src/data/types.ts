@@ -88,6 +88,11 @@ export interface SiteCopy {
     trackTitle: string;
     trackPlaceholder: string;
     trackHint: string;
+    quoteTitle: string;
+    quoteFrom: string;
+    quoteTo: string;
+    quoteWeight: string;
+    quoteNote: string;
     needsTitle: string;
     needs: Array<{ id: ShipmentCategory; title: string; description: string }>;
     modesTitle: string;
@@ -181,6 +186,10 @@ export interface SiteCopy {
     title: string;
     lead: string;
     formTitle: string;
+    channelsTitle: string;
+    addressTitle: string;
+    socialTitle: string;
+    telegramLabel: string;
     mapNote: string;
   };
   privacy: {

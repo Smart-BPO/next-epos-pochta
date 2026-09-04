@@ -67,25 +67,23 @@ export function RequestPricePageView({ locale }: { locale: Locale }) {
 
       <section className={sectionMuted}>
         <PageContainer className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] lg:items-start lg:gap-10">
-          <div className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
-            <RequestPriceForm
-              locale={locale}
-              content={copy}
-              initialCategory={
-                category === "regular"
-                  ? "goods"
-                  : category === "parcels"
-                    ? "parcel"
-                    : category === "documents" ||
-                        category === "parcel" ||
-                        category === "goods" ||
-                        category === "other"
-                      ? category
-                      : ""
-              }
-              initialPickup={pickup}
-            />
-          </div>
+          <RequestPriceForm
+            locale={locale}
+            content={copy}
+            initialCategory={
+              category === "regular"
+                ? "goods"
+                : category === "parcels"
+                  ? "parcel"
+                  : category === "documents" ||
+                      category === "parcel" ||
+                      category === "goods" ||
+                      category === "other"
+                    ? category
+                    : ""
+            }
+            initialPickup={pickup}
+          />
 
           <aside className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
             <h2 className="m-0 font-display text-2xl font-semibold uppercase tracking-[-0.02em] text-black">
