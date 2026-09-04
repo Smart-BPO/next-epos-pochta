@@ -21,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   for (const key of indexablePages) {
     const path = pagePaths[key];
-    for (const locale of ["ru", "uz"] as const) {
+    for (const locale of ["uz", "ru"] as const) {
       entries.push({
         url: `${base}${localePath(locale, path)}`,
         changeFrequency: key === "home" ? "weekly" : "monthly",

@@ -394,9 +394,22 @@ export const uzCopy: SiteCopy = {
     unavailableTitle: "Kuzatuv tez orada ochiladi",
     unavailableText:
       "Sahifa EPOS POCHTA status tizimiga ulashga tayyor. API ulanmaguncha joriy statusni telefon orqali aniqlashingiz mumkin.",
+    formatErrorTitle: "Trek-raqam formati notoʻgʻri",
+    formatErrorText:
+      "Kamida 6 belgi, harflar, raqamlar yoki chiziqcha. Boʻshliqlar avtomatik olib tashlanadi.",
     errorTitle: "Joʻnatma topilmadi",
     errorText:
       "Raqamni tekshirib qayta urinib koʻring. Xato takrorlansa, qoʻllab-quvvatlashga murojaat qiling.",
+    supportCta: "Qoʻllab-quvvatlashga qoʻngʻiroq",
+    timelinePreviewTitle: "Statuslar qanday koʻrinadi",
+    timelinePreviewNote:
+      "Bu faqat interfeys namunasi. Haqiqiy statuslar faqat API ulanganidan keyin chiqadi.",
+    sampleStatuses: [
+      "Qabul qilindi",
+      "Yoʻlda",
+      "Yetkazishga chiqdi",
+      "Yetkazildi",
+    ],
   },
   requestPrice: {
     title: "Narx soʻrash",

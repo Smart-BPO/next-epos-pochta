@@ -13,6 +13,7 @@ interface LeadPayload {
   data: Record<string, unknown>;
 }
 
+// TODO(cms): move rate-limit + idempotency to Redis/DB when connected
 const rateMap = new Map<string, { count: number; resetAt: number }>();
 const idempotencyMap = new Map<string, { id: string; createdAt: number }>();
 
@@ -52,6 +53,60 @@ function pruneMaps() {
   }
 }
 
+function formatLeadText(record: Record<string, unknown>) {
+  return JSON.stringify(record, null, 2);
+}
+
+async function notifyResend(record: {
+  id: string;
+  type: LeadType;
+  [key: string]: unknown;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const notifyTo =
+    process.env.RESEND_NOTIFY_TO || process.env.NEXT_PUBLIC_CONTACT_EMAIL;
+  const from =
+    process.env.RESEND_FROM || "EPOS POCHTA <onboarding@resend.dev>";
+  if (!apiKey || !notifyTo) return false;
+
+  const resend = new Resend(apiKey);
+  await resend.emails.send({
+    from,
+    to: notifyTo,
+    subject: `[EPOS] ${record.type.toUpperCase()} ${record.id}`,
+    text: formatLeadText(record),
+  });
+  return true;
+}
+
+async function notifyTelegram(record: {
+  id: string;
+  type: LeadType;
+  [key: string]: unknown;
+}) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return false;
+
+  const text = `EPOS lead ${record.type.toUpperCase()} ${record.id}\n\n${formatLeadText(record)}`;
+  const response = await fetch(
+    `https://api.telegram.org/bot${token}/sendMessage`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: text.slice(0, 3900),
+        disable_web_page_preview: true,
+      }),
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`telegram_http_${response.status}`);
+  }
+  return true;
+}
+
 export async function POST(request: Request) {
   pruneMaps();
 
@@ -63,7 +118,6 @@ export async function POST(request: Request) {
   }
 
   if (body.website) {
-    // Honeypot filled — pretend success
     return NextResponse.json({ id: createLeadId(), ok: true });
   }
 
@@ -89,7 +143,7 @@ export async function POST(request: Request) {
   const record = {
     id,
     type: body.type,
-    locale: body.locale ?? "ru",
+    locale: body.locale ?? "uz",
     pageUrl: body.pageUrl ?? "",
     utm: body.utm ?? {},
     createdAt: new Date().toISOString(),
@@ -99,26 +153,16 @@ export async function POST(request: Request) {
   // TODO(cms): persist to Supabase / CRM when connected
   console.info("[lead]", JSON.stringify(record));
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const notifyTo =
-    process.env.RESEND_NOTIFY_TO || process.env.NEXT_PUBLIC_CONTACT_EMAIL;
-  const from =
-    process.env.RESEND_FROM || "EPOS POCHTA <onboarding@resend.dev>";
+  const notifyResults = await Promise.allSettled([
+    notifyResend(record),
+    notifyTelegram(record),
+  ]);
 
-  if (apiKey && notifyTo) {
-    try {
-      const resend = new Resend(apiKey);
-      await resend.emails.send({
-        from,
-        to: notifyTo,
-        subject: `[EPOS] ${body.type.toUpperCase()} ${id}`,
-        text: JSON.stringify(record, null, 2),
-      });
-    } catch (error) {
-      console.error("[lead:email]", error);
-      // Still return success to user — data is logged; retry possible via client
+  notifyResults.forEach((result, index) => {
+    if (result.status === "rejected") {
+      console.error(index === 0 ? "[lead:email]" : "[lead:telegram]", result.reason);
     }
-  }
+  });
 
   return NextResponse.json({
     id,

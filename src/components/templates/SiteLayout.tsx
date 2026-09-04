@@ -3,6 +3,7 @@ import { getContent } from "@/i18n/get-content";
 import { Header } from "@/components/organisms/Header";
 import { SiteFooter } from "@/components/organisms/SiteFooter";
 import { FloatingContact } from "@/components/organisms/FloatingContact";
+import { MobileStickyCta } from "@/components/organisms/MobileStickyCta";
 import { CookieConsentBanner } from "@/components/consent/CookieConsentBanner";
 
 interface SiteLayoutProps {
@@ -24,6 +25,7 @@ export function SiteLayout({ locale, children }: SiteLayoutProps) {
         phoneLabel={content.ui.floatingPhone}
         telegramLabel={content.ui.floatingTelegram}
       />
+      <MobileStickyCta locale={locale} label={content.ui.requestPrice} />
       <CookieConsentBanner
         text={content.ui.cookieText}
         acceptLabel={content.ui.cookieAccept}

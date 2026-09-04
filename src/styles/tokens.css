@@ -1,24 +1,32 @@
 :root {
-  --color-primary: #e11d2e;
-  --color-primary-hover: #c41625;
-  --color-primary-soft: #fde8ea;
-  --color-ink: #121212;
-  --color-ink-muted: #5c5c5c;
-  --color-border: #e6e6e6;
+  --color-primary: #d01224;
+  --color-primary-hover: #b00e1e;
+  --color-primary-soft: #fce8ea;
+  --color-ink: #0f1218;
+  --color-ink-muted: #5a6472;
+  --color-border: #e4e7ec;
   --color-surface: #ffffff;
-  --color-surface-muted: #f7f7f8;
+  --color-surface-muted: #f5f6f8;
+  --color-surface-deep: #141820;
   --color-success: #0f7a3e;
   --color-warning: #b45309;
-  --color-danger: #e11d2e;
+  --color-danger: #d01224;
   --page-padding: clamp(1rem, 3vw, 2rem);
   --page-max: 72rem;
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
-  --shadow-md: 0 8px 24px rgb(0 0 0 / 0.08);
-  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --shadow-sm: 0 1px 2px rgb(15 18 24 / 0.05);
+  --shadow-md: 0 12px 32px rgb(15 18 24 / 0.1);
+  --font-sans: var(--font-manrope), "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-manrope), "Segoe UI", system-ui, sans-serif;
   --tap-min: 44px;
+  --header-height: 4rem;
+  --sticky-cta-height: 4.25rem;
+  --hero-ink: #ffffff;
+  --motion-fast: 160ms;
+  --motion-base: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme inline {

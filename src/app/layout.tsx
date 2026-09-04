@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
-import { inter } from "@/assets/fonts";
+import { manrope } from "@/assets/fonts";
 import "./globals.css";
 import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -44,16 +44,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const htmlLangHeader = (await headers()).get("x-html-lang");
-  const lang = htmlLangHeader === "uz" ? "uz" : "ru";
+  const lang = htmlLangHeader === "ru" ? "ru" : "uz";
 
   return (
-    <html lang={lang} className={inter.variable} suppressHydrationWarning>
+    <html lang={lang} className={manrope.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body
-        className="antialiased"
+        className="antialiased has-sticky-cta"
         style={{
           minHeight: "100vh",
           display: "flex",

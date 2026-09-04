@@ -131,8 +131,14 @@ export interface SiteCopy {
     emptyHint: string;
     unavailableTitle: string;
     unavailableText: string;
+    formatErrorTitle: string;
+    formatErrorText: string;
     errorTitle: string;
     errorText: string;
+    supportCta: string;
+    timelinePreviewTitle: string;
+    timelinePreviewNote: string;
+    sampleStatuses: string[];
   };
   requestPrice: {
     title: string;
@@ -216,17 +222,30 @@ export const uzbekistanCities = [
   { id: "tashkent", regionId: "tashkent-city", ru: "Ташкент", uz: "Toshkent" },
   { id: "chirchik", regionId: "tashkent-region", ru: "Чирчик", uz: "Chirchiq" },
   { id: "angren", regionId: "tashkent-region", ru: "Ангрен", uz: "Angren" },
+  { id: "nurafshon", regionId: "tashkent-region", ru: "Нурафшон", uz: "Nurafshon" },
+  { id: "yangiyul", regionId: "tashkent-region", ru: "Янгиюль", uz: "Yangiyoʻl" },
   { id: "andijan", regionId: "andijan", ru: "Андижан", uz: "Andijon" },
+  { id: "asaka", regionId: "andijan", ru: "Асака", uz: "Asaka" },
   { id: "bukhara", regionId: "bukhara", ru: "Бухара", uz: "Buxoro" },
+  { id: "kagan", regionId: "bukhara", ru: "Каган", uz: "Kogon" },
   { id: "fergana", regionId: "fergana", ru: "Фергана", uz: "Fargʻona" },
   { id: "kokand", regionId: "fergana", ru: "Коканд", uz: "Qoʻqon" },
+  { id: "margilan", regionId: "fergana", ru: "Маргилан", uz: "Margʻilon" },
   { id: "jizzakh", regionId: "jizzakh", ru: "Джизак", uz: "Jizzax" },
   { id: "karshi", regionId: "kashkadarya", ru: "Карши", uz: "Qarshi" },
+  { id: "shahrisabz", regionId: "kashkadarya", ru: "Шахрисабз", uz: "Shahrisabz" },
   { id: "urgench", regionId: "khorezm", ru: "Ургенч", uz: "Urganch" },
+  { id: "khiva", regionId: "khorezm", ru: "Хива", uz: "Xiva" },
   { id: "namangan", regionId: "namangan", ru: "Наманган", uz: "Namangan" },
+  { id: "chust", regionId: "namangan", ru: "Чуст", uz: "Chust" },
   { id: "navoi", regionId: "navoi", ru: "Навои", uz: "Navoiy" },
+  { id: "zarafshan", regionId: "navoi", ru: "Зарафшан", uz: "Zarafshon" },
   { id: "samarkand", regionId: "samarkand", ru: "Самарканд", uz: "Samarqand" },
+  { id: "kattaqorgon", regionId: "samarkand", ru: "Каттакурган", uz: "Kattaqoʻrgʻon" },
   { id: "gulistan", regionId: "sirdarya", ru: "Гулистан", uz: "Guliston" },
+  { id: "yangiyer", regionId: "sirdarya", ru: "Янгиер", uz: "Yangiyer" },
   { id: "termez", regionId: "surkhandarya", ru: "Термез", uz: "Termiz" },
+  { id: "denov", regionId: "surkhandarya", ru: "Денау", uz: "Denov" },
   { id: "nukus", regionId: "karakalpakstan", ru: "Нукус", uz: "Nukus" },
+  { id: "khujayli", regionId: "karakalpakstan", ru: "Ходжейли", uz: "Xoʻjayli" },
 ] as const;

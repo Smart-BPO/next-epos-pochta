@@ -3,11 +3,28 @@ import { getCanonicalRedirectFromHeaders } from "@/utils/seo/canonical-request";
 
 /**
  * 1. One-hop 308 to the canonical URL (https apex, trailing slash).
- * 2. Set x-html-lang for UZ routes.
+ * 2. Legacy /uz → unprefixed (UZ is now default).
+ * 3. Set x-html-lang + locale cookie (/ru → ru, else uz).
  * TODO(cms): admin auth gate when Supabase admin is connected.
  */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  if (
+    pathname === "/uz" ||
+    pathname === "/uz/" ||
+    pathname.startsWith("/uz/")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname =
+      pathname === "/uz" || pathname === "/uz/"
+        ? "/"
+        : pathname.replace(/^\/uz/, "") || "/";
+    if (!url.pathname.endsWith("/") && !url.pathname.includes(".")) {
+      url.pathname = `${url.pathname}/`;
+    }
+    return NextResponse.redirect(url, 308);
+  }
 
   if (!pathname.startsWith("/_next")) {
     const canonical = getCanonicalRedirectFromHeaders(
@@ -20,26 +37,16 @@ export async function proxy(request: NextRequest) {
   }
 
   const requestHeaders = new Headers(request.headers);
-  const uzbek =
-    pathname === "/uz" || pathname === "/uz/" || pathname.startsWith("/uz/");
-  requestHeaders.set("x-html-lang", uzbek ? "uz" : "ru");
+  const russian =
+    pathname === "/ru" || pathname === "/ru/" || pathname.startsWith("/ru/");
+  requestHeaders.set("x-html-lang", russian ? "ru" : "uz");
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
 
-  // Persist language preference between visits
-  if (uzbek) {
-    response.cookies.set("epos_locale", "uz", {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365,
-      sameSite: "lax",
-    });
-  } else if (
-    !pathname.startsWith("/api") &&
-    !pathname.startsWith("/_next")
-  ) {
-    response.cookies.set("epos_locale", "ru", {
+  if (!pathname.startsWith("/api") && !pathname.startsWith("/_next")) {
+    response.cookies.set("epos_locale", russian ? "ru" : "uz", {
       path: "/",
       maxAge: 60 * 60 * 24 * 365,
       sameSite: "lax",

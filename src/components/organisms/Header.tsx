@@ -38,16 +38,16 @@ export function Header({ locale, content }: HeaderProps) {
         <div className="header-actions">
           <div className="lang-switch" aria-label="Language">
             <Link
-              href={switchLocalePath(pathname, "ru")}
-              aria-current={locale === "ru" ? "true" : undefined}
-            >
-              RU
-            </Link>
-            <Link
               href={switchLocalePath(pathname, "uz")}
               aria-current={locale === "uz" ? "true" : undefined}
             >
               UZ
+            </Link>
+            <Link
+              href={switchLocalePath(pathname, "ru")}
+              aria-current={locale === "ru" ? "true" : undefined}
+            >
+              RU
             </Link>
           </div>
           <a className="phone-link" href={phoneHref}>

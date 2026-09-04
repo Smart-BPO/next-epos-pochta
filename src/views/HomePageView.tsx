@@ -1,8 +1,10 @@
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
+import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
+import { TrustIcon } from "@/components/atoms/TrustIcon";
 import { GeoSearch } from "@/components/molecules/GeoSearch";
 import { QuickTrackForm } from "@/components/molecules/QuickTrackForm";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -17,6 +19,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
 
       <section className="hero">
         <PageContainer>
+          <p className="hero-brand">{SITE_CONFIG.name}</p>
           <h1>{copy.home.heroTitle}</h1>
           <p className="hero-lead">{copy.home.heroLead}</p>
           <p className="hero-note">{copy.home.heroNote}</p>
@@ -36,12 +39,10 @@ export function HomePageView({ locale }: { locale: Locale }) {
 
       <section className="section">
         <PageContainer>
-          <div className="card" style={{ maxWidth: "36rem" }}>
-            <h2 className="section-title">{copy.home.trackTitle}</h2>
+          <h2 className="section-title">{copy.home.trackTitle}</h2>
+          <p className="section-lead">{copy.home.trackHint}</p>
+          <div className="track-shell">
             <QuickTrackForm locale={locale} copy={copy} />
-            <p className="hint" style={{ marginTop: "0.75rem" }}>
-              {copy.home.trackHint}
-            </p>
           </div>
         </PageContainer>
       </section>
@@ -49,11 +50,13 @@ export function HomePageView({ locale }: { locale: Locale }) {
       <section className="section section-muted">
         <PageContainer>
           <h2 className="section-title">{copy.home.needsTitle}</h2>
-          <div className="grid-cards">
+          <div>
             {copy.home.needs.map((item) => (
-              <article key={item.id} className="card">
-                <h3>{item.title}</h3>
-                <p style={{ marginBottom: "1rem" }}>{item.description}</p>
+              <article key={item.id} className="action-tile">
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </div>
                 <Button
                   href={`${localePath(locale, "/request-price/")}?category=${item.id}`}
                 >
@@ -68,30 +71,28 @@ export function HomePageView({ locale }: { locale: Locale }) {
       <section className="section">
         <PageContainer>
           <h2 className="section-title">{copy.home.modesTitle}</h2>
-          <div className="grid-cards">
+          <ul className="feature-list">
             {copy.home.modes.map((mode) => (
-              <article key={mode.id} className="card">
+              <li key={mode.id}>
                 <h3>{mode.title}</h3>
                 <p>{mode.description}</p>
-              </article>
+              </li>
             ))}
-          </div>
+          </ul>
         </PageContainer>
       </section>
 
       <section className="section section-muted">
         <PageContainer>
           <h2 className="section-title">{copy.home.benefitsTitle}</h2>
-          <ul
-            className="grid-cards"
-            style={{ listStyle: "none", padding: 0, margin: 0 }}
-          >
-            {copy.home.benefits.map((b) => (
-              <li key={b} className="card">
-                {b}
-              </li>
+          <div className="trust-grid">
+            {copy.home.benefits.map((b, index) => (
+              <article key={b} className="trust-item">
+                <TrustIcon index={index} />
+                <h3>{b}</h3>
+              </article>
             ))}
-          </ul>
+          </div>
         </PageContainer>
       </section>
 
@@ -115,10 +116,10 @@ export function HomePageView({ locale }: { locale: Locale }) {
         <PageContainer>
           <h2 className="section-title">{copy.home.businessTitle}</h2>
           <p className="section-lead">{copy.home.businessLead}</p>
-          <ul className="grid-cards" style={{ listStyle: "none", padding: 0 }}>
+          <ul className="feature-list">
             {copy.home.businessItems.map((item) => (
-              <li key={item} className="card">
-                {item}
+              <li key={item}>
+                <p>{item}</p>
               </li>
             ))}
           </ul>
@@ -166,7 +167,10 @@ export function HomePageView({ locale }: { locale: Locale }) {
             </h2>
             <p>{copy.home.finalLead}</p>
             <div style={{ marginTop: "1.25rem" }}>
-              <Button href={localePath(locale, "/request-price/")}>
+              <Button
+                href={localePath(locale, "/request-price/")}
+                className="btn-on-dark"
+              >
                 {copy.ui.requestPrice}
               </Button>
             </div>

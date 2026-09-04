@@ -46,16 +46,22 @@ export function createPageMetadata(
       description,
       url,
       siteName: SITE_CONFIG.name,
-      locale: options?.ogLocale ?? "ru_UZ",
+      locale: options?.ogLocale ?? "uz_UZ",
       type: "website",
-      ...(options?.image
-        ? { images: [{ url: options.image, width: 1200, height: 630 }] }
-        : {}),
+      images: [
+        {
+          url: options?.image ?? "/images/og/default.png",
+          width: 1200,
+          height: 630,
+          alt: SITE_CONFIG.name,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [options?.image ?? "/images/og/default.png"],
     },
     robots,
   };
@@ -73,7 +79,15 @@ export const rootMetadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_CONFIG.name,
-    locale: "ru_UZ",
+    locale: "uz_UZ",
+    images: [
+      {
+        url: "/images/og/default.png",
+        width: 1200,
+        height: 630,
+        alt: SITE_CONFIG.name,
+      },
+    ],
   },
   other: {
     "theme-color": SITE_CONFIG.themeColor,

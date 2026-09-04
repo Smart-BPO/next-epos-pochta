@@ -5,9 +5,9 @@ import { PageContainer } from "@/components/atoms/PageContainer";
 export function PrivacyPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   return (
-    <section className="section">
+    <section className="page-intro">
       <PageContainer className="legal-content">
-        <h1 className="section-title">{copy.privacy.title}</h1>
+        <h1>{copy.privacy.title}</h1>
         {copy.privacy.body.map((p) => (
           <p key={p.slice(0, 24)}>{p}</p>
         ))}
@@ -19,9 +19,9 @@ export function PrivacyPageView({ locale }: { locale: Locale }) {
 export function TermsPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   return (
-    <section className="section">
+    <section className="page-intro">
       <PageContainer className="legal-content">
-        <h1 className="section-title">{copy.terms.title}</h1>
+        <h1>{copy.terms.title}</h1>
         {copy.terms.body.map((p) => (
           <p key={p.slice(0, 24)}>{p}</p>
         ))}

@@ -4,9 +4,9 @@ import { getCanonicalSiteUrl } from "./seo/indexing";
 export const SITE_CONFIG = {
   name: "EPOS POCHTA",
   legalName: "ООО «EPOS POCHTA»",
-  title: "EPOS POCHTA — доставка посылок по Узбекистану",
+  title: "EPOS POCHTA — Oʻzbekiston boʻylab yetkazib berish",
   description:
-    "Курьерская доставка по территории Узбекистана: заберём отправление, доставим получателю и сообщим статус на каждом этапе.",
+    "EPOS POCHTA — Oʻzbekiston boʻylab kuryerlik yetkazib berish. Joʻnatmani olib ketamiz, yetkazamiz va har bosqichda statusni xabar qilamiz.",
   url: getCanonicalSiteUrl(),
   phone: getPublicEnv("NEXT_PUBLIC_CONTACT_PHONE", "+998887092299"),
   phoneDisplay: "+998 88 709 22 99",
@@ -20,9 +20,9 @@ export const SITE_CONFIG = {
     inn: "312949361",
     oked: "53200",
   },
-  locales: ["ru", "uz"] as const,
-  defaultLocale: "ru" as const,
-  themeColor: "#e11d2e",
+  locales: ["uz", "ru"] as const,
+  defaultLocale: "uz" as const,
+  themeColor: "#d01224",
   analytics: {
     yandexMetrikaId: getPublicEnv("NEXT_PUBLIC_YM_ID"),
     googleAnalyticsId: getPublicEnv("NEXT_PUBLIC_GA_ID"),

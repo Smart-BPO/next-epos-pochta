@@ -5,8 +5,8 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 ## Scope (current)
 
 - Public corporate site only
-- Static TypeScript content (`src/data`, `src/i18n/locales`)
-- Locales: `ru` (default, unprefixed) and `uz` (`/uz/`)
+- Static TypeScript content (`src/data`, `src/i18n`)
+- Locales: `uz` (default, unprefixed) and `ru` (`/ru/`)
 - No admin panel, no Supabase yet — leave `TODO(cms)` / `TODO(tracking-api)` hooks
 
 ## Product rules

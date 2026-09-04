@@ -1,22 +1,22 @@
-export const locales = ["ru", "uz"] as const;
+export const locales = ["uz", "ru"] as const;
 
 export type Locale = (typeof locales)[number];
 
-export const defaultLocale: Locale = "ru";
+export const defaultLocale: Locale = "uz";
 
 export const localeLabels: Record<Locale, string> = {
-  ru: "RU",
   uz: "UZ",
+  ru: "RU",
 };
 
 export const htmlLang: Record<Locale, string> = {
-  ru: "ru",
   uz: "uz",
+  ru: "ru",
 };
 
 export const ogLocale: Record<Locale, string> = {
-  ru: "ru_UZ",
   uz: "uz_UZ",
+  ru: "ru_UZ",
 };
 
 export type PageKey =

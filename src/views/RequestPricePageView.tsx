@@ -13,27 +13,29 @@ export function RequestPricePageView({ locale }: { locale: Locale }) {
   const pickup = params.get("pickup") === "1";
 
   return (
-    <section className="section">
+    <section className="page-intro">
       <PageContainer>
-        <h1 className="section-title">{copy.requestPrice.title}</h1>
+        <h1>{copy.requestPrice.title}</h1>
         <p className="section-lead">{copy.requestPrice.lead}</p>
-        <RequestPriceForm
-          locale={locale}
-          content={copy}
-          initialCategory={
-            category === "regular"
-              ? "goods"
-              : category === "parcels"
-                ? "parcel"
-                : category === "documents" ||
-                    category === "parcel" ||
-                    category === "goods" ||
-                    category === "other"
-                  ? category
-                  : ""
-          }
-          initialPickup={pickup}
-        />
+        <div className="form-shell">
+          <RequestPriceForm
+            locale={locale}
+            content={copy}
+            initialCategory={
+              category === "regular"
+                ? "goods"
+                : category === "parcels"
+                  ? "parcel"
+                  : category === "documents" ||
+                      category === "parcel" ||
+                      category === "goods" ||
+                      category === "other"
+                    ? category
+                    : ""
+            }
+            initialPickup={pickup}
+          />
+        </div>
       </PageContainer>
     </section>
   );
