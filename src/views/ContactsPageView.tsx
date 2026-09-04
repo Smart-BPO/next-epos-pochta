@@ -33,11 +33,9 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
           <p className={sectionLead}>{copy.contacts.lead}</p>
           <div className={heroActions}>
             <Button href={`tel:${SITE_CONFIG.phone}`}>{copy.ui.call}</Button>
-            {SITE_CONFIG.telegramUrl ? (
-              <Button href={SITE_CONFIG.telegramUrl} variant="secondary">
-                {copy.ui.write}
-              </Button>
-            ) : null}
+            <Button href={SITE_CONFIG.telegramUrl} variant="secondary">
+              {copy.ui.write}
+            </Button>
             <Button
               href={localePath(locale, "/request-price/")}
               variant="secondary"
@@ -68,9 +66,37 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
             <li className={featureItem}>
               <h3 className={featureItemTitle}>Telegram</h3>
               <p className={featureItemText}>
-                {SITE_CONFIG.telegramUrl
-                  ? SITE_CONFIG.telegramUrl
-                  : copy.ui.placeholderTelegram}
+                <a
+                  href={SITE_CONFIG.telegramUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {SITE_CONFIG.telegramUrl}
+                </a>
+              </p>
+            </li>
+            <li className={featureItem}>
+              <h3 className={featureItemTitle}>Instagram</h3>
+              <p className={featureItemText}>
+                <a
+                  href={SITE_CONFIG.instagramUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  @epos_pochta
+                </a>
+              </p>
+            </li>
+            <li className={featureItem}>
+              <h3 className={featureItemTitle}>Facebook</h3>
+              <p className={featureItemText}>
+                <a
+                  href={SITE_CONFIG.facebookUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  EPOS POCHTA
+                </a>
               </p>
             </li>
             <li className={featureItem}>

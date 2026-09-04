@@ -18,6 +18,16 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   ...rootMetadata,
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/manifest.json",
   other: {
     ...(typeof rootMetadata.other === "object" && rootMetadata.other
       ? rootMetadata.other
@@ -53,8 +63,6 @@ export default function RootLayout({
               '(function(){try{var p=location.pathname;document.documentElement.lang=(p==="/ru"||p.indexOf("/ru/")===0)?"ru":"uz"}catch(e){}})();',
           }}
         />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="manifest" href="/manifest.json" />
       </head>
       <body
         className="flex min-h-dvh flex-col bg-white font-sans text-ink antialiased [padding-bottom:calc(var(--sticky-cta-height)+env(safe-area-inset-bottom))] md:pb-0"

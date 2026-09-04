@@ -17,19 +17,19 @@ const supportEmail = SITE_CONFIG.email || "support@epos.uz";
 export function SiteFooter({ locale, content }: SiteFooterProps) {
   const socials = [
     {
-      href: SITE_CONFIG.telegramUrl || undefined,
+      href: SITE_CONFIG.telegramUrl,
       src: "/images/brand/social/telegram.svg",
       label: "Telegram",
     },
     {
-      href: undefined,
-      src: "/images/brand/social/ok.svg",
-      label: "Odnoklassniki",
+      href: SITE_CONFIG.instagramUrl,
+      src: "/images/brand/social/instagram.svg",
+      label: "Instagram",
     },
     {
-      href: undefined,
-      src: "/images/brand/social/vk.svg",
-      label: "VK",
+      href: SITE_CONFIG.facebookUrl,
+      src: "/images/brand/social/facebook.svg",
+      label: "Facebook",
     },
   ] as const;
 
@@ -53,29 +53,18 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
               </p>
             </div>
             <div className="flex gap-8">
-              {socials.map((social) =>
-                social.href ? (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={social.label}
-                    className="relative size-12 overflow-hidden"
-                  >
-                    <Image src={social.src} alt="" fill unoptimized className="object-contain" />
-                  </a>
-                ) : (
-                  <span
-                    key={social.label}
-                    aria-hidden
-                    className="relative size-12 overflow-hidden opacity-40"
-                    title="TODO(cms): social URL"
-                  >
-                    <Image src={social.src} alt="" fill unoptimized className="object-contain" />
-                  </span>
-                ),
-              )}
+              {socials.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={social.label}
+                  className="relative size-12 overflow-hidden"
+                >
+                  <Image src={social.src} alt="" fill unoptimized className="object-contain" />
+                </a>
+              ))}
             </div>
           </div>
 
@@ -126,34 +115,21 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
               />
               {supportEmail}
             </a>
-            {SITE_CONFIG.telegramUrl ? (
-              <a
-                href={SITE_CONFIG.telegramUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-black hover:text-primary"
-              >
-                <Image
-                  src="/images/brand/icon-telegram.svg"
-                  alt=""
-                  width={24}
-                  height={24}
-                  unoptimized
-                />
-                Telegram
-              </a>
-            ) : (
-              <span className="inline-flex items-center gap-2 text-sm text-black/40">
-                <Image
-                  src="/images/brand/icon-telegram.svg"
-                  alt=""
-                  width={24}
-                  height={24}
-                  unoptimized
-                />
-                {content.ui.placeholderTelegram}
-              </span>
-            )}
+            <a
+              href={SITE_CONFIG.telegramUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-black hover:text-primary"
+            >
+              <Image
+                src="/images/brand/icon-telegram.svg"
+                alt=""
+                width={24}
+                height={24}
+                unoptimized
+              />
+              Telegram
+            </a>
             <a
               href={`tel:${SITE_CONFIG.phone}`}
               className="text-2xl font-medium text-black hover:text-primary"

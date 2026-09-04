@@ -11,7 +11,18 @@ export const SITE_CONFIG = {
   phone: getPublicEnv("NEXT_PUBLIC_CONTACT_PHONE", "+998887092299"),
   phoneDisplay: "+998 88 709 22 99",
   email: getPublicEnv("NEXT_PUBLIC_CONTACT_EMAIL", ""),
-  telegramUrl: getPublicEnv("NEXT_PUBLIC_TELEGRAM_URL", ""),
+  telegramUrl: getPublicEnv(
+    "NEXT_PUBLIC_TELEGRAM_URL",
+    "https://t.me/epos_operator",
+  ),
+  instagramUrl: getPublicEnv(
+    "NEXT_PUBLIC_INSTAGRAM_URL",
+    "https://www.instagram.com/epos_pochta/",
+  ),
+  facebookUrl: getPublicEnv(
+    "NEXT_PUBLIC_FACEBOOK_URL",
+    "https://www.facebook.com/profile.php?id=61590938820629",
+  ),
   // TODO(cms): hours and messenger links from CMS / client confirmation
   hours: "",
   address: {
