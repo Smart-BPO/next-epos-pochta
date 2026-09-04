@@ -1,0 +1,9 @@
+{
+  "name": "EPOS POCHTA",
+  "short_name": "EPOS",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e11d2e",
+  "lang": "ru"
+}
