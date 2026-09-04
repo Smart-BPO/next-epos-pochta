@@ -54,18 +54,13 @@ export function createTrackingPage(locale: Locale) {
   return {
     generateMetadata: () =>
       getLocalizedPageMetadata(locale, "tracking", { noIndex: true }),
-    Page: async function TrackingPage({
-      searchParams,
-    }: {
-      searchParams?: Promise<{ number?: string }>;
-    }) {
-      const params = searchParams ? await searchParams : {};
+    Page: async function TrackingPage() {
+      // Read ?number= on the client — keeps the route statically prerenderable.
       return (
         <SiteLayout locale={locale}>
-          <TrackingPageView
-            locale={locale}
-            initialNumber={params.number ?? ""}
-          />
+          <Suspense fallback={<div className="section page-container">…</div>}>
+            <TrackingPageView locale={locale} />
+          </Suspense>
         </SiteLayout>
       );
     },

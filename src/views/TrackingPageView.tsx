@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
@@ -12,17 +13,15 @@ import { lookupTracking } from "@/lib/tracking/client";
 
 type UiState = "idle" | "invalid" | "unavailable" | "not_found";
 
-export function TrackingPageView({
-  locale,
-  initialNumber = "",
-}: {
-  locale: Locale;
-  initialNumber?: string;
-}) {
+export function TrackingPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
-  const [number, setNumber] = useState(initialNumber);
+  const params = useSearchParams();
+  const queryNumber = params.get("number") ?? "";
+  const [number, setNumber] = useState(queryNumber);
+  const [edited, setEdited] = useState(false);
+  const displayNumber = edited ? number : queryNumber;
   const [state, setState] = useState<UiState>(
-    initialNumber ? "unavailable" : "idle",
+    queryNumber ? "unavailable" : "idle",
   );
   const [pending, startTransition] = useTransition();
 
@@ -38,7 +37,7 @@ export function TrackingPageView({
               e.preventDefault();
               startTransition(async () => {
                 trackEvent("track_search_submit");
-                const result = await lookupTracking(number);
+                const result = await lookupTracking(displayNumber);
                 if (!result.ok && result.error === "invalid_format") {
                   setState("invalid");
                   trackEvent("track_search_error", { reason: "invalid_format" });
@@ -58,8 +57,9 @@ export function TrackingPageView({
               <label htmlFor="track-number">{copy.tracking.placeholder}</label>
               <input
                 id="track-number"
-                value={number}
+                value={displayNumber}
                 onChange={(e) => {
+                  setEdited(true);
                   setNumber(e.target.value);
                   if (state !== "idle") setState("idle");
                 }}

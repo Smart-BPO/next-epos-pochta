@@ -63,7 +63,10 @@ const nextConfig = {
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   reactStrictMode: true,
+  // Hostinger / shared hosts: fewer workers + leaner traces = much faster builds
   experimental: {
+    cpus: 2,
+    webpackMemoryOptimizations: true,
     serverActions: {
       bodySizeLimit: "1mb",
       allowedOrigins: [
@@ -75,11 +78,27 @@ const nextConfig = {
       ],
     },
   },
+  outputFileTracingExcludes: {
+    "*": [
+      "node_modules/@swc/core*/**",
+      "node_modules/@esbuild/**",
+      "node_modules/typescript/**",
+      "node_modules/eslint*/**",
+      "node_modules/@typescript-eslint/**",
+      "node_modules/prettier/**",
+      "node_modules/@next/swc-*/**",
+      "node_modules/webpack/**",
+      "node_modules/terser/**",
+      "node_modules/uglify-js/**",
+      "**/*.md",
+      "**/*.map",
+    ],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     qualities: [50, 75, 85, 90],
     imageSizes: [32, 48, 64, 96, 128, 256, 320, 384, 640],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 2560],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   async redirects() {
@@ -99,15 +118,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/_next/static/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-      {
         source: "/api/:path*",
         headers: [
           ...securityHeaders,
@@ -124,10 +134,6 @@ const nextConfig = {
         headers: [
           ...securityHeaders,
           publicFramingHeader,
-          {
-            key: "Cache-Control",
-            value: "public, max-age=0, s-maxage=0, must-revalidate",
-          },
           ...(indexable ? [] : [noindexRobotsHeader]),
         ],
       },

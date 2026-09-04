@@ -1,14 +1,11 @@
-import { headers } from "next/headers";
 import { SiteLayout } from "@/components/templates/SiteLayout";
 import { NotFoundView } from "@/views/NotFoundView";
-import type { Locale } from "@/i18n/config";
 
-export default async function NotFound() {
-  const lang = (await headers()).get("x-html-lang");
-  const locale: Locale = lang === "ru" ? "ru" : "uz";
+/** Static 404 shell — default UZ; /ru 404 is fine until client lang script runs. */
+export default function NotFound() {
   return (
-    <SiteLayout locale={locale}>
-      <NotFoundView locale={locale} />
+    <SiteLayout locale="uz">
+      <NotFoundView locale="uz" />
     </SiteLayout>
   );
 }

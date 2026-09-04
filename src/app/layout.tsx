@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
 import { manrope } from "@/assets/fonts";
 import "./globals.css";
 import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
@@ -17,38 +16,40 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    ...rootMetadata,
-    other: {
-      ...(typeof rootMetadata.other === "object" && rootMetadata.other
-        ? rootMetadata.other
-        : {}),
-      "theme-color": SITE_CONFIG.themeColor,
-      ...(SITE_CONFIG.seo.googleSiteVerification
-        ? {
-            "google-site-verification":
-              SITE_CONFIG.seo.googleSiteVerification,
-          }
-        : {}),
-      ...(SITE_CONFIG.seo.yandexSiteVerification
-        ? { "yandex-verification": SITE_CONFIG.seo.yandexSiteVerification }
-        : {}),
-    },
-  };
-}
+export const metadata: Metadata = {
+  ...rootMetadata,
+  other: {
+    ...(typeof rootMetadata.other === "object" && rootMetadata.other
+      ? rootMetadata.other
+      : {}),
+    "theme-color": SITE_CONFIG.themeColor,
+    ...(SITE_CONFIG.seo.googleSiteVerification
+      ? {
+          "google-site-verification":
+            SITE_CONFIG.seo.googleSiteVerification,
+        }
+      : {}),
+    ...(SITE_CONFIG.seo.yandexSiteVerification
+      ? { "yandex-verification": SITE_CONFIG.seo.yandexSiteVerification }
+      : {}),
+  },
+};
 
-export default async function RootLayout({
+/** Keep root layout static — do not call headers()/cookies() here. */
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const htmlLangHeader = (await headers()).get("x-html-lang");
-  const lang = htmlLangHeader === "ru" ? "ru" : "uz";
-
   return (
-    <html lang={lang} className={manrope.variable} suppressHydrationWarning>
+    <html lang="uz" className={manrope.variable} suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){try{var p=location.pathname;document.documentElement.lang=(p==="/ru"||p.indexOf("/ru/")===0)?"ru":"uz")}catch(e){}})();',
+          }}
+        />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
       </head>
