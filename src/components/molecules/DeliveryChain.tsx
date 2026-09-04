@@ -6,33 +6,33 @@ import { cn } from "@/lib/cn";
 const STEPS = [
   {
     id: "order",
-    src: "/images/home/delivery-chain/ecommerce.webp",
+    src: "/images/home/business/ecommerce-laptop.webp",
     width: 720,
     height: 720,
   },
   {
     id: "warehouse",
-    src: "/images/home/delivery-chain/warehouse.webp",
+    src: "/images/home/business/fulfillment-warehouse.webp",
     width: 720,
     height: 720,
   },
   {
     id: "transit",
-    src: "/images/home/delivery-chain/van.webp",
+    src: "/images/home/business/epos-van.webp",
     width: 720,
     height: 720,
   },
   {
     id: "pickup",
-    src: "/images/home/delivery-chain/pickup.webp",
+    src: "/images/home/business/pickup-point.webp",
     width: 720,
-    height: 480,
+    height: 720,
   },
   {
     id: "door",
-    src: "/images/home/delivery-chain/door.webp",
+    src: "/images/home/business/recipient-door.webp",
     width: 720,
-    height: 665,
+    height: 720,
   },
 ] as const;
 
@@ -46,10 +46,10 @@ function ParcelMarker({ className }: { className?: string }) {
       aria-hidden
     >
       <Image
-        src="/images/home/delivery-chain/parcel.webp"
+        src="/images/home/business/epos-parcel.webp"
         alt=""
         width={96}
-        height={83}
+        height={96}
         className="h-auto w-full object-contain drop-shadow-md"
       />
     </span>

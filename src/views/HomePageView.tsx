@@ -38,12 +38,12 @@ const NEED_IMAGES: Record<string, string> = {
 };
 
 const BUSINESS_ICONS = [
-  "/images/home/business/pickup.svg",
-  "/images/home/business/mass.svg",
-  "/images/home/business/door.svg",
+  "/images/home/business/regular-pickup.svg",
+  "/images/home/business/bulk-shipments.svg",
+  "/images/home/business/doorstep-delivery.svg",
   "/images/home/business/returns.svg",
-  "/images/home/business/cod.svg",
-  "/images/home/business/api.svg",
+  "/images/home/business/cash-on-delivery.svg",
+  "/images/home/business/api-reporting.svg",
 ] as const;
 
 const BENEFIT_ICONS = [
