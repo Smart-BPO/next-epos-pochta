@@ -69,10 +69,10 @@ export const heroActions =
   "flex flex-wrap gap-4 animate-hero-rise [animation-delay:220ms]";
 
 export const btnBase =
-  "inline-flex min-h-[var(--tap-min)] cursor-pointer items-center justify-center gap-2 rounded-xl border border-transparent px-6 py-4 text-base font-medium leading-5 transition-[background,color,border-color,transform,box-shadow,opacity] duration-[160ms] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex min-h-[var(--tap-min)] cursor-pointer items-center justify-center gap-2 rounded-[48px] border border-transparent px-6 py-4 text-base font-medium leading-5 transition-[background,color,border-color,transform,box-shadow,opacity] duration-[160ms] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60";
 
 export const btnPrimary =
-  `${btnBase} bg-gradient-to-b from-primary to-primary-hover text-white shadow-[0_8px_20px_rgb(211_2_3/0.22)] hover:opacity-95`;
+  `${btnBase} border-[#ff3539] bg-[linear-gradient(86deg,#310102_21.5%,#aa2628_99%)] text-white shadow-[inset_0_0_8px_#fff] hover:opacity-95`;
 
 export const btnSecondary =
   `${btnBase} border-primary bg-transparent text-primary hover:bg-primary-soft`;
@@ -80,12 +80,18 @@ export const btnSecondary =
 export const btnGhost = `${btnBase} bg-transparent text-ink`;
 
 export const btnOnDark =
-  `${btnBase} bg-white text-ink shadow-md hover:bg-neutral-100`;
+  `${btnBase} border-[#ff3539] bg-[linear-gradient(86deg,#310102_21.5%,#aa2628_99%)] text-white shadow-[inset_0_0_8px_#fff] hover:opacity-95`;
 
 export const btnHeroPrimary = btnPrimary;
 
-export const btnHeroSecondary =
-  `${btnBase} border-primary bg-transparent text-primary hover:bg-primary-soft`;
+export const btnHeroSecondary = btnSecondary;
+
+/** Home section titles — Figma uppercase display. */
+export const homeSectionTitle =
+  "m-0 font-display text-[clamp(1.5rem,3vw,2.25rem)] font-semibold uppercase leading-normal tracking-[-0.02em] text-black";
+
+export const homeSectionLead =
+  "m-0 max-w-[30rem] text-lg text-black/60 md:text-xl";
 
 export const card =
   "rounded-lg border border-border bg-surface p-5 shadow-sm";

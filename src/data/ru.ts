@@ -38,6 +38,7 @@ export const ruCopy: SiteCopy = {
     forBusiness: "Для бизнеса",
     getOffer: "Получить предложение",
     learnApi: "Узнать об API",
+    geoCheck: "Проверить",
     call: "Позвонить",
     write: "Написать",
     send: "Отправить",
@@ -71,6 +72,8 @@ export const ruCopy: SiteCopy = {
     privacy: "Политика конфиденциальности",
     terms: "Условия оказания услуг",
     contacts: "Контакты",
+    support: "Служба поддержки",
+    faqLink: "Вопросы и ответы",
   },
   home: {
     heroTitle: "Доставляем посылки по всему Узбекистану",
@@ -80,7 +83,7 @@ export const ruCopy: SiteCopy = {
     trackTitle: "Где моя посылка?",
     trackPlaceholder: "Введите трек-номер",
     trackHint: "Трек-номер указан в квитанции или SMS",
-    needsTitle: "Что нужно доставить",
+    needsTitle: "Что нужно доставить?",
     needs: [
       {
         id: "documents",

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
@@ -11,93 +12,176 @@ interface SiteFooterProps {
   content: SiteCopy;
 }
 
-export function SiteFooter({ locale, content }: SiteFooterProps) {
-  return (
-    <footer className="mt-auto bg-surface-deep py-12 text-[#f3f3f3]">
-      <div
-        className={cn(
-          pageContainer,
-          "grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-8",
-        )}
-      >
-        <div>
-          <div className="mb-3 whitespace-nowrap font-display text-[1.05rem] font-extrabold tracking-wide text-[#ffb3ba]">
-            {SITE_CONFIG.name}
-          </div>
-          <p className="text-[0.9rem] text-[#bdbdbd]">{content.footer.blurb}</p>
-        </div>
+const supportEmail = SITE_CONFIG.email || "support@epos.uz";
 
-        <div>
-          <strong>{content.footer.contacts}</strong>
-          <ul className="mt-3 list-none p-0">
-            {content.nav.map((item) => (
-              <li key={item.href} className="mb-1.5">
+export function SiteFooter({ locale, content }: SiteFooterProps) {
+  const socials = [
+    {
+      href: SITE_CONFIG.telegramUrl || undefined,
+      src: "/images/brand/social/telegram.svg",
+      label: "Telegram",
+    },
+    {
+      href: undefined,
+      src: "/images/brand/social/ok.svg",
+      label: "Odnoklassniki",
+    },
+    {
+      href: undefined,
+      src: "/images/brand/social/vk.svg",
+      label: "VK",
+    },
+  ] as const;
+
+  return (
+    <footer className="mt-auto border-t border-black/10 bg-white py-14 text-black">
+      <div className={cn(pageContainer, "flex flex-col gap-12")}>
+        <div className="grid gap-12 lg:grid-cols-3 lg:gap-12">
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
+              <Link href={localePath(locale, "/")} className="inline-block w-[92px]">
+                <Image
+                  src="/images/brand/logo.svg"
+                  alt={SITE_CONFIG.name}
+                  width={92}
+                  height={36}
+                  unoptimized
+                />
+              </Link>
+              <p className="m-0 max-w-sm text-sm leading-5 text-black/60">
+                {content.footer.blurb}
+              </p>
+            </div>
+            <div className="flex gap-8">
+              {socials.map((social) =>
+                social.href ? (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={social.label}
+                    className="relative size-12 overflow-hidden"
+                  >
+                    <Image src={social.src} alt="" fill unoptimized className="object-contain" />
+                  </a>
+                ) : (
+                  <span
+                    key={social.label}
+                    aria-hidden
+                    className="relative size-12 overflow-hidden opacity-40"
+                    title="TODO(cms): social URL"
+                  >
+                    <Image src={social.src} alt="" fill unoptimized className="object-contain" />
+                  </span>
+                ),
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <p className="m-0 text-2xl font-medium text-black">
+              {content.footer.contacts}
+            </p>
+            <nav className="flex flex-col">
+              {content.nav.map((item) => (
                 <Link
+                  key={item.href}
                   href={localePath(locale, item.href)}
-                  className="text-[#f3f3f3] hover:text-[#ffb3ba]"
+                  className="rounded-full py-2 text-sm font-medium text-black hover:text-primary"
                 >
                   {item.label}
                 </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+              ))}
+            </nav>
+          </div>
 
-        <div>
-          <p>
-            <a
-              href={`tel:${SITE_CONFIG.phone}`}
-              className="text-[#f3f3f3] hover:text-[#ffb3ba]"
+          <div className="flex flex-col gap-4">
+            <p className="m-0 text-2xl font-medium text-black">
+              {content.footer.support}
+            </p>
+            <Link
+              href={`${localePath(locale, "/")}#faq`}
+              className="inline-flex items-center gap-2 text-sm text-black hover:text-primary"
             >
-              {SITE_CONFIG.phoneDisplay}
+              <Image
+                src="/images/brand/icon-faq.svg"
+                alt=""
+                width={24}
+                height={24}
+                unoptimized
+              />
+              {content.footer.faqLink}
+            </Link>
+            <a
+              href={`mailto:${supportEmail}`}
+              className="inline-flex items-center gap-2 text-sm text-black hover:text-primary"
+            >
+              <Image
+                src="/images/brand/icon-mail.svg"
+                alt=""
+                width={24}
+                height={24}
+                unoptimized
+              />
+              {supportEmail}
             </a>
-          </p>
-          <p className="text-[0.9rem] text-[#bdbdbd]">
-            {SITE_CONFIG.email || content.ui.placeholderEmail}
-          </p>
-          <p className="text-[0.9rem] text-[#bdbdbd]">
             {SITE_CONFIG.telegramUrl ? (
               <a
                 href={SITE_CONFIG.telegramUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#f3f3f3] hover:text-[#ffb3ba]"
+                className="inline-flex items-center gap-2 text-sm text-black hover:text-primary"
               >
+                <Image
+                  src="/images/brand/icon-telegram.svg"
+                  alt=""
+                  width={24}
+                  height={24}
+                  unoptimized
+                />
                 Telegram
               </a>
             ) : (
-              content.ui.placeholderTelegram
+              <span className="inline-flex items-center gap-2 text-sm text-black/40">
+                <Image
+                  src="/images/brand/icon-telegram.svg"
+                  alt=""
+                  width={24}
+                  height={24}
+                  unoptimized
+                />
+                {content.ui.placeholderTelegram}
+              </span>
             )}
-          </p>
-          <p className="text-[0.9rem] text-[#bdbdbd]">
-            {SITE_CONFIG.hours || content.ui.placeholderHours}
-          </p>
-          <p className="text-[0.9rem] text-[#bdbdbd]">
-            {SITE_CONFIG.address.line}
-          </p>
+            <a
+              href={`tel:${SITE_CONFIG.phone}`}
+              className="text-2xl font-medium text-black hover:text-primary"
+            >
+              {SITE_CONFIG.phoneDisplay}
+            </a>
+            <p className="m-0 text-sm leading-5 text-black">
+              {SITE_CONFIG.address.line}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div
-        className={cn(
-          pageContainer,
-          "mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[#333] pt-5",
-        )}
-      >
-        <p className="m-0 text-[0.9rem] text-[#bdbdbd]">{content.footer.legal}</p>
-        <div className="flex flex-wrap gap-4">
-          <Link
-            href={localePath(locale, "/privacy/")}
-            className="text-[#f3f3f3] hover:text-[#ffb3ba]"
-          >
-            {content.footer.privacy}
-          </Link>
-          <Link
-            href={localePath(locale, "/terms/")}
-            className="text-[#f3f3f3] hover:text-[#ffb3ba]"
-          >
-            {content.footer.terms}
-          </Link>
+        <div className="flex flex-col gap-4 border-t border-black/10 pt-8 sm:flex-row sm:items-center sm:justify-between sm:gap-12">
+          <p className="m-0 text-sm text-black/60">{content.footer.legal}</p>
+          <div className="flex flex-wrap gap-8 sm:justify-end">
+            <Link
+              href={localePath(locale, "/privacy/")}
+              className="text-sm font-medium text-black/60 hover:text-primary"
+            >
+              {content.footer.privacy}
+            </Link>
+            <Link
+              href={localePath(locale, "/terms/")}
+              className="text-sm font-medium text-black/60 hover:text-primary"
+            >
+              {content.footer.terms}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

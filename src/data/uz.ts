@@ -34,6 +34,7 @@ export const uzCopy: SiteCopy = {
     forBusiness: "Biznes uchun",
     getOffer: "Taklif olish",
     learnApi: "API haqida",
+    geoCheck: "Tekshirish",
     call: "Qoʻngʻiroq",
     write: "Yozish",
     send: "Yuborish",
@@ -67,6 +68,8 @@ export const uzCopy: SiteCopy = {
     privacy: "Maxfiylik siyosati",
     terms: "Xizmat koʻrsatish shartlari",
     contacts: "Aloqa",
+    support: "Qoʻllab-quvvatlash",
+    faqLink: "Savol-javoblar",
   },
   home: {
     heroTitle: "Oʻzbekiston boʻylab pochtalarni yetkazamiz",
@@ -76,7 +79,7 @@ export const uzCopy: SiteCopy = {
     trackTitle: "Pochta qayerda?",
     trackPlaceholder: "Trek-raqamni kiriting",
     trackHint: "Trek-raqam kvitansiyada yoki SMS da koʻrsatiladi",
-    needsTitle: "Nima yetkazish kerak",
+    needsTitle: "Nima yetkazish kerak?",
     needs: [
       {
         id: "documents",

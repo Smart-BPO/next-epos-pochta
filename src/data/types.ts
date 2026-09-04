@@ -52,6 +52,7 @@ export interface SiteCopy {
     forBusiness: string;
     getOffer: string;
     learnApi: string;
+    geoCheck: string;
     call: string;
     write: string;
     send: string;
@@ -77,6 +78,8 @@ export interface SiteCopy {
     privacy: string;
     terms: string;
     contacts: string;
+    support: string;
+    faqLink: string;
   };
   home: {
     heroTitle: string;
