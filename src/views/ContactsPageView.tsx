@@ -70,6 +70,7 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
                   href={SITE_CONFIG.telegramUrl}
                   target="_blank"
                   rel="noreferrer"
+                  className="break-all"
                 >
                   {SITE_CONFIG.telegramUrl}
                 </a>

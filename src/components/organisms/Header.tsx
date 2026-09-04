@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { Locale } from "@/i18n/config";
-import { localePath, switchLocalePath } from "@/i18n/paths";
+import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
+import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher";
 import { cn } from "@/lib/cn";
 import { pageContainer } from "@/styles/ui";
 
@@ -18,7 +18,6 @@ interface HeaderProps {
 }
 
 export function Header({ locale, content }: HeaderProps) {
-  const pathname = usePathname() || "/";
   const [open, setOpen] = useState(false);
   const requestHref = localePath(locale, "/request-price/");
   const phoneHref = `tel:${SITE_CONFIG.phone}`;
@@ -47,12 +46,12 @@ export function Header({ locale, content }: HeaderProps) {
           />
         </Link>
 
-        <nav className="hidden items-center gap-1 xl:flex" aria-label="Main">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
           {content.nav.map((item) => (
             <Link
               key={item.href}
               href={localePath(locale, item.href)}
-              className="rounded-xl px-4 py-4 text-base font-medium text-black/60 hover:text-black"
+              className="rounded-xl px-3 py-4 text-base font-medium text-black/60 hover:text-black xl:px-4"
             >
               {item.label}
             </Link>
@@ -61,46 +60,18 @@ export function Header({ locale, content }: HeaderProps) {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <a
-            className="hidden whitespace-nowrap rounded-xl px-4 py-4 text-base font-medium text-black lg:inline"
+            className="hidden whitespace-nowrap rounded-xl px-3 py-4 text-base font-medium text-black xl:inline"
             href={phoneHref}
           >
             {SITE_CONFIG.phoneDisplay}
           </a>
-          <div
-            className="inline-flex items-center rounded-xl border border-black/10 p-1"
-            aria-label="Language"
-          >
-            <Link
-              href={switchLocalePath(pathname, "uz")}
-              aria-current={locale === "uz" ? "true" : undefined}
-              className={cn(
-                "rounded-lg px-3 py-3 text-base font-medium",
-                locale === "uz"
-                  ? "bg-black/10 text-black"
-                  : "text-black/40 hover:text-black",
-              )}
-            >
-              UZ
-            </Link>
-            <Link
-              href={switchLocalePath(pathname, "ru")}
-              aria-current={locale === "ru" ? "true" : undefined}
-              className={cn(
-                "rounded-lg px-3 py-3 text-base font-medium",
-                locale === "ru"
-                  ? "bg-black/10 text-black"
-                  : "text-black/40 hover:text-black",
-              )}
-            >
-              RU
-            </Link>
-          </div>
+          <LanguageSwitcher locale={locale} />
           <span className="hidden md:inline">
             <Button href={requestHref}>{content.ui.requestPrice}</Button>
           </span>
           <button
             type="button"
-            className="inline-flex min-h-[var(--tap-min)] min-w-[var(--tap-min)] items-center justify-center rounded-xl border border-black/10 bg-white xl:hidden"
+            className="inline-flex min-h-[var(--tap-min)] min-w-[var(--tap-min)] items-center justify-center rounded-xl border border-black/10 bg-white px-3 lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
@@ -113,7 +84,7 @@ export function Header({ locale, content }: HeaderProps) {
       <div
         id="mobile-nav"
         className={cn(
-          "border-t border-black/5 bg-white px-[var(--page-padding)] pb-5 pt-4 xl:hidden",
+          "border-t border-black/5 bg-white px-[var(--page-padding)] pb-5 pt-4 lg:hidden",
           !open && "hidden",
         )}
       >

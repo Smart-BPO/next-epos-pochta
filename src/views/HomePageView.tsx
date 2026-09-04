@@ -86,27 +86,27 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="bg-gradient-to-b from-primary to-primary-hover py-12 md:py-16">
-        <PageContainer className="flex flex-col gap-9">
+      <section className="bg-gradient-to-b from-primary to-primary-hover py-[var(--section-y)]">
+        <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={`${homeSectionTitle} text-white`}>
             {copy.home.needsTitle}
           </h2>
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {copy.home.needs.map((item) => (
               <article
                 key={item.id}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-6"
+                className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
               >
-                <h3 className="m-0 min-h-[2.5rem] font-display text-xl font-semibold uppercase text-black md:text-2xl">
+                <h3 className="m-0 min-h-[2.5em] font-display text-xl font-semibold uppercase leading-tight text-black md:text-2xl">
                   {item.title}
                 </h3>
-                <div className="relative h-[12.5rem] w-full shrink-0 overflow-hidden">
+                <div className="relative h-[10rem] w-full shrink-0 overflow-hidden sm:h-[12.5rem]">
                   <Image
                     src={NEED_IMAGES[item.id] ?? NEED_IMAGES.documents}
                     alt=""
                     fill
                     className="object-contain object-center"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                 </div>
                 <p className="m-0 flex-1 text-base text-black/60">
@@ -126,23 +126,23 @@ export function HomePageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={section}>
-        <PageContainer className="flex flex-col gap-9">
+        <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.home.modesTitle}</h2>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4 md:gap-6">
             {copy.home.modes.map((mode, index) => (
               <article
                 key={mode.id}
-                className="relative overflow-hidden rounded-3xl border border-black/20 bg-white p-6"
+                className="relative overflow-hidden rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] pr-16 sm:pr-20 md:pr-28"
               >
-                <h3 className="relative z-10 m-0 font-display text-xl font-semibold uppercase text-black md:text-2xl">
+                <h3 className="relative z-10 m-0 max-w-[18ch] font-display text-xl font-semibold uppercase text-black md:max-w-none md:text-2xl">
                   {mode.title}
                 </h3>
-                <p className="relative z-10 mt-4 max-w-2xl text-base text-black/60">
+                <p className="relative z-10 mt-3 max-w-2xl text-base text-black/60 md:mt-4">
                   {mode.description}
                 </p>
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 rotate-[15deg] font-display text-[7rem] font-black leading-none text-black/20 md:right-16 md:text-[10rem]"
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rotate-[15deg] font-display text-[4.5rem] font-black leading-none text-black/20 sm:right-6 sm:text-[6rem] md:right-12 md:text-[10rem]"
                 >
                   {index + 1}
                 </span>
@@ -153,13 +153,13 @@ export function HomePageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={section}>
-        <PageContainer className="flex flex-col gap-9">
+        <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.home.benefitsTitle}</h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {copy.home.benefits.map((text, index) => (
               <article
                 key={text}
-                className="flex flex-col gap-4 rounded-3xl border border-black/20 bg-white p-6"
+                className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
               >
                 <div className="relative size-12 shrink-0">
                   <Image
@@ -178,25 +178,25 @@ export function HomePageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={section}>
-        <PageContainer className="flex flex-col gap-9">
+        <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.home.howTitle}</h2>
-          <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
+          <div className="flex flex-col items-center gap-4 md:gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
             {copy.home.howSteps.map((step, index) => (
               <div
                 key={step.title}
-                className="flex w-full flex-col items-center gap-6 lg:w-auto lg:flex-row lg:gap-0"
+                className="flex w-full flex-col items-center gap-4 md:gap-6 lg:w-auto lg:min-w-0 lg:flex-1 lg:flex-row lg:gap-0"
               >
-                <article className="flex aspect-square w-full max-w-[18.125rem] flex-col items-center justify-center gap-4 overflow-hidden rounded-full border border-black/20 bg-white px-8 py-6 text-center">
+                <article className="flex aspect-square w-full max-w-[min(100%,18.125rem)] flex-col items-center justify-center gap-3 overflow-hidden rounded-full border border-black/20 bg-white px-6 py-5 text-center sm:gap-4 sm:px-8 sm:py-6 lg:mx-auto">
                   <p className="m-0 font-display text-5xl font-semibold uppercase text-black/30 md:text-6xl">
                     {index + 1}
                   </p>
-                  <h3 className="m-0 text-xl font-medium text-black md:text-2xl">
+                  <h3 className="m-0 text-lg font-medium text-black sm:text-xl md:text-2xl">
                     {step.title}
                   </h3>
-                  <p className="m-0 text-lg text-black/60">{step.text}</p>
+                  <p className="m-0 text-base text-black/60 sm:text-lg">{step.text}</p>
                 </article>
                 {index < copy.home.howSteps.length - 1 ? (
-                  <div className="z-10 shrink-0 rounded-full bg-gradient-to-b from-primary to-primary-hover px-4 py-2 lg:-mx-3">
+                  <div className="z-10 shrink-0 rounded-full bg-gradient-to-b from-primary to-primary-hover px-4 py-2 lg:-mx-2 xl:-mx-3">
                     <Image
                       src="/images/home/steps/arrow.svg"
                       alt=""
@@ -214,18 +214,18 @@ export function HomePageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={section}>
-        <PageContainer className="flex flex-col gap-9">
+        <PageContainer className="flex flex-col gap-6 md:gap-9">
           <div className="flex flex-col gap-4">
             <h2 className={`${homeSectionTitle} max-w-[45rem]`}>
               {copy.home.businessTitle}
             </h2>
             <p className={homeSectionLead}>{copy.home.businessLead}</p>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {copy.home.businessItems.map((item) => (
               <div
                 key={item}
-                className="rounded-full border border-black/20 bg-white px-6 py-6 text-center text-lg text-black md:text-xl"
+                className="rounded-full border border-black/20 bg-white px-5 py-5 text-center text-lg text-black sm:px-6 sm:py-6 md:text-xl"
               >
                 {item}
               </div>
@@ -248,16 +248,16 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="relative isolate overflow-hidden py-12 md:py-16">
+      <section className="relative isolate overflow-hidden py-[var(--section-y)]">
         <Image
           src="/images/hero/uzbekistan-map.svg"
           alt=""
           width={1000}
           height={652}
-          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(100%,40rem)] select-none object-contain object-right opacity-90 md:block lg:w-[min(110%,46rem)]"
+          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(100%,40rem)] max-w-[min(100%,46rem)] select-none object-contain object-right opacity-90 md:block"
           unoptimized
         />
-        <PageContainer className="relative z-10 flex flex-col gap-9">
+        <PageContainer className="relative z-10 flex flex-col gap-6 md:gap-9">
           <div className="flex max-w-xl flex-col gap-4">
             <h2 className={homeSectionTitle}>{copy.home.geoTitle}</h2>
             <p className={homeSectionLead}>{copy.home.geoLead}</p>
@@ -267,20 +267,20 @@ export function HomePageView({ locale }: { locale: Locale }) {
       </section>
 
       <section id="faq" className={`${section} scroll-mt-[var(--header-height)]`}>
-        <PageContainer className="flex flex-col gap-9">
+        <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.home.faqTitle}</h2>
           <FaqList items={copy.home.faq} />
         </PageContainer>
       </section>
 
-      <section className="pb-12 md:pb-16">
+      <section className="pb-[var(--section-y)]">
         <PageContainer>
-          <div className="relative overflow-hidden rounded-3xl border border-black/20 bg-black p-8 md:p-12">
+          <div className="relative overflow-hidden rounded-3xl border border-black/20 bg-black p-6 sm:p-8 md:min-h-[17.5rem] md:p-12">
             <div className="relative z-10 flex max-w-xl flex-col gap-4">
               <h2 className={`${homeSectionTitle} text-white`}>
                 {copy.home.finalTitle}
               </h2>
-              <p className="m-0 text-lg text-white/60 md:text-xl">
+              <p className="m-0 text-[length:var(--home-lead)] text-white/60">
                 {copy.home.finalLead}
               </p>
               <div className="mt-2">
@@ -293,8 +293,9 @@ export function HomePageView({ locale }: { locale: Locale }) {
               src="/images/home/cta/devices.png"
               alt=""
               width={442}
-              height={295}
-              className="pointer-events-none absolute bottom-0 right-0 hidden w-[min(45%,28rem)] select-none object-contain object-bottom lg:block"
+              height={230}
+              className="pointer-events-none relative mx-auto mt-8 block h-auto w-full max-w-md select-none object-contain object-bottom md:absolute md:-bottom-1 md:right-0 md:mx-0 md:mt-0 md:h-[min(100%,18.5rem)] md:w-[min(52%,28rem)] md:max-w-none md:object-cover md:object-top"
+              sizes="(max-width: 768px) 100vw, 28rem"
             />
           </div>
         </PageContainer>

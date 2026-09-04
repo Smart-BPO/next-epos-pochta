@@ -12,8 +12,13 @@
   --color-warning: #b45309;
   --color-danger: #d30203;
   --color-telegram: #229ed9;
-  --page-padding: clamp(1rem, 3vw, 2rem);
-  --page-max: 72rem;
+  /* Figma 1440 content ≈ 1232px; Full HD/4K grow gutters only */
+  --page-padding: clamp(1rem, 4vw, 6.5rem);
+  --page-max: 77rem;
+  --section-y: clamp(2.5rem, 6vw, 4.5rem);
+  --home-title: clamp(1.5rem, 3vw, 2.25rem);
+  --home-lead: clamp(1.05rem, 2vw, 1.25rem);
+  --card-pad: clamp(1.25rem, 2.5vw, 1.5rem);
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
@@ -54,7 +59,11 @@
   --spacing-header: var(--header-height);
   --spacing-sticky-cta: var(--sticky-cta-height);
   --spacing-tap: var(--tap-min);
+  --spacing-section: var(--section-y);
+  --spacing-card: var(--card-pad);
   --max-width-page: var(--page-max);
+  --text-home-title: var(--home-title);
+  --text-home-lead: var(--home-lead);
   --animate-hero-rise: hero-rise var(--motion-base) var(--ease-out) both;
 }
 

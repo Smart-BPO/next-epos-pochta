@@ -34,10 +34,10 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
   ] as const;
 
   return (
-    <footer className="mt-auto border-t border-black/10 bg-white py-14 text-black">
-      <div className={cn(pageContainer, "flex flex-col gap-12")}>
-        <div className="grid gap-12 lg:grid-cols-3 lg:gap-12">
-          <div className="flex flex-col gap-8">
+    <footer className="mt-auto border-t border-black/10 bg-white py-10 text-black md:py-14">
+      <div className={cn(pageContainer, "flex flex-col gap-10 md:gap-12")}>
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
+          <div className="flex flex-col gap-8 sm:col-span-2 lg:col-span-1">
             <div className="flex flex-col gap-4">
               <Link href={localePath(locale, "/")} className="inline-block w-[92px]">
                 <Image
@@ -52,7 +52,7 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
                 {content.footer.blurb}
               </p>
             </div>
-            <div className="flex gap-8">
+            <div className="flex flex-wrap gap-6 sm:gap-8">
               {socials.map((social) => (
                 <a
                   key={social.label}
@@ -60,7 +60,7 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={social.label}
-                  className="relative size-12 overflow-hidden"
+                  className="relative size-12 shrink-0 overflow-hidden"
                 >
                   <Image src={social.src} alt="" fill unoptimized className="object-contain" />
                 </a>
@@ -68,8 +68,8 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <p className="m-0 text-2xl font-medium text-black">
+          <div className="flex min-w-0 flex-col gap-4">
+            <p className="m-0 text-xl font-medium text-black sm:text-2xl">
               {content.footer.contacts}
             </p>
             <nav className="flex flex-col">
@@ -85,13 +85,13 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
             </nav>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <p className="m-0 text-2xl font-medium text-black">
+          <div className="flex min-w-0 flex-col gap-4">
+            <p className="m-0 text-xl font-medium text-black sm:text-2xl">
               {content.footer.support}
             </p>
             <Link
               href={`${localePath(locale, "/")}#faq`}
-              className="inline-flex items-center gap-2 text-sm text-black hover:text-primary"
+              className="inline-flex min-w-0 items-center gap-2 text-sm text-black hover:text-primary"
             >
               <Image
                 src="/images/brand/icon-faq.svg"
@@ -99,12 +99,13 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
                 width={24}
                 height={24}
                 unoptimized
+                className="shrink-0"
               />
-              {content.footer.faqLink}
+              <span className="min-w-0 break-words">{content.footer.faqLink}</span>
             </Link>
             <a
               href={`mailto:${supportEmail}`}
-              className="inline-flex items-center gap-2 text-sm text-black hover:text-primary"
+              className="inline-flex min-w-0 items-center gap-2 text-sm text-black hover:text-primary"
             >
               <Image
                 src="/images/brand/icon-mail.svg"
@@ -112,14 +113,15 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
                 width={24}
                 height={24}
                 unoptimized
+                className="shrink-0"
               />
-              {supportEmail}
+              <span className="min-w-0 break-all">{supportEmail}</span>
             </a>
             <a
               href={SITE_CONFIG.telegramUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-black hover:text-primary"
+              className="inline-flex min-w-0 items-center gap-2 text-sm text-black hover:text-primary"
             >
               <Image
                 src="/images/brand/icon-telegram.svg"
@@ -127,24 +129,25 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
                 width={24}
                 height={24}
                 unoptimized
+                className="shrink-0"
               />
               Telegram
             </a>
             <a
               href={`tel:${SITE_CONFIG.phone}`}
-              className="text-2xl font-medium text-black hover:text-primary"
+              className="text-xl font-medium text-black hover:text-primary sm:text-2xl"
             >
               {SITE_CONFIG.phoneDisplay}
             </a>
-            <p className="m-0 text-sm leading-5 text-black">
+            <p className="m-0 text-sm leading-5 text-black break-words">
               {SITE_CONFIG.address.line}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-black/10 pt-8 sm:flex-row sm:items-center sm:justify-between sm:gap-12">
+        <div className="flex flex-col gap-4 border-t border-black/10 pt-8 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
           <p className="m-0 text-sm text-black/60">{content.footer.legal}</p>
-          <div className="flex flex-wrap gap-8 sm:justify-end">
+          <div className="flex flex-wrap gap-4 sm:gap-8 sm:justify-end">
             <Link
               href={localePath(locale, "/privacy/")}
               className="text-sm font-medium text-black/60 hover:text-primary"

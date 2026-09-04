@@ -22,7 +22,8 @@ import {
 } from "@/lib/form/schemas";
 import { submitLead } from "@/lib/form/submitLead";
 import { createRequestId } from "@/lib/form/utils";
-import { alertSuccess, card } from "@/styles/ui";
+import { alertSuccess, card, formShell } from "@/styles/ui";
+import { cn } from "@/lib/cn";
 
 const schema = Yup.object({
   name: requiredString(),
@@ -91,7 +92,7 @@ export function ContactForm({
         setSubmitting(false);
       }}
     >
-      <Form className={card} noValidate>
+      <Form className={cn(card, formShell)} noValidate>
         <FormInputField name="name" label={c.name} required />
         <FormRow>
           <FormInputField
