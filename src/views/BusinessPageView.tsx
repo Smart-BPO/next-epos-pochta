@@ -3,7 +3,7 @@ import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
-import { BusinessForm } from "@/components/forms/BusinessForm";
+import { BusinessForm } from "@/components/organisms/BusinessForm";
 
 export function BusinessPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);

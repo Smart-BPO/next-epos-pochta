@@ -3,7 +3,7 @@ import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
-import { ContactForm } from "@/components/forms/ContactForm";
+import { ContactForm } from "@/components/organisms/ContactForm";
 import { SITE_CONFIG } from "@/utils/consts";
 
 export function ContactsPageView({ locale }: { locale: Locale }) {

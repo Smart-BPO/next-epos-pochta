@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { PageContainer } from "@/components/atoms/PageContainer";
-import { RequestPriceForm } from "@/components/forms/RequestPriceForm";
+import { RequestPriceForm } from "@/components/organisms/RequestPriceForm";
 
 export function RequestPricePageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);

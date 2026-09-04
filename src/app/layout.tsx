@@ -4,6 +4,7 @@ import { inter } from "@/assets/fonts";
 import "./globals.css";
 import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { AppToaster } from "@/components/providers/AppToaster";
 import { rootMetadata } from "@/utils/seo/metadata";
 import { getGlobalJsonLdGraph } from "@/utils/seo/json-ld";
 import { SITE_CONFIG } from "@/utils/consts";
@@ -62,6 +63,7 @@ export default async function RootLayout({
         <JsonLd data={getGlobalJsonLdGraph()} />
         {children}
         <SiteAnalytics />
+        <AppToaster />
       </body>
     </html>
   );
