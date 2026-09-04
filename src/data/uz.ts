@@ -165,7 +165,9 @@ export const uzCopy: SiteCopy = {
       { title: "Kuzating", text: "Trek-raqam boʻyicha statusni tekshiring." },
     ],
     businessTitle: "Oʻz kuryer xizmatisiz buyurtmalarni yetkazing",
-    businessLead: "Internet-doʻkon va kompaniyalarni muntazam yetkazib berishga ulaymiz.",
+    businessEyebrow: "E-commerce va biznes uchun",
+    businessLead:
+      "Internet-doʻkon va kompaniyalarni muntazam yetkazib berishga ulaymiz.",
     businessItems: [
       "Muntazam olib ketish",
       "Ommaviy joʻnatmalar",

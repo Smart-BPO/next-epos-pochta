@@ -109,6 +109,7 @@ export interface SiteCopy {
     howTitle: string;
     howSteps: Array<{ title: string; text: string }>;
     businessTitle: string;
+    businessEyebrow: string;
     businessLead: string;
     businessItems: string[];
     geoTitle: string;

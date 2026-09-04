@@ -4,6 +4,7 @@ import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
+import { BusinessLogisticsScene } from "@/components/molecules/BusinessLogisticsScene";
 import { DeliveryChain } from "@/components/molecules/DeliveryChain";
 import { FaqList } from "@/components/molecules/FaqList";
 import { GeoSearch } from "@/components/molecules/GeoSearch";
@@ -35,6 +36,15 @@ const NEED_IMAGES: Record<string, string> = {
   goods: "/images/home/needs/goods.png",
   regular: "/images/home/needs/regular.png",
 };
+
+const BUSINESS_ICONS = [
+  "/images/home/business/pickup.svg",
+  "/images/home/business/mass.svg",
+  "/images/home/business/door.svg",
+  "/images/home/business/returns.svg",
+  "/images/home/business/cod.svg",
+  "/images/home/business/api.svg",
+] as const;
 
 const BENEFIT_ICONS = [
   "/images/home/benefits/delivery.svg",
@@ -235,36 +245,53 @@ export function HomePageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={section}>
-        <PageContainer className="flex flex-col gap-6 md:gap-9">
-          <div className="flex flex-col gap-4">
-            <h2 className={`${homeSectionTitle} max-w-[45rem]`}>
-              {copy.home.businessTitle}
-            </h2>
-            <p className={homeSectionLead}>{copy.home.businessLead}</p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto_auto] lg:items-stretch">
-            {copy.home.businessItems.map((item) => (
-              <div
-                key={item}
-                className="rounded-full border border-black/20 bg-white px-5 py-5 text-center text-lg text-black sm:px-6 sm:py-6 md:text-xl"
-              >
-                {item}
+        <PageContainer>
+          <div className="grid items-stretch gap-8 rounded-3xl border border-black/15 bg-white p-5 sm:p-8 lg:grid-cols-2 lg:gap-10 lg:p-10">
+            <div className="flex flex-col gap-5 lg:gap-6">
+              <p className="m-0 text-sm font-semibold uppercase tracking-[0.06em] text-primary">
+                {copy.home.businessEyebrow}
+              </p>
+              <h2 className={`${homeSectionTitle} max-w-[28rem]`}>
+                {copy.home.businessTitle}
+              </h2>
+              <p className={`${homeSectionLead} mb-0`}>{copy.home.businessLead}</p>
+
+              <ul className="m-0 grid list-none grid-cols-2 gap-x-4 gap-y-5 p-0 sm:grid-cols-3 sm:gap-x-6">
+                {copy.home.businessItems.map((item, index) => (
+                  <li key={item} className="flex flex-col gap-2">
+                    <Image
+                      src={BUSINESS_ICONS[index] ?? BUSINESS_ICONS[0]}
+                      alt=""
+                      width={40}
+                      height={40}
+                      unoptimized
+                    />
+                    <span className="text-sm font-medium leading-snug text-black sm:text-base">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <Button
+                  href={`${localePath(locale, "/business/")}#api`}
+                  variant="secondary"
+                  className="w-full sm:w-auto"
+                >
+                  {copy.ui.learnApi}
+                </Button>
+                <Button
+                  href={localePath(locale, "/business/connect/")}
+                  variant="primary"
+                  className="w-full sm:w-auto"
+                >
+                  {copy.ui.getOffer}
+                </Button>
               </div>
-            ))}
-            <Button
-              href={`${localePath(locale, "/business/")}#api`}
-              variant="secondary"
-              className="w-full self-stretch"
-            >
-              {copy.ui.learnApi}
-            </Button>
-            <Button
-              href={localePath(locale, "/business/")}
-              variant="primary"
-              className="w-full self-stretch"
-            >
-              {copy.ui.startConnect}
-            </Button>
+            </div>
+
+            <BusinessLogisticsScene />
           </div>
         </PageContainer>
       </section>

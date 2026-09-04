@@ -184,6 +184,7 @@ export const ruCopy: SiteCopy = {
       },
     ],
     businessTitle: "Доставка заказов без собственной курьерской службы",
+    businessEyebrow: "Для e-commerce и бизнеса",
     businessLead:
       "Подключаем интернет-магазины и компании к регулярной доставке.",
     businessItems: [
