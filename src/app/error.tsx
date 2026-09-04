@@ -4,6 +4,13 @@ import { useSyncExternalStore } from "react";
 import { Button } from "@/components/atoms/Button";
 import { localePath } from "@/i18n/paths";
 import type { Locale } from "@/i18n/config";
+import {
+  heroActions,
+  pageContainer,
+  pageIntro,
+  pageIntroTitle,
+  sectionLead,
+} from "@/styles/ui";
 
 function readLocale(): Locale {
   const cookie = document.cookie
@@ -48,11 +55,11 @@ export default function Error({
   const t = copy[locale];
 
   return (
-    <section className="page-intro">
-      <div className="page-container">
-        <h1>{t.title}</h1>
-        <p className="section-lead">{t.lead}</p>
-        <div className="hero-actions">
+    <section className={pageIntro}>
+      <div className={pageContainer}>
+        <h1 className={pageIntroTitle}>{t.title}</h1>
+        <p className={sectionLead}>{t.lead}</p>
+        <div className={heroActions}>
           <Button type="button" onClick={reset}>
             {t.retry}
           </Button>

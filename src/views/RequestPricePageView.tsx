@@ -5,6 +5,12 @@ import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { RequestPriceForm } from "@/components/organisms/RequestPriceForm";
+import {
+  formShell,
+  pageIntro,
+  pageIntroTitle,
+  sectionLead,
+} from "@/styles/ui";
 
 export function RequestPricePageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
@@ -13,11 +19,11 @@ export function RequestPricePageView({ locale }: { locale: Locale }) {
   const pickup = params.get("pickup") === "1";
 
   return (
-    <section className="page-intro">
+    <section className={pageIntro}>
       <PageContainer>
-        <h1>{copy.requestPrice.title}</h1>
-        <p className="section-lead">{copy.requestPrice.lead}</p>
-        <div className="form-shell">
+        <h1 className={pageIntroTitle}>{copy.requestPrice.title}</h1>
+        <p className={sectionLead}>{copy.requestPrice.lead}</p>
+        <div className={formShell}>
           <RequestPriceForm
             locale={locale}
             content={copy}

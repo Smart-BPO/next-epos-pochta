@@ -7,6 +7,7 @@ import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import { trackEvent } from "@/lib/analytics/events";
 import { Button } from "@/components/atoms/Button";
+import { fieldControl } from "@/styles/ui";
 
 export function QuickTrackForm({
   locale,
@@ -28,20 +29,14 @@ export function QuickTrackForm({
           `${localePath(locale, "/tracking/")}?number=${encodeURIComponent(number)}`,
         );
       }}
-      style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}
+      className="flex flex-wrap gap-3"
     >
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={copy.home.trackPlaceholder}
         aria-label={copy.home.trackPlaceholder}
-        style={{
-          flex: "1 1 12rem",
-          minHeight: "var(--tap-min)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-md)",
-          padding: "0.65rem 0.85rem",
-        }}
+        className={`${fieldControl} min-w-0 flex-[1_1_12rem]`}
       />
       <Button type="submit">{copy.ui.track}</Button>
     </form>

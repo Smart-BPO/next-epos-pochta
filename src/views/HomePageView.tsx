@@ -9,6 +9,31 @@ import { GeoSearch } from "@/components/molecules/GeoSearch";
 import { QuickTrackForm } from "@/components/molecules/QuickTrackForm";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getFaqSchema } from "@/utils/seo/json-ld";
+import {
+  actionTile,
+  faqDetails,
+  faqSummary,
+  featureItem,
+  featureItemText,
+  featureItemTitle,
+  featureList,
+  hero,
+  heroActions,
+  heroBrand,
+  heroLead,
+  heroNote,
+  heroTitle,
+  pageCta,
+  section,
+  sectionLead,
+  sectionMuted,
+  sectionTitle,
+  step,
+  steps,
+  trackShell,
+  trustGrid,
+  trustItem,
+} from "@/styles/ui";
 
 export function HomePageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
@@ -17,19 +42,19 @@ export function HomePageView({ locale }: { locale: Locale }) {
     <>
       <JsonLd data={getFaqSchema(copy.home.faq)} />
 
-      <section className="hero">
+      <section className={hero}>
         <PageContainer>
-          <p className="hero-brand">{SITE_CONFIG.name}</p>
-          <h1>{copy.home.heroTitle}</h1>
-          <p className="hero-lead">{copy.home.heroLead}</p>
-          <p className="hero-note">{copy.home.heroNote}</p>
-          <div className="hero-actions">
-            <Button href={localePath(locale, "/request-price/")}>
+          <p className={heroBrand}>{SITE_CONFIG.name}</p>
+          <h1 className={heroTitle}>{copy.home.heroTitle}</h1>
+          <p className={heroLead}>{copy.home.heroLead}</p>
+          <p className={heroNote}>{copy.home.heroNote}</p>
+          <div className={heroActions}>
+            <Button href={localePath(locale, "/request-price/")} variant="heroPrimary">
               {copy.ui.requestPrice}
             </Button>
             <Button
               href={`${localePath(locale, "/request-price/")}?pickup=1`}
-              variant="secondary"
+              variant="heroSecondary"
             >
               {copy.ui.callCourier}
             </Button>
@@ -37,25 +62,25 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <h2 className="section-title">{copy.home.trackTitle}</h2>
-          <p className="section-lead">{copy.home.trackHint}</p>
-          <div className="track-shell">
+          <h2 className={sectionTitle}>{copy.home.trackTitle}</h2>
+          <p className={sectionLead}>{copy.home.trackHint}</p>
+          <div className={trackShell}>
             <QuickTrackForm locale={locale} copy={copy} />
           </div>
         </PageContainer>
       </section>
 
-      <section className="section section-muted">
+      <section className={sectionMuted}>
         <PageContainer>
-          <h2 className="section-title">{copy.home.needsTitle}</h2>
+          <h2 className={sectionTitle}>{copy.home.needsTitle}</h2>
           <div>
             {copy.home.needs.map((item) => (
-              <article key={item.id} className="action-tile">
+              <article key={item.id} className={actionTile}>
                 <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
+                  <h3 className="m-0 text-[1.1rem] font-semibold">{item.title}</h3>
+                  <p className="m-0 text-ink-muted">{item.description}</p>
                 </div>
                 <Button
                   href={`${localePath(locale, "/request-price/")}?category=${item.id}`}
@@ -68,62 +93,60 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <h2 className="section-title">{copy.home.modesTitle}</h2>
-          <ul className="feature-list">
+          <h2 className={sectionTitle}>{copy.home.modesTitle}</h2>
+          <ul className={featureList}>
             {copy.home.modes.map((mode) => (
-              <li key={mode.id}>
-                <h3>{mode.title}</h3>
-                <p>{mode.description}</p>
+              <li key={mode.id} className={featureItem}>
+                <h3 className={featureItemTitle}>{mode.title}</h3>
+                <p className={featureItemText}>{mode.description}</p>
               </li>
             ))}
           </ul>
         </PageContainer>
       </section>
 
-      <section className="section section-muted">
+      <section className={sectionMuted}>
         <PageContainer>
-          <h2 className="section-title">{copy.home.benefitsTitle}</h2>
-          <div className="trust-grid">
+          <h2 className={sectionTitle}>{copy.home.benefitsTitle}</h2>
+          <div className={trustGrid}>
             {copy.home.benefits.map((b, index) => (
-              <article key={b} className="trust-item">
+              <article key={b} className={trustItem}>
                 <TrustIcon index={index} />
-                <h3>{b}</h3>
+                <h3 className="m-0 text-[1.05rem] font-semibold">{b}</h3>
               </article>
             ))}
           </div>
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <h2 className="section-title">{copy.home.howTitle}</h2>
-          <div className="steps">
-            {copy.home.howSteps.map((step) => (
-              <article key={step.title} className="step">
-                <h3 style={{ margin: "0 0 0.35rem" }}>{step.title}</h3>
-                <p style={{ margin: 0, color: "var(--color-ink-muted)" }}>
-                  {step.text}
-                </p>
+          <h2 className={sectionTitle}>{copy.home.howTitle}</h2>
+          <div className={steps}>
+            {copy.home.howSteps.map((s) => (
+              <article key={s.title} className={step}>
+                <h3 className="m-0 mb-1.5">{s.title}</h3>
+                <p className="m-0 text-ink-muted">{s.text}</p>
               </article>
             ))}
           </div>
         </PageContainer>
       </section>
 
-      <section className="section section-muted">
+      <section className={sectionMuted}>
         <PageContainer>
-          <h2 className="section-title">{copy.home.businessTitle}</h2>
-          <p className="section-lead">{copy.home.businessLead}</p>
-          <ul className="feature-list">
+          <h2 className={sectionTitle}>{copy.home.businessTitle}</h2>
+          <p className={sectionLead}>{copy.home.businessLead}</p>
+          <ul className={featureList}>
             {copy.home.businessItems.map((item) => (
-              <li key={item}>
-                <p>{item}</p>
+              <li key={item} className={featureItem}>
+                <p className={featureItemText}>{item}</p>
               </li>
             ))}
           </ul>
-          <div className="hero-actions" style={{ marginTop: "1.25rem" }}>
+          <div className={`${heroActions} mt-5`}>
             <Button href={localePath(locale, "/business/")}>
               {copy.ui.getOffer}
             </Button>
@@ -137,40 +160,35 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <h2 className="section-title">{copy.home.geoTitle}</h2>
-          <p className="section-lead">{copy.home.geoLead}</p>
+          <h2 className={sectionTitle}>{copy.home.geoTitle}</h2>
+          <p className={sectionLead}>{copy.home.geoLead}</p>
           <GeoSearch locale={locale} copy={copy} />
         </PageContainer>
       </section>
 
-      <section className="section section-muted">
+      <section className={sectionMuted}>
         <PageContainer>
-          <h2 className="section-title">{copy.home.faqTitle}</h2>
-          <div className="faq">
+          <h2 className={sectionTitle}>{copy.home.faqTitle}</h2>
+          <div>
             {copy.home.faq.map((item) => (
-              <details key={item.question}>
-                <summary>{item.question}</summary>
-                <p>{item.answer}</p>
+              <details key={item.question} className={faqDetails}>
+                <summary className={faqSummary}>{item.question}</summary>
+                <p className="text-ink-muted">{item.answer}</p>
               </details>
             ))}
           </div>
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <div className="page-cta">
-            <h2 className="section-title" style={{ color: "white" }}>
-              {copy.home.finalTitle}
-            </h2>
-            <p>{copy.home.finalLead}</p>
-            <div style={{ marginTop: "1.25rem" }}>
-              <Button
-                href={localePath(locale, "/request-price/")}
-                className="btn-on-dark"
-              >
+          <div className={pageCta}>
+            <h2 className={`${sectionTitle} text-white`}>{copy.home.finalTitle}</h2>
+            <p className="max-w-xl text-[#d4d4d4]">{copy.home.finalLead}</p>
+            <div className="mt-5">
+              <Button href={localePath(locale, "/request-price/")} variant="onDark">
                 {copy.ui.requestPrice}
               </Button>
             </div>

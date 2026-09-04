@@ -2,6 +2,7 @@
 
 import { useFormikContext } from "formik";
 import { Button } from "@/components/atoms/Button";
+import { formActions } from "@/styles/ui";
 
 interface FormActionsProps {
   submitLabel: string;
@@ -19,7 +20,7 @@ export function FormActions({
   const { isSubmitting } = useFormikContext();
 
   return (
-    <div className="form-actions">
+    <div className={formActions}>
       {showBack && onBack && backLabel ? (
         <Button type="button" variant="secondary" onClick={onBack}>
           {backLabel}

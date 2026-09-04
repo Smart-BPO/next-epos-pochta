@@ -1,6 +1,21 @@
 import Link from "next/link";
+import { cn } from "@/lib/cn";
+import {
+  btnGhost,
+  btnHeroPrimary,
+  btnHeroSecondary,
+  btnOnDark,
+  btnPrimary,
+  btnSecondary,
+} from "@/styles/ui";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
+type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "onDark"
+  | "heroPrimary"
+  | "heroSecondary";
 
 interface ButtonProps {
   href?: string;
@@ -13,9 +28,12 @@ interface ButtonProps {
 }
 
 const variantClass: Record<ButtonVariant, string> = {
-  primary: "btn btn-primary",
-  secondary: "btn btn-secondary",
-  ghost: "btn btn-ghost",
+  primary: btnPrimary,
+  secondary: btnSecondary,
+  ghost: btnGhost,
+  onDark: btnOnDark,
+  heroPrimary: btnHeroPrimary,
+  heroSecondary: btnHeroSecondary,
 };
 
 export function Button({
@@ -27,8 +45,15 @@ export function Button({
   onClick,
   disabled,
 }: ButtonProps) {
-  const cls = `${variantClass[variant]} ${className}`.trim();
+  const cls = cn(variantClass[variant], className);
   if (href) {
+    if (href.startsWith("#")) {
+      return (
+        <a href={href} className={cls} onClick={onClick}>
+          {children}
+        </a>
+      );
+    }
     return (
       <Link href={href} className={cls} onClick={onClick}>
         {children}

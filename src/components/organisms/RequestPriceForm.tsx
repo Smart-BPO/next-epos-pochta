@@ -28,6 +28,16 @@ import {
 } from "@/lib/form/schemas";
 import { submitLead } from "@/lib/form/submitLead";
 import { createRequestId, yesNoOptions } from "@/lib/form/utils";
+import { cn } from "@/lib/cn";
+import {
+  alertSuccess,
+  card,
+  formShell,
+  formStepActive,
+  formStepDone,
+  formStepPill,
+  formSteps,
+} from "@/styles/ui";
 
 interface PriceFormProps {
   locale: Locale;
@@ -363,24 +373,26 @@ export function RequestPriceForm({
 
   if (successId) {
     return (
-      <div className="alert alert-success" role="status">
+      <div className={alertSuccess} role="status">
         <strong>
           {content.requestPrice.successTitle}. ID: {successId}
         </strong>
-        <p style={{ marginBottom: 0 }}>{content.requestPrice.successText}</p>
+        <p className="mb-0">{content.requestPrice.successText}</p>
       </div>
     );
   }
 
   return (
-    <div className="form-shell card">
-      <div className="form-steps" aria-hidden>
+    <div className={cn(formShell, card)}>
+      <div className={formSteps} aria-hidden>
         {content.requestPrice.steps.map((label, index) => (
           <div
             key={label}
-            className={`form-step-pill ${
-              index === step ? "is-active" : index < step ? "is-done" : ""
-            }`}
+            className={cn(
+              formStepPill,
+              index === step && formStepActive,
+              index < step && formStepDone,
+            )}
           >
             {label}
           </div>

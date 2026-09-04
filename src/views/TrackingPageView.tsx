@@ -10,6 +10,22 @@ import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { trackEvent } from "@/lib/analytics/events";
 import { lookupTracking } from "@/lib/tracking/client";
+import {
+  alertInfo,
+  alertWarning,
+  field,
+  fieldControl,
+  fieldHint,
+  fieldLabel,
+  heroActions,
+  pageIntro,
+  pageIntroTitle,
+  sectionLead,
+  sectionTitle,
+  trackShell,
+  trackTimeline,
+  trackTimelineItem,
+} from "@/styles/ui";
 
 type UiState = "idle" | "invalid" | "unavailable" | "not_found";
 
@@ -26,12 +42,12 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
   const [pending, startTransition] = useTransition();
 
   return (
-    <section className="page-intro">
+    <section className={pageIntro}>
       <PageContainer>
-        <h1>{copy.tracking.title}</h1>
-        <p className="section-lead">{copy.tracking.lead}</p>
+        <h1 className={pageIntroTitle}>{copy.tracking.title}</h1>
+        <p className={sectionLead}>{copy.tracking.lead}</p>
 
-        <div className="track-shell">
+        <div className={trackShell}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -53,8 +69,10 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
               });
             }}
           >
-            <div className="field">
-              <label htmlFor="track-number">{copy.tracking.placeholder}</label>
+            <div className={field}>
+              <label htmlFor="track-number" className={fieldLabel}>
+                {copy.tracking.placeholder}
+              </label>
               <input
                 id="track-number"
                 value={displayNumber}
@@ -66,6 +84,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                 placeholder={copy.tracking.placeholder}
                 autoComplete="off"
                 inputMode="text"
+                className={fieldControl}
               />
             </div>
             <Button type="submit" disabled={pending}>
@@ -74,28 +93,28 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
           </form>
 
           {state === "idle" ? (
-            <div className="alert alert-info">{copy.tracking.emptyHint}</div>
+            <div className={alertInfo}>{copy.tracking.emptyHint}</div>
           ) : null}
 
           {state === "invalid" ? (
-            <div className="alert alert-warning" role="alert">
+            <div className={alertWarning} role="alert">
               <strong>{copy.tracking.formatErrorTitle}</strong>
               <p>{copy.tracking.formatErrorText}</p>
             </div>
           ) : null}
 
           {state === "not_found" ? (
-            <div className="alert alert-warning" role="status">
+            <div className={alertWarning} role="status">
               <strong>{copy.tracking.errorTitle}</strong>
               <p>{copy.tracking.errorText}</p>
             </div>
           ) : null}
 
           {state === "unavailable" ? (
-            <div className="alert alert-warning" role="status">
+            <div className={alertWarning} role="status">
               <strong>{copy.tracking.unavailableTitle}</strong>
               <p>{copy.tracking.unavailableText}</p>
-              <div className="hero-actions" style={{ marginTop: "0.85rem" }}>
+              <div className={`${heroActions} mt-3.5`}>
                 <Button
                   href={`tel:${SITE_CONFIG.phone}`}
                   onClick={() => trackEvent("track_support_call_click")}
@@ -113,13 +132,13 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
           ) : null}
 
           <div>
-            <h2 className="section-title">{copy.tracking.timelinePreviewTitle}</h2>
-            <p className="section-lead">{copy.tracking.timelinePreviewNote}</p>
-            <div className="track-timeline" aria-hidden="true">
+            <h2 className={sectionTitle}>{copy.tracking.timelinePreviewTitle}</h2>
+            <p className={sectionLead}>{copy.tracking.timelinePreviewNote}</p>
+            <div className={trackTimeline} aria-hidden="true">
               {copy.tracking.sampleStatuses.map((label) => (
-                <div key={label} className="track-timeline__item">
+                <div key={label} className={trackTimelineItem}>
                   <strong>{label}</strong>
-                  <p className="hint">—</p>
+                  <p className={fieldHint}>—</p>
                 </div>
               ))}
             </div>

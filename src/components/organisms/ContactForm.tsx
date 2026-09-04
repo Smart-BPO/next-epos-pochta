@@ -22,6 +22,7 @@ import {
 } from "@/lib/form/schemas";
 import { submitLead } from "@/lib/form/submitLead";
 import { createRequestId } from "@/lib/form/utils";
+import { alertSuccess, card } from "@/styles/ui";
 
 const schema = Yup.object({
   name: requiredString(),
@@ -47,9 +48,9 @@ export function ContactForm({
 
   if (successId) {
     return (
-      <div className="alert alert-success" role="status">
+      <div className={alertSuccess} role="status">
         <strong>ID: {successId}</strong>
-        <p style={{ marginBottom: 0 }}>
+        <p className="mb-0">
           {locale === "uz"
             ? "Xabar qabul qilindi. Tez orada bogʻlanamiz."
             : "Сообщение принято. Мы скоро свяжемся с вами."}
@@ -90,7 +91,7 @@ export function ContactForm({
         setSubmitting(false);
       }}
     >
-      <Form className="card" noValidate>
+      <Form className={card} noValidate>
         <FormInputField name="name" label={c.name} required />
         <FormRow>
           <FormInputField

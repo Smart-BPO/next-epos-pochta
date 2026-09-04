@@ -11,6 +11,7 @@
   --color-success: #0f7a3e;
   --color-warning: #b45309;
   --color-danger: #d01224;
+  --color-telegram: #229ed9;
   --page-padding: clamp(1rem, 3vw, 2rem);
   --page-max: 72rem;
   --radius-sm: 0.5rem;
@@ -23,7 +24,6 @@
   --tap-min: 44px;
   --header-height: 4rem;
   --sticky-cta-height: 4.25rem;
-  --hero-ink: #ffffff;
   --motion-fast: 160ms;
   --motion-base: 420ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -38,5 +38,43 @@
   --color-border: var(--color-border);
   --color-surface: var(--color-surface);
   --color-surface-muted: var(--color-surface-muted);
+  --color-surface-deep: var(--color-surface-deep);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --color-telegram: var(--color-telegram);
   --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --spacing-page: var(--page-padding);
+  --spacing-header: var(--header-height);
+  --spacing-sticky-cta: var(--sticky-cta-height);
+  --spacing-tap: var(--tap-min);
+  --max-width-page: var(--page-max);
+  --animate-hero-rise: hero-rise var(--motion-base) var(--ease-out) both;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -4,6 +4,7 @@ import { Header } from "@/components/organisms/Header";
 import { SiteFooter } from "@/components/organisms/SiteFooter";
 import { FloatingContact } from "@/components/organisms/FloatingContact";
 import { MobileStickyCta } from "@/components/organisms/MobileStickyCta";
+import { HashScroll } from "@/components/organisms/HashScroll";
 import { CookieConsentBanner } from "@/components/consent/CookieConsentBanner";
 
 interface SiteLayoutProps {
@@ -16,8 +17,9 @@ export function SiteLayout({ locale, children }: SiteLayoutProps) {
 
   return (
     <>
+      <HashScroll />
       <Header locale={locale} content={content} />
-      <div id="site-content">
+      <div id="site-content" className="flex-1">
         <main id="main-content">{children}</main>
       </div>
       <SiteFooter locale={locale} content={content} />

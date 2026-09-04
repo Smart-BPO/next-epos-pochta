@@ -35,31 +35,29 @@ export const metadata: Metadata = {
   },
 };
 
-/** Keep root layout static — do not call headers()/cookies() here. */
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uz" className={manrope.variable} suppressHydrationWarning>
+    <html
+      lang="uz"
+      className={`${manrope.variable} scroll-smooth scroll-pt-[var(--header-height)]`}
+      suppressHydrationWarning
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html:
-              '(function(){try{var p=location.pathname;document.documentElement.lang=(p==="/ru"||p.indexOf("/ru/")===0)?"ru":"uz")}catch(e){}})();',
+              '(function(){try{var p=location.pathname;document.documentElement.lang=(p==="/ru"||p.indexOf("/ru/")===0)?"ru":"uz"}catch(e){}})();',
           }}
         />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body
-        className="antialiased has-sticky-cta"
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
+        className="flex min-h-dvh flex-col bg-[radial-gradient(1200px_480px_at_100%_-10%,rgb(208_18_36/0.06),transparent_55%),var(--color-surface)] font-sans text-ink antialiased [padding-bottom:calc(var(--sticky-cta-height)+env(safe-area-inset-bottom))] md:pb-0"
       >
         <JsonLd data={getGlobalJsonLdGraph()} />
         {children}

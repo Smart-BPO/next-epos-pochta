@@ -10,6 +10,11 @@ import { RequestPricePageView } from "@/views/RequestPricePageView";
 import { AboutPageView } from "@/views/AboutPageView";
 import { ContactsPageView } from "@/views/ContactsPageView";
 import { PrivacyPageView, TermsPageView } from "@/views/LegalPageViews";
+import { pageContainer, section } from "@/styles/ui";
+
+const suspenseFallback = (
+  <div className={`${section} ${pageContainer}`}>…</div>
+);
 
 export function createHomePage(locale: Locale) {
   return {
@@ -58,7 +63,7 @@ export function createTrackingPage(locale: Locale) {
       // Read ?number= on the client — keeps the route statically prerenderable.
       return (
         <SiteLayout locale={locale}>
-          <Suspense fallback={<div className="section page-container">…</div>}>
+          <Suspense fallback={suspenseFallback}>
             <TrackingPageView locale={locale} />
           </Suspense>
         </SiteLayout>
@@ -74,7 +79,7 @@ export function createRequestPricePage(locale: Locale) {
     Page: async function RequestPricePage() {
       return (
         <SiteLayout locale={locale}>
-          <Suspense fallback={<div className="section page-container">…</div>}>
+          <Suspense fallback={suspenseFallback}>
             <RequestPricePageView locale={locale} />
           </Suspense>
         </SiteLayout>

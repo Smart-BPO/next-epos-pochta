@@ -24,6 +24,8 @@ import {
 } from "@/lib/form/schemas";
 import { submitLead } from "@/lib/form/submitLead";
 import { createRequestId, yesNoOptions } from "@/lib/form/utils";
+import { cn } from "@/lib/cn";
+import { alertSuccess, card, formShell } from "@/styles/ui";
 
 const schema = Yup.object({
   company: requiredString(),
@@ -51,11 +53,11 @@ export function BusinessForm({
 
   if (successId) {
     return (
-      <div className="alert alert-success" role="status">
+      <div className={alertSuccess} role="status">
         <strong>
           {content.requestPrice.successTitle}. ID: {successId}
         </strong>
-        <p style={{ marginBottom: 0 }}>{content.requestPrice.successText}</p>
+        <p className="mb-0">{content.requestPrice.successText}</p>
       </div>
     );
   }
@@ -95,7 +97,7 @@ export function BusinessForm({
         setSubmitting(false);
       }}
     >
-      <Form className="card form-shell" noValidate>
+      <Form className={cn(card, formShell)} noValidate>
         <FormInputField name="company" label={c.company} required />
         <FormInputField name="name" label={c.name} required />
         <FormRow>

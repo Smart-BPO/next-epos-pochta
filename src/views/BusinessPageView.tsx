@@ -6,69 +6,92 @@ import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { TrustIcon } from "@/components/atoms/TrustIcon";
 import { BusinessForm } from "@/components/organisms/BusinessForm";
+import { cn } from "@/lib/cn";
+import {
+  anchorSection,
+  featureItem,
+  featureItemText,
+  featureItemTitle,
+  featureList,
+  hero,
+  heroActions,
+  heroBrand,
+  heroLead,
+  heroTitle,
+  section,
+  sectionLead,
+  sectionMuted,
+  sectionTitle,
+  step,
+  steps,
+  trustGrid,
+  trustItem,
+} from "@/styles/ui";
 
 export function BusinessPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
 
   return (
     <>
-      <section className="hero">
+      <section className={hero}>
         <PageContainer>
-          <p className="hero-brand">{SITE_CONFIG.name}</p>
-          <h1>{copy.business.heroTitle}</h1>
-          <p className="hero-lead">{copy.business.heroLead}</p>
-          <div className="hero-actions">
-            <Button href="#business-form">{copy.ui.getOffer}</Button>
+          <p className={heroBrand}>{SITE_CONFIG.name}</p>
+          <h1 className={heroTitle}>{copy.business.heroTitle}</h1>
+          <p className={heroLead}>{copy.business.heroLead}</p>
+          <div className={heroActions}>
+            <Button href="#business-form" variant="heroPrimary">
+              {copy.ui.getOffer}
+            </Button>
           </div>
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <h2 className="section-title">{copy.business.segmentsTitle}</h2>
-          <ul className="feature-list">
+          <h2 className={sectionTitle}>{copy.business.segmentsTitle}</h2>
+          <ul className={featureList}>
             {copy.business.segments.map((s) => (
-              <li key={s.title}>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
+              <li key={s.title} className={featureItem}>
+                <h3 className={featureItemTitle}>{s.title}</h3>
+                <p className={featureItemText}>{s.text}</p>
               </li>
             ))}
           </ul>
         </PageContainer>
       </section>
 
-      <section className="section section-muted">
+      <section className={sectionMuted}>
         <PageContainer>
-          <h2 className="section-title">{copy.business.capabilitiesTitle}</h2>
-          <div className="trust-grid">
+          <h2 className={sectionTitle}>{copy.business.capabilitiesTitle}</h2>
+          <div className={trustGrid}>
             {copy.business.capabilities.map((item, index) => (
-              <article key={item} className="trust-item">
+              <article key={item} className={trustItem}>
                 <TrustIcon index={index} />
-                <h3>{item}</h3>
+                <h3 className="m-0 text-[1.05rem] font-semibold">{item}</h3>
               </article>
             ))}
           </div>
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <h2 className="section-title">{copy.business.connectTitle}</h2>
-          <div className="steps">
-            {copy.business.connectSteps.map((step) => (
-              <article key={step} className="step">
-                <p style={{ margin: 0 }}>{step}</p>
+          <h2 className={sectionTitle}>{copy.business.connectTitle}</h2>
+          <div className={steps}>
+            {copy.business.connectSteps.map((s) => (
+              <article key={s} className={step}>
+                <p className="m-0">{s}</p>
               </article>
             ))}
           </div>
         </PageContainer>
       </section>
 
-      <section className="section section-muted" id="api">
+      <section className={cn(sectionMuted, anchorSection)} id="api">
         <PageContainer>
-          <h2 className="section-title">{copy.business.apiTitle}</h2>
-          <p className="section-lead">{copy.business.apiLead}</p>
-          <div className="trust-item" style={{ marginBottom: "1.25rem" }}>
+          <h2 className={sectionTitle}>{copy.business.apiTitle}</h2>
+          <p className={sectionLead}>{copy.business.apiLead}</p>
+          <div className={`${trustItem} mb-5`}>
             <TrustIcon index={3} />
           </div>
           <Button href={localePath(locale, "/contacts/")} variant="secondary">
@@ -77,9 +100,9 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="section" id="business-form">
+      <section className={cn(section, anchorSection)} id="business-form">
         <PageContainer>
-          <h2 className="section-title">{copy.business.formTitle}</h2>
+          <h2 className={sectionTitle}>{copy.business.formTitle}</h2>
           <BusinessForm locale={locale} content={copy} />
         </PageContainer>
       </section>

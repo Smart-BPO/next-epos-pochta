@@ -1,13 +1,18 @@
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { PageContainer } from "@/components/atoms/PageContainer";
+import {
+  legalContent,
+  pageIntro,
+  pageIntroTitle,
+} from "@/styles/ui";
 
 export function PrivacyPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   return (
-    <section className="page-intro">
-      <PageContainer className="legal-content">
-        <h1>{copy.privacy.title}</h1>
+    <section className={pageIntro}>
+      <PageContainer className={legalContent}>
+        <h1 className={pageIntroTitle}>{copy.privacy.title}</h1>
         {copy.privacy.body.map((p) => (
           <p key={p.slice(0, 24)}>{p}</p>
         ))}
@@ -19,9 +24,9 @@ export function PrivacyPageView({ locale }: { locale: Locale }) {
 export function TermsPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   return (
-    <section className="page-intro">
-      <PageContainer className="legal-content">
-        <h1>{copy.terms.title}</h1>
+    <section className={pageIntro}>
+      <PageContainer className={legalContent}>
+        <h1 className={pageIntroTitle}>{copy.terms.title}</h1>
         {copy.terms.body.map((p) => (
           <p key={p.slice(0, 24)}>{p}</p>
         ))}

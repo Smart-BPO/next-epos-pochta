@@ -4,70 +4,82 @@ import { PageContainer } from "@/components/atoms/PageContainer";
 import { TrustIcon } from "@/components/atoms/TrustIcon";
 import { PageCta } from "@/components/organisms/PageCta";
 import { SITE_CONFIG } from "@/utils/consts";
+import {
+  featureItem,
+  featureItemText,
+  featureItemTitle,
+  featureList,
+  pageIntro,
+  pageIntroTitle,
+  section,
+  sectionLead,
+  sectionMuted,
+  sectionTitle,
+  trustGrid,
+  trustItem,
+} from "@/styles/ui";
 
 export function AboutPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
 
   return (
     <>
-      <section className="page-intro">
+      <section className={pageIntro}>
         <PageContainer>
-          <h1>{copy.about.title}</h1>
-          <p className="section-lead">{copy.about.lead}</p>
+          <h1 className={pageIntroTitle}>{copy.about.title}</h1>
+          <p className={sectionLead}>{copy.about.lead}</p>
         </PageContainer>
       </section>
 
-      <section className="section section-muted">
+      <section className={sectionMuted}>
         <PageContainer>
-          <h2 className="section-title">{copy.about.missionTitle}</h2>
-          <p className="section-lead" style={{ marginBottom: 0 }}>
-            {copy.about.mission}
-          </p>
+          <h2 className={sectionTitle}>{copy.about.missionTitle}</h2>
+          <p className={`${sectionLead} mb-0`}>{copy.about.mission}</p>
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <h2 className="section-title">{copy.about.geoTitle}</h2>
-          <p className="section-lead" style={{ marginBottom: 0 }}>
-            {copy.about.geo}
-          </p>
+          <h2 className={sectionTitle}>{copy.about.geoTitle}</h2>
+          <p className={`${sectionLead} mb-0`}>{copy.about.geo}</p>
         </PageContainer>
       </section>
 
-      <section className="section section-muted">
+      <section className={sectionMuted}>
         <PageContainer>
-          <h2 className="section-title">{copy.about.benefitsTitle}</h2>
-          <div className="trust-grid">
+          <h2 className={sectionTitle}>{copy.about.benefitsTitle}</h2>
+          <div className={trustGrid}>
             {copy.home.benefits.map((b, index) => (
-              <article key={b} className="trust-item">
+              <article key={b} className={trustItem}>
                 <TrustIcon index={index} />
-                <h3>{b}</h3>
+                <h3 className="m-0 text-[1.05rem] font-semibold">{b}</h3>
               </article>
             ))}
           </div>
         </PageContainer>
       </section>
 
-      <section className="section">
+      <section className={section}>
         <PageContainer>
-          <h2 className="section-title">{copy.about.legalTitle}</h2>
-          <ul className="feature-list">
-            <li>
-              <h3>{SITE_CONFIG.legalName}</h3>
-              <p>
+          <h2 className={sectionTitle}>{copy.about.legalTitle}</h2>
+          <ul className={featureList}>
+            <li className={featureItem}>
+              <h3 className={featureItemTitle}>{SITE_CONFIG.legalName}</h3>
+              <p className={featureItemText}>
                 ИНН / STIR: {SITE_CONFIG.address.inn}
                 <br />
                 ОКЭД / OKED: {SITE_CONFIG.address.oked}
               </p>
             </li>
-            <li>
-              <h3>{locale === "uz" ? "Manzil" : "Адрес"}</h3>
-              <p>{SITE_CONFIG.address.line}</p>
+            <li className={featureItem}>
+              <h3 className={featureItemTitle}>
+                {locale === "uz" ? "Manzil" : "Адрес"}
+              </h3>
+              <p className={featureItemText}>{SITE_CONFIG.address.line}</p>
             </li>
-            <li>
-              <h3>{copy.ui.call}</h3>
-              <p>
+            <li className={featureItem}>
+              <h3 className={featureItemTitle}>{copy.ui.call}</h3>
+              <p className={featureItemText}>
                 <a href={`tel:${SITE_CONFIG.phone}`}>
                   {SITE_CONFIG.phoneDisplay}
                 </a>

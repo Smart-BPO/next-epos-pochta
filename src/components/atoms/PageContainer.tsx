@@ -1,3 +1,6 @@
+import { cn } from "@/lib/cn";
+import { pageContainer } from "@/styles/ui";
+
 export function PageContainer({
   children,
   className = "",
@@ -5,5 +8,5 @@ export function PageContainer({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <div className={`page-container ${className}`.trim()}>{children}</div>;
+  return <div className={cn(pageContainer, className)}>{children}</div>;
 }

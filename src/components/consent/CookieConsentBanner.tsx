@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { SITE_CONFIG } from "@/utils/consts";
+import { Button } from "@/components/atoms/Button";
 
 const STORAGE_KEY = "epos_cookie_consent";
 
@@ -48,29 +49,32 @@ export function CookieConsentBanner({
   if (!visible) return null;
 
   return (
-    <div className="cookie-banner" role="dialog" aria-live="polite">
-      <p style={{ marginTop: 0 }}>{text}</p>
-      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-        <button
+    <div
+      className="fixed inset-x-4 bottom-[calc(1rem+var(--sticky-cta-height))] z-50 mx-auto max-w-lg rounded-lg border border-border bg-white p-4 shadow-md md:bottom-4"
+      role="dialog"
+      aria-live="polite"
+    >
+      <p className="mt-0">{text}</p>
+      <div className="flex flex-wrap gap-3">
+        <Button
           type="button"
-          className="btn btn-primary"
           onClick={() => {
             window.localStorage.setItem(STORAGE_KEY, "accepted");
             setLocalChoice("accepted");
           }}
         >
           {acceptLabel}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="btn btn-secondary"
+          variant="secondary"
           onClick={() => {
             window.localStorage.setItem(STORAGE_KEY, "declined");
             setLocalChoice("declined");
           }}
         >
           {declineLabel}
-        </button>
+        </Button>
       </div>
     </div>
   );

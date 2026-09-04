@@ -4,30 +4,47 @@ import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { PageCta } from "@/components/organisms/PageCta";
+import { cn } from "@/lib/cn";
+import {
+  actionTile,
+  alertInfo,
+  anchorSection,
+  faqDetails,
+  faqSummary,
+  pageIntro,
+  pageIntroTitle,
+  section,
+  sectionLead,
+  sectionMuted,
+  sectionTitle,
+} from "@/styles/ui";
 
 export function ServicesPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
 
   return (
     <>
-      <section className="page-intro">
+      <section className={pageIntro}>
         <PageContainer>
-          <h1>{copy.meta.servicesTitle}</h1>
-          <p className="section-lead">{copy.services.intro}</p>
-          <div className="alert alert-info">{copy.services.priceNote}</div>
+          <h1 className={pageIntroTitle}>{copy.meta.servicesTitle}</h1>
+          <p className={sectionLead}>{copy.services.intro}</p>
+          <div className={alertInfo}>{copy.services.priceNote}</div>
         </PageContainer>
       </section>
 
       {copy.services.items.map((service, index) => (
         <section
           key={service.id}
-          className={`section ${index % 2 ? "section-muted" : ""}`}
+          className={cn(
+            index % 2 ? sectionMuted : section,
+            anchorSection,
+          )}
           id={service.id}
         >
           <PageContainer>
-            <article className="action-tile" style={{ border: "none", paddingTop: 0 }}>
+            <article className={`${actionTile} border-0 pt-0`}>
               <div>
-                <h2 className="section-title">{service.title}</h2>
+                <h2 className={sectionTitle}>{service.title}</h2>
                 <p>
                   <strong>
                     {locale === "uz" ? "Kimlar uchun:" : "Для кого:"}
@@ -73,11 +90,11 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
                   {service.limitations}
                 </p>
                 {service.faqs.length ? (
-                  <div className="faq" style={{ marginTop: "1rem" }}>
+                  <div className="mt-4">
                     {service.faqs.map((faq) => (
-                      <details key={faq.question}>
-                        <summary>{faq.question}</summary>
-                        <p>{faq.answer}</p>
+                      <details key={faq.question} className={faqDetails}>
+                        <summary className={faqSummary}>{faq.question}</summary>
+                        <p className="text-ink-muted">{faq.answer}</p>
                       </details>
                     ))}
                   </div>
