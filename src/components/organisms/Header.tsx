@@ -37,7 +37,6 @@ export function Header({ locale, content }: HeaderProps) {
   const { path: currentPath } = stripLocalePrefix(pathname);
   const requestHref = localePath(locale, "/request-price/");
   const trackHref = localePath(locale, "/tracking/");
-  const phoneHref = `tel:${SITE_CONFIG.phone}`;
   const menuLabel = locale === "uz" ? "Menyu" : "Меню";
   const actionsLabel = locale === "uz" ? "Amallar" : "Действия";
 
@@ -92,12 +91,6 @@ export function Header({ locale, content }: HeaderProps) {
               {content.ui.track}
             </Button>
           </span>
-          <a
-            className="hidden whitespace-nowrap rounded-xl px-3 py-4 text-base font-medium text-black lg:inline"
-            href={phoneHref}
-          >
-            {SITE_CONFIG.phoneDisplay}
-          </a>
           <span className="hidden sm:inline">
             <LanguageSwitcher locale={locale} />
           </span>
@@ -156,9 +149,6 @@ export function Header({ locale, content }: HeaderProps) {
           <Button href={trackHref} variant="secondary" onClick={() => setOpen(false)}>
             {content.ui.track}
           </Button>
-          <a href={phoneHref} className="font-medium text-black">
-            {SITE_CONFIG.phoneDisplay}
-          </a>
           <div className="sm:hidden">
             <LanguageSwitcher locale={locale} />
           </div>

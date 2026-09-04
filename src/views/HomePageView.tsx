@@ -159,27 +159,6 @@ export function HomePageView({ locale }: { locale: Locale }) {
         <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.home.modesTitle}</h2>
           <DeliveryChain locale={locale} />
-          <div className="flex flex-col gap-4 md:gap-6">
-            {copy.home.modes.map((mode, index) => (
-              <article
-                key={mode.id}
-                className="relative overflow-hidden rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] pr-20 sm:pr-24 md:pr-28"
-              >
-                <h3 className="relative z-10 m-0 max-w-[18ch] font-display text-xl font-semibold uppercase text-black md:max-w-none md:text-2xl">
-                  {mode.title}
-                </h3>
-                <p className="relative z-10 mt-3 max-w-2xl text-base text-black/60 md:mt-4">
-                  {mode.description}
-                </p>
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rotate-[15deg] font-display text-[5.5rem] font-black leading-none text-black/15 sm:right-6 sm:text-[6rem] md:right-12 md:text-[10rem]"
-                >
-                  {index + 1}
-                </span>
-              </article>
-            ))}
-          </div>
         </PageContainer>
       </section>
 
