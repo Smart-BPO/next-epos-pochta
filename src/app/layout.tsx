@@ -57,7 +57,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body
-        className="flex min-h-dvh flex-col bg-[radial-gradient(1200px_480px_at_100%_-10%,rgb(208_18_36/0.06),transparent_55%),var(--color-surface)] font-sans text-ink antialiased [padding-bottom:calc(var(--sticky-cta-height)+env(safe-area-inset-bottom))] md:pb-0"
+        className="flex min-h-dvh flex-col bg-white font-sans text-ink antialiased [padding-bottom:calc(var(--sticky-cta-height)+env(safe-area-inset-bottom))] md:pb-0"
       >
         <JsonLd data={getGlobalJsonLdGraph()} />
         {children}

@@ -8,7 +8,6 @@ import {
   btnPrimary,
   btnSecondary,
 } from "@/styles/ui";
-
 type ButtonVariant =
   | "primary"
   | "secondary"

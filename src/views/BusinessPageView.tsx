@@ -39,7 +39,7 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
           <h1 className={heroTitle}>{copy.business.heroTitle}</h1>
           <p className={heroLead}>{copy.business.heroLead}</p>
           <div className={heroActions}>
-            <Button href="#business-form" variant="heroPrimary">
+            <Button href="#business-form" variant="primary">
               {copy.ui.getOffer}
             </Button>
           </div>

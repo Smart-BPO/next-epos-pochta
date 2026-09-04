@@ -1,7 +1,7 @@
+import Image from "next/image";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
-import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { TrustIcon } from "@/components/atoms/TrustIcon";
@@ -17,12 +17,16 @@ import {
   featureItemText,
   featureItemTitle,
   featureList,
-  hero,
   heroActions,
-  heroBrand,
-  heroLead,
-  heroNote,
-  heroTitle,
+  homeHero,
+  homeHeroActions,
+  homeHeroCopy,
+  homeHeroGrid,
+  homeHeroLead,
+  homeHeroMap,
+  homeHeroNote,
+  homeHeroTitle,
+  homeHeroVisual,
   pageCta,
   section,
   sectionLead,
@@ -30,7 +34,6 @@ import {
   sectionTitle,
   step,
   steps,
-  trackShell,
   trustGrid,
   trustItem,
 } from "@/styles/ui";
@@ -42,32 +45,39 @@ export function HomePageView({ locale }: { locale: Locale }) {
     <>
       <JsonLd data={getFaqSchema(copy.home.faq)} />
 
-      <section className={hero}>
-        <PageContainer>
-          <p className={heroBrand}>{SITE_CONFIG.name}</p>
-          <h1 className={heroTitle}>{copy.home.heroTitle}</h1>
-          <p className={heroLead}>{copy.home.heroLead}</p>
-          <p className={heroNote}>{copy.home.heroNote}</p>
-          <div className={heroActions}>
-            <Button href={localePath(locale, "/request-price/")} variant="heroPrimary">
-              {copy.ui.requestPrice}
-            </Button>
-            <Button
-              href={`${localePath(locale, "/request-price/")}?pickup=1`}
-              variant="heroSecondary"
-            >
-              {copy.ui.callCourier}
-            </Button>
+      <section className={homeHero}>
+        <PageContainer className={homeHeroGrid}>
+          <div className={homeHeroCopy}>
+            <h1 className={homeHeroTitle}>{copy.home.heroTitle}</h1>
+            <p className={homeHeroLead}>{copy.home.heroLead}</p>
+            <p className={homeHeroNote}>{copy.home.heroNote}</p>
+            <div className={homeHeroActions}>
+              <Button
+                href={localePath(locale, "/request-price/")}
+                variant="heroPrimary"
+              >
+                {copy.ui.requestPrice}
+              </Button>
+              <Button
+                href={`${localePath(locale, "/request-price/")}?pickup=1`}
+                variant="heroSecondary"
+              >
+                {copy.ui.callCourier}
+              </Button>
+            </div>
           </div>
-        </PageContainer>
-      </section>
 
-      <section className={section}>
-        <PageContainer>
-          <h2 className={sectionTitle}>{copy.home.trackTitle}</h2>
-          <p className={sectionLead}>{copy.home.trackHint}</p>
-          <div className={trackShell}>
-            <QuickTrackForm locale={locale} copy={copy} />
+          <div className={homeHeroVisual}>
+            <Image
+              src="/images/hero/uzbekistan-map.svg"
+              alt=""
+              width={1000}
+              height={652}
+              className={homeHeroMap}
+              priority
+              unoptimized
+            />
+            <QuickTrackForm locale={locale} copy={copy} variant="hero" />
           </div>
         </PageContainer>
       </section>

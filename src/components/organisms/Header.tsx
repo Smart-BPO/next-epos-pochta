@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -23,43 +24,60 @@ export function Header({ locale, content }: HeaderProps) {
   const phoneHref = `tel:${SITE_CONFIG.phone}`;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/90 bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-black/5 bg-white/95 backdrop-blur-md">
       <div
         className={cn(
           pageContainer,
-          "flex min-h-[var(--header-height)] items-center justify-between gap-4",
+          "flex min-h-[var(--header-height)] items-center justify-between gap-3",
         )}
       >
         <Link
           href={localePath(locale, "/")}
-          className="whitespace-nowrap font-display text-[1.05rem] font-extrabold tracking-wide text-primary"
+          className="relative h-9 w-[92px] shrink-0"
+          aria-label={SITE_CONFIG.name}
         >
-          {SITE_CONFIG.name}
+          <Image
+            src="/images/brand/logo.svg"
+            alt={SITE_CONFIG.name}
+            width={92}
+            height={36}
+            className="h-9 w-auto"
+            priority
+            unoptimized
+          />
         </Link>
 
-        <nav className="hidden items-center gap-5 md:flex" aria-label="Main">
+        <nav className="hidden items-center gap-1 xl:flex" aria-label="Main">
           {content.nav.map((item) => (
             <Link
               key={item.href}
               href={localePath(locale, item.href)}
-              className="text-[0.95rem] text-ink hover:text-primary"
+              className="rounded-xl px-4 py-4 text-base font-medium text-black/60 hover:text-black"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <a
+            className="hidden whitespace-nowrap rounded-xl px-4 py-4 text-base font-medium text-black lg:inline"
+            href={phoneHref}
+          >
+            {SITE_CONFIG.phoneDisplay}
+          </a>
           <div
-            className="inline-flex overflow-hidden rounded-[0.55rem] border border-border"
+            className="inline-flex items-center rounded-xl border border-black/10 p-1"
             aria-label="Language"
           >
             <Link
               href={switchLocalePath(pathname, "uz")}
               aria-current={locale === "uz" ? "true" : undefined}
               className={cn(
-                "grid min-h-[var(--tap-min)] min-w-10 place-items-center px-2.5 text-[0.8rem] font-semibold",
-                locale === "uz" && "bg-primary text-white",
+                "rounded-lg px-3 py-3 text-base font-medium",
+                locale === "uz"
+                  ? "bg-black/10 text-black"
+                  : "text-black/40 hover:text-black",
               )}
             >
               UZ
@@ -68,25 +86,21 @@ export function Header({ locale, content }: HeaderProps) {
               href={switchLocalePath(pathname, "ru")}
               aria-current={locale === "ru" ? "true" : undefined}
               className={cn(
-                "grid min-h-[var(--tap-min)] min-w-10 place-items-center px-2.5 text-[0.8rem] font-semibold",
-                locale === "ru" && "bg-primary text-white",
+                "rounded-lg px-3 py-3 text-base font-medium",
+                locale === "ru"
+                  ? "bg-black/10 text-black"
+                  : "text-black/40 hover:text-black",
               )}
             >
               RU
             </Link>
           </div>
-          <a
-            className="hidden whitespace-nowrap font-semibold md:inline"
-            href={phoneHref}
-          >
-            {SITE_CONFIG.phoneDisplay}
-          </a>
           <span className="hidden md:inline">
             <Button href={requestHref}>{content.ui.requestPrice}</Button>
           </span>
           <button
             type="button"
-            className="inline-flex min-h-[var(--tap-min)] min-w-[var(--tap-min)] items-center justify-center rounded-sm border border-border bg-white md:hidden"
+            className="inline-flex min-h-[var(--tap-min)] min-w-[var(--tap-min)] items-center justify-center rounded-xl border border-black/10 bg-white xl:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
@@ -99,7 +113,7 @@ export function Header({ locale, content }: HeaderProps) {
       <div
         id="mobile-nav"
         className={cn(
-          "border-t border-border bg-white px-[var(--page-padding)] pb-5 pt-4 md:hidden",
+          "border-t border-black/5 bg-white px-[var(--page-padding)] pb-5 pt-4 xl:hidden",
           !open && "hidden",
         )}
       >
@@ -108,13 +122,15 @@ export function Header({ locale, content }: HeaderProps) {
             key={item.href}
             href={localePath(locale, item.href)}
             onClick={() => setOpen(false)}
-            className="flex min-h-[var(--tap-min)] items-center border-b border-border py-1"
+            className="flex min-h-[var(--tap-min)] items-center border-b border-black/5 py-1 text-black/60"
           >
             {item.label}
           </Link>
         ))}
         <div className="mt-4 grid gap-3">
-          <a href={phoneHref}>{SITE_CONFIG.phoneDisplay}</a>
+          <a href={phoneHref} className="font-medium text-black">
+            {SITE_CONFIG.phoneDisplay}
+          </a>
           <Button href={requestHref}>{content.ui.requestPrice}</Button>
         </div>
       </div>
