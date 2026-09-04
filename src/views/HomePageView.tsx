@@ -94,8 +94,13 @@ export function HomePageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className="bg-surface-muted py-4 lg:hidden">
-        <PageContainer className="flex flex-col gap-4">
+        <PageContainer>
           <QuickTrackForm locale={locale} copy={copy} variant="card" />
+        </PageContainer>
+      </section>
+
+      <section className="bg-white pb-6 pt-2 md:pb-8 lg:pb-10">
+        <PageContainer>
           <HomeQuoteTeaser locale={locale} copy={copy} />
         </PageContainer>
       </section>

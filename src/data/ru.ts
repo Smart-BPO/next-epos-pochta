@@ -87,7 +87,9 @@ export const ruCopy: SiteCopy = {
     quoteTitle: "Рассчитайте стоимость и срок доставки",
     quoteFrom: "Откуда",
     quoteTo: "Куда",
-    quoteWeight: "Вес, кг",
+    quoteCategory: "Что отправляем",
+    quoteSwap: "Поменять пункты местами",
+    quoteCta: "Рассчитать",
     quoteNote: "Цена на сайте не считается — менеджер сообщит стоимость после запроса.",
     needsTitle: "Что нужно доставить?",
     needs: [

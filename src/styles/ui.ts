@@ -52,6 +52,15 @@ export const homeTrackCard =
 export const homeQuoteCard =
   "rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]";
 
+export const homeQuoteRow =
+  "flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3";
+
+export const homeQuoteField =
+  "min-h-[var(--tap-min)] min-w-0 flex-1 rounded-xl border border-black/20 bg-white px-4 py-4 text-base placeholder:text-black/40";
+
+export const homeQuoteSelect =
+  `${homeQuoteField} appearance-none bg-[length:1rem] bg-[right_1rem_center] bg-no-repeat pr-10`;
+
 export const homeHeroTrackerTitle =
   "m-0 mb-4 font-display text-xl font-semibold uppercase leading-normal text-black sm:text-2xl";
 

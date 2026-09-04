@@ -91,7 +91,9 @@ export interface SiteCopy {
     quoteTitle: string;
     quoteFrom: string;
     quoteTo: string;
-    quoteWeight: string;
+    quoteCategory: string;
+    quoteSwap: string;
+    quoteCta: string;
     quoteNote: string;
     needsTitle: string;
     needs: Array<{ id: ShipmentCategory; title: string; description: string }>;

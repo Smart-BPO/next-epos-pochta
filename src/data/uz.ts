@@ -83,7 +83,9 @@ export const uzCopy: SiteCopy = {
     quoteTitle: "Yetkazib berish narxi va muddatini bilib oling",
     quoteFrom: "Qayerdan",
     quoteTo: "Qayerga",
-    quoteWeight: "Ogʻirlik, kg",
+    quoteCategory: "Nima yuboramiz",
+    quoteSwap: "Manzillarni almashtirish",
+    quoteCta: "Hisoblash",
     quoteNote: "Saytda narx hisoblanmaydi — menejer soʻrovdan keyin xabar qiladi.",
     needsTitle: "Nima yetkazish kerak?",
     needs: [
