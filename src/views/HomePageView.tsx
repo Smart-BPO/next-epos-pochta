@@ -223,36 +223,42 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className={section}>
+      <section className="bg-gradient-to-b from-primary to-primary-hover py-[var(--section-y)]">
         <PageContainer>
-          <div className="grid items-stretch gap-8 rounded-3xl border border-black/15 bg-white p-5 sm:p-8 lg:grid-cols-2 lg:gap-10 lg:p-10">
-            <div className="flex flex-col gap-5 lg:gap-6">
-              <p className="m-0 text-sm font-semibold uppercase tracking-[0.06em] text-primary">
+          <div className="grid items-stretch gap-8 overflow-hidden rounded-3xl bg-white p-6 shadow-[0_16px_48px_rgb(15_18_24/0.12)] sm:p-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-6 lg:p-10 xl:gap-10">
+            <div className="flex flex-col gap-5 lg:gap-6 lg:py-1">
+              <p className="m-0 text-sm font-semibold uppercase tracking-[0.08em] text-primary">
                 {copy.home.businessEyebrow}
               </p>
-              <h2 className={`${homeSectionTitle} max-w-[28rem]`}>
+              <h2 className={`${homeSectionTitle} max-w-[22ch]`}>
                 {copy.home.businessTitle}
               </h2>
-              <p className={`${homeSectionLead} mb-0`}>{copy.home.businessLead}</p>
+              <p className="m-0 max-w-[34rem] text-[length:var(--home-lead)] text-black/60">
+                {copy.home.businessLead}
+              </p>
 
-              <ul className="m-0 grid list-none grid-cols-2 gap-x-4 gap-y-5 p-0 sm:grid-cols-3 sm:gap-x-6">
+              <ul className="m-0 mt-1 grid list-none grid-cols-2 gap-x-5 gap-y-6 p-0 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-7">
                 {copy.home.businessItems.map((item, index) => (
-                  <li key={item} className="flex flex-col gap-2">
+                  <li
+                    key={item}
+                    className="flex flex-col items-start gap-2.5 sm:items-center sm:text-center"
+                  >
                     <Image
                       src={BUSINESS_ICONS[index] ?? BUSINESS_ICONS[0]}
                       alt=""
-                      width={40}
-                      height={40}
+                      width={36}
+                      height={36}
+                      className="size-9"
                       unoptimized
                     />
-                    <span className="text-sm font-medium leading-snug text-black sm:text-base">
+                    <span className="text-sm font-medium leading-snug text-black sm:text-[0.95rem]">
                       {item}
                     </span>
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="mt-auto flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap">
                 <Button
                   href={`${localePath(locale, "/business/")}#api`}
                   variant="secondary"
