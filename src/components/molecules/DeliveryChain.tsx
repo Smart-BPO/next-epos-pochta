@@ -61,7 +61,7 @@ export function DeliveryChain({ locale }: { locale: Locale }) {
   const labels = getContent(locale).home.chainSteps;
 
   return (
-    <div className="relative overflow-x-hidden rounded-3xl border border-black/10 bg-[linear-gradient(180deg,#fff_0%,#faf7f7_100%)] px-3 py-5 max-md:overflow-y-visible sm:px-5 sm:py-8 md:overflow-hidden md:px-6 md:py-10">
+    <div className="relative overflow-x-hidden rounded-3xl border border-black/10 bg-[linear-gradient(180deg,#fff_0%,#faf7f7_100%)] px-4 py-5 max-md:overflow-y-visible sm:px-5 sm:py-8 md:overflow-hidden md:px-6 md:py-10">
       {/* Desktop / tablet horizontal path */}
       <div className="relative hidden md:block">
         {/* Line between first and last column centers (5 equal cols → 10% … 90%) */}
@@ -111,39 +111,57 @@ export function DeliveryChain({ locale }: { locale: Locale }) {
       </div>
 
       {/* Mobile vertical path */}
-      <ol className="relative m-0 grid list-none gap-0 overflow-visible p-0 md:hidden">
+      <ol className="relative m-0 grid list-none gap-0 p-0 md:hidden">
+        {/* Continuous rail behind step nodes */}
         <div
           aria-hidden
-          className="absolute bottom-10 left-[1.35rem] top-10 w-1 rounded-full bg-gradient-to-b from-primary to-primary-hover"
+          className="absolute bottom-[2.75rem] left-[0.375rem] top-[2.75rem] w-1 rounded-full bg-gradient-to-b from-primary to-primary-hover"
         />
-        {STEPS.map((step, index) => (
-          <li
-            key={step.id}
-            className="relative flex min-h-[5.5rem] items-center gap-3 py-3 pl-1"
-          >
-            <span
-              aria-hidden
-              className="relative z-[1] ml-[0.95rem] size-3 shrink-0 rounded-full border-2 border-white bg-primary shadow-sm"
-            />
-            {index < STEPS.length - 1 ? (
-              <ParcelMarker className="left-[1.35rem] top-full z-[1] -translate-x-1/2 -translate-y-1/2 size-8" />
-            ) : null}
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <div className="relative h-20 w-24 shrink-0">
-                <Image
-                  src={step.src}
-                  alt=""
-                  fill
-                  className="object-contain object-center drop-shadow-md"
-                  sizes="6rem"
+
+        {STEPS.map((step, index) => {
+          const isLast = index === STEPS.length - 1;
+          return (
+            <li key={step.id} className="relative">
+              <div className="grid grid-cols-[1.25rem_5.75rem_minmax(0,1fr)] items-center gap-x-3 py-2.5">
+                <span
+                  aria-hidden
+                  className="relative z-[1] mx-auto size-3 shrink-0 rounded-full border-2 border-white bg-primary shadow-sm"
                 />
+
+                <div className="relative aspect-square w-full">
+                  <Image
+                    src={step.src}
+                    alt=""
+                    fill
+                    className="object-contain object-center drop-shadow-md"
+                    sizes="5.75rem"
+                  />
+                </div>
+
+                <p className="m-0 text-[0.8125rem] font-semibold uppercase leading-snug tracking-wide text-black/65 sm:text-sm">
+                  {labels[index]}
+                </p>
               </div>
-              <p className="m-0 text-sm font-medium uppercase leading-snug tracking-wide text-black/60">
-                {labels[index]}
-              </p>
-            </div>
-          </li>
-        ))}
+
+              {!isLast ? (
+                <div
+                  className="grid grid-cols-[1.25rem_5.75rem_minmax(0,1fr)] items-center gap-x-3"
+                  aria-hidden
+                >
+                  <div className="relative z-[1] flex justify-center py-0.5">
+                    <Image
+                      src="/images/home/business/epos-parcel.webp"
+                      alt=""
+                      width={36}
+                      height={36}
+                      className="size-8 object-contain drop-shadow-md"
+                    />
+                  </div>
+                </div>
+              ) : null}
+            </li>
+          );
+        })}
       </ol>
     </div>
   );
