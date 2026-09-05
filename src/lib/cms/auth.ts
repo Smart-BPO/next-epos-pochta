@@ -112,6 +112,17 @@ export async function requireAdmin(): Promise<AdminUser> {
 }
 
 export async function touchAdminLastLogin(userId: string) {
+  try {
+    const supabase = await createSupabaseServerClient();
+    await supabase
+      .from("epos_admin_users")
+      .update({ last_login_at: new Date().toISOString() })
+      .eq("user_id", userId);
+    return;
+  } catch {
+    // fall through to service role
+  }
+
   if (!hasSupabaseAdminConfig()) return;
   try {
     const admin = createSupabaseAdminClient();

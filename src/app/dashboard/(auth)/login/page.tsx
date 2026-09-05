@@ -1,6 +1,6 @@
 import { DashboardLoginForm } from "@/components/dashboard/DashboardLoginForm";
 import { countAdmins } from "@/lib/cms/auth";
-import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { hasSupabaseAdminConfig, hasSupabaseBrowserConfig } from "@/lib/supabase/env";
 import { getEnv } from "@/utils/env";
 import Link from "next/link";
 
@@ -28,9 +28,9 @@ function loginErrorMessage(code: string | undefined): string {
     case "setup-locked":
       return "Setup уже закрыт — войдите существующим аккаунтом";
     case "missing_service_role":
-      return "На Hostinger нет SUPABASE_SERVICE_ROLE_KEY (server-only). Добавьте и передеплойте.";
+      return "Для /dashboard/setup/ нужен SUPABASE_SERVICE_ROLE_KEY. Обычный вход работает без него.";
     case "missing_bootstrap_secret":
-      return "На Hostinger нет CMS_BOOTSTRAP_SECRET. Добавьте тот же секрет, что в .env.local, и передеплойте.";
+      return "На сервере нет CMS_BOOTSTRAP_SECRET.";
     default:
       return "";
   }
@@ -43,10 +43,11 @@ export default async function DashboardLoginPage({
 }) {
   const params = await searchParams;
   const adminCount = await countAdmins();
+  // countAdmins needs service role; if missing, still offer setup when browser config exists
   const canOfferSetup =
-    adminCount === 0 &&
-    hasSupabaseAdminConfig() &&
-    Boolean(getEnv("CMS_BOOTSTRAP_SECRET", "SETUP_SECRET"));
+    hasSupabaseBrowserConfig() &&
+    Boolean(getEnv("CMS_BOOTSTRAP_SECRET", "SETUP_SECRET")) &&
+    (hasSupabaseAdminConfig() ? adminCount === 0 : true);
 
   return (
     <div className="grid min-h-dvh place-items-center bg-[#f6f6f7] px-4 py-10">
@@ -55,7 +56,7 @@ export default async function DashboardLoginPage({
           initialError={loginErrorMessage(params.error)}
           nextPath={safeNextPath(params.next)}
         />
-        {canOfferSetup ? (
+        {canOfferSetup && adminCount === 0 ? (
           <p className="mt-4 text-center text-sm text-black/50">
             Первый вход?{" "}
             <Link
