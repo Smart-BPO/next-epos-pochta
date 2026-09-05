@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { canBootstrapAdmin } from "./actions";
+import { getBootstrapStatus } from "./actions";
 import { SetupForm } from "./setup-form";
 
 export default async function DashboardSetupPage() {
-  if (!(await canBootstrapAdmin())) {
-    redirect("/dashboard/login/?error=setup-locked");
+  const status = await getBootstrapStatus();
+  if (!status.ok) {
+    redirect(`/dashboard/login/?error=${status.reason}`);
   }
 
   return (

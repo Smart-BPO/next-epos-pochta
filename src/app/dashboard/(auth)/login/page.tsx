@@ -1,5 +1,7 @@
 import { DashboardLoginForm } from "@/components/dashboard/DashboardLoginForm";
 import { countAdmins } from "@/lib/cms/auth";
+import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { getEnv } from "@/utils/env";
 import Link from "next/link";
 
 function safeNextPath(raw: string | undefined): string | undefined {
@@ -16,6 +18,24 @@ function safeNextPath(raw: string | undefined): string | undefined {
   return value;
 }
 
+function loginErrorMessage(code: string | undefined): string {
+  switch (code) {
+    case "not-admin":
+      return "Нет доступа сотрудника";
+    case "forbidden":
+      return "Доступ запрещён";
+    case "already_bootstrapped":
+    case "setup-locked":
+      return "Setup уже закрыт — войдите существующим аккаунтом";
+    case "missing_service_role":
+      return "На Hostinger нет SUPABASE_SERVICE_ROLE_KEY (server-only). Добавьте и передеплойте.";
+    case "missing_bootstrap_secret":
+      return "На Hostinger нет CMS_BOOTSTRAP_SECRET. Добавьте тот же секрет, что в .env.local, и передеплойте.";
+    default:
+      return "";
+  }
+}
+
 export default async function DashboardLoginPage({
   searchParams,
 }: {
@@ -23,23 +43,19 @@ export default async function DashboardLoginPage({
 }) {
   const params = await searchParams;
   const adminCount = await countAdmins();
-  const initialError =
-    params.error === "not-admin"
-      ? "Нет доступа сотрудника"
-      : params.error === "forbidden"
-        ? "Доступ запрещён"
-        : params.error === "setup-locked"
-          ? "Setup уже закрыт — войдите существующим аккаунтом"
-          : "";
+  const canOfferSetup =
+    adminCount === 0 &&
+    hasSupabaseAdminConfig() &&
+    Boolean(getEnv("CMS_BOOTSTRAP_SECRET", "SETUP_SECRET"));
 
   return (
     <div className="grid min-h-dvh place-items-center bg-[#f6f6f7] px-4 py-10">
       <div className="w-full max-w-sm">
         <DashboardLoginForm
-          initialError={initialError}
+          initialError={loginErrorMessage(params.error)}
           nextPath={safeNextPath(params.next)}
         />
-        {adminCount === 0 ? (
+        {canOfferSetup ? (
           <p className="mt-4 text-center text-sm text-black/50">
             Первый вход?{" "}
             <Link

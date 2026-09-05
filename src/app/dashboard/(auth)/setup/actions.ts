@@ -11,18 +11,40 @@ function bootstrapSecretConfigured(): string {
   return getEnv("CMS_BOOTSTRAP_SECRET", "SETUP_SECRET");
 }
 
+export type BootstrapStatus =
+  | { ok: true }
+  | { ok: false; reason: "missing_service_role" | "missing_bootstrap_secret" | "already_bootstrapped" };
+
+export async function getBootstrapStatus(): Promise<BootstrapStatus> {
+  if (!hasSupabaseAdminConfig()) {
+    return { ok: false, reason: "missing_service_role" };
+  }
+  if (!bootstrapSecretConfigured()) {
+    return { ok: false, reason: "missing_bootstrap_secret" };
+  }
+  if ((await countAdmins()) > 0) {
+    return { ok: false, reason: "already_bootstrapped" };
+  }
+  return { ok: true };
+}
+
 export async function canBootstrapAdmin(): Promise<boolean> {
-  if (!hasSupabaseAdminConfig()) return false;
-  if (!bootstrapSecretConfigured()) return false;
-  return (await countAdmins()) === 0;
+  return (await getBootstrapStatus()).ok;
 }
 
 export async function bootstrapAdminAction(
   _prev: { error?: string } | null,
   formData: FormData,
 ): Promise<{ error?: string }> {
-  if (!(await canBootstrapAdmin())) {
-    return { error: "Setup недоступен (уже есть staff или нет env)" };
+  const status = await getBootstrapStatus();
+  if (!status.ok) {
+    if (status.reason === "missing_service_role") {
+      return { error: "На сервере нет SUPABASE_SERVICE_ROLE_KEY" };
+    }
+    if (status.reason === "missing_bootstrap_secret") {
+      return { error: "На сервере нет CMS_BOOTSTRAP_SECRET" };
+    }
+    return { error: "Setup недоступен — staff уже создан" };
   }
 
   const expected = bootstrapSecretConfigured();
