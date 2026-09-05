@@ -55,9 +55,9 @@ const BENEFIT_ICONS = [
   "/images/home/benefits/terms.svg",
 ] as const;
 
-export function HomePageView({ locale }: { locale: Locale }) {
+export async function HomePageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
-  const latestNews = getLatestNews(locale, 3);
+  const latestNews = await getLatestNews(locale, 3);
 
   return (
     <>

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { ogLocale } from "@/i18n/config";
 import { getLocalizedPageMetadata } from "@/i18n/metadata";
@@ -24,12 +24,6 @@ import {
   getNewsBySlug,
   listPublishedSlugs,
 } from "@/lib/news/repository";
-import {
-  getDeliveryCityByCode,
-  getDeliveryCityBySlug,
-  listDeliveryCityCodes,
-  listDeliveryCitySlugs,
-} from "@/data/delivery-cities";
 import {
   getDeliveryRoute,
   listDeliveryRouteParams,
@@ -181,80 +175,6 @@ export function createDeliveryIndexPage(locale: Locale) {
   };
 }
 
-export function createDeliveryCityPage(locale: Locale) {
-  return {
-    generateStaticParams: () => [
-      ...listDeliveryCitySlugs().map((city) => ({ city })),
-      ...listDeliveryCityCodes().map((city) => ({ city })),
-    ],
-    generateMetadata: async ({
-      params,
-    }: {
-      params: Promise<{ city: string }>;
-    }) => {
-      const { city: slug } = await params;
-      const byCode = getDeliveryCityByCode(slug);
-      if (byCode) {
-        const path = localePath(locale, `/delivery/${byCode.slug}/`);
-        const alternates = getLocalizedAlternates(`/delivery/${byCode.slug}/`);
-        return createPageMetadata(
-          locale === "uz" ? byCode.metaTitleUz : byCode.metaTitleRu,
-          locale === "uz" ? byCode.metaDescriptionUz : byCode.metaDescriptionRu,
-          path,
-          {
-            locale,
-            ogLocale: ogLocale[locale],
-            alternates: Object.fromEntries(
-              Object.entries(alternates).map(([lang, href]) => [
-                lang,
-                canonicalPageUrl(href),
-              ]),
-            ),
-          },
-        );
-      }
-      const city = getDeliveryCityBySlug(slug);
-      if (!city) return getLocalizedPageMetadata(locale, "services");
-      const title = locale === "uz" ? city.metaTitleUz : city.metaTitleRu;
-      const description =
-        locale === "uz" ? city.metaDescriptionUz : city.metaDescriptionRu;
-      const path = localePath(locale, `/delivery/${city.slug}/`);
-      const alternates = getLocalizedAlternates(`/delivery/${city.slug}/`);
-      return createPageMetadata(title, description, path, {
-        locale,
-        ogLocale: ogLocale[locale],
-        alternates: Object.fromEntries(
-          Object.entries(alternates).map(([lang, href]) => [
-            lang,
-            canonicalPageUrl(href),
-          ]),
-        ),
-      });
-    },
-    Page: async function DeliveryCityPage({
-      params,
-    }: {
-      params: Promise<{ city: string }>;
-    }) {
-      const { city: slug } = await params;
-      const byCode = getDeliveryCityByCode(slug);
-      if (byCode) {
-        permanentRedirect(localePath(locale, `/delivery/${byCode.slug}/`));
-      }
-      const city = getDeliveryCityBySlug(slug);
-      if (!city) notFound();
-      const { DeliveryCityPageView } = await import(
-        "@/views/DeliveryCityPageView"
-      );
-      return (
-        <SiteLayout locale={locale}>
-          <DeliveryCityPageView locale={locale} city={city} />
-        </SiteLayout>
-      );
-    },
-  };
-}
-
 export function createDeliveryRoutePage(locale: Locale) {
   return {
     generateStaticParams: () => listDeliveryRouteParams(),
@@ -352,15 +272,17 @@ export function createNewsListPage(locale: Locale) {
 
 export function createNewsArticlePage(locale: Locale) {
   return {
-    generateStaticParams: () =>
-      listPublishedSlugs().map((slug) => ({ slug })),
+    generateStaticParams: async () => {
+      const slugs = await listPublishedSlugs();
+      return slugs.map((slug) => ({ slug }));
+    },
     generateMetadata: async ({
       params,
     }: {
       params: Promise<{ slug: string }>;
     }) => {
       const { slug } = await params;
-      const article = getNewsBySlug(locale, slug);
+      const article = await getNewsBySlug(locale, slug);
       if (!article) return getLocalizedPageMetadata(locale, "news");
       return getNewsArticleMetadata(locale, article);
     },
@@ -370,7 +292,7 @@ export function createNewsArticlePage(locale: Locale) {
       params: Promise<{ slug: string }>;
     }) {
       const { slug } = await params;
-      const article = getNewsBySlug(locale, slug);
+      const article = await getNewsBySlug(locale, slug);
       if (!article) notFound();
       return (
         <SiteLayout locale={locale}>

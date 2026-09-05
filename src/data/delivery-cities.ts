@@ -1,7 +1,7 @@
 /**
- * City landing pages for local SEO — unique copy per city, no tariffs.
- * URL: /delivery/[slug]/ and /ru/delivery/[slug]/
- * Route pages use short IATA-like codes: /delivery/{fromCode}/{toCode}/
+ * Delivery hubs for Aviasales-style route pages.
+ * Public URLs: /delivery/{fromCode}/{toCode}/ (e.g. /delivery/tas/skd/)
+ * Index: /delivery/ — lists outbound routes per hub.
  */
 export interface DeliveryCity {
   slug: string;

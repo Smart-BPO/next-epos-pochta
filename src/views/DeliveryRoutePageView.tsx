@@ -61,8 +61,8 @@ export function DeliveryRoutePageView({
   const eta = etaLabel(locale, route.etaBand);
   const homePath = localePath(locale, "/");
   const listPath = localePath(locale, "/delivery/");
-  const fromCityPath = localePath(locale, `/delivery/${route.from.slug}/`);
-  const toCityPath = localePath(locale, `/delivery/${route.to.slug}/`);
+  const fromHubPath = `${listPath}#${route.from.code}`;
+  const toHubPath = `${listPath}#${route.to.code}`;
   const thisPath = localePath(locale, routePath(route.from.code, route.to.code));
   const reversePath = localePath(
     locale,
@@ -85,7 +85,7 @@ export function DeliveryRoutePageView({
             name: locale === "uz" ? "Yetkazib berish" : "Доставка",
             path: listPath,
           },
-          { name: fromName, path: fromCityPath },
+          { name: fromName, path: fromHubPath },
           { name: `${fromName} → ${toName}`, path: thisPath },
         ])}
       />
@@ -120,7 +120,7 @@ export function DeliveryRoutePageView({
               </li>
               <li>
                 <Link
-                  href={fromCityPath}
+                  href={fromHubPath}
                   className="underline-offset-2 hover:text-primary hover:underline"
                 >
                   {fromName}
@@ -234,12 +234,12 @@ export function DeliveryRoutePageView({
             </ul>
             <p className="m-0 mt-3 text-sm text-black/50">
               <Link
-                href={fromCityPath}
+                href={fromHubPath}
                 className="font-medium text-primary underline-offset-2 hover:underline"
               >
                 {locale === "uz"
-                  ? `${fromName} shahri sahifasi`
-                  : `Страница города ${fromName}`}
+                  ? `${fromName} yoʻnalishlari`
+                  : `Направления из ${fromName}`}
               </Link>
             </p>
           </div>
@@ -267,12 +267,12 @@ export function DeliveryRoutePageView({
             </ul>
             <p className="m-0 mt-3 text-sm text-black/50">
               <Link
-                href={toCityPath}
+                href={toHubPath}
                 className="font-medium text-primary underline-offset-2 hover:underline"
               >
                 {locale === "uz"
-                  ? `${toName} shahri sahifasi`
-                  : `Страница города ${toName}`}
+                  ? `${toName} yoʻnalishlari`
+                  : `Направления в ${toName}`}
               </Link>
             </p>
           </div>

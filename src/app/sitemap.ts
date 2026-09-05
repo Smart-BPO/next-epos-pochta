@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { pagePaths } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import { listPublishedSlugs } from "@/lib/news/repository";
-import { listDeliveryCitySlugs } from "@/data/delivery-cities";
 import { listDeliveryRouteParams, routePath } from "@/data/delivery-routes";
 import { getCanonicalSiteUrl, isIndexableDeployment } from "@/utils/seo/indexing";
 
@@ -32,7 +31,7 @@ const indexablePages = [
   "faq",
 ] as const;
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!isIndexableDeployment()) return [];
 
   const base = getCanonicalSiteUrl();
@@ -60,18 +59,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
-  for (const slug of listDeliveryCitySlugs()) {
-    const path = `/delivery/${slug}/`;
-    for (const locale of ["uz", "ru"] as const) {
-      entries.push({
-        url: `${base}${localePath(locale, path)}`,
-        lastModified: now,
-        changeFrequency: "monthly",
-        priority: 0.8,
-      });
-    }
-  }
-
   for (const { from, to } of listDeliveryRouteParams()) {
     const path = routePath(from, to);
     for (const locale of ["uz", "ru"] as const) {
@@ -84,7 +71,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-  for (const slug of listPublishedSlugs()) {
+  for (const slug of await listPublishedSlugs()) {
     const path = `/news/${slug}/`;
     for (const locale of ["uz", "ru"] as const) {
       entries.push({

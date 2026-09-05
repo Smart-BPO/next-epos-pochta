@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 
 type ShipmentPayload = {
   sessionId?: string;
@@ -48,33 +50,54 @@ export async function POST(request: Request) {
   }
 
   const id = createShipmentId();
-  const record = {
+  const sessionId = body.sessionId.trim();
+  const row = {
     id,
-    kind: "webapp_shipment",
-    sessionId: body.sessionId.trim(),
+    contact_session_id: sessionId,
     locale: body.locale === "ru" ? "ru" : "uz",
     phone: body.phone ?? "",
-    telegramUserId: body.telegramUserId ?? null,
-    fromSettlementId: body.fromSettlementId,
-    toSettlementId: body.toSettlementId,
-    fromLabel: body.fromLabel ?? "",
-    toLabel: body.toLabel ?? "",
-    weightKg: toNumber(body.weightKg),
-    lengthCm: toNumber(body.lengthCm),
-    widthCm: toNumber(body.widthCm),
-    heightCm: toNumber(body.heightCm),
+    telegram_user_id:
+      typeof body.telegramUserId === "number" ? body.telegramUserId : null,
+    from_settlement_id: body.fromSettlementId,
+    to_settlement_id: body.toSettlementId,
+    from_label: body.fromLabel ?? "",
+    to_label: body.toLabel ?? "",
+    weight_kg: toNumber(body.weightKg),
+    length_cm: toNumber(body.lengthCm),
+    width_cm: toNumber(body.widthCm),
+    height_cm: toNumber(body.heightCm),
     comment: (body.comment ?? "").trim(),
-    // Client estimate must never be treated as final price / оферта
-    priceStatus: "pending_manager",
-    createdAt: new Date().toISOString(),
+    status: "pending_manager",
+    track_number: null,
+    price_status: "pending_manager",
   };
 
-  // TODO(admin): insert shipment draft linked to contact session / telegram user
-  // TODO(tracking-api): allocate track number after manager confirms
-  console.info("[webapp:shipment]", JSON.stringify(record));
+  if (!hasSupabaseAdminConfig()) {
+    console.info("[webapp:shipment]", JSON.stringify(row));
+    return NextResponse.json({ ok: true, id });
+  }
 
-  return NextResponse.json({
-    ok: true,
-    id,
-  });
+  try {
+    const admin = createSupabaseAdminClient();
+    const { data: contact } = await admin
+      .from("epos_webapp_contacts")
+      .select("session_id")
+      .eq("session_id", sessionId)
+      .maybeSingle();
+    if (!contact) {
+      return NextResponse.json({ error: "contact_not_found" }, { status: 401 });
+    }
+
+    const { error } = await admin.from("epos_webapp_shipments").insert(row);
+    if (error) {
+      console.error("[webapp:shipment:db]", error.message);
+      return NextResponse.json({ error: "db_error" }, { status: 500 });
+    }
+  } catch (err) {
+    console.error("[webapp:shipment:db]", err);
+    return NextResponse.json({ error: "db_error" }, { status: 500 });
+  }
+
+  // TODO(tracking-api): allocate track number after manager confirms
+  return NextResponse.json({ ok: true, id });
 }

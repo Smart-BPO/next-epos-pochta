@@ -16,6 +16,7 @@ export default function robots(): MetadataRoute.Robots {
       disallow: [
         "/api/",
         "/webapp/",
+        "/dashboard/",
         "/tracking/",
         "/request-price/",
         "/business/connect/",

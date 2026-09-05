@@ -4,10 +4,11 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 
 ## Scope (current)
 
-- Public corporate site only
-- Static TypeScript content (`src/data`, `src/i18n`)
+- Public corporate site + CMS at `/dashboard` (Supabase project **epos** / `khlororwqcpiccylqdze`)
+- Content: static TS seed (`src/data`, `src/i18n`) with CMS overlays (news, site settings, delivery hub copy)
 - Locales: `uz` (default, unprefixed) and `ru` (`/ru/`)
-- No admin panel, no Supabase yet — leave `TODO(cms)` / `TODO(tracking-api)` hooks
+- Tracking page stays a stub until tracking API — `TODO(tracking-api)`; dashboard can set shipment `track_number` manually
+- Env: `NEXT_PUBLIC_SUPABASE_*` + server-only `SUPABASE_SERVICE_ROLE_KEY` (+ `CMS_BOOTSTRAP_SECRET` for first owner)
 
 ## Product rules
 

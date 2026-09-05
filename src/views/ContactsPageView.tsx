@@ -3,7 +3,7 @@ import { getContent } from "@/i18n/get-content";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { PageCta } from "@/components/organisms/PageCta";
-import { SITE_CONFIG } from "@/utils/consts";
+import { getRuntimeSiteConfig } from "@/lib/cms/site-settings";
 import {
   homeSectionTitle,
   pageIntro,
@@ -21,11 +21,12 @@ function officeMapsExternalUrl(lat: number, lng: number) {
   return `https://yandex.ru/maps/?pt=${lng},${lat}&z=16&l=map`;
 }
 
-export function ContactsPageView({ locale }: { locale: Locale }) {
+export async function ContactsPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
-  const { lat, lng, line } = SITE_CONFIG.address;
-  const hours = SITE_CONFIG.hours.trim();
-  const email = SITE_CONFIG.email.trim();
+  const site = await getRuntimeSiteConfig();
+  const { lat, lng, line } = site.address;
+  const hours = site.hours.trim();
+  const email = site.email.trim();
   const mapsUrl = officeMapsExternalUrl(lat, lng);
 
   return (
@@ -47,10 +48,10 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
                   {copy.ui.call}
                 </p>
                 <a
-                  href={`tel:${SITE_CONFIG.phone}`}
+                  href={`tel:${site.phone}`}
                   className="mt-1 block text-2xl font-semibold text-black hover:text-primary"
                 >
-                  {SITE_CONFIG.phoneDisplay}
+                  {site.phoneDisplay}
                 </a>
               </div>
 
@@ -59,7 +60,7 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
                   Telegram
                 </p>
                 <a
-                  href={SITE_CONFIG.telegramUrl}
+                  href={site.telegramUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-1 block text-lg font-medium text-primary hover:underline"
@@ -87,11 +88,7 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
                   <p className="m-0 text-sm font-semibold uppercase tracking-wide text-black/40">
                     {locale === "uz" ? "Ish vaqti" : "Режим работы"}
                   </p>
-                  <p className="mt-1 m-0 text-lg text-black/70">
-                    {locale === "uz"
-                      ? SITE_CONFIG.hoursDisplayUz
-                      : SITE_CONFIG.hoursDisplayRu}
-                  </p>
+                  <p className="mt-1 m-0 text-lg text-black/70">{hours}</p>
                 </div>
               ) : null}
 
@@ -100,7 +97,7 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
                   {copy.contacts.addressTitle}
                 </p>
                 <p className="mt-1 m-0 text-base leading-relaxed text-black/70">
-                  {locale === "uz" ? SITE_CONFIG.address.lineUz : line}
+                  {locale === "uz" ? site.address.lineUz : line}
                 </p>
                 <p className="mt-2 m-0 text-sm text-black/50">
                   {copy.contacts.mapNote}

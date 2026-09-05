@@ -188,12 +188,9 @@ export function GeoSection({
                   ) : null}
 
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {activeRegion.deliverySlug ? (
+                    {activeRegion.deliveryCode ? (
                       <Button
-                        href={localePath(
-                          locale,
-                          `/delivery/${activeRegion.deliverySlug}/`,
-                        )}
+                        href={`${localePath(locale, "/delivery/")}#${activeRegion.deliveryCode}`}
                         variant="secondary"
                         size="sm"
                       >

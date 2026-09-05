@@ -237,37 +237,6 @@ export function getNewsArticleSchema(
   };
 }
 
-export function getDeliveryCitySchema(
-  locale: Locale,
-  city: (typeof DELIVERY_CITIES)[number],
-) {
-  const siteUrl = siteOrigin();
-  const path = localePath(locale, `/delivery/${city.slug}/`);
-  const name = locale === "uz" ? city.nameUz : city.nameRu;
-  const description = locale === "uz" ? city.metaDescriptionUz : city.metaDescriptionRu;
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    name:
-      locale === "uz"
-        ? `${name} shahriga yetkazib berish`
-        : `Доставка в ${name}`,
-    description,
-    url: `${siteUrl}${path}`,
-    provider: { "@id": `${siteUrl}/#organization` },
-    areaServed: {
-      "@type": "City",
-      name: city.nameEn,
-      containedInPlace: {
-        "@type": "Country",
-        name: "Uzbekistan",
-      },
-    },
-    serviceType: "Courier delivery",
-  };
-}
-
 export function getDeliveryRouteSchema(
   locale: Locale,
   route: {

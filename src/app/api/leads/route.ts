@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 
 type LeadType = "price" | "business" | "contact";
 
@@ -9,11 +11,10 @@ interface LeadPayload {
   pageUrl?: string;
   utm?: Record<string, string>;
   requestId?: string;
-  website?: string; // honeypot
+  website?: string;
   data: Record<string, unknown>;
 }
 
-// TODO(cms): move rate-limit + idempotency to Redis/DB when connected
 const rateMap = new Map<string, { count: number; resetAt: number }>();
 const idempotencyMap = new Map<string, { id: string; createdAt: number }>();
 
@@ -130,6 +131,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
+  if (body.requestId && hasSupabaseAdminConfig()) {
+    try {
+      const admin = createSupabaseAdminClient();
+      const { data: existing } = await admin
+        .from("epos_leads")
+        .select("id")
+        .eq("request_id", body.requestId)
+        .maybeSingle();
+      if (existing?.id) {
+        return NextResponse.json({
+          id: existing.id,
+          ok: true,
+          duplicate: true,
+        });
+      }
+    } catch {
+      // fall through to memory map
+    }
+  }
+
   if (body.requestId && idempotencyMap.has(body.requestId)) {
     const existing = idempotencyMap.get(body.requestId)!;
     return NextResponse.json({ id: existing.id, ok: true, duplicate: true });
@@ -150,8 +171,36 @@ export async function POST(request: Request) {
     data: body.data,
   };
 
-  // TODO(cms): persist to Supabase / CRM when connected
-  console.info("[lead]", JSON.stringify(record));
+  let notifiedEmail = false;
+  let notifiedTelegram = false;
+
+  if (hasSupabaseAdminConfig()) {
+    try {
+      const admin = createSupabaseAdminClient();
+      const { error } = await admin.from("epos_leads").insert({
+        id,
+        type: body.type,
+        locale: body.locale === "ru" ? "ru" : "uz",
+        status: "new",
+        source: "website",
+        payload: {
+          pageUrl: body.pageUrl ?? "",
+          data: body.data,
+        },
+        utm: body.utm ?? {},
+        request_id: body.requestId ?? null,
+        notified_email: false,
+        notified_telegram: false,
+      });
+      if (error) {
+        console.error("[lead:db]", error.message);
+      }
+    } catch (err) {
+      console.error("[lead:db]", err);
+    }
+  } else {
+    console.info("[lead]", JSON.stringify(record));
+  }
 
   const notifyResults = await Promise.allSettled([
     notifyResend(record),
@@ -159,14 +208,32 @@ export async function POST(request: Request) {
   ]);
 
   notifyResults.forEach((result, index) => {
+    if (result.status === "fulfilled" && result.value) {
+      if (index === 0) notifiedEmail = true;
+      else notifiedTelegram = true;
+    }
     if (result.status === "rejected") {
-      console.error(index === 0 ? "[lead:email]" : "[lead:telegram]", result.reason);
+      console.error(
+        index === 0 ? "[lead:email]" : "[lead:telegram]",
+        result.reason,
+      );
     }
   });
 
-  return NextResponse.json({
-    id,
-    ok: true,
-    // Never return a calculated price as a quote response; estimates live only in the client form / lead payload.
-  });
+  if (hasSupabaseAdminConfig() && (notifiedEmail || notifiedTelegram)) {
+    try {
+      const admin = createSupabaseAdminClient();
+      await admin
+        .from("epos_leads")
+        .update({
+          notified_email: notifiedEmail,
+          notified_telegram: notifiedTelegram,
+        })
+        .eq("id", id);
+    } catch {
+      // non-fatal
+    }
+  }
+
+  return NextResponse.json({ id, ok: true });
 }

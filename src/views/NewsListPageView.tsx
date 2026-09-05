@@ -23,7 +23,7 @@ import {
   sectionMuted,
 } from "@/styles/ui";
 
-export function NewsListPageView({
+export async function NewsListPageView({
   locale,
   searchParams,
 }: {
@@ -32,8 +32,8 @@ export function NewsListPageView({
 }) {
   const copy = getContent(locale);
   const query = parseNewsListQuery(searchParams);
-  const result = queryNews(locale, query);
-  const allArticles = listNews(locale);
+  const result = await queryNews(locale, query);
+  const allArticles = await listNews(locale);
 
   const from = result.total === 0 ? 0 : (result.page - 1) * result.pageSize + 1;
   const to = Math.min(result.page * result.pageSize, result.total);

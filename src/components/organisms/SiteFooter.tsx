@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
-import { SITE_CONFIG } from "@/utils/consts";
+import { getRuntimeSiteConfig } from "@/lib/cms/site-settings";
 import { cn } from "@/lib/cn";
 import { pageContainer } from "@/styles/ui";
 
@@ -11,8 +11,6 @@ interface SiteFooterProps {
   locale: Locale;
   content: SiteCopy;
 }
-
-const supportEmail = SITE_CONFIG.email || "support@epos.uz";
 
 const supportLinkClass =
   "inline-flex min-w-0 items-start gap-2 text-sm text-black hover:text-primary";
@@ -30,31 +28,30 @@ function SupportIcon({ src }: { src: string }) {
   );
 }
 
-export function SiteFooter({ locale, content }: SiteFooterProps) {
+export async function SiteFooter({ locale, content }: SiteFooterProps) {
+  const site = await getRuntimeSiteConfig();
+  const supportEmail = site.email || "support@epos.uz";
   const socials = [
     {
-      href: SITE_CONFIG.telegramUrl,
+      href: site.telegramUrl,
       src: "/images/brand/social/telegram.svg",
       label: "Telegram",
     },
     {
-      href: SITE_CONFIG.instagramUrl,
+      href: site.instagramUrl,
       src: "/images/brand/social/instagram.svg",
       label: "Instagram",
     },
     {
-      href: SITE_CONFIG.facebookUrl,
+      href: site.facebookUrl,
       src: "/images/brand/social/facebook.svg",
       label: "Facebook",
     },
   ] as const;
 
   const address =
-    locale === "uz" ? SITE_CONFIG.address.lineUz : SITE_CONFIG.address.line;
-  const hours =
-    locale === "uz"
-      ? SITE_CONFIG.hoursDisplayUz
-      : SITE_CONFIG.hoursDisplayRu;
+    locale === "uz" ? site.address.lineUz : site.address.line;
+  const hours = site.hours;
 
   return (
     <footer className="mt-auto border-t border-black/10 bg-white py-10 text-black md:py-14">
@@ -65,7 +62,7 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
               <Link href={localePath(locale, "/")} className="inline-block w-[92px]">
                 <Image
                   src="/images/brand/logo.svg"
-                  alt={SITE_CONFIG.name}
+                  alt={site.name}
                   width={92}
                   height={36}
                   unoptimized
@@ -142,7 +139,7 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
             </a>
 
             <a
-              href={SITE_CONFIG.telegramUrl}
+              href={site.telegramUrl}
               target="_blank"
               rel="noreferrer"
               className={supportLinkClass}
@@ -152,11 +149,11 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
             </a>
 
             <a
-              href={`tel:${SITE_CONFIG.phone}`}
+              href={`tel:${site.phone}`}
               className="inline-flex min-w-0 items-center gap-2 text-xl font-medium text-black hover:text-primary sm:text-2xl"
             >
               <SupportIcon src="/images/brand/icon-phone.svg" />
-              <span className="min-w-0 break-all">{SITE_CONFIG.phoneDisplay}</span>
+              <span className="min-w-0 break-all">{site.phoneDisplay}</span>
             </a>
 
             <p className={cn(supportLinkClass, "m-0 cursor-default hover:text-black")}>

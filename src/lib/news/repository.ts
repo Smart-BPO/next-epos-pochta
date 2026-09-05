@@ -9,8 +9,8 @@ import type {
 } from "@/data/news/types";
 import { NEWS_CATEGORIES } from "@/data/news/types";
 import type { Locale } from "@/i18n/config";
-
-/** TODO(cms): swap static import for Supabase query when connected. */
+import { fetchNewsArticlesFromDb } from "@/lib/cms/news";
+import { cache } from "react";
 
 /** Allowed page-size templates for the news index (`all` = 12+ / show everything). */
 export const NEWS_PAGE_SIZE_OPTIONS = [3, 6, 9, 12, "all"] as const;
@@ -52,8 +52,15 @@ function localize(
   };
 }
 
-function publishedArticles(): NewsArticle[] {
-  return newsArticles.filter((article) => article.status === "published");
+const loadArticles = cache(async (): Promise<NewsArticle[]> => {
+  const fromDb = await fetchNewsArticlesFromDb();
+  if (fromDb && fromDb.length > 0) return fromDb;
+  return newsArticles;
+});
+
+async function publishedArticles(): Promise<NewsArticle[]> {
+  const all = await loadArticles();
+  return all.filter((article) => article.status === "published");
 }
 
 function compareTitle(a: string, b: string, locale: Locale) {
@@ -112,9 +119,7 @@ export function isNewsSort(value: string): value is NewsSort {
 
 export function parseNewsListQuery(
   raw: Record<string, string | string[] | undefined> | URLSearchParams,
-): Required<
-  Pick<NewsListQuery, "category" | "sort" | "page">
-> & {
+): Required<Pick<NewsListQuery, "category" | "sort" | "page">> & {
   pageSize: NewsPageSize;
   q: string;
 } {
@@ -179,15 +184,15 @@ export function buildNewsListSearchParams(query: {
   return params;
 }
 
-export function queryNews(
+export async function queryNews(
   locale: Locale,
   rawQuery: NewsListQuery = {},
-): NewsListResult {
+): Promise<NewsListResult> {
   const category = rawQuery.category ?? "all";
   const sort = rawQuery.sort ?? "newest";
   const q = rawQuery.q ?? "";
 
-  const localized = publishedArticles().map((article) =>
+  const localized = (await publishedArticles()).map((article) =>
     localize(article, locale),
   );
 
@@ -221,32 +226,34 @@ export function queryNews(
   };
 }
 
-export function listNews(locale: Locale): LocalizedNewsArticle[] {
-  return queryNews(locale, { page: 1, pageSize: Number.MAX_SAFE_INTEGER })
+export async function listNews(locale: Locale): Promise<LocalizedNewsArticle[]> {
+  return (await queryNews(locale, { page: 1, pageSize: Number.MAX_SAFE_INTEGER }))
     .items;
 }
 
-export function getNewsBySlug(
+export async function getNewsBySlug(
   locale: Locale,
   slug: string,
-): LocalizedNewsArticle | null {
-  const article = publishedArticles().find((item) => item.slug === slug);
+): Promise<LocalizedNewsArticle | null> {
+  const article = (await publishedArticles()).find((item) => item.slug === slug);
   return article ? localize(article, locale) : null;
 }
 
-export function getLatestNews(
+export async function getLatestNews(
   locale: Locale,
   limit = 3,
-): LocalizedNewsArticle[] {
-  return queryNews(locale, {
-    sort: "newest",
-    page: 1,
-    pageSize: limit,
-  }).items;
+): Promise<LocalizedNewsArticle[]> {
+  return (
+    await queryNews(locale, {
+      sort: "newest",
+      page: 1,
+      pageSize: limit,
+    })
+  ).items;
 }
 
-export function listPublishedSlugs(): string[] {
-  return publishedArticles()
+export async function listPublishedSlugs(): Promise<string[]> {
+  return (await publishedArticles())
     .sort(
       (a, b) =>
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),

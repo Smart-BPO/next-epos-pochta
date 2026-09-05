@@ -20,7 +20,7 @@ import {
   sectionTitle,
 } from "@/styles/ui";
 
-export function NewsArticlePageView({
+export async function NewsArticlePageView({
   locale,
   article,
 }: {
@@ -28,7 +28,7 @@ export function NewsArticlePageView({
   article: LocalizedNewsArticle;
 }) {
   const copy = getContent(locale);
-  const related = getLatestNews(locale, 4)
+  const related = (await getLatestNews(locale, 4))
     .filter((item) => item.slug !== article.slug)
     .slice(0, 3);
 

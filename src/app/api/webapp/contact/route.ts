@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { verifyTelegramWebAppInitData } from "@/lib/webapp/telegram-init-data";
 
 type ContactPayload = {
   phone?: string;
@@ -49,28 +52,80 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_name" }, { status: 400 });
   }
 
-  const sessionId = createSessionId();
-  const record = {
-    sessionId,
-    phone,
-    firstName,
-    lastName: (body.lastName ?? "").trim(),
-    locale: body.locale === "ru" ? "ru" : "uz",
-    source: body.source === "telegram_contact" ? "telegram_contact" : "manual",
-    telegramUser: body.telegramUser ?? null,
-    // TODO(admin): verify Telegram initData HMAC with bot token before trusting user id
-    initDataPresent: Boolean(body.initData),
-    createdAt: new Date().toISOString(),
-  };
+  const botToken = process.env.TELEGRAM_BOT_TOKEN ?? "";
+  let initDataOk = false;
+  let telegramUserId: number | null =
+    typeof body.telegramUser?.id === "number" ? body.telegramUser.id : null;
+  let telegramUsername: string | null =
+    typeof body.telegramUser?.username === "string"
+      ? body.telegramUser.username
+      : null;
 
-  // TODO(admin): upsert contact profile in Supabase / CRM keyed by telegramUser.id + phone
-  console.info("[webapp:contact]", JSON.stringify(record));
+  if (body.initData && botToken) {
+    const verified = verifyTelegramWebAppInitData(body.initData, botToken);
+    if (verified.ok) {
+      initDataOk = true;
+      if (verified.userId != null) telegramUserId = verified.userId;
+      if (verified.username) telegramUsername = verified.username;
+    }
+  }
+
+  const sessionId = createSessionId();
+  const locale = body.locale === "ru" ? "ru" : "uz";
+  const source =
+    body.source === "telegram_contact" ? "telegram_contact" : "manual";
+  const lastName = (body.lastName ?? "").trim();
+
+  if (!hasSupabaseAdminConfig()) {
+    console.info(
+      "[webapp:contact]",
+      JSON.stringify({
+        sessionId,
+        phone,
+        firstName,
+        lastName,
+        locale,
+        source,
+        telegramUserId,
+        initDataOk,
+      }),
+    );
+    return NextResponse.json({
+      ok: true,
+      sessionId,
+      phone,
+      firstName,
+      lastName,
+    });
+  }
+
+  try {
+    const admin = createSupabaseAdminClient();
+    const { error } = await admin.from("epos_webapp_contacts").insert({
+      session_id: sessionId,
+      phone,
+      first_name: firstName,
+      last_name: lastName,
+      locale,
+      source,
+      telegram_user_id: telegramUserId,
+      telegram_username: telegramUsername,
+      init_data_ok: initDataOk,
+    });
+    if (error) {
+      console.error("[webapp:contact:db]", error.message);
+      return NextResponse.json({ error: "db_error" }, { status: 500 });
+    }
+  } catch (err) {
+    console.error("[webapp:contact:db]", err);
+    return NextResponse.json({ error: "db_error" }, { status: 500 });
+  }
 
   return NextResponse.json({
     ok: true,
     sessionId,
-    phone: record.phone,
-    firstName: record.firstName,
-    lastName: record.lastName,
+    phone,
+    firstName,
+    lastName,
   });
 }

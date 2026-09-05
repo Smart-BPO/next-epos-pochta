@@ -13,8 +13,8 @@ export type MapRegion = {
   slug: string;
   nameRu: string;
   nameUz: string;
-  /** Optional /delivery/[slug]/ landing */
-  deliverySlug?: string;
+  /** Optional hub code for /delivery/#{code} on the routes index */
+  deliveryCode?: string;
 };
 
 export const MAP_REGIONS: MapRegion[] = [
@@ -23,63 +23,63 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "andijan",
     nameRu: "Андижанская область",
     nameUz: "Andijon viloyati",
-    deliverySlug: "andijan",
+    deliveryCode: "azn",
   },
   {
     iso: "UZBU",
     slug: "bukhara",
     nameRu: "Бухарская область",
     nameUz: "Buxoro viloyati",
-    deliverySlug: "bukhara",
+    deliveryCode: "bhk",
   },
   {
     iso: "UZFA",
     slug: "fergana",
     nameRu: "Ферганская область",
     nameUz: "Fargʻona viloyati",
-    deliverySlug: "fergana",
+    deliveryCode: "feg",
   },
   {
     iso: "UZJI",
     slug: "jizzakh",
     nameRu: "Джизакская область",
     nameUz: "Jizzax viloyati",
-    deliverySlug: "jizzakh",
+    deliveryCode: "jiz",
   },
   {
     iso: "UZNG",
     slug: "namangan",
     nameRu: "Наманганская область",
     nameUz: "Namangan viloyati",
-    deliverySlug: "namangan",
+    deliveryCode: "nma",
   },
   {
     iso: "UZNW",
     slug: "navoi",
     nameRu: "Навоийская область",
     nameUz: "Navoiy viloyati",
-    deliverySlug: "navoi",
+    deliveryCode: "nvi",
   },
   {
     iso: "UZQA",
     slug: "kashkadarya",
     nameRu: "Кашкадарьинская область",
     nameUz: "Qashqadaryo viloyati",
-    deliverySlug: "karshi",
+    deliveryCode: "ksq",
   },
   {
     iso: "UZQR",
     slug: "karakalpakstan",
     nameRu: "Республика Каракалпакстан",
     nameUz: "Qoraqalpogʻiston Respublikasi",
-    deliverySlug: "nukus",
+    deliveryCode: "ncu",
   },
   {
     iso: "UZSA",
     slug: "samarkand",
     nameRu: "Самаркандская область",
     nameUz: "Samarqand viloyati",
-    deliverySlug: "samarkand",
+    deliveryCode: "skd",
   },
   {
     iso: "UZSI",
@@ -92,28 +92,28 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "surkhandarya",
     nameRu: "Сурхандарьинская область",
     nameUz: "Surxondaryo viloyati",
-    deliverySlug: "termez",
+    deliveryCode: "tmj",
   },
   {
     iso: "UZTK",
     slug: "tashkent_city",
     nameRu: "г. Ташкент",
     nameUz: "Toshkent shahri",
-    deliverySlug: "tashkent",
+    deliveryCode: "tas",
   },
   {
     iso: "UZTO",
     slug: "tashkent",
     nameRu: "Ташкентская область",
     nameUz: "Toshkent viloyati",
-    deliverySlug: "tashkent",
+    deliveryCode: "tas",
   },
   {
     iso: "UZXO",
     slug: "khorezm",
     nameRu: "Хорезмская область",
     nameUz: "Xorazm viloyati",
-    deliverySlug: "urgench",
+    deliveryCode: "ugc",
   },
 ];
 
