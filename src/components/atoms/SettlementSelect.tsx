@@ -78,12 +78,12 @@ const defaultClassNames: ClassNamesConfig<
 > = {
   control: ({ isFocused }) =>
     cn(
-      "min-h-[var(--tap-min)] rounded-xl border bg-white px-1 text-base text-ink shadow-none!",
+      "min-h-11 rounded-xl border bg-white px-1 text-sm text-ink shadow-none! sm:min-h-[var(--tap-min)] sm:text-base",
       isFocused
-        ? "border-primary ring-2 ring-primary/20"
-        : "border-black/30",
+        ? "border-primary ring-2 ring-primary/15"
+        : "border-black/15",
     ),
-  valueContainer: () => "px-2.5 py-2",
+  valueContainer: () => "px-2.5 py-1.5 sm:py-2",
   placeholder: () => "text-black/40",
   singleValue: () => "text-ink",
   input: () => "text-ink",
@@ -91,7 +91,7 @@ const defaultClassNames: ClassNamesConfig<
   dropdownIndicator: () => "text-black/40 px-2",
   clearIndicator: () => "text-black/35 hover:text-black/60 px-1",
   menu: () =>
-    "mt-1 rounded-xl border border-black/15 bg-white shadow-[0_12px_32px_rgb(15_18_24/0.12)] overflow-hidden z-50",
+    "mt-1 rounded-xl border border-black/12 bg-white shadow-[0_12px_32px_rgb(15_18_24/0.12)] overflow-hidden z-50",
   menuList: () => "max-h-72 py-1",
   option: ({ isFocused, isSelected }) =>
     cn(
@@ -113,12 +113,16 @@ const compactClassNames: ClassNamesConfig<
   ...defaultClassNames,
   control: ({ isFocused }) =>
     cn(
-      "min-h-12 rounded-xl border bg-white px-0.5 text-base text-ink shadow-none!",
+      "min-h-10 rounded-xl border bg-white px-0.5 text-xs text-ink shadow-none! sm:min-h-12 sm:text-base",
       isFocused
-        ? "border-primary ring-2 ring-primary/20"
-        : "border-black/20",
+        ? "border-primary ring-2 ring-primary/15"
+        : "border-black/15",
     ),
-  valueContainer: () => "px-3 py-1.5",
+  valueContainer: () => "gap-0.5 px-2 py-1 sm:px-3 sm:py-1.5",
+  singleValue: () => "truncate text-ink",
+  placeholder: () => "truncate text-black/40",
+  dropdownIndicator: () => "text-black/40 px-1 sm:px-2",
+  clearIndicator: () => "text-black/35 hover:text-black/60 px-0.5 sm:px-1",
 };
 
 export function SettlementSelect({
@@ -174,8 +178,8 @@ export function SettlementSelect({
 
   const shellClass =
     variant === "compact"
-      ? "flex min-h-12 items-center rounded-xl border border-black/20 bg-white px-3.5 text-base text-black/40"
-      : "flex min-h-[var(--tap-min)] items-center rounded-xl border border-black/30 bg-white px-4 text-base text-black/40";
+      ? "flex min-h-10 items-center rounded-xl border border-black/15 bg-white px-2.5 text-xs text-black/40 sm:min-h-12 sm:px-3.5 sm:text-base"
+      : "flex min-h-11 items-center rounded-xl border border-black/15 bg-white px-3.5 text-sm text-black/40 sm:min-h-[var(--tap-min)] sm:px-4 sm:text-base";
 
   if (!mounted) {
     return (

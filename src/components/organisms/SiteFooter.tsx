@@ -14,6 +14,22 @@ interface SiteFooterProps {
 
 const supportEmail = SITE_CONFIG.email || "support@epos.uz";
 
+const supportLinkClass =
+  "inline-flex min-w-0 items-start gap-2 text-sm text-black hover:text-primary";
+
+function SupportIcon({ src }: { src: string }) {
+  return (
+    <Image
+      src={src}
+      alt=""
+      width={24}
+      height={24}
+      unoptimized
+      className="mt-0.5 shrink-0"
+    />
+  );
+}
+
 export function SiteFooter({ locale, content }: SiteFooterProps) {
   const socials = [
     {
@@ -32,6 +48,13 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
       label: "Facebook",
     },
   ] as const;
+
+  const address =
+    locale === "uz" ? SITE_CONFIG.address.lineUz : SITE_CONFIG.address.line;
+  const hours =
+    locale === "uz"
+      ? SITE_CONFIG.hoursDisplayUz
+      : SITE_CONFIG.hoursDisplayRu;
 
   return (
     <footer className="mt-auto border-t border-black/10 bg-white py-10 text-black md:py-14">
@@ -89,77 +112,66 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
             <p className="m-0 text-xl font-medium text-black sm:text-2xl">
               {content.footer.support}
             </p>
-            <Link
-              href={localePath(locale, "/faq/")}
-              className="inline-flex min-w-0 items-center gap-2 text-sm text-black hover:text-primary"
-            >
-              <Image
-                src="/images/brand/icon-faq.svg"
-                alt=""
-                width={24}
-                height={24}
-                unoptimized
-                className="shrink-0"
-              />
+
+            <Link href={localePath(locale, "/faq/")} className={supportLinkClass}>
+              <SupportIcon src="/images/brand/icon-faq.svg" />
               <span className="min-w-0 break-words">{content.footer.faqLink}</span>
             </Link>
+
             <Link
               href={localePath(locale, "/calculator/")}
-              className="text-sm font-medium text-black hover:text-primary"
+              className={cn(supportLinkClass, "font-medium")}
             >
-              {content.ui.calculator}
+              <SupportIcon src="/images/brand/icon-calculator.svg" />
+              <span className="min-w-0 break-words">{content.ui.calculator}</span>
             </Link>
+
             <Link
               href={localePath(locale, "/delivery/")}
-              className="text-sm font-medium text-black hover:text-primary"
+              className={cn(supportLinkClass, "font-medium")}
             >
-              {content.footer.geography}
+              <SupportIcon src="/images/brand/icon-cities.svg" />
+              <span className="min-w-0 break-words">
+                {content.footer.geography}
+              </span>
             </Link>
-            <a
-              href={`mailto:${supportEmail}`}
-              className="inline-flex min-w-0 items-center gap-2 text-sm text-black hover:text-primary"
-            >
-              <Image
-                src="/images/brand/icon-mail.svg"
-                alt=""
-                width={24}
-                height={24}
-                unoptimized
-                className="shrink-0"
-              />
+
+            <a href={`mailto:${supportEmail}`} className={supportLinkClass}>
+              <SupportIcon src="/images/brand/icon-mail.svg" />
               <span className="min-w-0 break-all">{supportEmail}</span>
             </a>
+
             <a
               href={SITE_CONFIG.telegramUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-w-0 items-center gap-2 text-sm text-black hover:text-primary"
+              className={supportLinkClass}
             >
-              <Image
-                src="/images/brand/icon-telegram.svg"
-                alt=""
-                width={24}
-                height={24}
-                unoptimized
-                className="shrink-0"
-              />
-              Telegram
+              <SupportIcon src="/images/brand/icon-telegram.svg" />
+              <span>Telegram</span>
             </a>
+
             <a
               href={`tel:${SITE_CONFIG.phone}`}
-              className="text-xl font-medium text-black hover:text-primary sm:text-2xl"
+              className="inline-flex min-w-0 items-center gap-2 text-xl font-medium text-black hover:text-primary sm:text-2xl"
             >
-              {SITE_CONFIG.phoneDisplay}
+              <SupportIcon src="/images/brand/icon-phone.svg" />
+              <span className="min-w-0 break-all">{SITE_CONFIG.phoneDisplay}</span>
             </a>
-            <p className="m-0 text-sm leading-5 text-black break-words">
-              {locale === "uz"
-                ? SITE_CONFIG.address.lineUz
-                : SITE_CONFIG.address.line}
+
+            <p className={cn(supportLinkClass, "m-0 cursor-default hover:text-black")}>
+              <SupportIcon src="/images/brand/icon-pin.svg" />
+              <span className="min-w-0 break-words leading-5">{address}</span>
             </p>
-            <p className="m-0 text-sm text-black/60">
-              {locale === "uz"
-                ? SITE_CONFIG.hoursDisplayUz
-                : SITE_CONFIG.hoursDisplayRu}
+
+            <p
+              className={cn(
+                supportLinkClass,
+                "m-0 cursor-default text-black/60 hover:text-black/60",
+              )}
+            >
+              <SupportIcon src="/images/brand/icon-clock.svg" />
+              <span className="min-w-0">{hours}</span>
             </p>
           </div>
         </div>

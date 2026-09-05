@@ -88,7 +88,7 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
       <section className="bg-gradient-to-b from-primary to-primary-hover py-[var(--section-y)]">
         <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={`${homeSectionTitle} text-white`}>{labels.catalog}</h2>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             {copy.services.items.map((service) => {
               const src =
                 SERVICE_MEDIA[service.id] ??
@@ -97,21 +97,21 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
                 <a
                   key={service.id}
                   href={`#${service.id}`}
-                  className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] transition-transform hover:-translate-y-0.5"
+                  className="flex h-full flex-col gap-2.5 rounded-2xl border border-black/20 bg-white p-3 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:rounded-3xl sm:p-[var(--card-pad)]"
                 >
-                  <h3 className="m-0 min-h-[2.5em] font-display text-xl font-semibold uppercase leading-tight text-black md:text-2xl">
+                  <h3 className="m-0 min-h-[2.5em] font-display text-[0.8125rem] font-semibold uppercase leading-tight text-black sm:text-xl md:text-2xl">
                     {service.title}
                   </h3>
-                  <div className="relative h-[10rem] w-full shrink-0 overflow-hidden sm:h-[12.5rem]">
+                  <div className="relative h-[6.5rem] w-full shrink-0 overflow-hidden sm:h-[12.5rem]">
                     <Image
                       src={src}
                       alt=""
                       fill
-                      className="object-contain object-center p-2"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-contain object-center p-1 sm:p-2"
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   </div>
-                  <p className="m-0 flex-1 text-base text-black/60">
+                  <p className="m-0 flex-1 text-xs leading-snug text-black/60 sm:text-base">
                     {service.audience}
                   </p>
                 </a>

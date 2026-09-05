@@ -36,7 +36,7 @@ export const homeHeroNote =
 
 /** Mobile: map under copy. Desktop: in-flow grid cell with map filling it. */
 export const homeHeroVisual =
-  "relative z-0 mt-2 w-full max-h-[12rem] sm:max-h-[14rem] lg:mt-0 lg:min-h-[20rem] lg:max-h-none lg:w-full";
+  "relative z-0 mt-2 hidden w-full max-h-[12rem] sm:max-h-[14rem] lg:mt-0 lg:block lg:min-h-[20rem] lg:max-h-none lg:w-full";
 
 export const homeHeroMap =
   "pointer-events-none relative mx-auto block h-auto w-full max-w-[16rem] select-none object-contain object-bottom opacity-90 sm:max-w-[20rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-right lg:opacity-100";
@@ -52,31 +52,31 @@ export const homeActionBridge =
   "pointer-events-auto";
 
 export const homeActionIsland =
-  "flex flex-col gap-5 rounded-3xl border border-black/15 bg-white p-4 shadow-[0_4px_20px_rgb(15_18_24/0.06)] sm:gap-6 sm:p-6 sm:shadow-[0_12px_40px_rgb(15_18_24/0.1)] lg:flex-row lg:items-stretch lg:gap-0 lg:border-black/20 lg:p-5 xl:px-6 xl:py-5";
+  "flex flex-col gap-4 rounded-3xl border border-black/12 bg-white p-4 shadow-[0_4px_20px_rgb(15_18_24/0.06)] sm:gap-6 sm:p-6 sm:shadow-[0_12px_40px_rgb(15_18_24/0.1)] lg:flex-row lg:items-stretch lg:gap-0 lg:border-black/20 lg:p-5 xl:px-6 xl:py-5";
 
 export const homeActionPane =
-  "flex min-w-0 flex-1 flex-col justify-center gap-2.5 lg:gap-3 lg:px-5 first:lg:pl-0 last:lg:pr-0";
+  "flex min-w-0 flex-1 flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3 lg:px-5 first:lg:pl-0 last:lg:pr-0";
 
 export const homeActionLabel =
-  "m-0 font-display text-base font-semibold uppercase leading-tight tracking-[-0.02em] text-black sm:text-lg lg:text-[1.05rem] xl:text-lg";
+  "m-0 font-display text-[0.9375rem] font-semibold uppercase leading-tight tracking-[-0.02em] text-black sm:text-lg lg:text-[1.05rem] xl:text-lg";
 
 export const homeActionRow =
-  "flex min-w-0 flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-3 lg:flex-nowrap";
+  "flex min-w-0 flex-row items-center gap-1.5 sm:gap-3 lg:flex-nowrap";
 
 export const homeActionField =
-  "min-h-12 min-w-0 w-full flex-1 rounded-xl border border-black/20 bg-white px-3.5 py-3 text-base text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/20";
+  "min-h-10 min-w-0 w-full flex-1 rounded-xl border border-black/15 bg-white px-2.5 py-2 text-sm text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/15 sm:min-h-12 sm:px-3.5 sm:py-3 sm:text-base";
 
 export const homeActionSwap =
-  "inline-flex size-6 shrink-0 items-center justify-center self-center text-black transition-opacity hover:opacity-70";
+  "inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-surface-muted text-black/65 transition-colors hover:border-black/20 hover:bg-white hover:text-black sm:size-9";
 
 export const homeActionDivider =
   "h-px w-full shrink-0 bg-black/10 lg:mx-0 lg:h-auto lg:w-px lg:self-stretch";
 
 export const homeActionNote =
-  "m-0 text-sm leading-snug text-black/60 lg:hidden";
+  "m-0 text-xs leading-snug text-black/55 sm:text-sm sm:text-black/60 lg:hidden";
 
 export const homeActionBtn =
-  "!min-h-12 w-full shrink-0 !px-5 !py-3 text-sm sm:w-auto sm:!px-6";
+  "!min-h-10 w-auto shrink-0 !px-3.5 !py-2 text-sm sm:!min-h-12 sm:!px-6 sm:!py-3";
 
 export const homeNeedsSection =
   "relative bg-gradient-to-b from-primary to-primary-hover py-[var(--section-y)] lg:pt-[5.5rem]";
@@ -106,18 +106,18 @@ export const heroActions =
   "flex flex-wrap gap-3 sm:gap-4 animate-hero-rise [animation-delay:220ms]";
 
 export const btnBase =
-  "inline-flex min-h-[var(--tap-min)] cursor-pointer items-center justify-center gap-2 rounded-[48px] border border-transparent px-5 py-3.5 text-base font-medium leading-5 transition-[background,color,border-color,transform,box-shadow,opacity] duration-[160ms] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:px-6 sm:py-4";
+  "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent px-5 py-2.5 text-sm font-semibold leading-5 transition-[background,color,border-color,transform,box-shadow,opacity] duration-[160ms] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-[var(--tap-min)] sm:px-6 sm:py-3.5 sm:text-base sm:font-medium";
 
 export const btnPrimary =
-  `${btnBase} border-[#ff3539] bg-[linear-gradient(86deg,#310102_21.5%,#aa2628_99%)] text-white shadow-[inset_0_0_8px_#fff] hover:opacity-95`;
+  `${btnBase} bg-primary text-white shadow-[0_4px_14px_rgb(211_2_3/0.22)] hover:bg-primary-hover hover:shadow-[0_6px_18px_rgb(211_2_3/0.28)]`;
 
 export const btnSecondary =
-  `${btnBase} border-primary bg-transparent text-primary hover:bg-primary-soft`;
+  `${btnBase} border-primary bg-white text-primary shadow-[0_1px_2px_rgb(15_18_24/0.04)] hover:bg-primary-soft`;
 
 export const btnGhost = `${btnBase} bg-transparent text-ink`;
 
 export const btnOnDark =
-  `${btnBase} border-[#ff3539] bg-[linear-gradient(86deg,#310102_21.5%,#aa2628_99%)] text-white shadow-[inset_0_0_8px_#fff] hover:opacity-95`;
+  `${btnBase} bg-primary text-white shadow-[0_4px_14px_rgb(211_2_3/0.28)] hover:bg-primary-hover`;
 
 export const btnHeroPrimary = btnPrimary;
 
@@ -200,13 +200,13 @@ export const fieldLabel = "text-[0.92rem] font-semibold text-ink";
 export const fieldHint = "text-[0.85rem] text-ink-muted";
 export const fieldError = "text-[0.85rem] text-danger";
 export const fieldControl =
-  "min-h-[var(--tap-min)] w-full rounded-xl border border-black/30 bg-white px-4 py-3.5 text-base text-ink outline-none placeholder:text-black/45 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-ink-muted";
+  "min-h-11 w-full rounded-xl border border-black/15 bg-white px-3.5 py-2.5 text-sm text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-ink-muted sm:min-h-[var(--tap-min)] sm:px-4 sm:py-3.5 sm:text-base sm:placeholder:text-black/45";
 export const fieldTextarea = `${fieldControl} min-h-28 resize-y`;
 export const fieldRow =
   "grid grid-cols-[repeat(auto-fit,minmax(min(100%,10rem),1fr))] gap-4";
 export const checkRow =
   "mb-4 flex items-start gap-2.5 text-[0.92rem] leading-snug text-ink";
-export const formActions = "mt-5 flex flex-wrap gap-3";
+export const formActions = "mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-3";
 
 export const alert = "mb-4 rounded-md px-[1.1rem] py-4";
 export const alertSuccess = `${alert} bg-[#e8f7ee] text-success`;
@@ -217,11 +217,11 @@ export const pageCta =
   "relative overflow-hidden rounded-3xl border border-black/20 bg-black p-6 text-white sm:p-8 md:p-12";
 
 export const trackShell =
-  "grid max-w-[40rem] gap-5 rounded-3xl border border-black/20 bg-white p-5 sm:gap-6 sm:p-6";
+  "grid max-w-[40rem] gap-4 rounded-3xl border border-black/15 bg-white p-4 sm:gap-6 sm:border-black/20 sm:p-6";
 export const trackForm =
   "grid gap-2";
 export const trackFormRow =
-  "grid grid-cols-1 gap-2.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-stretch sm:gap-3";
+  "grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-stretch sm:gap-3";
 export const trackResultTitle =
   "m-0 font-display text-lg font-semibold uppercase leading-tight tracking-[-0.02em] text-black sm:text-xl";
 export const trackResultNumber =

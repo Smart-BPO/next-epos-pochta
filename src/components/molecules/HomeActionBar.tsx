@@ -27,12 +27,13 @@ import {
 function SwapIcon() {
   return (
     <svg
-      width="20"
-      height="20"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       aria-hidden
       xmlns="http://www.w3.org/2000/svg"
+      className="sm:h-5 sm:w-5"
     >
       <path
         d="M5 8h11.5M14 5.5 16.5 8 14 10.5"
@@ -127,53 +128,55 @@ export function HomeActionBar({
             <div className={`${homeActionPane} lg:min-w-[22rem] lg:flex-[1.35]`}>
               <h2 className={homeActionLabel}>{copy.home.quoteTitle}</h2>
               <form
-                className={homeActionRow}
+                className="flex min-w-0 flex-col gap-2 sm:gap-3"
                 onSubmit={(e) => {
                   e.preventDefault();
                   submitQuote();
                 }}
               >
-                <label className="sr-only" htmlFor="home-action-from">
-                  {copy.home.quoteFrom}
-                </label>
-                <SettlementSelect
-                  id="home-action-from"
-                  instanceId="home-action-from"
-                  locale={locale}
-                  value={from}
-                  onChange={setFrom}
-                  placeholder={copy.home.quoteFrom}
-                  variant="compact"
-                  className="min-w-0 flex-1"
-                />
-                <button
-                  type="button"
-                  className={homeActionSwap}
-                  aria-label={copy.home.quoteSwap}
-                  onClick={() => {
-                    setFrom(to);
-                    setTo(from);
-                  }}
-                >
-                  <SwapIcon />
-                </button>
-                <label className="sr-only" htmlFor="home-action-to">
-                  {copy.home.quoteTo}
-                </label>
-                <SettlementSelect
-                  id="home-action-to"
-                  instanceId="home-action-to"
-                  locale={locale}
-                  value={to}
-                  onChange={setTo}
-                  placeholder={copy.home.quoteTo}
-                  variant="compact"
-                  className="min-w-0 flex-1"
-                />
+                <div className={homeActionRow}>
+                  <label className="sr-only" htmlFor="home-action-from">
+                    {copy.home.quoteFrom}
+                  </label>
+                  <SettlementSelect
+                    id="home-action-from"
+                    instanceId="home-action-from"
+                    locale={locale}
+                    value={from}
+                    onChange={setFrom}
+                    placeholder={copy.home.quoteFrom}
+                    variant="compact"
+                    className="min-w-0 flex-1"
+                  />
+                  <button
+                    type="button"
+                    className={homeActionSwap}
+                    aria-label={copy.home.quoteSwap}
+                    onClick={() => {
+                      setFrom(to);
+                      setTo(from);
+                    }}
+                  >
+                    <SwapIcon />
+                  </button>
+                  <label className="sr-only" htmlFor="home-action-to">
+                    {copy.home.quoteTo}
+                  </label>
+                  <SettlementSelect
+                    id="home-action-to"
+                    instanceId="home-action-to"
+                    locale={locale}
+                    value={to}
+                    onChange={setTo}
+                    placeholder={copy.home.quoteTo}
+                    variant="compact"
+                    className="min-w-0 flex-1"
+                  />
+                </div>
                 <Button
                   type="submit"
                   variant="primary"
-                  className={homeActionBtn}
+                  className={`${homeActionBtn} !w-full`}
                 >
                   {copy.home.quoteCta}
                 </Button>

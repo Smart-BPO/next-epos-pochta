@@ -156,7 +156,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                 <Button
                   type="submit"
                   disabled={pending}
-                  className="!min-h-[var(--tap-min)] w-full shrink-0 !px-6 !py-0 sm:w-auto"
+                  className="w-full shrink-0 sm:w-auto"
                 >
                   {copy.ui.track}
                 </Button>

@@ -78,7 +78,7 @@ export const uzCopy: SiteCopy = {
   footer: {
     blurb:
       "Jismoniy shaxslar, internet-doʻkonlar va kompaniyalar uchun Oʻzbekiston boʻylab kuryerlik yetkazib berish.",
-    legal: "«EPOS POCHTA» MCHJ · STIR 312949361 · OKED 53200",
+    legal: "«EPOS POCHTA» MCHJ · STIR 312949361",
     privacy: "Maxfiylik siyosati",
     terms: "Xizmat koʻrsatish shartlari",
     contacts: "Aloqa",

@@ -6,9 +6,9 @@ import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { BusinessLogisticsScene } from "@/components/molecules/BusinessLogisticsScene";
 import { DeliveryChain } from "@/components/molecules/DeliveryChain";
-import { GeoSearch } from "@/components/molecules/GeoSearch";
 import { HomeActionBar } from "@/components/molecules/HomeActionBar";
 import { NewsCard } from "@/components/molecules/NewsCard";
+import { GeoSection } from "@/components/organisms/GeoSection";
 import { getLatestNews } from "@/lib/news/repository";
 import {
   homeHero,
@@ -143,22 +143,25 @@ export function HomePageView({ locale }: { locale: Locale }) {
       <section className={section}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.home.benefitsTitle}</h2>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             {copy.home.benefits.map((text, index) => (
               <article
                 key={text}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
+                className="flex h-full flex-col gap-2.5 rounded-2xl border border-black/15 bg-white p-3 sm:gap-4 sm:rounded-3xl sm:border-black/20 sm:p-[var(--card-pad)]"
               >
-                <div className="relative size-12 shrink-0">
+                <div className="relative size-9 shrink-0 sm:size-12">
                   <Image
                     src={BENEFIT_ICONS[index] ?? BENEFIT_ICONS[0]}
                     alt=""
                     width={48}
                     height={48}
+                    className="size-full"
                     unoptimized
                   />
                 </div>
-                <p className="m-0 text-lg text-black/60 md:text-xl">{text}</p>
+                <p className="m-0 text-sm leading-snug text-black/60 sm:text-lg md:text-xl">
+                  {text}
+                </p>
               </article>
             ))}
           </div>
@@ -261,34 +264,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section
-        id="geo"
-        className="relative isolate scroll-mt-[var(--header-height)] overflow-hidden py-[var(--section-y)]"
-      >
-        <Image
-          src="/images/hero/uzbekistan-map.svg"
-          alt=""
-          width={1000}
-          height={652}
-          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(100%,40rem)] max-w-[min(100%,46rem)] select-none object-contain object-right opacity-90 md:block"
-          unoptimized
-        />
-        <PageContainer className="relative z-10 flex flex-col gap-6 md:gap-9">
-          <div className="flex max-w-xl flex-col gap-4">
-            <h2 className={homeSectionTitle}>{copy.home.geoTitle}</h2>
-            <p className={homeSectionLead}>{copy.home.geoLead}</p>
-          </div>
-          <GeoSearch locale={locale} copy={copy} variant="home" />
-          <Image
-            src="/images/hero/uzbekistan-map.svg"
-            alt=""
-            width={1000}
-            height={652}
-            className="pointer-events-none relative mx-auto h-auto w-full max-w-sm select-none object-contain opacity-90 md:hidden"
-            unoptimized
-          />
-        </PageContainer>
-      </section>
+      <GeoSection locale={locale} copy={copy} />
 
       {latestNews.length > 0 ? (
         <section className={sectionMuted}>
@@ -306,7 +282,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
                 {copy.home.newsAll}
               </Button>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
               {latestNews.map((article) => (
                 <NewsCard key={article.id} locale={locale} article={article} />
               ))}

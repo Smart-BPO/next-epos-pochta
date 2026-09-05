@@ -86,7 +86,7 @@ export function NewsArticlePageView({
         <section className={section}>
           <PageContainer className="flex flex-col gap-6 md:gap-9">
             <h2 className={sectionTitle}>{copy.news.otherNews}</h2>
-            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
               {related.map((item) => (
                 <NewsCard key={item.id} locale={locale} article={item} />
               ))}
