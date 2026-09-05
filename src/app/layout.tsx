@@ -65,7 +65,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="flex min-h-dvh flex-col bg-white font-sans text-ink antialiased [padding-bottom:calc(var(--sticky-cta-height)+env(safe-area-inset-bottom))] md:pb-0"
+        className="flex min-h-dvh flex-col bg-white font-sans text-ink antialiased"
       >
         <JsonLd data={getGlobalJsonLdGraph()} />
         {children}

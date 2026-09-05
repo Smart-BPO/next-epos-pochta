@@ -2,7 +2,6 @@ import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { Header } from "@/components/organisms/Header";
 import { SiteFooter } from "@/components/organisms/SiteFooter";
-import { MobileStickyCta } from "@/components/organisms/MobileStickyCta";
 import { HashScroll } from "@/components/organisms/HashScroll";
 import { CookieConsentBanner } from "@/components/consent/CookieConsentBanner";
 
@@ -22,7 +21,6 @@ export function SiteLayout({ locale, children }: SiteLayoutProps) {
         <main id="main-content">{children}</main>
       </div>
       <SiteFooter locale={locale} content={content} />
-      <MobileStickyCta locale={locale} label={content.ui.calculate} />
       <CookieConsentBanner
         text={content.ui.cookieText}
         acceptLabel={content.ui.cookieAccept}

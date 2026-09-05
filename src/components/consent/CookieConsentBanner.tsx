@@ -50,7 +50,7 @@ export function CookieConsentBanner({
 
   return (
     <div
-      className="fixed inset-x-4 bottom-[calc(1rem+var(--sticky-cta-height))] z-50 mx-auto max-w-lg rounded-lg border border-border bg-white p-4 shadow-md md:bottom-4"
+      className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-lg rounded-lg border border-border bg-white p-4 shadow-md"
       role="dialog"
       aria-live="polite"
     >

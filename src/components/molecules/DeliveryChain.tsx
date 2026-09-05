@@ -110,58 +110,36 @@ export function DeliveryChain({ locale }: { locale: Locale }) {
         </ol>
       </div>
 
-      {/* Mobile vertical path */}
+      {/* Mobile vertical path — one continuous rail through node centers */}
       <ol className="relative m-0 grid list-none gap-0 p-0 md:hidden">
-        {/* Continuous rail behind step nodes */}
         <div
           aria-hidden
-          className="absolute bottom-[2.75rem] left-[0.375rem] top-[2.75rem] w-1 rounded-full bg-gradient-to-b from-primary to-primary-hover"
+          className="absolute bottom-[2.75rem] left-[0.4375rem] top-[2.75rem] w-0.5 -translate-x-1/2 bg-primary"
         />
 
-        {STEPS.map((step, index) => {
-          const isLast = index === STEPS.length - 1;
-          return (
-            <li key={step.id} className="relative">
-              <div className="grid grid-cols-[1.25rem_5.75rem_minmax(0,1fr)] items-center gap-x-3 py-2.5">
-                <span
-                  aria-hidden
-                  className="relative z-[1] mx-auto size-3 shrink-0 rounded-full border-2 border-white bg-primary shadow-sm"
-                />
-
-                <div className="relative aspect-square w-full">
-                  <Image
-                    src={step.src}
-                    alt=""
-                    fill
-                    className="object-contain object-center drop-shadow-md"
-                    sizes="5.75rem"
-                  />
-                </div>
-
-                <p className="m-0 text-[0.8125rem] font-semibold uppercase leading-snug tracking-wide text-black/65 sm:text-sm">
-                  {labels[index]}
-                </p>
-              </div>
-
-              {!isLast ? (
-                <div
-                  className="grid grid-cols-[1.25rem_5.75rem_minmax(0,1fr)] items-center gap-x-3"
-                  aria-hidden
-                >
-                  <div className="relative z-[1] flex justify-center py-0.5">
-                    <Image
-                      src="/images/home/business/epos-parcel.webp"
-                      alt=""
-                      width={36}
-                      height={36}
-                      className="size-8 object-contain drop-shadow-md"
-                    />
-                  </div>
-                </div>
-              ) : null}
-            </li>
-          );
-        })}
+        {STEPS.map((step, index) => (
+          <li
+            key={step.id}
+            className="relative z-[1] grid grid-cols-[0.875rem_4.5rem_minmax(0,1fr)] items-center gap-x-3.5 py-2"
+          >
+            <span
+              aria-hidden
+              className="relative z-[1] mx-auto size-2.5 rounded-full bg-primary shadow-[0_0_0_3px_rgb(255_250_248)]"
+            />
+            <div className="relative aspect-square w-full">
+              <Image
+                src={step.src}
+                alt=""
+                fill
+                className="object-contain object-center drop-shadow-md"
+                sizes="4.5rem"
+              />
+            </div>
+            <p className="m-0 text-sm font-semibold uppercase leading-snug tracking-wide text-black/65">
+              {labels[index]}
+            </p>
+          </li>
+        ))}
       </ol>
     </div>
   );

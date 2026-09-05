@@ -28,7 +28,6 @@
   --font-display: var(--font-manrope), "Segoe UI", system-ui, sans-serif;
   --tap-min: 44px;
   --header-height: 3.5rem;
-  --sticky-cta-height: 4.25rem;
   --motion-fast: 160ms;
   --motion-base: 420ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -65,7 +64,6 @@
   --shadow-md: var(--shadow-md);
   --spacing-page: var(--page-padding);
   --spacing-header: var(--header-height);
-  --spacing-sticky-cta: var(--sticky-cta-height);
   --spacing-tap: var(--tap-min);
   --spacing-section: var(--section-y);
   --spacing-card: var(--card-pad);
