@@ -12,7 +12,6 @@ import {
   homeQuoteCard,
   homeQuoteField,
   homeQuoteRow,
-  homeQuoteSelect,
 } from "@/styles/ui";
 
 function SwapIcon() {
@@ -54,14 +53,12 @@ export function HomeQuoteTeaser({
   const router = useRouter();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [category, setCategory] = useState("");
 
   const submit = () => {
     trackEvent("request_price_start", { source: "home_quote" });
     const params = new URLSearchParams();
     if (from.trim()) params.set("from", from.trim());
     if (to.trim()) params.set("to", to.trim());
-    if (category) params.set("category", category);
     const qs = params.toString();
     router.push(
       `${localePath(locale, "/request-price/")}${qs ? `?${qs}` : ""}`,
@@ -78,58 +75,43 @@ export function HomeQuoteTeaser({
           submit();
         }}
       >
-        <label className="sr-only" htmlFor="home-quote-from">
-          {copy.home.quoteFrom}
-        </label>
-        <input
-          id="home-quote-from"
-          value={from}
-          onChange={(e) => setFrom(e.target.value)}
-          placeholder={copy.home.quoteFrom}
-          className={homeQuoteField}
-          autoComplete="address-level2"
-        />
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <label className="sr-only" htmlFor="home-quote-from">
+            {copy.home.quoteFrom}
+          </label>
+          <input
+            id="home-quote-from"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            placeholder={copy.home.quoteFrom}
+            className={homeQuoteField}
+            autoComplete="address-level2"
+          />
 
-        <button
-          type="button"
-          className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center self-center rounded-xl border border-black/10 text-black/60 transition-colors hover:border-black/20 hover:text-black"
-          aria-label={copy.home.quoteSwap}
-          onClick={() => {
-            setFrom(to);
-            setTo(from);
-          }}
-        >
-          <SwapIcon />
-        </button>
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-black/10 text-black/60 transition-colors hover:border-black/20 hover:text-black"
+            aria-label={copy.home.quoteSwap}
+            onClick={() => {
+              setFrom(to);
+              setTo(from);
+            }}
+          >
+            <SwapIcon />
+          </button>
 
-        <label className="sr-only" htmlFor="home-quote-to">
-          {copy.home.quoteTo}
-        </label>
-        <input
-          id="home-quote-to"
-          value={to}
-          onChange={(e) => setTo(e.target.value)}
-          placeholder={copy.home.quoteTo}
-          className={homeQuoteField}
-          autoComplete="address-level2"
-        />
-
-        <label className="sr-only" htmlFor="home-quote-category">
-          {copy.home.quoteCategory}
-        </label>
-        <select
-          id="home-quote-category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className={`${homeQuoteSelect} bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 fill=%22none%22%3E%3Cpath d=%22M1 1.5 6 6.5 11 1.5%22 stroke=%22%23000%22 stroke-opacity=%22.4%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E')]`}
-        >
-          <option value="">{copy.home.quoteCategory}</option>
-          {copy.home.needs.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.title}
-            </option>
-          ))}
-        </select>
+          <label className="sr-only" htmlFor="home-quote-to">
+            {copy.home.quoteTo}
+          </label>
+          <input
+            id="home-quote-to"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            placeholder={copy.home.quoteTo}
+            className={homeQuoteField}
+            autoComplete="address-level2"
+          />
+        </div>
 
         <Button
           type="submit"
@@ -139,7 +121,9 @@ export function HomeQuoteTeaser({
           {copy.home.quoteCta}
         </Button>
       </form>
-      <p className="mt-2.5 m-0 text-sm text-black/50 lg:mt-3">{copy.home.quoteNote}</p>
+      <p className="mt-2 m-0 text-xs text-black/50 sm:text-sm lg:mt-3">
+        {copy.home.quoteNote}
+      </p>
     </div>
   );
 }

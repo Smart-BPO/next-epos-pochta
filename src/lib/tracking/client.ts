@@ -2,10 +2,10 @@ import type { Locale } from "@/i18n/config";
 import type { TrackingLookupResult, TrackingShipment } from "./types";
 import { isValidTrackingNumber, normalizeTrackingNumber } from "./types";
 
-export const DEMO_TRACK_NUMBER = "000000";
-export const DEMO_NOT_FOUND_NUMBER = "999999";
+/** Hidden stub number that returns a found shipment until the real API is wired. */
+const STUB_FOUND_NUMBER = "000000";
 
-function demoShipment(locale: Locale): TrackingShipment {
+function stubShipment(locale: Locale): TrackingShipment {
   const now = Date.now();
   const day = 24 * 60 * 60 * 1000;
   const labels =
@@ -30,7 +30,7 @@ function demoShipment(locale: Locale): TrackingShipment {
         };
 
   return {
-    number: DEMO_TRACK_NUMBER,
+    number: STUB_FOUND_NUMBER,
     status: "delivered",
     updatedAt: new Date(now - day).toISOString(),
     events: [
@@ -63,10 +63,6 @@ function demoShipment(locale: Locale): TrackingShipment {
         label: labels.delivered,
         occurredAt: new Date(now - day).toISOString(),
         location: labels.samarkand,
-        note:
-          locale === "uz"
-            ? "Demo joʻnatma — haqiqiy API ulanmagan"
-            : "Демо-отправление — реальный API не подключён",
       },
     ],
   };
@@ -75,7 +71,6 @@ function demoShipment(locale: Locale): TrackingShipment {
 /**
  * Client adapter for shipment lookup.
  * TODO(tracking-api): replace stub with real EPOS tracking HTTP client.
- * Demo: 000000 → found; 999999 → not_found; other valid → unavailable.
  */
 export async function lookupTracking(
   rawNumber: string,
@@ -86,13 +81,9 @@ export async function lookupTracking(
     return { ok: false, error: "invalid_format" };
   }
 
-  if (number === DEMO_TRACK_NUMBER) {
-    return { ok: true, shipment: demoShipment(locale) };
+  if (number === STUB_FOUND_NUMBER) {
+    return { ok: true, shipment: stubShipment(locale) };
   }
 
-  if (number === DEMO_NOT_FOUND_NUMBER) {
-    return { ok: false, error: "not_found" };
-  }
-
-  return { ok: false, error: "unavailable" };
+  return { ok: false, error: "not_found" };
 }

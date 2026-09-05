@@ -39,12 +39,12 @@ export function QuickTrackForm({
         );
       }}
       className={cn(
-        "flex w-full gap-3",
+        "flex w-full items-center gap-2",
         variant === "card"
-          ? "flex-col"
+          ? "flex-row"
           : stacked
-            ? "flex-col sm:flex-row sm:items-center sm:gap-4"
-            : "flex-wrap",
+            ? "flex-col sm:flex-row sm:gap-3"
+            : "flex-wrap gap-3",
       )}
     >
       <input
@@ -54,14 +54,14 @@ export function QuickTrackForm({
         aria-label={copy.home.trackPlaceholder}
         className={cn(
           fieldControl,
-          "min-w-0",
-          stacked ? "flex-1 placeholder:text-black/40" : "flex-[1_1_12rem]",
+          "min-w-0 flex-1 !py-2.5 placeholder:text-black/40",
+          !stacked && "flex-[1_1_12rem]",
         )}
       />
       <Button
         type="submit"
         variant={stacked ? "heroSecondary" : "primary"}
-        className={cn("shrink-0", variant === "card" && "w-full")}
+        className="!min-h-11 shrink-0 !px-4 !py-2.5 text-sm"
       >
         {copy.ui.track}
       </Button>
@@ -83,7 +83,7 @@ export function QuickTrackForm({
       <div className={homeTrackCard}>
         <h2 className={homeHeroTrackerTitle}>{copy.home.trackTitle}</h2>
         {form}
-        <p className="mt-3 text-sm text-black/60">{copy.home.trackHint}</p>
+        <p className="mt-2 text-xs text-black/50 sm:text-sm">{copy.home.trackHint}</p>
       </div>
     );
   }

@@ -9,13 +9,9 @@ import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { trackEvent } from "@/lib/analytics/events";
-import {
-  DEMO_TRACK_NUMBER,
-  lookupTracking,
-} from "@/lib/tracking/client";
+import { lookupTracking } from "@/lib/tracking/client";
 import type { TrackingShipment } from "@/lib/tracking/types";
 import {
-  alertInfo,
   alertWarning,
   field,
   fieldControl,
@@ -30,16 +26,9 @@ import {
   trackTimeline,
   trackTimelineItem,
   trackTimelineItemActive,
-  trackTimelineMuted,
 } from "@/styles/ui";
 
-type UiState =
-  | "idle"
-  | "loading"
-  | "invalid"
-  | "unavailable"
-  | "not_found"
-  | "found";
+type UiState = "idle" | "loading" | "invalid" | "not_found" | "found";
 
 function formatEventTime(iso: string, locale: Locale) {
   return new Intl.DateTimeFormat(locale === "uz" ? "uz-UZ" : "ru-RU", {
@@ -76,13 +65,8 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
       trackEvent("track_search_error", { reason: "invalid_format" });
       return;
     }
-    if (!result.ok && result.error === "not_found") {
-      setState("not_found");
-      trackEvent("track_search_error", { reason: "not_found" });
-      return;
-    }
-    setState("unavailable");
-    trackEvent("track_search_unavailable");
+    setState("not_found");
+    trackEvent("track_search_error", { reason: "not_found" });
   }
 
   function runLookup(raw: string, syncUrl: boolean) {
@@ -118,9 +102,6 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
       cancelled = true;
     };
   }, [queryNumber, locale]);
-
-  const showPreview =
-    state === "idle" || state === "invalid" || state === "unavailable";
 
   return (
     <section className={pageIntro}>
@@ -159,24 +140,6 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
             </Button>
           </form>
 
-          {state === "idle" ? (
-            <div className="grid gap-3">
-              <div className={alertInfo}>{copy.tracking.emptyHint}</div>
-              <p className="m-0 text-sm text-black/50">{copy.tracking.demoHint}</p>
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full sm:w-auto"
-                onClick={() => {
-                  setNumber(DEMO_TRACK_NUMBER);
-                  runLookup(DEMO_TRACK_NUMBER, true);
-                }}
-              >
-                {copy.tracking.tryDemoCta}
-              </Button>
-            </div>
-          ) : null}
-
           {state === "loading" ? (
             <p className="m-0 text-base text-black/60" role="status">
               {copy.tracking.loadingText}
@@ -211,38 +174,6 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
             </div>
           ) : null}
 
-          {state === "unavailable" ? (
-            <div className={alertWarning} role="status">
-              <strong>{copy.tracking.unavailableTitle}</strong>
-              <p>{copy.tracking.unavailableText}</p>
-              <p className="mt-2 text-sm">{copy.tracking.demoHint}</p>
-              <div className={`${heroActions} mt-3.5`}>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => {
-                    setNumber(DEMO_TRACK_NUMBER);
-                    runLookup(DEMO_TRACK_NUMBER, true);
-                  }}
-                >
-                  {copy.tracking.tryDemoCta}
-                </Button>
-                <Button
-                  href={`tel:${SITE_CONFIG.phone}`}
-                  onClick={() => trackEvent("track_support_call_click")}
-                >
-                  {copy.tracking.supportCta}
-                </Button>
-                <Button
-                  href={localePath(locale, "/contacts/")}
-                  variant="ghost"
-                >
-                  {copy.ui.write}
-                </Button>
-              </div>
-            </div>
-          ) : null}
-
           {state === "found" && shipment ? (
             <div>
               <h2 className={sectionTitle}>{copy.tracking.resultTitle}</h2>
@@ -265,25 +196,10 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                       {event.location ? ` · ${event.location}` : ""}
                     </p>
                     {event.note ? (
-                      <p className="mt-1 m-0 text-sm text-black/50">{event.note}</p>
+                      <p className="mt-1 m-0 text-sm text-black/50">
+                        {event.note}
+                      </p>
                     ) : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {showPreview ? (
-            <div>
-              <h2 className={sectionTitle}>
-                {copy.tracking.timelinePreviewTitle}
-              </h2>
-              <p className={sectionLead}>{copy.tracking.timelinePreviewNote}</p>
-              <div className={trackTimelineMuted} aria-hidden="true">
-                {copy.tracking.sampleStatuses.map((label) => (
-                  <div key={label} className={trackTimelineItem}>
-                    <strong>{label}</strong>
-                    <p className={fieldHint}>—</p>
                   </div>
                 ))}
               </div>

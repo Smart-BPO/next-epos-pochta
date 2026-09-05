@@ -433,15 +433,7 @@ export const uzCopy: SiteCopy = {
     title: "Joʻnatmani kuzatish",
     lead: "Kvitansiya yoki SMS dagi trek-raqamni kiriting.",
     placeholder: "Trek-raqam",
-    emptyHint:
-      "Trek-raqam odatda topshirish kvitansiyasida yoki SMS da koʻrsatiladi.",
-    demoHint:
-      "Demo: 000000 — muvaffaqiyatli status; 999999 — «topilmadi». Haqiqiy API hali ulanmagan.",
-    tryDemoCta: "000000 ni sinab koʻrish",
     loadingText: "Joʻnatma qidirilmoqda…",
-    unavailableTitle: "Kuzatuv tez orada ochiladi",
-    unavailableText:
-      "Sahifa EPOS POCHTA status tizimiga ulashga tayyor. API ulanmaguncha joriy statusni telefon orqali aniqlashingiz mumkin.",
     formatErrorTitle: "Trek-raqam formati notoʻgʻri",
     formatErrorText:
       "Kamida 6 belgi, harflar, raqamlar yoki chiziqcha. Boʻshliqlar avtomatik olib tashlanadi.",
@@ -449,16 +441,7 @@ export const uzCopy: SiteCopy = {
     errorText:
       "Raqamni tekshirib qayta urinib koʻring. Xato takrorlansa, qoʻllab-quvvatlashga murojaat qiling.",
     supportCta: "Qoʻllab-quvvatlashga qoʻngʻiroq",
-    timelinePreviewTitle: "Statuslar qanday koʻrinadi",
-    timelinePreviewNote:
-      "Bu faqat interfeys namunasi. Haqiqiy statuslar faqat API ulanganidan keyin chiqadi.",
     resultTitle: "Joʻnatma statusi",
-    sampleStatuses: [
-      "Qabul qilindi",
-      "Yoʻlda",
-      "Yetkazishga chiqdi",
-      "Yetkazildi",
-    ],
   },
   requestPrice: {
     title: "Narxni hisoblash",

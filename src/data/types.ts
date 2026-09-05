@@ -160,21 +160,13 @@ export interface SiteCopy {
     title: string;
     lead: string;
     placeholder: string;
-    emptyHint: string;
-    demoHint: string;
-    tryDemoCta: string;
     loadingText: string;
-    unavailableTitle: string;
-    unavailableText: string;
     formatErrorTitle: string;
     formatErrorText: string;
     errorTitle: string;
     errorText: string;
     supportCta: string;
-    timelinePreviewTitle: string;
-    timelinePreviewNote: string;
     resultTitle: string;
-    sampleStatuses: string[];
   };
   requestPrice: {
     title: string;

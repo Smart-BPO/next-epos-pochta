@@ -24,6 +24,8 @@ import {
   homeHeroNote,
   homeHeroTitle,
   homeHeroVisual,
+  homeNeedsCard,
+  homeNeedsGrid,
   homeNeedsSection,
   homeQuoteBridge,
   homeSectionLead,
@@ -77,14 +79,14 @@ export function HomePageView({ locale }: { locale: Locale }) {
               <Button
                 href={localePath(locale, "/request-price/")}
                 variant="heroPrimary"
-                className="w-full !min-h-11 !px-5 !py-2.5 text-sm sm:w-auto"
+                className="min-w-0 flex-1 !min-h-11 !px-4 !py-2.5 text-sm sm:flex-none sm:!px-5"
               >
                 {copy.ui.calculate}
               </Button>
               <Button
                 href={`${localePath(locale, "/request-price/")}?pickup=1`}
                 variant="heroSecondary"
-                className="w-full !min-h-11 !px-5 !py-2.5 text-sm sm:w-auto"
+                className="min-w-0 flex-1 !min-h-11 !px-3 !py-2.5 text-sm sm:flex-none sm:!px-5"
               >
                 {copy.ui.callCourier}
               </Button>
@@ -106,7 +108,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="bg-white pb-2 pt-1 lg:hidden">
+      <section className="relative z-10 bg-white pb-5 pt-1 lg:hidden">
         <PageContainer>
           <QuickTrackForm locale={locale} copy={copy} variant="card" />
         </PageContainer>
@@ -119,37 +121,37 @@ export function HomePageView({ locale }: { locale: Locale }) {
       </div>
 
       <section className={homeNeedsSection}>
-        <PageContainer className="flex flex-col gap-5 md:gap-7">
-          <h2 className={`${homeSectionTitle} text-white`}>
+        <PageContainer className="flex flex-col gap-4 sm:gap-5 md:gap-7">
+          <h2
+            className={`${homeSectionTitle} text-[1.35rem] text-white sm:text-[length:var(--home-title)]`}
+          >
             {copy.home.needsTitle}
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+          <div className={homeNeedsGrid}>
             {copy.home.needs.map((item) => (
-              <article
-                key={item.id}
-                className="flex h-full flex-col gap-3 rounded-3xl border border-black/10 bg-white p-5 sm:gap-4 sm:p-[var(--card-pad)]"
-              >
-                <h3 className="m-0 min-h-[2.5em] font-display text-lg font-semibold uppercase leading-tight text-black md:text-xl">
+              <article key={item.id} className={homeNeedsCard}>
+                <h3 className="m-0 font-display text-sm font-semibold uppercase leading-tight text-black sm:text-lg md:text-xl">
                   {item.title}
                 </h3>
-                <div className="relative h-[8.5rem] w-full shrink-0 overflow-hidden sm:h-[10.5rem]">
+                <div className="relative mx-auto h-20 w-full shrink-0 overflow-hidden sm:h-28 lg:h-[10.5rem]">
                   <Image
                     src={NEED_IMAGES[item.id] ?? NEED_IMAGES.documents}
                     alt=""
                     fill
                     className="object-contain object-center"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 25vw"
                   />
                 </div>
-                <p className="m-0 flex-1 text-sm text-black/60 sm:text-base">
+                <p className="m-0 hidden flex-1 text-sm text-black/60 sm:block sm:text-base">
                   {item.description}
                 </p>
                 <Button
                   href={`${localePath(locale, "/request-price/")}?category=${item.id}`}
                   variant="secondary"
-                  className="w-full !min-h-11 !px-4 !py-2.5 text-sm"
+                  className="mt-auto w-full !min-h-10 !px-2 !py-2 text-xs sm:!min-h-11 sm:!px-4 sm:text-sm"
                 >
-                  {copy.ui.requestPrice}
+                  <span className="sm:hidden">{copy.ui.calculate}</span>
+                  <span className="hidden sm:inline">{copy.ui.requestPrice}</span>
                 </Button>
               </article>
             ))}

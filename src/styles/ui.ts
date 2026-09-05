@@ -15,61 +15,67 @@ export const pageIntroTitle =
 
 export const anchorSection = "scroll-mt-[var(--header-height)]";
 
-/** Home hero — compact first viewport; calculator bridges into the red needs band. */
+/** Home hero — compact; map is decorative on mobile, side visual on desktop. */
 export const homeHero =
   "relative isolate overflow-hidden bg-white";
 
 export const homeHeroGrid =
-  "relative grid items-start gap-5 py-5 max-lg:grid-cols-1 md:gap-6 md:py-6 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:items-center lg:gap-6 lg:pb-14 lg:pt-8 xl:pb-16";
+  "relative grid items-start gap-4 py-4 max-lg:grid-cols-1 sm:gap-5 sm:py-5 md:py-6 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:items-center lg:gap-6 lg:pb-14 lg:pt-8 xl:pb-16";
 
 export const homeHeroCopy =
-  "relative z-10 flex max-w-[30rem] flex-col items-stretch gap-3.5 lg:items-start lg:gap-5";
+  "relative z-10 flex max-w-[30rem] flex-col items-stretch gap-3 lg:items-start lg:gap-5";
 
 export const homeHeroTitle =
-  "m-0 animate-hero-rise font-display text-[clamp(1.65rem,3.8vw,2.75rem)] font-black uppercase leading-[1.05] tracking-[-0.02em] text-black max-lg:text-[1.85rem]";
+  "m-0 animate-hero-rise font-display text-[1.625rem] font-black uppercase leading-[1.08] tracking-[-0.02em] text-black sm:text-[1.85rem] lg:text-[clamp(1.65rem,3.8vw,2.75rem)]";
 
 export const homeHeroLead =
-  "m-0 animate-hero-rise text-[clamp(1rem,1.8vw,1.25rem)] leading-snug text-black [animation-delay:80ms]";
+  "m-0 animate-hero-rise text-[0.95rem] leading-snug text-black/80 [animation-delay:80ms] sm:text-base lg:text-[clamp(1rem,1.8vw,1.25rem)] lg:text-black";
 
 export const homeHeroNote =
-  "m-0 animate-hero-rise text-sm text-black/60 sm:text-base [animation-delay:140ms]";
+  "m-0 animate-hero-rise text-sm text-black/55 [animation-delay:140ms]";
 
 export const homeHeroActions =
-  "flex w-full flex-col gap-2.5 animate-hero-rise [animation-delay:180ms] sm:flex-row sm:flex-wrap lg:w-auto";
+  "flex w-full flex-row flex-wrap gap-2 animate-hero-rise [animation-delay:180ms] sm:gap-2.5";
 
 export const homeHeroVisual =
-  "relative z-0 order-last w-full min-h-[11rem] sm:min-h-[14rem] lg:order-none lg:min-h-[22rem] lg:justify-self-end";
+  "pointer-events-none absolute inset-x-0 bottom-0 top-8 -z-0 opacity-[0.22] max-lg:max-h-[18rem] lg:pointer-events-auto lg:relative lg:inset-auto lg:z-0 lg:min-h-[22rem] lg:w-full lg:opacity-100";
 
 export const homeHeroMap =
-  "pointer-events-none relative mx-auto block h-auto w-full max-w-[20rem] select-none object-contain opacity-90 sm:max-w-[26rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-right lg:opacity-100";
+  "pointer-events-none relative mx-auto block h-auto w-full max-w-[18rem] select-none object-contain object-bottom sm:max-w-[22rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-right";
 
 export const homeHeroTracker =
-  "relative z-10 hidden w-full max-w-[26rem] rounded-3xl border border-black/10 bg-white p-5 shadow-[0_16px_40px_rgb(15_18_24/0.1)] lg:absolute lg:right-0 lg:top-2 lg:ml-auto lg:mt-0 lg:block xl:top-4";
+  "pointer-events-auto relative z-10 hidden w-full max-w-[26rem] rounded-3xl border border-black/10 bg-white p-5 shadow-[0_16px_40px_rgb(15_18_24/0.1)] lg:absolute lg:right-0 lg:top-4 lg:ml-auto lg:mt-0 lg:block";
 
 export const homeTrackCard =
-  "rounded-3xl border border-black/10 bg-white p-[var(--card-pad)] shadow-[0_8px_24px_rgb(15_18_24/0.06)] lg:hidden";
+  "rounded-2xl border border-black/10 bg-white p-4 shadow-[0_8px_24px_rgb(15_18_24/0.06)] sm:rounded-3xl sm:p-5 lg:hidden";
 
 /** Floats on the seam between hero (white) and needs (red). */
 export const homeQuoteCard =
-  "rounded-3xl border border-black/10 bg-white p-5 shadow-[0_16px_48px_rgb(15_18_24/0.14)] sm:p-6";
+  "rounded-2xl border border-black/10 bg-white p-4 shadow-[0_16px_48px_rgb(15_18_24/0.14)] sm:rounded-3xl sm:p-5 lg:p-6";
 
 export const homeQuoteBridge =
-  "relative z-20 -mt-10 mb-[-3rem] md:-mt-12 md:mb-[-3.75rem] lg:-mt-14 lg:mb-[-4.25rem]";
+  "relative z-20 -mt-6 mb-[-2.25rem] sm:-mt-8 sm:mb-[-2.75rem] md:-mt-12 md:mb-[-3.75rem] lg:-mt-14 lg:mb-[-4.25rem]";
 
 export const homeQuoteRow =
-  "flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3";
+  "flex flex-col gap-2.5 sm:gap-3 lg:flex-row lg:items-center";
 
 export const homeQuoteField =
-  "min-h-11 min-w-0 flex-1 rounded-xl border border-black/15 bg-white px-4 py-3 text-base placeholder:text-black/40";
+  "min-h-11 min-w-0 flex-1 rounded-xl border border-black/15 bg-white px-3.5 py-2.5 text-base placeholder:text-black/40 sm:px-4 sm:py-3";
 
 export const homeQuoteSelect =
   `${homeQuoteField} appearance-none bg-[length:1rem] bg-[right_1rem_center] bg-no-repeat pr-10`;
 
 export const homeHeroTrackerTitle =
-  "m-0 mb-3 font-display text-lg font-semibold uppercase leading-tight text-black sm:mb-4 sm:text-xl";
+  "m-0 mb-2.5 font-display text-base font-semibold uppercase leading-tight text-black sm:mb-3 sm:text-lg lg:text-xl";
 
 export const homeNeedsSection =
-  "bg-gradient-to-b from-primary to-primary-hover pb-[var(--section-y)] pt-[4.5rem] md:pt-24 lg:pt-28";
+  "bg-gradient-to-b from-primary to-primary-hover pb-10 pt-14 sm:pb-12 sm:pt-16 md:pb-[var(--section-y)] md:pt-24 lg:pt-28";
+
+export const homeNeedsGrid =
+  "grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4 lg:gap-5";
+
+export const homeNeedsCard =
+  "flex h-full flex-col gap-2 rounded-2xl border border-black/10 bg-white p-3 sm:gap-3 sm:rounded-3xl sm:p-5 lg:p-[var(--card-pad)]";
 
 /** Business / secondary light hero */
 export const hero =
@@ -172,7 +178,6 @@ export const trackShell =
   "grid max-w-[40rem] gap-6 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]";
 export const trackTimeline =
   "grid gap-[1.1rem] border-l-2 border-black/10 pl-5";
-export const trackTimelineMuted = `${trackTimeline} pointer-events-none opacity-55`;
 export const trackTimelineItem =
   "relative before:absolute before:left-[-1.55rem] before:top-[0.35rem] before:h-[0.65rem] before:w-[0.65rem] before:rounded-full before:border-2 before:border-white before:bg-black/20";
 export const trackTimelineItemActive =
