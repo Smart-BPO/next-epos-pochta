@@ -9,13 +9,15 @@ import {
   alertInfo,
   pageIntro,
   pageIntroTitle,
+  sectionLead,
   sectionMuted,
 } from "@/styles/ui";
 
 export function RequestPricePageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   const params = useSearchParams();
-  const category = params.get("category") || params.get("service") || "";
+  const category =
+    params.get("category") || params.get("service") || "";
   const fromQuery = params.get("from") || "";
   const toQuery = params.get("to") || "";
 
@@ -23,21 +25,17 @@ export function RequestPricePageView({ locale }: { locale: Locale }) {
     <>
       <section className={pageIntro}>
         <PageContainer>
-          <div className="max-w-3xl">
-            <h1 className={pageIntroTitle}>{copy.requestPrice.title}</h1>
-            <p className="mb-6 text-[length:var(--home-lead)] text-black/60">
-              {copy.requestPrice.lead}
-            </p>
-            <div className={`${alertInfo} rounded-2xl`}>
-              {copy.requestPrice.priceNote}
-            </div>
-          </div>
+          <h1 className={pageIntroTitle}>{copy.requestPrice.title}</h1>
+          <p className={sectionLead}>{copy.requestPrice.lead}</p>
         </PageContainer>
       </section>
 
       <section className={sectionMuted}>
         <PageContainer>
           <div className="max-w-3xl">
+            <div className={`${alertInfo} mb-6 rounded-2xl`}>
+              {copy.requestPrice.priceNote}
+            </div>
             <RequestPriceForm
               locale={locale}
               content={copy}

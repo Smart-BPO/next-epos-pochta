@@ -15,6 +15,7 @@ import {
   pageIntro,
   pageIntroTitle,
   section,
+  sectionLead,
   sectionMuted,
   sectionTitle,
 } from "@/styles/ui";
@@ -35,23 +36,9 @@ export function NewsArticlePageView({
     <>
       <JsonLd data={getNewsArticleSchema(locale, article)} />
       <section className={pageIntro}>
-        <PageContainer className="flex flex-col gap-4">
-          <Link
-            href={localePath(locale, "/news/")}
-            className="text-base font-medium text-primary hover:underline"
-          >
-            ← {copy.news.backToNews}
-          </Link>
-          <time
-            dateTime={article.publishedAt}
-            className="text-sm text-black/50"
-          >
-            {formatNewsDate(article.publishedAt, locale)}
-          </time>
+        <PageContainer>
           <h1 className={pageIntroTitle}>{article.title}</h1>
-          <p className="m-0 max-w-3xl text-[length:var(--home-lead)] text-black/60">
-            {article.excerpt}
-          </p>
+          <p className={sectionLead}>{article.excerpt}</p>
         </PageContainer>
       </section>
 
@@ -74,6 +61,18 @@ export function NewsArticlePageView({
 
       <section className={sectionMuted}>
         <PageContainer className={legalContent}>
+          <p className="!mt-0 mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-black/50">
+            <Link
+              href={localePath(locale, "/news/")}
+              className="font-medium text-primary hover:underline"
+            >
+              ← {copy.news.backToNews}
+            </Link>
+            <span aria-hidden>·</span>
+            <time dateTime={article.publishedAt}>
+              {formatNewsDate(article.publishedAt, locale)}
+            </time>
+          </p>
           {article.body.map((block) => {
             if (block.startsWith("## ")) {
               return <h2 key={block}>{block.slice(3)}</h2>;

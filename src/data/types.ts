@@ -55,6 +55,7 @@ export interface SiteCopy {
   };
   ui: {
     requestPrice: string;
+    calculator: string;
     calculate: string;
     callCourier: string;
     track: string;
@@ -88,6 +89,7 @@ export interface SiteCopy {
     contacts: string;
     support: string;
     faqLink: string;
+    geography: string;
   };
   home: {
     heroTitle: string;
@@ -203,22 +205,13 @@ export interface SiteCopy {
     title: string;
     lead: string;
     priceNote: string;
-    steps: [string, string, string, string];
-    progressTemplate: string;
-    questionCargo: string;
-    questionVolume: string;
-    questionServices: string;
-    questionServicesHint: string;
-    questionContact: string;
-    questionContactLead: string;
-    cargoOptions: Array<{ id: string; title: string; description: string }>;
-    volumeOptions: Array<{ id: string; title: string; description: string }>;
-    serviceOptions: Array<{ id: string; title: string }>;
     successTitle: string;
     successText: string;
     fields: {
       monthlyVolume: string;
       needApi: string;
+      regularPickup: string;
+      needCod: string;
       comment: string;
       routes: string;
       yes: string;
@@ -286,6 +279,7 @@ export interface SiteCopy {
     sortOldest: string;
     sortTitleAsc: string;
     sortTitleDesc: string;
+    pageSizeLabel: string;
     resultsLabel: string;
     resetFilters: string;
     prevPage: string;

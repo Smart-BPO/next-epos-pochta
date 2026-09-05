@@ -113,7 +113,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
                   href={
                     item.id === "regular"
                       ? localePath(locale, "/request-price/")
-                      : localePath(locale, "/calculator/")
+                      : `${localePath(locale, "/calculator/")}?category=${item.id}`
                   }
                   variant="secondary"
                   className="mt-auto w-full !min-h-10 !px-2 !py-2 text-xs sm:!min-h-11 sm:!px-4 sm:text-sm"

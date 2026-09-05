@@ -47,6 +47,8 @@ export function createPageMetadata(
       url,
       siteName: SITE_CONFIG.name,
       locale: options?.ogLocale ?? "uz_UZ",
+      alternateLocale:
+        options?.ogLocale === "ru_UZ" ? ["uz_UZ"] : ["ru_UZ"],
       type: "website",
       images: [
         {

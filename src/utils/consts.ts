@@ -24,10 +24,17 @@ export const SITE_CONFIG = {
     "https://www.facebook.com/profile.php?id=61590938820629",
   ),
   // TODO(cms): hours and messenger links from CMS / client confirmation
-  hours: "",
+  hours: getPublicEnv(
+    "NEXT_PUBLIC_BUSINESS_HOURS",
+    "Mo-Sa 09:00-18:00",
+  ),
+  hoursDisplayRu: "Пн–Сб 09:00–18:00",
+  hoursDisplayUz: "Du–Sha 09:00–18:00",
   address: {
     line:
       "г. Ташкент, Сергелийский район, МСГ Bunyodobod, ул. Ташкентская кольцевая автомобильная дорога, дом 7",
+    lineUz:
+      "Toshkent sh., Sergeli tumani, Bunyodobod MFY, Toshkent halqa avtomobil yoʻli, 7-uy",
     /** Approximate pin — refine via NEXT_PUBLIC_MAP_LAT / NEXT_PUBLIC_MAP_LNG. */
     lat: Number(getPublicEnv("NEXT_PUBLIC_MAP_LAT", "41.2085")) || 41.2085,
     lng: Number(getPublicEnv("NEXT_PUBLIC_MAP_LNG", "69.22")) || 69.22,

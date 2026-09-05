@@ -103,6 +103,18 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
               />
               <span className="min-w-0 break-words">{content.footer.faqLink}</span>
             </Link>
+            <Link
+              href={localePath(locale, "/calculator/")}
+              className="text-sm font-medium text-black hover:text-primary"
+            >
+              {content.ui.calculator}
+            </Link>
+            <Link
+              href={localePath(locale, "/delivery/")}
+              className="text-sm font-medium text-black hover:text-primary"
+            >
+              {content.footer.geography}
+            </Link>
             <a
               href={`mailto:${supportEmail}`}
               className="inline-flex min-w-0 items-center gap-2 text-sm text-black hover:text-primary"
@@ -140,7 +152,14 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
               {SITE_CONFIG.phoneDisplay}
             </a>
             <p className="m-0 text-sm leading-5 text-black break-words">
-              {SITE_CONFIG.address.line}
+              {locale === "uz"
+                ? SITE_CONFIG.address.lineUz
+                : SITE_CONFIG.address.line}
+            </p>
+            <p className="m-0 text-sm text-black/60">
+              {locale === "uz"
+                ? SITE_CONFIG.hoursDisplayUz
+                : SITE_CONFIG.hoursDisplayRu}
             </p>
           </div>
         </div>

@@ -4,24 +4,21 @@ import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import {
-  heroActions,
+  pageIntro,
   pageIntroTitle,
-  section,
   sectionLead,
 } from "@/styles/ui";
 
 export function NotFoundView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   return (
-    <section className={section}>
+    <section className={pageIntro}>
       <PageContainer>
         <h1 className={pageIntroTitle}>{copy.notFound.title}</h1>
         <p className={sectionLead}>{copy.notFound.lead}</p>
-        <div className={heroActions}>
-          <Button href={localePath(locale, "/")}>
-            {locale === "uz" ? "Bosh sahifa" : "На главную"}
-          </Button>
-        </div>
+        <Button href={localePath(locale, "/")}>
+          {locale === "uz" ? "Bosh sahifa" : "На главную"}
+        </Button>
       </PageContainer>
     </section>
   );

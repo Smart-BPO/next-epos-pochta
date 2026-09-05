@@ -13,6 +13,12 @@ export function trackEvent(
   if (typeof w.gtag === "function") {
     w.gtag("event", name, safe);
   }
+
+  const ymId = process.env.NEXT_PUBLIC_YM_ID;
+  if (ymId && typeof w.ym === "function") {
+    w.ym(ymId, "reachGoal", name, safe);
+  }
+
   w.dataLayer = w.dataLayer || [];
   w.dataLayer.push({ event: name, ...safe });
 }

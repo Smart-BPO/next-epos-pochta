@@ -2,37 +2,38 @@ import type { SiteCopy } from "@/data/types";
 
 export const uzCopy: SiteCopy = {
   meta: {
-    homeTitle: "Oʻzbekiston boʻylab pochta yetkazib berish",
+    homeTitle: "Oʻzbekiston boʻylab kuryerlik yetkazib berish — EPOS POCHTA",
     homeDescription:
-      "EPOS POCHTA — Oʻzbekiston boʻylab kuryerlik yetkazib berish. Narx soʻrang, joʻnatmani kuzating yoki biznes uchun ariza qoldiring.",
-    servicesTitle: "Yetkazib berish xizmatlari",
+      "Hujjat va pochta yetkazib berish: kalkulyator orientiri, statuslar, kuryer va biznes yechimlari. Ochiq tarifsiz.",
+    servicesTitle: "Kuryerlik yetkazib berish xizmatlari",
     servicesDescription:
-      "Hujjatlar, pochta, eshikgacha yetkazish, kuryer chaqirish va internet-doʻkonlar uchun yechimlar — ochiq tariflar yoʻq, faqat soʻrov boʻyicha hisob.",
-    businessTitle: "Biznes uchun",
+      "Hujjatlar, pochta, eshikgacha yetkazish, kuryer, e-commerce va korporativ logistika — soʻrov boʻyicha hisob.",
+    businessTitle: "Biznes va internet-doʻkonlar uchun yetkazib berish",
     businessDescription:
-      "Muntazam olib ketish, ommaviy joʻnatmalar, qaytarishlar, yetkazib berishda toʻlov, API va hisobotlar.",
+      "Muntazam olib ketish, ommaviy joʻnatmalar, COD, qaytarishlar, API va hisobotlar — Oʻzbekistondagi e-commerce uchun.",
     trackingTitle: "Joʻnatmani kuzatish",
     trackingDescription: "EPOS POCHTA trek-raqami boʻyicha statusni tekshiring.",
     requestPriceTitle: "Biznes uchun tijorat taklifi",
     requestPriceDescription:
-      "Internet-doʻkonlar va kompaniyalar uchun qisqa soʻrovnoma: hajm, xizmatlar va aloqa. Menejer individual shartlarni tayyorlaydi.",
-    calculatorTitle: "Narx kalkulyatori",
+      "Internet-doʻkonlar va kompaniyalar uchun individual hisob arizasi: hajm, API, olib ketish va aloqa. Shartlarni menejer tasdiqlaydi.",
+    calculatorTitle: "Yetkazib berish narxi kalkulyatori",
     calculatorDescription:
-      "Yoʻnalish, ogʻirlik va oʻlchamlar boʻyicha taxminiy hisob. Oferta emas — yakuniy narxni menejer tasdiqlaydi.",
-    faqTitle: "Savol-javoblar",
+      "Shaharlar, ogʻirlik va oʻlchamlar boʻyicha taxminiy narx. Oferta emas — yakuniy narxni menejer tasdiqlaydi.",
+    faqTitle: "EPOS POCHTA yetkazib berish boʻyicha savol-javoblar",
     faqDescription:
-      "EPOS POCHTA yetkazib berish, narx, muddatlar va qoʻllab-quvvatlash boʻyicha javoblar.",
+      "Narxni qanday hisoblash, muddat, kuryer chaqirish va trek — EPOS POCHTA javoblari.",
     businessConnectTitle: "Biznes uchun ulanish",
     businessConnectDescription:
       "Muntazam yetkazib berish, API va korporativ shartlarni ulash uchun bosqichma-bosqich ariza.",
-    aboutTitle: "Kompaniya haqida",
+    aboutTitle: "EPOS POCHTA kompaniyasi haqida",
     aboutDescription:
-      "EPOS POCHTA — Oʻzbekiston Respublikasi hududida yetkazib berish xizmatlarini taqdim etuvchi zamonaviy kuryerlik kompaniyasi.",
-    newsTitle: "Yangiliklar",
+      "EPOS POCHTA — Oʻzbekiston Respublikasi hududida yetkazib berish xizmatlarini taqdim etuvchi kuryerlik kompaniyasi.",
+    newsTitle: "EPOS POCHTA yetkazib berish yangiliklari",
     newsDescription:
-      "EPOS POCHTA yangiliklari va eʼlonlari — xizmat ishga tushishi, yetkazib berish geografiyasi va biznes yechimlari.",
-    contactsTitle: "Aloqa",
-    contactsDescription: "EPOS POCHTA telefoni, manzili va xarita.",
+      "EPOS POCHTA yangiliklari: xizmat ishga tushishi, geografiya va biznes yechimlari.",
+    contactsTitle: "EPOS POCHTA aloqasi — Toshkent",
+    contactsDescription:
+      "Telefon, ofis manzili, ish vaqti va Toshkentdagi xarita.",
     privacyTitle: "Maxfiylik siyosati",
     privacyDescription: "EPOS POCHTA shaxsiy maʼlumotlarni qanday qayta ishlaydi.",
     termsTitle: "Xizmat koʻrsatish shartlari",
@@ -41,6 +42,7 @@ export const uzCopy: SiteCopy = {
   },
   ui: {
     requestPrice: "Narx soʻrash",
+    calculator: "Kalkulyator",
     calculate: "Hisoblash",
     callCourier: "Kuryer chaqirish",
     track: "Kuzatish",
@@ -82,6 +84,7 @@ export const uzCopy: SiteCopy = {
     contacts: "Aloqa",
     support: "Qoʻllab-quvvatlash",
     faqLink: "Savol-javoblar",
+    geography: "Shaharlar boʻylab yetkazib berish",
   },
   home: {
     heroTitle: "Oʻzbekiston boʻylab pochtalarni yetkazamiz",
@@ -250,7 +253,7 @@ export const uzCopy: SiteCopy = {
         categoryId: "pricing",
         question: "Narxni qanday bilaman?",
         answer:
-          "Yoʻnalish, ogʻirlik va oʻlchamlar boʻyicha kalkulyatordan taxminiy hisob oling. Bu oferta emas. Yakuniy narxni menejer ariza yoki biznes soʻrovnomasidan keyin tasdiqlaydi.",
+          "Saytdagi kalkulyatorda shaharlar, ogʻirlik va oʻlchamlarni kiriting — taxminiy smeta chiqadi. Bu oferta emas. Yakuniy narxni menejer tasdiqlaydi. Biznes uchun — tijorat taklifi formasi.",
       },
       {
         id: "tariffs",
@@ -258,6 +261,20 @@ export const uzCopy: SiteCopy = {
         question: "Nega saytda tarif jadvali yoʻq?",
         answer:
           "Narx yoʻnalish, ogʻirlik, oʻlcham, olib ketish/yetkazish usuli va hajmga bogʻliq. Ochiq narxnomalar joylamaymiz — kalkulyatorda orientir va menejer orqali individual hisob beramiz.",
+      },
+      {
+        id: "cities",
+        categoryId: "delivery",
+        question: "Qaysi shaharlarga yetkazasiz?",
+        answer:
+          "Oʻzbekistonning asosiy shaharlari: Toshkent, Samarqand, Buxoro, Namangan, Andijon, Fargʻona va boshqalar. Batafsil — «Shaharlar boʻylab yetkazib berish» boʻlimida.",
+      },
+      {
+        id: "calculator-vs-b2b",
+        categoryId: "pricing",
+        question: "Kalkulyator biznes arizasidan nimasi bilan farq qiladi?",
+        answer:
+          "Kalkulyator — bir martalik taxminiy smeta uchun. Tijorat taklifi arizasi — hajm, API, muntazam olib ketish va COD kerak boʻlgan kompaniyalar uchun.",
       },
       {
         id: "eta",
@@ -545,75 +562,17 @@ export const uzCopy: SiteCopy = {
   },
   requestPrice: {
     title: "Biznes uchun tijorat taklifi",
-    lead: "4 ta qisqa savolga javob bering — menejer hajmingiz va yoʻnalishlaringiz uchun shartlarni tayyorlaydi. Saytda ochiq tarif va oferta yoʻq.",
+    lead: "Kompaniya maʼlumotlarini qoldiring — menejer hajmingiz va yoʻnalishlaringiz uchun shartlarni tayyorlaydi. Saytda ochiq tarif va oferta yoʻq.",
     priceNote:
-      "Bu individual hisob uchun ariza. Yakuniy narx va muddatni menejer kelishuvdan keyin tasdiqlaydi.",
-    steps: ["Yuk", "Hajm", "Xizmatlar", "Aloqa"],
-    progressTemplate: "{current}-qadam / {total}",
-    questionCargo: "Asosan nima yuborasiz?",
-    questionVolume: "Oyiga nechta joʻnatma?",
-    questionServices: "Qaysi xizmatlar kerak?",
-    questionServicesHint: "Bir nechtasini tanlash mumkin",
-    questionContact: "Taklifni qayerga yuboraylik?",
-    questionContactLead:
-      "Kompaniya aloqasini qoldiring — menejer tijorat taklifi bilan bogʻlanadi.",
-    cargoOptions: [
-      {
-        id: "documents",
-        title: "Hujjatlar",
-        description: "Shartnomalar, aktlar, yozishmalar",
-      },
-      {
-        id: "parcels",
-        title: "Pochta",
-        description: "Shaxsiy va korporativ joʻnatmalar",
-      },
-      {
-        id: "goods",
-        title: "Xaridorlarga tovarlar",
-        description: "Internet-doʻkon buyurtmalari",
-      },
-      {
-        id: "mixed",
-        title: "Aralash oqim",
-        description: "Bir necha turdagi joʻnatmalar",
-      },
-    ],
-    volumeOptions: [
-      {
-        id: "1-50",
-        title: "50 gacha",
-        description: "Start yoki pilot hajm",
-      },
-      {
-        id: "51-200",
-        title: "51–200",
-        description: "Muntazam joʻnatmalar",
-      },
-      {
-        id: "201-1000",
-        title: "201–1000",
-        description: "Oʻsib borayotgan e-commerce",
-      },
-      {
-        id: "1000+",
-        title: "1000+",
-        description: "Ommaviy joʻnatmalar",
-      },
-    ],
-    serviceOptions: [
-      { id: "pickup", title: "Muntazam olib ketish" },
-      { id: "door", title: "Eshikgacha yetkazish" },
-      { id: "cod", title: "Yetkazib berishda toʻlov" },
-      { id: "api", title: "API va statuslar" },
-      { id: "returns", title: "Qaytarishlar" },
-    ],
+      "Bu biznes uchun individual hisob arizasi. Yakuniy narx va muddatni menejer kelishuvdan keyin tasdiqlaydi. Bir martalik joʻnatma uchun kalkulyatordan foydalaning.",
     successTitle: "Ariza qabul qilindi",
     successText:
       "EPOS POCHTA menejeri siz bilan bogʻlanib, hajmingiz uchun tijorat taklifini tayyorlaydi.",
     fields: {
       monthlyVolume: "Oyiga joʻnatmalar soni",
       needApi: "API kerakligi",
+      regularPickup: "Muntazam olib ketish",
+      needCod: "Yetkazib berishda toʻlov",
       comment: "Izoh",
       routes: "Asosiy yoʻnalishlar yoki shaharlar",
       yes: "Ha",
@@ -684,6 +643,7 @@ export const uzCopy: SiteCopy = {
     sortOldest: "Avval eskilari",
     sortTitleAsc: "Nom boʻyicha A–Z",
     sortTitleDesc: "Nom boʻyicha Z–A",
+    pageSizeLabel: "Sahifada",
     resultsLabel: "{from}–{to} / {total}",
     resetFilters: "Filtrlarni tozalash",
     prevPage: "Orqaga",

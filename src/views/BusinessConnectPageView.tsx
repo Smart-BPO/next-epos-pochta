@@ -16,17 +16,17 @@ export function BusinessConnectPageView({ locale }: { locale: Locale }) {
   return (
     <>
       <section className={pageIntro}>
-        <PageContainer className="flex max-w-2xl flex-col gap-4">
+        <PageContainer>
           <h1 className={pageIntroTitle}>{copy.businessConnect.title}</h1>
           <p className={sectionLead}>{copy.businessConnect.lead}</p>
-          <div className={`${alertInfo} rounded-2xl`}>
-            {copy.business.connectCtaLead}
-          </div>
         </PageContainer>
       </section>
 
       <section className={sectionMuted}>
-        <PageContainer>
+        <PageContainer className="max-w-2xl">
+          <div className={`${alertInfo} mb-6 rounded-2xl`}>
+            {copy.business.connectCtaLead}
+          </div>
           <BusinessConnectForm locale={locale} content={copy} />
         </PageContainer>
       </section>

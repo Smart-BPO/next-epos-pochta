@@ -48,7 +48,8 @@ export interface NewsListQuery {
   category?: NewsCategory | "all";
   sort?: NewsSort;
   page?: number;
-  pageSize?: number;
+  /** Numeric template or `"all"` (12+ / entire list). */
+  pageSize?: number | "all";
   q?: string;
 }
 

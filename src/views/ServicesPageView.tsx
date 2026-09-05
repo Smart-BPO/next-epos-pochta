@@ -5,9 +5,10 @@ import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { PageCta } from "@/components/organisms/PageCta";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { getServiceCatalogSchema } from "@/utils/seo/json-ld";
 import { cn } from "@/lib/cn";
 import {
-  alertInfo,
   anchorSection,
   faqDetails,
   faqSummary,
@@ -31,19 +32,33 @@ const SERVICE_MEDIA: Record<string, string> = {
   returns: "/images/services/08-return-shipments.webp",
 };
 
-function serviceHref(locale: Locale, serviceId: string) {
+function serviceHref(locale: Locale, serviceId: string): {
+  href: string;
+  isB2b: boolean;
+} {
+  const b2bIds = new Set(["ecommerce", "corporate", "cod", "returns"]);
+  if (b2bIds.has(serviceId)) {
+    const base = localePath(locale, "/request-price/");
+    return { href: `${base}?service=${serviceId}`, isB2b: true };
+  }
+
   const category =
     serviceId === "documents"
       ? "documents"
       : serviceId === "parcels"
         ? "parcel"
-        : serviceId === "ecommerce" || serviceId === "cod"
-          ? "goods"
+        : serviceId === "door"
+          ? "parcel"
           : "";
-  const base = localePath(locale, "/request-price/");
-  if (category) return `${base}?category=${category}&service=${serviceId}`;
-  if (serviceId === "courier") return `${base}?pickup=1&service=${serviceId}`;
-  return `${base}?service=${serviceId}`;
+  const base = localePath(locale, "/calculator/");
+  const params = new URLSearchParams();
+  if (category) params.set("category", category);
+  if (serviceId === "courier") params.set("pickup", "1");
+  const qs = params.toString();
+  return {
+    href: `${base}${qs ? `?${qs}` : ""}`,
+    isB2b: false,
+  };
 }
 
 export function ServicesPageView({ locale }: { locale: Locale }) {
@@ -60,24 +75,13 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <JsonLd
+        data={getServiceCatalogSchema(locale, copy.services.items)}
+      />
       <section className={pageIntro}>
-        <PageContainer className="flex flex-col gap-6">
-          <div>
-            <h1 className={pageIntroTitle}>{copy.meta.servicesTitle}</h1>
-            <p className={sectionLead}>{copy.services.intro}</p>
-            <div className={`${alertInfo} rounded-2xl`}>{copy.services.priceNote}</div>
-          </div>
-          <nav aria-label={labels.catalog} className="flex flex-wrap gap-2">
-            {copy.services.items.map((service) => (
-              <a
-                key={service.id}
-                href={`#${service.id}`}
-                className="rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-medium text-black hover:border-primary hover:text-primary"
-              >
-                {service.title}
-              </a>
-            ))}
-          </nav>
+        <PageContainer>
+          <h1 className={pageIntroTitle}>{copy.meta.servicesTitle}</h1>
+          <p className={sectionLead}>{copy.services.intro}</p>
         </PageContainer>
       </section>
 
@@ -121,6 +125,7 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
         const src =
           SERVICE_MEDIA[service.id] ??
           "/images/services/02-parcel-delivery.webp";
+        const action = serviceHref(locale, service.id);
         return (
           <section
             key={service.id}
@@ -185,8 +190,10 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
                   </div>
 
                   <div className="mt-6 flex flex-wrap gap-3">
-                    <Button href={serviceHref(locale, service.id)}>
-                      {copy.ui.requestPrice}
+                    <Button href={action.href}>
+                      {action.isB2b
+                        ? copy.ui.requestPrice
+                        : copy.ui.calculate}
                     </Button>
                     <Button
                       href={localePath(locale, "/contacts/")}

@@ -12,7 +12,27 @@ import type { Locale } from "@/i18n/config";
 
 /** TODO(cms): swap static import for Supabase query when connected. */
 
-export const NEWS_PAGE_SIZE = 3;
+/** Allowed page-size templates for the news index (`all` = 12+ / show everything). */
+export const NEWS_PAGE_SIZE_OPTIONS = [3, 6, 9, 12, "all"] as const;
+export type NewsPageSize = (typeof NEWS_PAGE_SIZE_OPTIONS)[number];
+export const NEWS_PAGE_SIZE_DEFAULT: NewsPageSize = 6;
+/** @deprecated Prefer NEWS_PAGE_SIZE_DEFAULT */
+export const NEWS_PAGE_SIZE = NEWS_PAGE_SIZE_DEFAULT;
+
+export function isNewsPageSize(value: unknown): value is NewsPageSize {
+  return (NEWS_PAGE_SIZE_OPTIONS as readonly unknown[]).includes(value);
+}
+
+export function resolveNewsPageSize(
+  pageSize: NewsPageSize | number | undefined,
+  total = Number.MAX_SAFE_INTEGER,
+): number {
+  if (pageSize === "all") return Math.max(1, total);
+  if (typeof pageSize === "number" && isNewsPageSize(pageSize)) return pageSize;
+  return NEWS_PAGE_SIZE_DEFAULT === "all"
+    ? Math.max(1, total)
+    : NEWS_PAGE_SIZE_DEFAULT;
+}
 
 function localize(
   article: NewsArticle,
@@ -92,7 +112,10 @@ export function isNewsSort(value: string): value is NewsSort {
 
 export function parseNewsListQuery(
   raw: Record<string, string | string[] | undefined> | URLSearchParams,
-): Required<Pick<NewsListQuery, "category" | "sort" | "page" | "pageSize">> & {
+): Required<
+  Pick<NewsListQuery, "category" | "sort" | "page">
+> & {
+  pageSize: NewsPageSize;
   q: string;
 } {
   const get = (key: string) => {
@@ -104,13 +127,22 @@ export function parseNewsListQuery(
   const categoryRaw = get("category");
   const sortRaw = get("sort");
   const pageRaw = Number.parseInt(get("page"), 10);
+  const perRaw = get("per") || get("pageSize");
+  const pageSizeNum = Number.parseInt(perRaw, 10);
   const q = get("q").trim();
+
+  let pageSize: NewsPageSize = NEWS_PAGE_SIZE_DEFAULT;
+  if (perRaw === "all" || perRaw === "12+") {
+    pageSize = "all";
+  } else if (isNewsPageSize(pageSizeNum)) {
+    pageSize = pageSizeNum;
+  }
 
   return {
     category: isNewsCategory(categoryRaw) ? categoryRaw : "all",
     sort: isNewsSort(sortRaw) ? sortRaw : "newest",
     page: Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1,
-    pageSize: NEWS_PAGE_SIZE,
+    pageSize,
     q,
   };
 }
@@ -119,6 +151,7 @@ export function buildNewsListSearchParams(query: {
   category?: string;
   sort?: string;
   page?: number;
+  pageSize?: NewsPageSize | number;
   q?: string;
 }): URLSearchParams {
   const params = new URLSearchParams();
@@ -127,6 +160,15 @@ export function buildNewsListSearchParams(query: {
   }
   if (query.sort && query.sort !== "newest") {
     params.set("sort", query.sort);
+  }
+  if (query.pageSize === "all") {
+    params.set("per", "all");
+  } else if (
+    typeof query.pageSize === "number" &&
+    isNewsPageSize(query.pageSize) &&
+    query.pageSize !== NEWS_PAGE_SIZE_DEFAULT
+  ) {
+    params.set("per", String(query.pageSize));
   }
   if (query.q?.trim()) {
     params.set("q", query.q.trim());
@@ -143,7 +185,6 @@ export function queryNews(
 ): NewsListResult {
   const category = rawQuery.category ?? "all";
   const sort = rawQuery.sort ?? "newest";
-  const pageSize = Math.max(1, rawQuery.pageSize ?? NEWS_PAGE_SIZE);
   const q = rawQuery.q ?? "";
 
   const localized = publishedArticles().map((article) =>
@@ -162,7 +203,11 @@ export function queryNews(
 
   const sorted = sortArticles(filtered, sort, locale);
   const total = sorted.length;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const template = isNewsPageSize(rawQuery.pageSize)
+    ? rawQuery.pageSize
+    : NEWS_PAGE_SIZE_DEFAULT;
+  const pageSize = resolveNewsPageSize(template, total);
+  const totalPages = Math.max(1, Math.ceil(total / pageSize) || 1);
   const page = Math.min(Math.max(1, rawQuery.page ?? 1), totalPages);
   const start = (page - 1) * pageSize;
 

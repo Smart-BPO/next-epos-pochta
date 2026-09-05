@@ -2,19 +2,17 @@ import Image from "next/image";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
-import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { PageCta } from "@/components/organisms/PageCta";
 import { cn } from "@/lib/cn";
 import {
   anchorSection,
-  heroActions,
-  heroBrand,
-  heroLead,
-  heroTitle,
   homeSectionTitle,
+  pageIntro,
+  pageIntroTitle,
   section,
+  sectionLead,
   sectionMuted,
 } from "@/styles/ui";
 
@@ -41,28 +39,10 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <section className="relative isolate overflow-hidden bg-white pt-[calc(var(--header-height)+1.5rem)] pb-[var(--section-y)]">
-        <Image
-          src="/images/hero/uzbekistan-map.svg"
-          alt=""
-          width={1000}
-          height={652}
-          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(100%,40rem)] max-w-[min(100%,46rem)] select-none object-contain object-right opacity-90 md:block"
-          unoptimized
-          priority
-        />
-        <PageContainer className="relative z-10 flex max-w-xl flex-col gap-4 md:gap-6">
-          <p className={heroBrand}>{SITE_CONFIG.name}</p>
-          <h1 className={heroTitle}>{copy.business.heroTitle}</h1>
-          <p className={heroLead}>{copy.business.heroLead}</p>
-          <div className={heroActions}>
-            <Button href={connectHref} variant="primary">
-              {copy.ui.startConnect}
-            </Button>
-            <Button href="#api" variant="secondary">
-              {copy.ui.learnApi}
-            </Button>
-          </div>
+      <section className={pageIntro}>
+        <PageContainer>
+          <h1 className={pageIntroTitle}>{copy.business.heroTitle}</h1>
+          <p className={sectionLead}>{copy.business.heroLead}</p>
         </PageContainer>
       </section>
 

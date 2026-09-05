@@ -1,8 +1,11 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Locale } from "@/i18n/config";
+import { ogLocale } from "@/i18n/config";
 import { getLocalizedPageMetadata } from "@/i18n/metadata";
 import { getNewsArticleMetadata } from "@/i18n/news-metadata";
+import { getLocalizedAlternates, localePath } from "@/i18n/paths";
+import { createPageMetadata, canonicalPageUrl } from "@/utils/seo/metadata";
 import { SiteLayout } from "@/components/templates/SiteLayout";
 import { HomePageView } from "@/views/HomePageView";
 import { ServicesPageView } from "@/views/ServicesPageView";
@@ -21,6 +24,10 @@ import {
   getNewsBySlug,
   listPublishedSlugs,
 } from "@/lib/news/repository";
+import {
+  getDeliveryCityBySlug,
+  listDeliveryCitySlugs,
+} from "@/data/delivery-cities";
 import { pageContainer, section } from "@/styles/ui";
 
 const suspenseFallback = (
@@ -122,6 +129,91 @@ export function createCalculatorPage(locale: Locale) {
           <Suspense fallback={suspenseFallback}>
             <CalculatorPageView locale={locale} />
           </Suspense>
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createDeliveryIndexPage(locale: Locale) {
+  return {
+    generateMetadata: async () => {
+      const title =
+        locale === "uz"
+          ? "Yetkazib berish shaharlari"
+          : "Доставка по городам Узбекистана";
+      const description =
+        locale === "uz"
+          ? "EPOS POCHTA — Toshkent, Samarqand, Buxoro va boshqa shaharlarga kuryerlik yetkazib berish. Kalkulyator va menejer tasdigʻi."
+          : "EPOS POCHTA — курьерская доставка в Ташкент, Самарканд, Бухару и другие города. Калькулятор и подтверждение менеджера.";
+      const path = localePath(locale, "/delivery/");
+      const alternates = getLocalizedAlternates("/delivery/");
+      return createPageMetadata(title, description, path, {
+        locale,
+        ogLocale: ogLocale[locale],
+        alternates: Object.fromEntries(
+          Object.entries(alternates).map(([lang, href]) => [
+            lang,
+            canonicalPageUrl(href),
+          ]),
+        ),
+      });
+    },
+    Page: async function DeliveryIndexPage() {
+      const { DeliveryIndexPageView } = await import(
+        "@/views/DeliveryCityPageView"
+      );
+      return (
+        <SiteLayout locale={locale}>
+          <DeliveryIndexPageView locale={locale} />
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createDeliveryCityPage(locale: Locale) {
+  return {
+    generateStaticParams: () =>
+      listDeliveryCitySlugs().map((city) => ({ city })),
+    generateMetadata: async ({
+      params,
+    }: {
+      params: Promise<{ city: string }>;
+    }) => {
+      const { city: slug } = await params;
+      const city = getDeliveryCityBySlug(slug);
+      if (!city) return getLocalizedPageMetadata(locale, "services");
+      const title = locale === "uz" ? city.metaTitleUz : city.metaTitleRu;
+      const description =
+        locale === "uz" ? city.metaDescriptionUz : city.metaDescriptionRu;
+      const path = localePath(locale, `/delivery/${city.slug}/`);
+      const alternates = getLocalizedAlternates(`/delivery/${city.slug}/`);
+      return createPageMetadata(title, description, path, {
+        locale,
+        ogLocale: ogLocale[locale],
+        alternates: Object.fromEntries(
+          Object.entries(alternates).map(([lang, href]) => [
+            lang,
+            canonicalPageUrl(href),
+          ]),
+        ),
+      });
+    },
+    Page: async function DeliveryCityPage({
+      params,
+    }: {
+      params: Promise<{ city: string }>;
+    }) {
+      const { city: slug } = await params;
+      const city = getDeliveryCityBySlug(slug);
+      if (!city) notFound();
+      const { DeliveryCityPageView } = await import(
+        "@/views/DeliveryCityPageView"
+      );
+      return (
+        <SiteLayout locale={locale}>
+          <DeliveryCityPageView locale={locale} city={city} />
         </SiteLayout>
       );
     },

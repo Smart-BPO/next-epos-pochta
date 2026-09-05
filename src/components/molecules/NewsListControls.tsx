@@ -9,7 +9,12 @@ import type {
   NewsCategoryCount,
   NewsSort,
 } from "@/data/news/types";
-import { buildNewsListSearchParams } from "@/lib/news/repository";
+import {
+  buildNewsListSearchParams,
+  NEWS_PAGE_SIZE_DEFAULT,
+  NEWS_PAGE_SIZE_OPTIONS,
+  type NewsPageSize,
+} from "@/lib/news/repository";
 import { cn } from "@/lib/cn";
 import {
   fieldControl,
@@ -21,18 +26,22 @@ import {
 
 type NewsCopy = SiteCopy["news"];
 
-function hrefFor(
-  pathname: string,
-  next: {
-    category?: string;
-    sort?: string;
-    page?: number;
-    q?: string;
-  },
-) {
+type ListHrefInput = {
+  category?: string;
+  sort?: string;
+  page?: number;
+  pageSize?: NewsPageSize;
+  q?: string;
+};
+
+function hrefFor(pathname: string, next: ListHrefInput) {
   const params = buildNewsListSearchParams(next);
   const qs = params.toString();
   return qs ? `${pathname}?${qs}` : pathname;
+}
+
+function pageSizeLabel(size: NewsPageSize) {
+  return size === "all" ? "12+" : String(size);
 }
 
 export function NewsListControls({
@@ -40,12 +49,14 @@ export function NewsListControls({
   categories,
   category,
   sort,
+  pageSize,
   q,
 }: {
   copy: NewsCopy;
   categories: NewsCategoryCount[];
   category: NewsCategory | "all";
   sort: NewsSort;
+  pageSize: NewsPageSize;
   q: string;
   page: number;
 }) {
@@ -66,6 +77,7 @@ export function NewsListControls({
           hrefFor(pathname, {
             category,
             sort,
+            pageSize,
             page: 1,
             q: search,
           }),
@@ -74,10 +86,13 @@ export function NewsListControls({
       });
     }, 300);
     return () => window.clearTimeout(handle);
-  }, [search, q, category, sort, pathname, router]);
+  }, [search, q, category, sort, pageSize, pathname, router]);
 
   const hasFilters =
-    category !== "all" || sort !== "newest" || q.trim().length > 0;
+    category !== "all" ||
+    sort !== "newest" ||
+    pageSize !== NEWS_PAGE_SIZE_DEFAULT ||
+    q.trim().length > 0;
 
   return (
     <div
@@ -104,36 +119,76 @@ export function NewsListControls({
           />
         </div>
 
-        <div className="flex w-full flex-col gap-1.5 sm:max-w-xs lg:w-auto">
-          <label
-            htmlFor="news-sort"
-            className="text-sm font-semibold uppercase tracking-wide text-black/40"
-          >
-            {copy.sortLabel}
-          </label>
-          <select
-            id="news-sort"
-            className={`${fieldControl} w-full !py-3`}
-            value={sort}
-            onChange={(e) => {
-              startTransition(() => {
-                router.push(
-                  hrefFor(pathname, {
-                    category,
-                    sort: e.target.value,
-                    page: 1,
-                    q: search,
-                  }),
-                  { scroll: false },
-                );
-              });
-            }}
-          >
-            <option value="newest">{copy.sortNewest}</option>
-            <option value="oldest">{copy.sortOldest}</option>
-            <option value="title-asc">{copy.sortTitleAsc}</option>
-            <option value="title-desc">{copy.sortTitleDesc}</option>
-          </select>
+        <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end lg:w-auto">
+          <div className="flex min-w-[10rem] flex-1 flex-col gap-1.5 sm:max-w-xs lg:flex-none">
+            <label
+              htmlFor="news-sort"
+              className="text-sm font-semibold uppercase tracking-wide text-black/40"
+            >
+              {copy.sortLabel}
+            </label>
+            <select
+              id="news-sort"
+              className={`${fieldControl} w-full !py-3`}
+              value={sort}
+              onChange={(e) => {
+                startTransition(() => {
+                  router.push(
+                    hrefFor(pathname, {
+                      category,
+                      sort: e.target.value,
+                      pageSize,
+                      page: 1,
+                      q: search,
+                    }),
+                    { scroll: false },
+                  );
+                });
+              }}
+            >
+              <option value="newest">{copy.sortNewest}</option>
+              <option value="oldest">{copy.sortOldest}</option>
+              <option value="title-asc">{copy.sortTitleAsc}</option>
+              <option value="title-desc">{copy.sortTitleDesc}</option>
+            </select>
+          </div>
+
+          <div className="flex min-w-[8rem] flex-col gap-1.5 sm:w-36">
+            <label
+              htmlFor="news-page-size"
+              className="text-sm font-semibold uppercase tracking-wide text-black/40"
+            >
+              {copy.pageSizeLabel}
+            </label>
+            <select
+              id="news-page-size"
+              className={`${fieldControl} w-full !py-3`}
+              value={pageSize}
+              onChange={(e) => {
+                const raw = e.target.value;
+                const nextSize: NewsPageSize =
+                  raw === "all" ? "all" : (Number(raw) as NewsPageSize);
+                startTransition(() => {
+                  router.push(
+                    hrefFor(pathname, {
+                      category,
+                      sort,
+                      pageSize: nextSize,
+                      page: 1,
+                      q: search,
+                    }),
+                    { scroll: false },
+                  );
+                });
+              }}
+            >
+              {NEWS_PAGE_SIZE_OPTIONS.map((size) => (
+                <option key={String(size)} value={size}>
+                  {pageSizeLabel(size)}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -146,6 +201,7 @@ export function NewsListControls({
             href={hrefFor(pathname, {
               category: "all",
               sort,
+              pageSize,
               q: search,
               page: 1,
             })}
@@ -164,6 +220,7 @@ export function NewsListControls({
               href={hrefFor(pathname, {
                 category: item.id,
                 sort,
+                pageSize,
                 q: search,
                 page: 1,
               })}
@@ -202,6 +259,7 @@ export function NewsPagination({
   totalPages,
   category,
   sort,
+  pageSize,
   q,
 }: {
   copy: NewsCopy;
@@ -209,12 +267,14 @@ export function NewsPagination({
   totalPages: number;
   category: NewsCategory | "all";
   sort: NewsSort;
+  pageSize: NewsPageSize;
   q: string;
 }) {
   const pathname = usePathname();
   if (totalPages <= 1) return null;
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const base = { category, sort, pageSize, q };
 
   return (
     <nav
@@ -231,12 +291,7 @@ export function NewsPagination({
       <div className="flex flex-wrap items-center justify-center gap-2">
         {page > 1 ? (
           <Link
-            href={hrefFor(pathname, {
-              category,
-              sort,
-              q,
-              page: page - 1,
-            })}
+            href={hrefFor(pathname, { ...base, page: page - 1 })}
             className={cn(quizChip, quizChipIdle)}
           >
             {copy.prevPage}
@@ -256,7 +311,7 @@ export function NewsPagination({
         {pages.map((n) => (
           <Link
             key={n}
-            href={hrefFor(pathname, { category, sort, q, page: n })}
+            href={hrefFor(pathname, { ...base, page: n })}
             className={cn(
               quizChip,
               n === page ? quizChipActive : quizChipIdle,
@@ -270,12 +325,7 @@ export function NewsPagination({
 
         {page < totalPages ? (
           <Link
-            href={hrefFor(pathname, {
-              category,
-              sort,
-              q,
-              page: page + 1,
-            })}
+            href={hrefFor(pathname, { ...base, page: page + 1 })}
             className={cn(quizChip, quizChipIdle)}
           >
             {copy.nextPage}

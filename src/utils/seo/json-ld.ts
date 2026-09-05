@@ -3,12 +3,54 @@ import { getCanonicalSiteUrl } from "@/utils/seo/indexing";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { LocalizedNewsArticle } from "@/data/news/types";
+import { DELIVERY_CITIES } from "@/data/delivery-cities";
 
-export function getOrganizationSchema() {
-  const siteUrl = getCanonicalSiteUrl().replace(/\/$/, "");
+function siteOrigin() {
+  return getCanonicalSiteUrl().replace(/\/$/, "");
+}
+
+const AREA_SERVED_CITIES = [
+  "Tashkent",
+  "Samarkand",
+  "Bukhara",
+  "Namangan",
+  "Andijan",
+  "Fergana",
+  "Nukus",
+  "Karshi",
+  "Termez",
+  "Navoi",
+  "Jizzakh",
+  "Urgench",
+] as const;
+
+function postalAddress() {
+  return {
+    "@type": "PostalAddress" as const,
+    streetAddress: SITE_CONFIG.address.line,
+    addressLocality: "Tashkent",
+    addressRegion: "Tashkent",
+    addressCountry: "UZ",
+  };
+}
+
+function geoCoordinates() {
+  return {
+    "@type": "GeoCoordinates" as const,
+    latitude: SITE_CONFIG.address.lat,
+    longitude: SITE_CONFIG.address.lng,
+  };
+}
+
+/** Local courier company entity for Google / Yandex. */
+export function getCourierServiceSchema() {
+  const siteUrl = siteOrigin();
+  const mapUrl = `https://yandex.com/maps/?pt=${SITE_CONFIG.address.lng},${SITE_CONFIG.address.lat}&z=16&l=map`;
+
   return {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "LocalBusiness", "CourierService"],
+    "@id": `${siteUrl}/#organization`,
     name: SITE_CONFIG.name,
     legalName: SITE_CONFIG.legalName,
     url: `${siteUrl}/`,
@@ -16,18 +58,92 @@ export function getOrganizationSchema() {
     image: `${siteUrl}/images/og/default.png`,
     telephone: SITE_CONFIG.phoneDisplay,
     ...(SITE_CONFIG.email ? { email: SITE_CONFIG.email } : {}),
+    priceRange: "UZS",
+    currenciesAccepted: "UZS",
+    openingHours: SITE_CONFIG.hours || undefined,
     sameAs: [
       SITE_CONFIG.telegramUrl,
       SITE_CONFIG.instagramUrl,
       SITE_CONFIG.facebookUrl,
     ].filter(Boolean),
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: SITE_CONFIG.address.line,
-      addressLocality: "Tashkent",
-      addressCountry: "UZ",
-    },
+    address: postalAddress(),
+    geo: geoCoordinates(),
+    hasMap: mapUrl,
     taxID: SITE_CONFIG.address.inn,
+    areaServed: [
+      {
+        "@type": "Country",
+        name: "Uzbekistan",
+      },
+      ...AREA_SERVED_CITIES.map((name) => ({
+        "@type": "City" as const,
+        name,
+      })),
+    ],
+  };
+}
+
+/** @deprecated Prefer getCourierServiceSchema — kept for callers expecting Organization. */
+export function getOrganizationSchema() {
+  return getCourierServiceSchema();
+}
+
+export function getWebSiteSchema() {
+  const siteUrl = siteOrigin();
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${siteUrl}/#website`,
+    name: SITE_CONFIG.name,
+    url: `${siteUrl}/`,
+    inLanguage: ["uz", "ru"],
+    publisher: { "@id": `${siteUrl}/#organization` },
+  };
+}
+
+export function getBreadcrumbSchema(
+  items: Array<{ name: string; path: string }>,
+) {
+  const siteUrl = siteOrigin();
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: `${siteUrl}${item.path.endsWith("/") || item.path === "" ? item.path || "/" : `${item.path}/`}`,
+    })),
+  };
+}
+
+export function getServiceCatalogSchema(
+  locale: Locale,
+  services: Array<{ id: string; title: string; audience: string }>,
+) {
+  const siteUrl = siteOrigin();
+  const path = localePath(locale, "/services/");
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: locale === "uz" ? "Yetkazib berish xizmatlari" : "Услуги доставки",
+    url: `${siteUrl}${path}`,
+    numberOfItems: services.length,
+    itemListElement: services.map((service, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Service",
+        name: service.title,
+        description: service.audience,
+        provider: { "@id": `${siteUrl}/#organization` },
+        areaServed: {
+          "@type": "Country",
+          name: "Uzbekistan",
+        },
+        url: `${siteUrl}${path}#${service.id}`,
+      },
+    })),
   };
 }
 
@@ -52,7 +168,7 @@ export function getNewsCollectionSchema(
   locale: Locale,
   articles: LocalizedNewsArticle[],
 ) {
-  const siteUrl = getCanonicalSiteUrl().replace(/\/$/, "");
+  const siteUrl = siteOrigin();
   const listPath = localePath(locale, "/news/");
 
   return {
@@ -81,7 +197,7 @@ export function getNewsArticleSchema(
   locale: Locale,
   article: LocalizedNewsArticle,
 ) {
-  const siteUrl = getCanonicalSiteUrl().replace(/\/$/, "");
+  const siteUrl = siteOrigin();
   const path = localePath(locale, `/news/${article.slug}/`);
   const image = article.coverImage
     ? article.coverImage.startsWith("http")
@@ -89,18 +205,22 @@ export function getNewsArticleSchema(
       : `${siteUrl}${article.coverImage}`
     : `${siteUrl}/images/og/default.png`;
 
+  const authorName =
+    locale === "uz" ? "EPOS POCHTA tahririyati" : "Редакция EPOS POCHTA";
+
   return {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     headline: article.title,
     description: article.excerpt,
     datePublished: article.publishedAt,
+    dateModified: article.publishedAt,
     image: [image],
     url: `${siteUrl}${path}`,
     inLanguage: locale === "uz" ? "uz" : "ru",
     author: {
       "@type": "Organization",
-      name: SITE_CONFIG.name,
+      name: authorName,
     },
     publisher: {
       "@type": "Organization",
@@ -117,6 +237,48 @@ export function getNewsArticleSchema(
   };
 }
 
+export function getDeliveryCitySchema(
+  locale: Locale,
+  city: (typeof DELIVERY_CITIES)[number],
+) {
+  const siteUrl = siteOrigin();
+  const path = localePath(locale, `/delivery/${city.slug}/`);
+  const name = locale === "uz" ? city.nameUz : city.nameRu;
+  const description = locale === "uz" ? city.metaDescriptionUz : city.metaDescriptionRu;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name:
+      locale === "uz"
+        ? `${name} shahriga yetkazib berish`
+        : `Доставка в ${name}`,
+    description,
+    url: `${siteUrl}${path}`,
+    provider: { "@id": `${siteUrl}/#organization` },
+    areaServed: {
+      "@type": "City",
+      name: city.nameEn,
+      containedInPlace: {
+        "@type": "Country",
+        name: "Uzbekistan",
+      },
+    },
+    serviceType: "Courier delivery",
+  };
+}
+
 export function getGlobalJsonLdGraph() {
-  return getOrganizationSchema();
+  const org = getCourierServiceSchema();
+  const site = getWebSiteSchema();
+  const { "@context": _c1, ...orgRest } = org as Record<string, unknown> & {
+    "@context": string;
+  };
+  const { "@context": _c2, ...siteRest } = site as Record<string, unknown> & {
+    "@context": string;
+  };
+  return {
+    "@context": "https://schema.org",
+    "@graph": [orgRest, siteRest],
+  };
 }

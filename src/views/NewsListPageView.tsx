@@ -10,8 +10,10 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { PageCta } from "@/components/organisms/PageCta";
 import {
   listNews,
+  NEWS_PAGE_SIZE_DEFAULT,
   parseNewsListQuery,
   queryNews,
+  type NewsPageSize,
 } from "@/lib/news/repository";
 import { getNewsCollectionSchema } from "@/utils/seo/json-ld";
 import {
@@ -43,6 +45,7 @@ export function NewsListPageView({
   const hasActiveFilters =
     query.category !== "all" ||
     query.sort !== "newest" ||
+    query.pageSize !== NEWS_PAGE_SIZE_DEFAULT ||
     query.q.length > 0;
 
   return (
@@ -62,6 +65,7 @@ export function NewsListPageView({
             categories={result.categories}
             category={query.category}
             sort={query.sort}
+            pageSize={query.pageSize as NewsPageSize}
             q={query.q}
             page={result.page}
           />
@@ -90,6 +94,7 @@ export function NewsListPageView({
                 totalPages={result.totalPages}
                 category={query.category}
                 sort={query.sort}
+                pageSize={query.pageSize as NewsPageSize}
                 q={query.q}
               />
             </>

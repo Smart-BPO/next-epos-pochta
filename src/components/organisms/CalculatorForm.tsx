@@ -116,15 +116,23 @@ export function CalculatorForm({
   content,
   initialFromQuery = "",
   initialToQuery = "",
+  initialCategory = "",
 }: {
   locale: Locale;
   content: SiteCopy;
   initialFromQuery?: string;
   initialToQuery?: string;
+  initialCategory?: string;
 }) {
   const c = content.calculator;
   const fromSeed = matchCityQuery(initialFromQuery, locale);
   const toSeed = matchCityQuery(initialToQuery, locale);
+  const category =
+    initialCategory === "documents" ||
+    initialCategory === "parcel" ||
+    initialCategory === "goods"
+      ? initialCategory
+      : "parcel";
 
   const [fromCity, setFromCity] = useState(fromSeed?.id ?? "");
   const [toCity, setToCity] = useState(toSeed?.id ?? "");
@@ -154,9 +162,9 @@ export function CalculatorForm({
       doorDelivery: false,
       places: 1,
       urgent: false,
-      category: "parcel",
+      category,
     });
-  }, [fromMeta, toMeta, weight, length, width, height]);
+  }, [fromMeta, toMeta, weight, length, width, height, category]);
 
   const fromError =
     submitted && !fromCity ? c.errors.fromCity : undefined;
@@ -176,6 +184,7 @@ export function CalculatorForm({
     if (toMeta) {
       params.set("to", locale === "uz" ? toMeta.uz : toMeta.ru);
     }
+    if (initialCategory) params.set("category", initialCategory);
     const qs = params.toString();
     return `${localePath(locale, "/request-price/")}${qs ? `?${qs}` : ""}`;
   })();
