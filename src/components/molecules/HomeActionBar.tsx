@@ -5,16 +5,18 @@ import { useRouter } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
-import { trackEvent } from "@/lib/analytics/events";
+import { getSettlementById, settlementLabel } from "@/data/settlements";
+import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
+import { SettlementSelect } from "@/components/atoms/SettlementSelect";
+import { trackEvent } from "@/lib/analytics/events";
 import {
   homeActionBar,
-  homeActionBody,
+  homeActionBridge,
   homeActionBtn,
   homeActionDivider,
   homeActionField,
-  homeActionGrid,
-  homeActionIcon,
+  homeActionIsland,
   homeActionLabel,
   homeActionNote,
   homeActionPane,
@@ -22,88 +24,25 @@ import {
   homeActionSwap,
 } from "@/styles/ui";
 
-function ParcelIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 40 40"
-      fill="none"
-      aria-hidden
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M7.5 13.5 20 7l12.5 6.5v13.5L20 33.5 7.5 27V13.5Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M20 20.5V33.5M7.5 13.5 20 20.5l12.5-7M14 10.5l12 6.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CalcIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 40 40"
-      fill="none"
-      aria-hidden
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect
-        x="10"
-        y="7"
-        width="20"
-        height="26"
-        rx="2.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <rect
-        x="13.5"
-        y="10.5"
-        width="13"
-        height="5"
-        rx="1.2"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <path
-        d="M14.5 21h2.5M18.75 21h2.5M23 21h2.5M14.5 25.5h2.5M18.75 25.5h2.5M23 25.5h2.5M14.5 30h2.5M18.75 30h2.5M23 30h2.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 function SwapIcon() {
   return (
     <svg
-      width="16"
-      height="16"
-      viewBox="0 0 20 20"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
       fill="none"
       aria-hidden
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M4 7h10.5M12 4.5 14.5 7 12 9.5"
+        d="M5 8h11.5M14 5.5 16.5 8 14 10.5"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M16 13H5.5M8 10.5 5.5 13 8 15.5"
+        d="M19 16H7.5M10 13.5 7.5 16 10 18.5"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
@@ -113,7 +52,7 @@ function SwapIcon() {
   );
 }
 
-/** Compact dual bar: track + calculator entry. */
+/** White Figma island: track + calculator entry under the hero. */
 export function HomeActionBar({
   locale,
   copy,
@@ -137,8 +76,10 @@ export function HomeActionBar({
   const submitQuote = () => {
     trackEvent("request_price_start", { source: "home_quote" });
     const params = new URLSearchParams();
-    if (from.trim()) params.set("from", from.trim());
-    if (to.trim()) params.set("to", to.trim());
+    const fromMeta = getSettlementById(from);
+    const toMeta = getSettlementById(to);
+    if (fromMeta) params.set("from", settlementLabel(fromMeta, locale));
+    if (toMeta) params.set("to", settlementLabel(toMeta, locale));
     const qs = params.toString();
     router.push(
       `${localePath(locale, "/calculator/")}${qs ? `?${qs}` : ""}`,
@@ -147,64 +88,63 @@ export function HomeActionBar({
 
   return (
     <section className={homeActionBar} aria-label={copy.home.quoteTitle}>
-      <PageContainer className={homeActionGrid}>
-        <div className={homeActionPane}>
-          <ParcelIcon className={homeActionIcon} />
-          <div className={homeActionBody}>
-            <h2 className={homeActionLabel}>{copy.home.trackTitle}</h2>
-            <form
-              className={homeActionRow}
-              onSubmit={(e) => {
-                e.preventDefault();
-                submitTrack();
-              }}
-            >
-              <label className="sr-only" htmlFor="home-action-track">
-                {copy.home.trackPlaceholder}
-              </label>
-              <input
-                id="home-action-track"
-                value={trackNumber}
-                onChange={(e) => setTrackNumber(e.target.value)}
-                placeholder={copy.home.trackPlaceholder}
-                className={homeActionField}
-                autoComplete="off"
-              />
-              <button type="submit" className={homeActionBtn}>
-                {copy.ui.track}
-              </button>
-            </form>
-          </div>
-        </div>
+      <div className={homeActionBridge}>
+        <PageContainer>
+          <div className={homeActionIsland}>
+            <div className={homeActionPane}>
+              <h2 className={homeActionLabel}>{copy.home.trackTitle}</h2>
+              <form
+                className={homeActionRow}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  submitTrack();
+                }}
+              >
+                <label className="sr-only" htmlFor="home-action-track">
+                  {copy.home.trackPlaceholder}
+                </label>
+                <input
+                  id="home-action-track"
+                  value={trackNumber}
+                  onChange={(e) => setTrackNumber(e.target.value)}
+                  placeholder={copy.home.trackPlaceholder}
+                  className={homeActionField}
+                  autoComplete="off"
+                />
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  className={homeActionBtn}
+                >
+                  {copy.ui.track}
+                </Button>
+              </form>
+              <p className={homeActionNote}>{copy.home.trackHint}</p>
+            </div>
 
-        <div className={homeActionDivider} aria-hidden />
-        <div
-          className="h-px w-full bg-white/25 lg:hidden"
-          aria-hidden
-        />
+            <div className={homeActionDivider} aria-hidden />
 
-        <div className={homeActionPane}>
-          <CalcIcon className={homeActionIcon} />
-          <div className={homeActionBody}>
-            <h2 className={homeActionLabel}>{copy.home.quoteTitle}</h2>
-            <form
-              className={homeActionRow}
-              onSubmit={(e) => {
-                e.preventDefault();
-                submitQuote();
-              }}
-            >
-              <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
+            <div className={`${homeActionPane} lg:min-w-[22rem] lg:flex-[1.35]`}>
+              <h2 className={homeActionLabel}>{copy.home.quoteTitle}</h2>
+              <form
+                className={homeActionRow}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  submitQuote();
+                }}
+              >
                 <label className="sr-only" htmlFor="home-action-from">
                   {copy.home.quoteFrom}
                 </label>
-                <input
+                <SettlementSelect
                   id="home-action-from"
+                  instanceId="home-action-from"
+                  locale={locale}
                   value={from}
-                  onChange={(e) => setFrom(e.target.value)}
+                  onChange={setFrom}
                   placeholder={copy.home.quoteFrom}
-                  className={homeActionField}
-                  autoComplete="address-level2"
+                  variant="compact"
+                  className="min-w-0 flex-1"
                 />
                 <button
                   type="button"
@@ -220,23 +160,29 @@ export function HomeActionBar({
                 <label className="sr-only" htmlFor="home-action-to">
                   {copy.home.quoteTo}
                 </label>
-                <input
+                <SettlementSelect
                   id="home-action-to"
+                  instanceId="home-action-to"
+                  locale={locale}
                   value={to}
-                  onChange={(e) => setTo(e.target.value)}
+                  onChange={setTo}
                   placeholder={copy.home.quoteTo}
-                  className={homeActionField}
-                  autoComplete="address-level2"
+                  variant="compact"
+                  className="min-w-0 flex-1"
                 />
-              </div>
-              <button type="submit" className={homeActionBtn}>
-                {copy.home.quoteCta}
-              </button>
-            </form>
-            <p className={homeActionNote}>{copy.home.quoteNote}</p>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className={homeActionBtn}
+                >
+                  {copy.home.quoteCta}
+                </Button>
+              </form>
+              <p className={homeActionNote}>{copy.home.quoteNote}</p>
+            </div>
           </div>
-        </div>
-      </PageContainer>
+        </PageContainer>
+      </div>
     </section>
   );
 }

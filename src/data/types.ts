@@ -203,8 +203,6 @@ export interface SiteCopy {
     title: string;
     lead: string;
     priceNote: string;
-    trustTitle: string;
-    trustItems: string[];
     steps: [string, string, string, string];
     progressTemplate: string;
     questionCargo: string;
@@ -272,17 +270,37 @@ export interface SiteCopy {
     readMore: string;
     backToNews: string;
     empty: string;
+    emptyFiltered: string;
     otherNews: string;
+    searchPlaceholder: string;
+    allCategories: string;
+    categoriesTitle: string;
+    categories: {
+      company: string;
+      product: string;
+      business: string;
+      geography: string;
+    };
+    sortLabel: string;
+    sortNewest: string;
+    sortOldest: string;
+    sortTitleAsc: string;
+    sortTitleDesc: string;
+    resultsLabel: string;
+    resetFilters: string;
+    prevPage: string;
+    nextPage: string;
+    pageLabel: string;
   };
   contacts: {
     title: string;
     lead: string;
-    formTitle: string;
     channelsTitle: string;
     addressTitle: string;
     socialTitle: string;
     telegramLabel: string;
     mapNote: string;
+    openInMaps: string;
   };
   privacy: {
     title: string;
@@ -322,8 +340,8 @@ export interface SiteCopy {
 }
 
 export const uzbekistanRegions = [
-  { id: "tashkent-city", ru: "г. Ташкент", uz: "Toshkent shahri" },
-  { id: "tashkent-region", ru: "Ташкентская область", uz: "Toshkent viloyati" },
+  { id: "tashkent_city", ru: "г. Ташкент", uz: "Toshkent shahri" },
+  { id: "tashkent", ru: "Ташкентская область", uz: "Toshkent viloyati" },
   { id: "andijan", ru: "Андижанская область", uz: "Andijon viloyati" },
   { id: "bukhara", ru: "Бухарская область", uz: "Buxoro viloyati" },
   { id: "fergana", ru: "Ферганская область", uz: "Fargʻona viloyati" },
@@ -333,39 +351,17 @@ export const uzbekistanRegions = [
   { id: "namangan", ru: "Наманганская область", uz: "Namangan viloyati" },
   { id: "navoi", ru: "Навоийская область", uz: "Navoiy viloyati" },
   { id: "samarkand", ru: "Самаркандская область", uz: "Samarqand viloyati" },
-  { id: "sirdarya", ru: "Сырдарьинская область", uz: "Sirdaryo viloyati" },
+  { id: "syrdarya", ru: "Сырдарьинская область", uz: "Sirdaryo viloyati" },
   { id: "surkhandarya", ru: "Сурхандарьинская область", uz: "Surxondaryo viloyati" },
   { id: "karakalpakstan", ru: "Республика Каракалпакстан", uz: "Qoraqalpogʻiston Respublikasi" },
 ] as const;
 
-export const uzbekistanCities = [
-  { id: "tashkent", regionId: "tashkent-city", ru: "Ташкент", uz: "Toshkent" },
-  { id: "chirchik", regionId: "tashkent-region", ru: "Чирчик", uz: "Chirchiq" },
-  { id: "angren", regionId: "tashkent-region", ru: "Ангрен", uz: "Angren" },
-  { id: "nurafshon", regionId: "tashkent-region", ru: "Нурафшон", uz: "Nurafshon" },
-  { id: "yangiyul", regionId: "tashkent-region", ru: "Янгиюль", uz: "Yangiyoʻl" },
-  { id: "andijan", regionId: "andijan", ru: "Андижан", uz: "Andijon" },
-  { id: "asaka", regionId: "andijan", ru: "Асака", uz: "Asaka" },
-  { id: "bukhara", regionId: "bukhara", ru: "Бухара", uz: "Buxoro" },
-  { id: "kagan", regionId: "bukhara", ru: "Каган", uz: "Kogon" },
-  { id: "fergana", regionId: "fergana", ru: "Фергана", uz: "Fargʻona" },
-  { id: "kokand", regionId: "fergana", ru: "Коканд", uz: "Qoʻqon" },
-  { id: "margilan", regionId: "fergana", ru: "Маргилан", uz: "Margʻilon" },
-  { id: "jizzakh", regionId: "jizzakh", ru: "Джизак", uz: "Jizzax" },
-  { id: "karshi", regionId: "kashkadarya", ru: "Карши", uz: "Qarshi" },
-  { id: "shahrisabz", regionId: "kashkadarya", ru: "Шахрисабз", uz: "Shahrisabz" },
-  { id: "urgench", regionId: "khorezm", ru: "Ургенч", uz: "Urganch" },
-  { id: "khiva", regionId: "khorezm", ru: "Хива", uz: "Xiva" },
-  { id: "namangan", regionId: "namangan", ru: "Наманган", uz: "Namangan" },
-  { id: "chust", regionId: "namangan", ru: "Чуст", uz: "Chust" },
-  { id: "navoi", regionId: "navoi", ru: "Навои", uz: "Navoiy" },
-  { id: "zarafshan", regionId: "navoi", ru: "Зарафшан", uz: "Zarafshon" },
-  { id: "samarkand", regionId: "samarkand", ru: "Самарканд", uz: "Samarqand" },
-  { id: "kattaqorgon", regionId: "samarkand", ru: "Каттакурган", uz: "Kattaqoʻrgʻon" },
-  { id: "gulistan", regionId: "sirdarya", ru: "Гулистан", uz: "Guliston" },
-  { id: "yangiyer", regionId: "sirdarya", ru: "Янгиер", uz: "Yangiyer" },
-  { id: "termez", regionId: "surkhandarya", ru: "Термез", uz: "Termiz" },
-  { id: "denov", regionId: "surkhandarya", ru: "Денау", uz: "Denov" },
-  { id: "nukus", regionId: "karakalpakstan", ru: "Нукус", uz: "Nukus" },
-  { id: "khujayli", regionId: "karakalpakstan", ru: "Ходжейли", uz: "Xoʻjayli" },
-] as const;
+export {
+  uzbekistanCities,
+  uzbekistanSettlements,
+  getSettlementById,
+  settlementLabel,
+  type Settlement,
+  type SettlementLevel,
+} from "@/data/settlements";
+

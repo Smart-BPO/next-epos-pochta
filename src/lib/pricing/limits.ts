@@ -9,8 +9,8 @@ export const CALC_LIMITS = {
 export type CalcLimitKey = keyof typeof CALC_LIMITS;
 
 export const CALC_QUICK_CITIES = [
-  "tashkent",
-  "samarkand",
-  "fergana",
-  "andijan",
+  "tashkent_city",
+  "samarkand_city",
+  "fergana_city",
+  "andijan_city",
 ] as const;

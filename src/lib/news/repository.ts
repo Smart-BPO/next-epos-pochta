@@ -2,10 +2,17 @@ import { newsArticles } from "@/data/news/articles";
 import type {
   LocalizedNewsArticle,
   NewsArticle,
+  NewsCategory,
+  NewsListQuery,
+  NewsListResult,
+  NewsSort,
 } from "@/data/news/types";
+import { NEWS_CATEGORIES } from "@/data/news/types";
 import type { Locale } from "@/i18n/config";
 
 /** TODO(cms): swap static import for Supabase query when connected. */
+
+export const NEWS_PAGE_SIZE = 3;
 
 function localize(
   article: NewsArticle,
@@ -15,6 +22,7 @@ function localize(
   return {
     id: article.id,
     slug: article.slug,
+    category: article.category,
     publishedAt: article.publishedAt,
     coverImage: article.coverImage,
     tags: article.tags,
@@ -25,16 +33,152 @@ function localize(
 }
 
 function publishedArticles(): NewsArticle[] {
-  return newsArticles
-    .filter((article) => article.status === "published")
-    .sort(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
-    );
+  return newsArticles.filter((article) => article.status === "published");
+}
+
+function compareTitle(a: string, b: string, locale: Locale) {
+  return a.localeCompare(b, locale === "uz" ? "uz" : "ru", {
+    sensitivity: "base",
+  });
+}
+
+function sortArticles(
+  items: LocalizedNewsArticle[],
+  sort: NewsSort,
+  locale: Locale,
+): LocalizedNewsArticle[] {
+  const next = [...items];
+  switch (sort) {
+    case "oldest":
+      return next.sort(
+        (a, b) =>
+          new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime(),
+      );
+    case "title-asc":
+      return next.sort((a, b) => compareTitle(a.title, b.title, locale));
+    case "title-desc":
+      return next.sort((a, b) => compareTitle(b.title, a.title, locale));
+    case "newest":
+    default:
+      return next.sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+      );
+  }
+}
+
+function matchesQuery(article: LocalizedNewsArticle, q: string) {
+  const needle = q.trim().toLowerCase();
+  if (!needle) return true;
+  return (
+    article.title.toLowerCase().includes(needle) ||
+    article.excerpt.toLowerCase().includes(needle) ||
+    (article.tags ?? []).some((tag) => tag.toLowerCase().includes(needle))
+  );
+}
+
+export function isNewsCategory(value: string): value is NewsCategory {
+  return (NEWS_CATEGORIES as readonly string[]).includes(value);
+}
+
+export function isNewsSort(value: string): value is NewsSort {
+  return (
+    value === "newest" ||
+    value === "oldest" ||
+    value === "title-asc" ||
+    value === "title-desc"
+  );
+}
+
+export function parseNewsListQuery(
+  raw: Record<string, string | string[] | undefined> | URLSearchParams,
+): Required<Pick<NewsListQuery, "category" | "sort" | "page" | "pageSize">> & {
+  q: string;
+} {
+  const get = (key: string) => {
+    if (raw instanceof URLSearchParams) return raw.get(key) ?? "";
+    const value = raw[key];
+    return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+  };
+
+  const categoryRaw = get("category");
+  const sortRaw = get("sort");
+  const pageRaw = Number.parseInt(get("page"), 10);
+  const q = get("q").trim();
+
+  return {
+    category: isNewsCategory(categoryRaw) ? categoryRaw : "all",
+    sort: isNewsSort(sortRaw) ? sortRaw : "newest",
+    page: Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1,
+    pageSize: NEWS_PAGE_SIZE,
+    q,
+  };
+}
+
+export function buildNewsListSearchParams(query: {
+  category?: string;
+  sort?: string;
+  page?: number;
+  q?: string;
+}): URLSearchParams {
+  const params = new URLSearchParams();
+  if (query.category && query.category !== "all") {
+    params.set("category", query.category);
+  }
+  if (query.sort && query.sort !== "newest") {
+    params.set("sort", query.sort);
+  }
+  if (query.q?.trim()) {
+    params.set("q", query.q.trim());
+  }
+  if (query.page && query.page > 1) {
+    params.set("page", String(query.page));
+  }
+  return params;
+}
+
+export function queryNews(
+  locale: Locale,
+  rawQuery: NewsListQuery = {},
+): NewsListResult {
+  const category = rawQuery.category ?? "all";
+  const sort = rawQuery.sort ?? "newest";
+  const pageSize = Math.max(1, rawQuery.pageSize ?? NEWS_PAGE_SIZE);
+  const q = rawQuery.q ?? "";
+
+  const localized = publishedArticles().map((article) =>
+    localize(article, locale),
+  );
+
+  const categories = NEWS_CATEGORIES.map((id) => ({
+    id,
+    count: localized.filter((article) => article.category === id).length,
+  })).filter((item) => item.count > 0);
+
+  const filtered = localized.filter((article) => {
+    if (category !== "all" && article.category !== category) return false;
+    return matchesQuery(article, q);
+  });
+
+  const sorted = sortArticles(filtered, sort, locale);
+  const total = sorted.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const page = Math.min(Math.max(1, rawQuery.page ?? 1), totalPages);
+  const start = (page - 1) * pageSize;
+
+  return {
+    items: sorted.slice(start, start + pageSize),
+    total,
+    page,
+    pageSize,
+    totalPages,
+    categories,
+  };
 }
 
 export function listNews(locale: Locale): LocalizedNewsArticle[] {
-  return publishedArticles().map((article) => localize(article, locale));
+  return queryNews(locale, { page: 1, pageSize: Number.MAX_SAFE_INTEGER })
+    .items;
 }
 
 export function getNewsBySlug(
@@ -49,11 +193,20 @@ export function getLatestNews(
   locale: Locale,
   limit = 3,
 ): LocalizedNewsArticle[] {
-  return listNews(locale).slice(0, limit);
+  return queryNews(locale, {
+    sort: "newest",
+    page: 1,
+    pageSize: limit,
+  }).items;
 }
 
 export function listPublishedSlugs(): string[] {
-  return publishedArticles().map((article) => article.slug);
+  return publishedArticles()
+    .sort(
+      (a, b) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    )
+    .map((article) => article.slug);
 }
 
 export function formatNewsDate(iso: string, locale: Locale): string {

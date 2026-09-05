@@ -13,12 +13,9 @@ import {
   heroBrand,
   heroLead,
   heroTitle,
-  homeSectionLead,
   homeSectionTitle,
   section,
-  sectionLead,
   sectionMuted,
-  sectionTitle,
 } from "@/styles/ui";
 
 const CAPABILITY_ICONS = [
@@ -101,10 +98,7 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
 
       <section className={section}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
-          <div className="flex max-w-xl flex-col gap-2">
-            <h2 className={homeSectionTitle}>{copy.business.capabilitiesTitle}</h2>
-            <p className={homeSectionLead}>{copy.business.heroLead}</p>
-          </div>
+          <h2 className={homeSectionTitle}>{copy.business.capabilitiesTitle}</h2>
           <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {copy.business.capabilities.map((item, index) => (
               <article
@@ -186,18 +180,6 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
                 </Button>
               </div>
             </div>
-          </div>
-        </PageContainer>
-      </section>
-
-      <section className={cn(sectionMuted, anchorSection)} id="business-form">
-        <PageContainer>
-          <div className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
-            <h2 className={sectionTitle}>{copy.business.connectCtaTitle}</h2>
-            <p className={sectionLead}>{copy.business.connectCtaLead}</p>
-            <Button href={connectHref} variant="primary">
-              {copy.ui.startConnect}
-            </Button>
           </div>
         </PageContainer>
       </section>

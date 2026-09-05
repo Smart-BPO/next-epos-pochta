@@ -157,10 +157,15 @@ export function createAboutPage(locale: Locale) {
 export function createNewsListPage(locale: Locale) {
   return {
     generateMetadata: () => getLocalizedPageMetadata(locale, "news"),
-    Page: async function NewsListPage() {
+    Page: async function NewsListPage({
+      searchParams,
+    }: {
+      searchParams: Promise<Record<string, string | string[] | undefined>>;
+    }) {
+      const params = await searchParams;
       return (
         <SiteLayout locale={locale}>
-          <NewsListPageView locale={locale} />
+          <NewsListPageView locale={locale} searchParams={params} />
         </SiteLayout>
       );
     },

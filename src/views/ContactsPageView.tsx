@@ -3,27 +3,34 @@ import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
-import { ContactForm } from "@/components/organisms/ContactForm";
 import { PageCta } from "@/components/organisms/PageCta";
 import { SITE_CONFIG } from "@/utils/consts";
 import {
+  btnSecondary,
   heroActions,
   homeSectionTitle,
-  mapPlaceholder,
   pageIntro,
   pageIntroTitle,
   sectionLead,
   sectionMuted,
-  sectionTitle,
 } from "@/styles/ui";
+import { cn } from "@/lib/cn";
+
+function officeMapEmbedSrc(lat: number, lng: number) {
+  const ll = `${lng},${lat}`;
+  return `https://yandex.ru/map-widget/v1/?ll=${encodeURIComponent(ll)}&z=16&pt=${encodeURIComponent(`${ll},pm2rdm`)}&l=map`;
+}
+
+function officeMapsExternalUrl(lat: number, lng: number) {
+  return `https://yandex.ru/maps/?pt=${lng},${lat}&z=16&l=map`;
+}
 
 export function ContactsPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
-  const mapLat = process.env.NEXT_PUBLIC_MAP_LAT;
-  const mapLng = process.env.NEXT_PUBLIC_MAP_LNG;
-  const hasMap = Boolean(mapLat && mapLng);
+  const { lat, lng, line } = SITE_CONFIG.address;
   const hours = SITE_CONFIG.hours.trim();
   const email = SITE_CONFIG.email.trim();
+  const mapsUrl = officeMapsExternalUrl(lat, lng);
 
   const socials = [
     {
@@ -59,7 +66,7 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={sectionMuted}>
-        <PageContainer className="grid gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
+        <PageContainer className="grid gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
           <div className="flex flex-col gap-8">
             <div>
               <h2 className={homeSectionTitle}>{copy.contacts.channelsTitle}</h2>
@@ -118,8 +125,19 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
                     {copy.contacts.addressTitle}
                   </p>
                   <p className="mt-1 m-0 text-base leading-relaxed text-black/70">
-                    {SITE_CONFIG.address.line}
+                    {line}
                   </p>
+                  <p className="mt-2 m-0 text-sm text-black/50">
+                    {copy.contacts.mapNote}
+                  </p>
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={cn(btnSecondary, "mt-4 inline-flex")}
+                  >
+                    {copy.contacts.openInMaps}
+                  </a>
                 </div>
               </div>
             </div>
@@ -151,52 +169,16 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
             </div>
           </div>
 
-          <div>
-            <h2 className={sectionTitle}>{copy.contacts.formTitle}</h2>
-            <ContactForm locale={locale} content={copy} />
-          </div>
-        </PageContainer>
-      </section>
-
-      <section className="relative isolate overflow-hidden py-[var(--section-y)]">
-        {!hasMap ? (
-          <Image
-            src="/images/hero/uzbekistan-map.svg"
-            alt=""
-            width={1000}
-            height={652}
-            className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(100%,40rem)] max-w-[min(100%,46rem)] select-none object-contain object-right opacity-90 md:block"
-            unoptimized
-          />
-        ) : null}
-        <PageContainer className="relative z-10 flex flex-col gap-6 md:gap-9">
-          <div className="max-w-xl">
-            <h2 className={homeSectionTitle}>{copy.contacts.addressTitle}</h2>
-            <p className="mt-3 m-0 text-[length:var(--home-lead)] text-black/60">
-              {SITE_CONFIG.address.line}
-            </p>
-            <p className={sectionLead}>{copy.contacts.mapNote}</p>
-          </div>
-          {hasMap ? (
+          <div className="overflow-hidden rounded-3xl border border-black/15 bg-white shadow-[0_1px_0_rgb(0_0_0/0.04)]">
             <iframe
               title={copy.contacts.addressTitle}
-              className={`${mapPlaceholder} min-h-[20rem] w-full border-0`}
+              className="block h-[min(70vh,32rem)] min-h-[22rem] w-full border-0 lg:min-h-[28rem]"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${Number(mapLng) - 0.02}%2C${Number(mapLat) - 0.01}%2C${Number(mapLng) + 0.02}%2C${Number(mapLat) + 0.01}&layer=mapnik&marker=${mapLat}%2C${mapLng}`}
+              allowFullScreen
+              src={officeMapEmbedSrc(lat, lng)}
             />
-          ) : (
-            <div className="relative min-h-[14rem] overflow-hidden rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] md:hidden">
-              <Image
-                src="/images/hero/uzbekistan-map.svg"
-                alt=""
-                width={600}
-                height={400}
-                className="mx-auto h-auto w-full max-w-sm object-contain opacity-90"
-                unoptimized
-              />
-            </div>
-          )}
+          </div>
         </PageContainer>
       </section>
 

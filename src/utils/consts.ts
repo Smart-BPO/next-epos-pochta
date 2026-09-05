@@ -28,6 +28,9 @@ export const SITE_CONFIG = {
   address: {
     line:
       "г. Ташкент, Сергелийский район, МСГ Bunyodobod, ул. Ташкентская кольцевая автомобильная дорога, дом 7",
+    /** Approximate pin — refine via NEXT_PUBLIC_MAP_LAT / NEXT_PUBLIC_MAP_LNG. */
+    lat: Number(getPublicEnv("NEXT_PUBLIC_MAP_LAT", "41.2085")) || 41.2085,
+    lng: Number(getPublicEnv("NEXT_PUBLIC_MAP_LNG", "69.22")) || 69.22,
     inn: "312949361",
     oked: "53200",
   },

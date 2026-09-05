@@ -5,9 +5,13 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
-import { uzbekistanCities } from "@/data/types";
+import {
+  getSettlementById,
+  settlementLabel,
+} from "@/data/settlements";
 import { Button } from "@/components/atoms/Button";
 import { RangeSlider } from "@/components/atoms/RangeSlider";
+import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { trackEvent } from "@/lib/analytics/events";
 import { estimateQuote, formatUzs } from "@/lib/pricing/estimate";
 import { matchCityQuery } from "@/lib/pricing/matchCity";
@@ -16,19 +20,12 @@ import { cn } from "@/lib/cn";
 import {
   alertInfo,
   card,
-  fieldControl,
   fieldLabel,
   quizChip,
   quizChipActive,
   quizChipIdle,
   quizChips,
 } from "@/styles/ui";
-
-function cityLabel(locale: Locale, id: string) {
-  const city = uzbekistanCities.find((c) => c.id === id);
-  if (!city) return id;
-  return locale === "uz" ? city.uz : city.ru;
-}
 
 function SwapIcon() {
   return (
@@ -75,7 +72,6 @@ function CityField({
   content: SiteCopy;
   error?: string;
 }) {
-  const cities = uzbekistanCities;
   const quick = CALC_QUICK_CITIES;
 
   return (
@@ -83,33 +79,32 @@ function CityField({
       <label htmlFor={id} className={fieldLabel}>
         {label}
       </label>
-      <select
+      <SettlementSelect
         id={id}
+        instanceId={id}
+        locale={locale}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={fieldControl}
-      >
-        <option value="">{content.calculator.cityPlaceholder}</option>
-        {cities.map((city) => (
-          <option key={city.id} value={city.id}>
-            {locale === "uz" ? city.uz : city.ru}
-          </option>
-        ))}
-      </select>
+        onChange={onChange}
+        placeholder={content.calculator.cityPlaceholder}
+      />
       <div className={quizChips}>
-        {quick.map((cityId) => (
-          <button
-            key={cityId}
-            type="button"
-            className={cn(
-              quizChip,
-              value === cityId ? quizChipActive : quizChipIdle,
-            )}
-            onClick={() => onChange(cityId)}
-          >
-            {cityLabel(locale, cityId)}
-          </button>
-        ))}
+        {quick.map((cityId) => {
+          const settlement = getSettlementById(cityId);
+          if (!settlement) return null;
+          return (
+            <button
+              key={cityId}
+              type="button"
+              className={cn(
+                quizChip,
+                value === cityId ? quizChipActive : quizChipIdle,
+              )}
+              onClick={() => onChange(cityId)}
+            >
+              {settlementLabel(settlement, locale)}
+            </button>
+          );
+        })}
       </div>
       {error ? <p className="m-0 text-sm text-danger">{error}</p> : null}
     </div>
@@ -140,8 +135,8 @@ export function CalculatorForm({
   const [submitted, setSubmitted] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  const fromMeta = uzbekistanCities.find((city) => city.id === fromCity);
-  const toMeta = uzbekistanCities.find((city) => city.id === toCity);
+  const fromMeta = getSettlementById(fromCity);
+  const toMeta = getSettlementById(toCity);
 
   const estimate = useMemo(() => {
     if (!fromMeta || !toMeta) return null;

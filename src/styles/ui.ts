@@ -15,12 +15,12 @@ export const pageIntroTitle =
 
 export const anchorSection = "scroll-mt-[var(--header-height)]";
 
-/** Home hero — title + map; actions live in the primary dual bar below. */
+/** Home hero — title + map; white action island bridges into needs below. */
 export const homeHero =
-  "relative isolate overflow-hidden bg-white";
+  "relative isolate overflow-visible bg-white";
 
 export const homeHeroGrid =
-  "relative grid items-start gap-4 py-6 max-lg:grid-cols-1 sm:gap-5 sm:py-8 md:py-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:pb-12 lg:pt-10 xl:pb-14";
+  "relative grid items-start gap-4 py-6 pb-16 max-lg:grid-cols-1 sm:gap-5 sm:py-8 sm:pb-20 md:py-10 md:pb-20 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:pb-14 lg:pt-10 xl:pb-16";
 
 export const homeHeroCopy =
   "relative z-10 flex max-w-[32rem] flex-col items-stretch gap-3 lg:items-start lg:gap-4";
@@ -40,45 +40,42 @@ export const homeHeroVisual =
 export const homeHeroMap =
   "pointer-events-none relative mx-auto block h-auto w-full max-w-[18rem] select-none object-contain object-bottom sm:max-w-[22rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-right";
 
-/** Dual action bar: track | calculator init on primary. */
+/** Absolute bridge on the needs section top edge (−50% = half white / half red). */
 export const homeActionBar =
-  "bg-primary text-white";
+  "pointer-events-none absolute inset-x-0 top-0 z-20 -translate-y-1/2";
 
-export const homeActionGrid =
-  "grid gap-5 py-4 sm:py-5 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)] lg:items-center lg:gap-0 lg:py-5";
+export const homeActionBridge =
+  "pointer-events-auto";
+
+export const homeActionIsland =
+  "flex flex-col gap-5 rounded-3xl border border-black/20 bg-white p-5 shadow-[0_12px_40px_rgb(15_18_24/0.1)] sm:gap-6 sm:p-6 lg:flex-row lg:items-stretch lg:gap-0 lg:p-5 xl:px-6 xl:py-5";
 
 export const homeActionPane =
-  "flex min-w-0 items-center gap-3 sm:gap-3.5";
-
-export const homeActionIcon =
-  "hidden h-9 w-9 shrink-0 text-white sm:block lg:h-10 lg:w-10";
-
-export const homeActionBody =
-  "flex min-w-0 flex-1 flex-col gap-1.5";
+  "flex min-w-0 flex-1 flex-col justify-center gap-2.5 lg:gap-3 lg:px-5 first:lg:pl-0 last:lg:pr-0";
 
 export const homeActionLabel =
-  "m-0 text-[0.65rem] font-semibold uppercase tracking-[0.06em] text-white/95 sm:text-[0.7rem]";
+  "m-0 font-display text-base font-semibold uppercase leading-tight tracking-[-0.02em] text-black sm:text-lg lg:text-[1.05rem] xl:text-lg";
 
 export const homeActionRow =
-  "flex min-w-0 flex-row flex-wrap items-center gap-2 sm:flex-nowrap";
+  "flex min-w-0 flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-3 lg:flex-nowrap";
 
 export const homeActionField =
-  "min-h-10 min-w-0 flex-1 rounded-xl border border-white/75 bg-white/12 px-3.5 py-2 text-[0.95rem] text-white outline-none placeholder:text-white/65 focus:border-white focus:bg-white/18";
-
-export const homeActionBtn =
-  "inline-flex min-h-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border-0 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.04em] text-primary transition-opacity hover:opacity-92 sm:px-5";
+  "min-h-12 min-w-0 flex-1 rounded-xl border border-black/20 bg-white px-3.5 py-3 text-base text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 export const homeActionSwap =
-  "inline-flex h-9 w-9 shrink-0 items-center justify-center self-center rounded-full border border-white/55 text-white transition-colors hover:border-white hover:bg-white/10 sm:h-10 sm:w-10";
+  "inline-flex size-6 shrink-0 items-center justify-center self-center text-black transition-opacity hover:opacity-70";
 
 export const homeActionDivider =
-  "hidden w-px self-stretch bg-white/35 lg:mx-5 lg:block xl:mx-7";
+  "h-px w-full shrink-0 bg-black/10 lg:mx-0 lg:h-auto lg:w-px lg:self-stretch";
 
 export const homeActionNote =
-  "m-0 text-[0.65rem] leading-snug text-white/75 sm:text-[0.7rem]";
+  "m-0 text-sm leading-snug text-black/60 lg:hidden";
+
+export const homeActionBtn =
+  "!min-h-12 shrink-0 !px-5 !py-3 text-sm sm:!px-6";
 
 export const homeNeedsSection =
-  "bg-gradient-to-b from-primary to-primary-hover pb-10 pt-8 sm:pb-12 sm:pt-10 md:pb-[var(--section-y)] md:pt-14 lg:pt-16";
+  "relative bg-gradient-to-b from-primary to-primary-hover pb-10 pt-28 sm:pb-12 sm:pt-32 md:pb-[var(--section-y)] lg:pt-[5.5rem]";
 export const homeNeedsGrid =
   "grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4 lg:gap-5";
 
@@ -216,13 +213,35 @@ export const pageCta =
   "relative overflow-hidden rounded-3xl border border-black/20 bg-black p-6 text-white sm:p-8 md:p-12";
 
 export const trackShell =
-  "grid max-w-[40rem] gap-6 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]";
+  "grid max-w-[40rem] gap-5 rounded-3xl border border-black/20 bg-white p-5 sm:gap-6 sm:p-6";
+export const trackForm =
+  "grid gap-2";
+export const trackFormRow =
+  "grid grid-cols-1 gap-2.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-stretch sm:gap-3";
+export const trackResultTitle =
+  "m-0 font-display text-lg font-semibold uppercase leading-tight tracking-[-0.02em] text-black sm:text-xl";
+export const trackResultNumber =
+  "m-0 mt-1 text-sm text-ink-muted";
 export const trackTimeline =
-  "relative grid gap-[1.1rem] pl-5 before:absolute before:bottom-[0.55rem] before:left-[0.18rem] before:top-[0.55rem] before:w-0.5 before:bg-black/10";
+  "relative m-0 mt-5 flex list-none flex-col p-0";
 export const trackTimelineItem =
-  "relative before:absolute before:left-[-1.55rem] before:top-[0.35rem] before:z-[1] before:h-[0.65rem] before:w-[0.65rem] before:rounded-full before:border-2 before:border-white before:bg-black/20";
-export const trackTimelineItemActive =
-  "relative before:absolute before:left-[-1.55rem] before:top-[0.35rem] before:z-[1] before:h-[0.65rem] before:w-[0.65rem] before:rounded-full before:border-2 before:border-white before:bg-primary";
+  "relative grid grid-cols-[0.75rem_minmax(0,1fr)] gap-x-3.5 pb-5 last:pb-0";
+export const trackTimelineRail =
+  "relative flex justify-center";
+export const trackTimelineDot =
+  "relative z-[1] mt-1.5 size-3 shrink-0 rounded-full border-2 border-white bg-black/25 shadow-[0_0_0_1px_rgb(0_0_0/0.06)]";
+export const trackTimelineDotActive =
+  "relative z-[1] mt-1.5 size-3 shrink-0 rounded-full border-2 border-white bg-primary shadow-[0_0_0_1px_rgb(211_2_3/0.2)]";
+export const trackTimelineLine =
+  "absolute bottom-[-1.25rem] left-1/2 top-[1.15rem] w-0.5 -translate-x-1/2 bg-black/10";
+export const trackTimelineBody =
+  "min-w-0 pt-0.5";
+export const trackTimelineLabel =
+  "m-0 text-[0.95rem] font-semibold leading-snug text-ink";
+export const trackTimelineMeta =
+  "m-0 mt-1 text-sm leading-snug text-ink-muted";
+export const trackTimelineNote =
+  "m-0 mt-1.5 text-sm leading-snug text-black/55";
 
 export const mapPlaceholder =
   "grid min-h-64 place-items-center rounded-3xl border border-dashed border-black/20 bg-[linear-gradient(135deg,var(--color-surface-muted),white),repeating-linear-gradient(-45deg,transparent,transparent_8px,rgb(211_2_3/0.04)_8px,rgb(211_2_3/0.04)_16px)] p-6 text-center text-ink-muted";

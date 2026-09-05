@@ -10,6 +10,7 @@ export const newsArticles: NewsArticle[] = [
     id: "launch",
     slug: "epos-pochta-launch",
     status: "published",
+    category: "company",
     publishedAt: "2026-03-01T09:00:00.000Z",
     coverImage: "/images/home/needs/parcels.png",
     tags: ["company", "launch", "service"],
@@ -52,6 +53,7 @@ export const newsArticles: NewsArticle[] = [
     id: "geography",
     slug: "delivery-across-uzbekistan",
     status: "published",
+    category: "geography",
     publishedAt: "2026-04-15T09:00:00.000Z",
     coverImage: "/images/home/needs/regular.png",
     tags: ["geography", "coverage", "routes"],
@@ -94,6 +96,7 @@ export const newsArticles: NewsArticle[] = [
     id: "business-api",
     slug: "business-and-api",
     status: "published",
+    category: "business",
     publishedAt: "2026-05-20T09:00:00.000Z",
     coverImage: "/images/home/needs/goods.png",
     tags: ["business", "api", "ecommerce"],
@@ -136,6 +139,7 @@ export const newsArticles: NewsArticle[] = [
     id: "tracking-statuses",
     slug: "tracking-and-status-updates",
     status: "published",
+    category: "product",
     publishedAt: "2026-06-10T09:00:00.000Z",
     coverImage: "/images/home/needs/documents.png",
     tags: ["tracking", "product", "support"],
@@ -170,6 +174,76 @@ export const newsArticles: NewsArticle[] = [
           "Проверьте номер или позвоните в поддержку. Пока API полностью не подключён, для части номеров может показываться сообщение «скоро будет доступно» — это штатный stub.",
           "## Совет",
           "Чтобы увидеть демо интерфейса, введите 000000. По реальным отправлениям поможем по телефону или в Telegram.",
+        ],
+      },
+    },
+  },
+  {
+    id: "door-delivery",
+    slug: "door-to-door-delivery",
+    status: "published",
+    category: "product",
+    publishedAt: "2026-07-02T09:00:00.000Z",
+    coverImage: "/images/home/needs/parcels.png",
+    tags: ["door", "courier", "product"],
+    locales: {
+      uz: {
+        title: "Eshikdan eshikgacha: qulay yetkazish",
+        excerpt:
+          "Kuryer chaqirish va eshikgacha yetkazish — punktga bormasdan joʻnatmani yuborish va qabul qilish.",
+        body: [
+          "Koʻplab mijozlar uchun eng qulay variant — joʻnatmani uy yoki ofisdan topshirish va qabul qiluvchiga eshikgacha yetkazish. EPOS POCHTA eshik—eshik va aralash rejimlarni qoʻllab-quvvatlaydi.",
+          "## Qachon tanlash kerak",
+          "Vaqt cheklangan boʻlsa, ogʻir pochta boʻlsa yoki punkt uzoqda boʻlsa — kuryer chaqirish va eshikgacha yetkazish mos keladi.",
+          "## Qanday soʻrash",
+          "Kalkulyator yoki «Narx soʻrash» formasida rejimni koʻrsating. Yakuniy muddat va shartlar menejer bilan kelishiladi.",
+        ],
+      },
+      ru: {
+        title: "От двери до двери: удобная доставка",
+        excerpt:
+          "Вызов курьера и доставка до двери — отправить и получить посылку без поездки в пункт.",
+        body: [
+          "Для многих клиентов самый удобный вариант — сдать отправление из дома или офиса и доставить получателю до двери. EPOS POCHTA поддерживает режим дверь—дверь и смешанные схемы.",
+          "## Когда это уместно",
+          "Если мало времени, посылка тяжёлая или пункт далеко — вызов курьера и доставка до двери подходят лучше всего.",
+          "## Как запросить",
+          "Укажите режим в калькуляторе или форме «Запросить стоимость». Срок и условия подтверждает менеджер.",
+        ],
+      },
+    },
+  },
+  {
+    id: "returns-cod",
+    slug: "returns-and-cash-on-delivery",
+    status: "published",
+    category: "business",
+    publishedAt: "2026-08-12T09:00:00.000Z",
+    coverImage: "/images/home/needs/goods.png",
+    tags: ["returns", "cod", "business"],
+    locales: {
+      uz: {
+        title: "Qaytarishlar va yetkazib berishda toʻlov",
+        excerpt:
+          "Internet-doʻkonlar uchun qaytarish sxemalari va kelishilgan hollarda yetkazib berishda toʻlov.",
+        body: [
+          "Elektron tijorat uchun muhim qism — muvaffaqiyatsiz yetkazishdan keyin qaytarish va baʼzi ssenariylarda yetkazib berishda toʻlov. EPOS POCHTA bu jarayonlarni shartnoma asosida kelishadi.",
+          "## Nima muhokama qilinadi",
+          "Qaytarish shartlari, toʻlov usullari, hisobotlar va SLA — ochiq tarif jadvali yoʻq, shartlar individual.",
+          "## Keyingi qadam",
+          "«Biznes uchun» sahifasida hajm va ehtiyojlarni qoldiring — menejer taklif tayyorlaydi.",
+        ],
+      },
+      ru: {
+        title: "Возвраты и наложенный платёж",
+        excerpt:
+          "Схемы возвратов для интернет-магазинов и наложенный платёж в согласованных сценариях.",
+        body: [
+          "Для e-commerce важны возвраты после неуспешной доставки и наложенный платёж в отдельных сценариях. EPOS POCHTA согласовывает эти процессы в договоре.",
+          "## Что обсуждается",
+          "Условия возврата, способы оплаты, отчётность и SLA — без открытого прайса, условия индивидуальные.",
+          "## Что дальше",
+          "Оставьте объём и потребности на странице «Для бизнеса» — менеджер подготовит предложение.",
         ],
       },
     },

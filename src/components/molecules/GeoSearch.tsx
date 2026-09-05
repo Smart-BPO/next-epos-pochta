@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { SiteCopy } from "@/data/types";
-import { uzbekistanCities } from "@/data/types";
+import { uzbekistanSettlements } from "@/data/types";
 import { Button } from "@/components/atoms/Button";
 import { fieldControl, fieldHint } from "@/styles/ui";
 
@@ -19,9 +19,13 @@ export function GeoSearch({
   const [query, setQuery] = useState("");
   const [submitted, setSubmitted] = useState("");
   const activeQuery = variant === "home" ? submitted : query;
-  const matches = uzbekistanCities.filter((c) => {
+  const matches = uzbekistanSettlements.filter((c) => {
     const label = locale === "uz" ? c.uz : c.ru;
-    return label.toLowerCase().includes(activeQuery.trim().toLowerCase());
+    const region = locale === "uz" ? c.regionUz : c.regionRu;
+    const q = activeQuery.trim().toLowerCase();
+    return (
+      label.toLowerCase().includes(q) || region.toLowerCase().includes(q)
+    );
   });
 
   if (variant === "home") {

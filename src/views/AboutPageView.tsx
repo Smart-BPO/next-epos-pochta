@@ -12,22 +12,10 @@ import {
   homeSectionTitle,
   pageIntro,
   pageIntroTitle,
-  section,
   sectionLead,
   sectionMuted,
   sectionTitle,
 } from "@/styles/ui";
-
-const BENEFIT_ICONS = [
-  "/images/home/benefits/delivery.svg",
-  "/images/home/benefits/free.svg",
-  "/images/home/benefits/return.svg",
-  "/images/home/benefits/sms.svg",
-  "/images/home/benefits/tracking.svg",
-  "/images/home/benefits/support.svg",
-  "/images/home/benefits/api.svg",
-  "/images/home/benefits/terms.svg",
-] as const;
 
 export function AboutPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
@@ -72,16 +60,9 @@ export function AboutPageView({ locale }: { locale: Locale }) {
           unoptimized
         />
         <PageContainer className="relative z-10 flex flex-col gap-6 md:gap-9">
-          <div className="flex max-w-xl flex-col gap-4">
+          <div className="flex max-w-xl flex-col gap-2">
             <h2 className={homeSectionTitle}>{copy.about.geoTitle}</h2>
             <p className={homeSectionLead}>{copy.about.geo}</p>
-            <Button
-              href={localePath(locale, "/#geo")}
-              variant="secondary"
-              className="self-start"
-            >
-              {copy.ui.geoCheck}
-            </Button>
           </div>
           <GeoSearch locale={locale} copy={copy} variant="home" />
         </PageContainer>
@@ -89,33 +70,8 @@ export function AboutPageView({ locale }: { locale: Locale }) {
 
       <section className={sectionMuted}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
-          <h2 className={homeSectionTitle}>{copy.about.benefitsTitle}</h2>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-            {copy.home.benefits.map((b, index) => (
-              <article
-                key={b}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
-              >
-                <div className="relative size-12 shrink-0">
-                  <Image
-                    src={BENEFIT_ICONS[index] ?? BENEFIT_ICONS[0]}
-                    alt=""
-                    width={48}
-                    height={48}
-                    unoptimized
-                  />
-                </div>
-                <p className="m-0 text-lg text-black/60 md:text-xl">{b}</p>
-              </article>
-            ))}
-          </div>
-        </PageContainer>
-      </section>
-
-      <section className={section}>
-        <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={sectionTitle}>{copy.about.legalTitle}</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <article className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
               <h3 className="m-0 mb-2 text-lg font-semibold text-black">
                 {SITE_CONFIG.legalName}
@@ -131,14 +87,13 @@ export function AboutPageView({ locale }: { locale: Locale }) {
                 {locale === "uz" ? "Manzil" : "Адрес"}
               </h3>
               <p className="m-0 text-sm text-black/60">{SITE_CONFIG.address.line}</p>
-            </article>
-            <article className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] sm:col-span-2 lg:col-span-1">
-              <h3 className="m-0 mb-2 text-lg font-semibold text-black">
-                {copy.ui.call}
-              </h3>
-              <p className="m-0 text-sm text-black/60">
-                <a href={`tel:${SITE_CONFIG.phone}`}>{SITE_CONFIG.phoneDisplay}</a>
-              </p>
+              <Button
+                href={localePath(locale, "/contacts/")}
+                variant="secondary"
+                className="mt-4"
+              >
+                {copy.footer.contacts}
+              </Button>
             </article>
           </div>
         </PageContainer>

@@ -20,18 +20,15 @@ import {
   sectionTitle,
 } from "@/styles/ui";
 
-const SERVICE_MEDIA: Record<
-  string,
-  { src: string; kind: "photo" | "icon" }
-> = {
-  documents: { src: "/images/home/needs/documents.png", kind: "photo" },
-  parcels: { src: "/images/home/needs/parcels.png", kind: "photo" },
-  door: { src: "/images/home/needs/goods.png", kind: "photo" },
-  courier: { src: "/images/home/needs/regular.png", kind: "photo" },
-  ecommerce: { src: "/images/home/benefits/api.svg", kind: "icon" },
-  corporate: { src: "/images/home/benefits/terms.svg", kind: "icon" },
-  cod: { src: "/images/home/benefits/sms.svg", kind: "icon" },
-  returns: { src: "/images/home/benefits/return.svg", kind: "icon" },
+const SERVICE_MEDIA: Record<string, string> = {
+  documents: "/images/services/01-document-delivery.webp",
+  parcels: "/images/services/02-parcel-delivery.webp",
+  door: "/images/services/03-door-delivery.webp",
+  courier: "/images/services/04-courier-call.webp",
+  ecommerce: "/images/services/05-ecommerce-delivery.webp",
+  corporate: "/images/services/06-corporate-delivery.webp",
+  cod: "/images/services/07-cash-on-delivery.webp",
+  returns: "/images/services/08-return-shipments.webp",
 };
 
 function serviceHref(locale: Locale, serviceId: string) {
@@ -70,10 +67,7 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
             <p className={sectionLead}>{copy.services.intro}</p>
             <div className={`${alertInfo} rounded-2xl`}>{copy.services.priceNote}</div>
           </div>
-          <nav
-            aria-label={labels.catalog}
-            className="flex flex-wrap gap-2"
-          >
+          <nav aria-label={labels.catalog} className="flex flex-wrap gap-2">
             {copy.services.items.map((service) => (
               <a
                 key={service.id}
@@ -92,10 +86,9 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
           <h2 className={`${homeSectionTitle} text-white`}>{labels.catalog}</h2>
           <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {copy.services.items.map((service) => {
-              const media = SERVICE_MEDIA[service.id] ?? {
-                src: "/images/home/benefits/delivery.svg",
-                kind: "icon" as const,
-              };
+              const src =
+                SERVICE_MEDIA[service.id] ??
+                "/images/services/02-parcel-delivery.webp";
               return (
                 <a
                   key={service.id}
@@ -105,31 +98,14 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
                   <h3 className="m-0 min-h-[2.5em] font-display text-xl font-semibold uppercase leading-tight text-black md:text-2xl">
                     {service.title}
                   </h3>
-                  <div
-                    className={cn(
-                      "relative w-full shrink-0 overflow-hidden",
-                      media.kind === "photo"
-                        ? "h-[10rem] sm:h-[12.5rem]"
-                        : "flex h-[10rem] items-center justify-center sm:h-[12.5rem]",
-                    )}
-                  >
-                    {media.kind === "photo" ? (
-                      <Image
-                        src={media.src}
-                        alt=""
-                        fill
-                        className="object-contain object-center"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      />
-                    ) : (
-                      <Image
-                        src={media.src}
-                        alt=""
-                        width={64}
-                        height={64}
-                        unoptimized
-                      />
-                    )}
+                  <div className="relative h-[10rem] w-full shrink-0 overflow-hidden sm:h-[12.5rem]">
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      className="object-contain object-center p-2"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
                   </div>
                   <p className="m-0 flex-1 text-base text-black/60">
                     {service.audience}
@@ -142,10 +118,9 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
       </section>
 
       {copy.services.items.map((service, index) => {
-        const media = SERVICE_MEDIA[service.id] ?? {
-          src: "/images/home/benefits/delivery.svg",
-          kind: "icon" as const,
-        };
+        const src =
+          SERVICE_MEDIA[service.id] ??
+          "/images/services/02-parcel-delivery.webp";
         return (
           <section
             key={service.id}
@@ -154,31 +129,14 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
           >
             <PageContainer>
               <article className="grid gap-8 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:items-start lg:gap-10">
-                <div
-                  className={cn(
-                    "relative mx-auto w-full max-w-xs overflow-hidden rounded-3xl bg-surface-muted lg:mx-0",
-                    media.kind === "photo"
-                      ? "aspect-square"
-                      : "flex aspect-square items-center justify-center",
-                  )}
-                >
-                  {media.kind === "photo" ? (
-                    <Image
-                      src={media.src}
-                      alt=""
-                      fill
-                      className="object-contain p-6"
-                      sizes="16rem"
-                    />
-                  ) : (
-                    <Image
-                      src={media.src}
-                      alt=""
-                      width={80}
-                      height={80}
-                      unoptimized
-                    />
-                  )}
+                <div className="relative mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-3xl bg-surface-muted lg:mx-0">
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    className="object-contain p-5"
+                    sizes="16rem"
+                  />
                 </div>
 
                 <div className="min-w-0">
@@ -226,22 +184,30 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
                     </p>
                   </div>
 
-                  {service.faqs.length ? (
-                    <div className="mt-6 border-t border-black/10 pt-4">
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <Button href={serviceHref(locale, service.id)}>
+                      {copy.ui.requestPrice}
+                    </Button>
+                    <Button
+                      href={localePath(locale, "/contacts/")}
+                      variant="secondary"
+                    >
+                      {copy.ui.write}
+                    </Button>
+                  </div>
+
+                  {service.faqs.length > 0 ? (
+                    <div className="mt-8 border-t border-border pt-4">
                       {service.faqs.map((faq) => (
                         <details key={faq.question} className={faqDetails}>
-                          <summary className={faqSummary}>{faq.question}</summary>
+                          <summary className={faqSummary}>
+                            {faq.question}
+                          </summary>
                           <p className="text-black/60">{faq.answer}</p>
                         </details>
                       ))}
                     </div>
                   ) : null}
-
-                  <div className="mt-6">
-                    <Button href={serviceHref(locale, service.id)}>
-                      {copy.ui.requestPrice}
-                    </Button>
-                  </div>
                 </div>
               </article>
             </PageContainer>

@@ -20,8 +20,10 @@
     "next": "16.3.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-select": "^5.10.2",
     "react-toastify": "^11.1.0",
     "resend": "^6.20.0",
+    "uzbgeo": "^2.2.0",
     "yup": "^1.7.1"
   },
   "devDependencies": {

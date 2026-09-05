@@ -29,7 +29,6 @@ import {
   alertSuccess,
   card,
   formActions,
-  formShell,
   formStepActive,
   formStepDone,
   formStepIdle,
@@ -315,7 +314,7 @@ export function RequestPriceForm({
   }
 
   return (
-    <div className={cn(formShell, card)}>
+    <div className={cn(card, "w-full")}>
       <div className={quizProgressWrap}>
         <p className={quizProgressLabel}>{progressLabel}</p>
         <div className={quizProgressTrack} aria-hidden>

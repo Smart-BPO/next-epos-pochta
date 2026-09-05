@@ -15,11 +15,15 @@ export function NewsCard({
 }) {
   const copy = getContent(locale);
   const href = localePath(locale, `/news/${article.slug}/`);
+  const categoryLabel = copy.news.categories[article.category];
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-black/20 bg-white">
       {article.coverImage ? (
-        <Link href={href} className="relative block aspect-[16/10] shrink-0 bg-surface-muted">
+        <Link
+          href={href}
+          className="relative block aspect-[16/10] shrink-0 bg-surface-muted"
+        >
           <Image
             src={article.coverImage}
             alt=""
@@ -30,12 +34,15 @@ export function NewsCard({
         </Link>
       ) : null}
       <div className="flex flex-1 flex-col gap-3 p-[var(--card-pad)]">
-        <time
-          dateTime={article.publishedAt}
-          className="text-sm text-black/50"
-        >
-          {formatNewsDate(article.publishedAt, locale)}
-        </time>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-black/50">
+          <time dateTime={article.publishedAt}>
+            {formatNewsDate(article.publishedAt, locale)}
+          </time>
+          <span aria-hidden className="text-black/25">
+            ·
+          </span>
+          <span>{categoryLabel}</span>
+        </div>
         <h3 className="m-0 font-display text-xl font-semibold uppercase leading-snug tracking-[-0.02em] text-black">
           <Link href={href} className="hover:text-primary">
             {article.title}

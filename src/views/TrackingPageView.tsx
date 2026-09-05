@@ -13,19 +13,27 @@ import { lookupTracking } from "@/lib/tracking/client";
 import type { TrackingShipment } from "@/lib/tracking/types";
 import {
   alertWarning,
-  field,
   fieldControl,
-  fieldHint,
   fieldLabel,
   heroActions,
   pageIntro,
   pageIntroTitle,
   sectionLead,
-  sectionTitle,
+  trackForm,
+  trackFormRow,
+  trackResultNumber,
+  trackResultTitle,
   trackShell,
   trackTimeline,
+  trackTimelineBody,
+  trackTimelineDot,
+  trackTimelineDotActive,
   trackTimelineItem,
-  trackTimelineItemActive,
+  trackTimelineLabel,
+  trackTimelineLine,
+  trackTimelineMeta,
+  trackTimelineNote,
+  trackTimelineRail,
 } from "@/styles/ui";
 
 type UiState = "idle" | "loading" | "invalid" | "not_found" | "found";
@@ -104,6 +112,11 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
     };
   }, [queryNumber, locale]);
 
+  const events =
+    state === "found" && shipment
+      ? [...shipment.events].reverse()
+      : [];
+
   return (
     <section className={pageIntro}>
       <PageContainer>
@@ -112,16 +125,16 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
 
         <div className={`${trackShell} max-w-2xl`}>
           <form
-            className="flex flex-col gap-4 sm:flex-row sm:items-end"
+            className={trackForm}
             onSubmit={(e) => {
               e.preventDefault();
               runLookup(number, true);
             }}
           >
-            <div className={`${field} mb-0 min-w-0 flex-1`}>
-              <label htmlFor="track-number" className={fieldLabel}>
-                {copy.tracking.placeholder}
-              </label>
+            <label htmlFor="track-number" className={fieldLabel}>
+              {copy.tracking.placeholder}
+            </label>
+            <div className={trackFormRow}>
               <input
                 id="track-number"
                 value={number}
@@ -133,31 +146,35 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                 placeholder={copy.tracking.placeholder}
                 autoComplete="off"
                 inputMode="text"
-                className={fieldControl}
+                className={`${fieldControl} w-full`}
               />
+              <Button
+                type="submit"
+                disabled={pending}
+                className="!min-h-[var(--tap-min)] w-full shrink-0 !px-6 !py-0 sm:w-auto"
+              >
+                {copy.ui.track}
+              </Button>
             </div>
-            <Button type="submit" disabled={pending} className="shrink-0">
-              {copy.ui.track}
-            </Button>
           </form>
 
           {state === "loading" ? (
-            <p className="m-0 text-base text-black/60" role="status">
+            <p className="m-0 text-base text-ink-muted" role="status">
               {copy.tracking.loadingText}
             </p>
           ) : null}
 
           {state === "invalid" ? (
-            <div className={alertWarning} role="alert">
+            <div className={`${alertWarning} mb-0`} role="alert">
               <strong>{copy.tracking.formatErrorTitle}</strong>
-              <p>{copy.tracking.formatErrorText}</p>
+              <p className="mb-0">{copy.tracking.formatErrorText}</p>
             </div>
           ) : null}
 
           {state === "not_found" ? (
-            <div className={alertWarning} role="status">
+            <div className={`${alertWarning} mb-0`} role="status">
               <strong>{copy.tracking.errorTitle}</strong>
-              <p>{copy.tracking.errorText}</p>
+              <p className="mb-0">{copy.tracking.errorText}</p>
               <div className={`${heroActions} mt-3.5`}>
                 <Button
                   href={`tel:${SITE_CONFIG.phone}`}
@@ -176,34 +193,43 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
           ) : null}
 
           {state === "found" && shipment ? (
-            <div>
-              <h2 className={sectionTitle}>{copy.tracking.resultTitle}</h2>
-              <p className="mb-4 m-0 text-sm text-black/50">
-                {shipment.number}
-              </p>
-              <div className={trackTimeline}>
-                {[...shipment.events].reverse().map((event, index) => (
-                  <div
-                    key={`${event.code}-${event.occurredAt}`}
-                    className={
-                      index === 0
-                        ? trackTimelineItemActive
-                        : trackTimelineItem
-                    }
-                  >
-                    <strong>{event.label}</strong>
-                    <p className={fieldHint}>
-                      {formatEventTime(event.occurredAt)}
-                      {event.location ? ` · ${event.location}` : ""}
-                    </p>
-                    {event.note ? (
-                      <p className="mt-1 m-0 text-sm text-black/50">
-                        {event.note}
-                      </p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
+            <div className="border-t border-black/10 pt-5">
+              <h2 className={trackResultTitle}>{copy.tracking.resultTitle}</h2>
+              <p className={trackResultNumber}>{shipment.number}</p>
+              <ol className={trackTimeline}>
+                {events.map((event, index) => {
+                  const isLast = index === events.length - 1;
+                  return (
+                    <li
+                      key={`${event.code}-${event.occurredAt}`}
+                      className={trackTimelineItem}
+                    >
+                      <div className={trackTimelineRail} aria-hidden>
+                        <span
+                          className={
+                            index === 0
+                              ? trackTimelineDotActive
+                              : trackTimelineDot
+                          }
+                        />
+                        {!isLast ? (
+                          <span className={trackTimelineLine} />
+                        ) : null}
+                      </div>
+                      <div className={trackTimelineBody}>
+                        <p className={trackTimelineLabel}>{event.label}</p>
+                        <p className={trackTimelineMeta}>
+                          {formatEventTime(event.occurredAt)}
+                          {event.location ? ` · ${event.location}` : ""}
+                        </p>
+                        {event.note ? (
+                          <p className={trackTimelineNote}>{event.note}</p>
+                        ) : null}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
           ) : null}
         </div>

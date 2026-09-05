@@ -64,25 +64,26 @@ export function DeliveryChain({ locale }: { locale: Locale }) {
     <div className="relative overflow-hidden rounded-3xl border border-black/10 bg-[linear-gradient(180deg,#fff_0%,#faf7f7_100%)] px-3 py-6 sm:px-5 sm:py-8 md:px-6 md:py-10">
       {/* Desktop / tablet horizontal path */}
       <div className="relative hidden md:block">
+        {/* Line between first and last column centers (5 equal cols → 10% … 90%) */}
         <div
           aria-hidden
-          className="absolute left-[8%] right-[8%] top-[46%] h-1 rounded-full bg-gradient-to-r from-primary via-primary to-primary-hover"
+          className="absolute left-[10%] right-[10%] top-[46%] h-1 -translate-y-1/2 rounded-full bg-gradient-to-r from-primary via-primary to-primary-hover"
         />
-        <div
-          aria-hidden
-          className="absolute left-[8%] right-[8%] top-[46%] flex -translate-y-1/2 justify-between px-[12%]"
-        >
-          {[0, 1, 2].map((i) => (
+
+        {/* One connector dot in each gap between the 5 cards */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-[46%]">
+          {[20, 40, 60, 80].map((left) => (
             <span
-              key={i}
-              className="size-3 rounded-full border-2 border-white bg-primary shadow-sm"
+              key={left}
+              className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-primary shadow-sm"
+              style={{ left: `${left}%` }}
             />
           ))}
         </div>
 
-        <ParcelMarker className="left-[26%] top-[38%] -translate-x-1/2" />
-        <ParcelMarker className="left-[50%] top-[52%] -translate-x-1/2" />
-        <ParcelMarker className="left-[74%] top-[38%] -translate-x-1/2" />
+        <ParcelMarker className="left-[30%] top-[34%] -translate-x-1/2" />
+        <ParcelMarker className="left-[50%] top-[54%] -translate-x-1/2" />
+        <ParcelMarker className="left-[70%] top-[34%] -translate-x-1/2" />
 
         <ol className="relative z-[2] m-0 grid list-none grid-cols-5 items-end gap-2 p-0 lg:gap-3">
           {STEPS.map((step, index) => (

@@ -83,9 +83,8 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <HomeActionBar locale={locale} copy={copy} />
-
       <section className={homeNeedsSection}>
+        <HomeActionBar locale={locale} copy={copy} />
         <PageContainer className="flex flex-col gap-4 sm:gap-5 md:gap-7">
           <h2
             className={`${homeSectionTitle} text-[1.35rem] text-white sm:text-[length:var(--home-title)]`}
