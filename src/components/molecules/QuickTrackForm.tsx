@@ -73,7 +73,7 @@ export function QuickTrackForm({
       <div className={homeHeroTracker}>
         <h2 className={homeHeroTrackerTitle}>{copy.home.trackTitle}</h2>
         {form}
-        <p className="mt-4 text-base text-black/60">{copy.home.trackHint}</p>
+        <p className="mt-3 text-sm text-black/60">{copy.home.trackHint}</p>
       </div>
     );
   }
@@ -83,7 +83,7 @@ export function QuickTrackForm({
       <div className={homeTrackCard}>
         <h2 className={homeHeroTrackerTitle}>{copy.home.trackTitle}</h2>
         {form}
-        <p className="mt-4 text-base text-black/60">{copy.home.trackHint}</p>
+        <p className="mt-3 text-sm text-black/60">{copy.home.trackHint}</p>
       </div>
     );
   }

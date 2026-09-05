@@ -134,12 +134,12 @@ export function HomeQuoteTeaser({
         <Button
           type="submit"
           variant="heroPrimary"
-          className="w-full shrink-0 lg:w-auto"
+          className="w-full shrink-0 !min-h-11 !px-5 !py-2.5 text-sm lg:w-auto"
         >
           {copy.home.quoteCta}
         </Button>
       </form>
-      <p className="mt-3 m-0 text-sm text-black/50 lg:mt-4">{copy.home.quoteNote}</p>
+      <p className="mt-2.5 m-0 text-sm text-black/50 lg:mt-3">{copy.home.quoteNote}</p>
     </div>
   );
 }

@@ -24,6 +24,8 @@ import {
   homeHeroNote,
   homeHeroTitle,
   homeHeroVisual,
+  homeNeedsSection,
+  homeQuoteBridge,
   homeSectionLead,
   homeSectionTitle,
   section,
@@ -75,14 +77,14 @@ export function HomePageView({ locale }: { locale: Locale }) {
               <Button
                 href={localePath(locale, "/request-price/")}
                 variant="heroPrimary"
-                className="w-full sm:w-auto"
+                className="w-full !min-h-11 !px-5 !py-2.5 text-sm sm:w-auto"
               >
                 {copy.ui.calculate}
               </Button>
               <Button
                 href={`${localePath(locale, "/request-price/")}?pickup=1`}
                 variant="heroSecondary"
-                className="w-full sm:w-auto"
+                className="w-full !min-h-11 !px-5 !py-2.5 text-sm sm:w-auto"
               >
                 {copy.ui.callCourier}
               </Button>
@@ -104,33 +106,33 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="bg-surface-muted py-4 lg:hidden">
+      <section className="bg-white pb-2 pt-1 lg:hidden">
         <PageContainer>
           <QuickTrackForm locale={locale} copy={copy} variant="card" />
         </PageContainer>
       </section>
 
-      <section className="bg-white pb-6 pt-2 md:pb-8 lg:pb-10">
+      <div className={homeQuoteBridge}>
         <PageContainer>
           <HomeQuoteTeaser locale={locale} copy={copy} />
         </PageContainer>
-      </section>
+      </div>
 
-      <section className="bg-gradient-to-b from-primary to-primary-hover py-[var(--section-y)]">
-        <PageContainer className="flex flex-col gap-6 md:gap-9">
+      <section className={homeNeedsSection}>
+        <PageContainer className="flex flex-col gap-5 md:gap-7">
           <h2 className={`${homeSectionTitle} text-white`}>
             {copy.home.needsTitle}
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
             {copy.home.needs.map((item) => (
               <article
                 key={item.id}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
+                className="flex h-full flex-col gap-3 rounded-3xl border border-black/10 bg-white p-5 sm:gap-4 sm:p-[var(--card-pad)]"
               >
-                <h3 className="m-0 min-h-[2.5em] font-display text-xl font-semibold uppercase leading-tight text-black md:text-2xl">
+                <h3 className="m-0 min-h-[2.5em] font-display text-lg font-semibold uppercase leading-tight text-black md:text-xl">
                   {item.title}
                 </h3>
-                <div className="relative h-[10rem] w-full shrink-0 overflow-hidden sm:h-[12.5rem]">
+                <div className="relative h-[8.5rem] w-full shrink-0 overflow-hidden sm:h-[10.5rem]">
                   <Image
                     src={NEED_IMAGES[item.id] ?? NEED_IMAGES.documents}
                     alt=""
@@ -139,13 +141,13 @@ export function HomePageView({ locale }: { locale: Locale }) {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                 </div>
-                <p className="m-0 flex-1 text-base text-black/60">
+                <p className="m-0 flex-1 text-sm text-black/60 sm:text-base">
                   {item.description}
                 </p>
                 <Button
                   href={`${localePath(locale, "/request-price/")}?category=${item.id}`}
                   variant="secondary"
-                  className="w-full"
+                  className="w-full !min-h-11 !px-4 !py-2.5 text-sm"
                 >
                   {copy.ui.requestPrice}
                 </Button>

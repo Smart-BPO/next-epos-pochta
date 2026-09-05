@@ -8,11 +8,18 @@ import { localeLabels, locales } from "@/i18n/config";
 import { switchLocalePath } from "@/i18n/paths";
 import { cn } from "@/lib/cn";
 
-export function LanguageSwitcher({ locale }: { locale: Locale }) {
+export function LanguageSwitcher({
+  locale,
+  size = "default",
+}: {
+  locale: Locale;
+  size?: "default" | "compact";
+}) {
   const pathname = usePathname() || "/";
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const listId = useId();
+  const compact = size === "compact";
 
   useEffect(() => {
     if (!open) return;
@@ -38,7 +45,12 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
     <div ref={rootRef} className="relative">
       <button
         type="button"
-        className="inline-flex min-h-[var(--tap-min)] items-center gap-1.5 rounded-xl border border-black/10 bg-white px-3 py-3 text-base font-medium text-black"
+        className={cn(
+          "inline-flex items-center gap-1 rounded-full border border-black/10 bg-white font-medium text-black transition-colors hover:border-black/20",
+          compact
+            ? "h-9 min-w-9 justify-center px-2.5 text-sm"
+            : "h-10 min-h-10 gap-1.5 px-3 text-sm",
+        )}
         aria-label="Language"
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -52,7 +64,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
           height="12"
           viewBox="0 0 12 12"
           className={cn(
-            "shrink-0 text-black/50 transition-transform duration-150",
+            "shrink-0 text-black/45 transition-transform duration-150",
             open && "rotate-180",
           )}
         >
@@ -72,7 +84,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
           id={listId}
           role="listbox"
           aria-label="Language"
-          className="absolute right-0 z-50 mt-2 min-w-[4.5rem] max-w-[calc(100vw-2*var(--page-padding))] overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-[0_12px_32px_rgb(0_0_0/0.12)]"
+          className="absolute right-0 z-50 mt-2 min-w-[4.75rem] overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-[0_12px_32px_rgb(0_0_0/0.12)]"
         >
           {locales.map((code) => {
             const active = code === locale;
@@ -81,7 +93,7 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
                 <Link
                   href={switchLocalePath(pathname, code)}
                   className={cn(
-                    "flex min-h-[var(--tap-min)] items-center px-3 py-2 text-base font-medium",
+                    "flex h-10 items-center px-3 text-sm font-medium",
                     active
                       ? "bg-black/5 text-black"
                       : "text-black/60 hover:bg-black/[0.03] hover:text-black",

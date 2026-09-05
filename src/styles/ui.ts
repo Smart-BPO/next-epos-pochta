@@ -15,54 +15,61 @@ export const pageIntroTitle =
 
 export const anchorSection = "scroll-mt-[var(--header-height)]";
 
-/** Home hero — Figma: mobile stacked (copy → CTAs → map); desktop copy + map/tracker. */
+/** Home hero — compact first viewport; calculator bridges into the red needs band. */
 export const homeHero =
-  "relative isolate overflow-hidden bg-white max-lg:min-h-0 lg:min-h-[min(100dvh-var(--header-height),52rem)]";
+  "relative isolate overflow-hidden bg-white";
 
 export const homeHeroGrid =
-  "relative grid items-start gap-6 py-6 max-lg:grid-cols-1 md:gap-8 md:py-8 lg:min-h-[min(100dvh-var(--header-height),52rem)] lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:py-12";
+  "relative grid items-start gap-5 py-5 max-lg:grid-cols-1 md:gap-6 md:py-6 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:items-center lg:gap-6 lg:pb-14 lg:pt-8 xl:pb-16";
 
 export const homeHeroCopy =
-  "relative z-10 flex max-w-[32rem] flex-col items-stretch gap-5 lg:items-start lg:gap-9";
+  "relative z-10 flex max-w-[30rem] flex-col items-stretch gap-3.5 lg:items-start lg:gap-5";
 
 export const homeHeroTitle =
-  "m-0 animate-hero-rise font-display text-[clamp(1.75rem,4.2vw,3rem)] font-black uppercase leading-[1.05] tracking-[-0.02em] text-black max-lg:text-[2rem]";
+  "m-0 animate-hero-rise font-display text-[clamp(1.65rem,3.8vw,2.75rem)] font-black uppercase leading-[1.05] tracking-[-0.02em] text-black max-lg:text-[1.85rem]";
 
 export const homeHeroLead =
-  "m-0 animate-hero-rise text-[clamp(1.05rem,2vw,1.5rem)] leading-normal text-black [animation-delay:80ms]";
+  "m-0 animate-hero-rise text-[clamp(1rem,1.8vw,1.25rem)] leading-snug text-black [animation-delay:80ms]";
 
 export const homeHeroNote =
-  "m-0 animate-hero-rise text-base text-black/60 [animation-delay:140ms]";
+  "m-0 animate-hero-rise text-sm text-black/60 sm:text-base [animation-delay:140ms]";
 
 export const homeHeroActions =
-  "flex w-full flex-col gap-3 animate-hero-rise [animation-delay:180ms] sm:flex-row sm:flex-wrap lg:w-auto";
+  "flex w-full flex-col gap-2.5 animate-hero-rise [animation-delay:180ms] sm:flex-row sm:flex-wrap lg:w-auto";
 
 export const homeHeroVisual =
-  "relative z-0 order-last w-full min-h-[12.5rem] sm:min-h-[16rem] lg:order-none lg:min-h-[28rem] lg:justify-self-end";
+  "relative z-0 order-last w-full min-h-[11rem] sm:min-h-[14rem] lg:order-none lg:min-h-[22rem] lg:justify-self-end";
 
 export const homeHeroMap =
-  "pointer-events-none relative mx-auto block h-auto w-full max-w-[22rem] select-none object-contain opacity-90 sm:max-w-[28rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,46rem)] lg:max-w-none lg:object-right lg:opacity-100";
+  "pointer-events-none relative mx-auto block h-auto w-full max-w-[20rem] select-none object-contain opacity-90 sm:max-w-[26rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-right lg:opacity-100";
 
 export const homeHeroTracker =
-  "relative z-10 hidden w-full max-w-[29.5rem] rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] lg:absolute lg:bottom-8 lg:right-0 lg:ml-auto lg:mt-0 lg:block";
+  "relative z-10 hidden w-full max-w-[26rem] rounded-3xl border border-black/10 bg-white p-5 shadow-[0_16px_40px_rgb(15_18_24/0.1)] lg:absolute lg:right-0 lg:top-2 lg:ml-auto lg:mt-0 lg:block xl:top-4";
 
 export const homeTrackCard =
-  "rounded-3xl border border-black/20 bg-white p-[var(--card-pad)] lg:hidden";
+  "rounded-3xl border border-black/10 bg-white p-[var(--card-pad)] shadow-[0_8px_24px_rgb(15_18_24/0.06)] lg:hidden";
 
+/** Floats on the seam between hero (white) and needs (red). */
 export const homeQuoteCard =
-  "rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]";
+  "rounded-3xl border border-black/10 bg-white p-5 shadow-[0_16px_48px_rgb(15_18_24/0.14)] sm:p-6";
+
+export const homeQuoteBridge =
+  "relative z-20 -mt-10 mb-[-3rem] md:-mt-12 md:mb-[-3.75rem] lg:-mt-14 lg:mb-[-4.25rem]";
 
 export const homeQuoteRow =
   "flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3";
 
 export const homeQuoteField =
-  "min-h-[var(--tap-min)] min-w-0 flex-1 rounded-xl border border-black/20 bg-white px-4 py-4 text-base placeholder:text-black/40";
+  "min-h-11 min-w-0 flex-1 rounded-xl border border-black/15 bg-white px-4 py-3 text-base placeholder:text-black/40";
 
 export const homeQuoteSelect =
   `${homeQuoteField} appearance-none bg-[length:1rem] bg-[right_1rem_center] bg-no-repeat pr-10`;
 
 export const homeHeroTrackerTitle =
-  "m-0 mb-4 font-display text-xl font-semibold uppercase leading-normal text-black sm:text-2xl";
+  "m-0 mb-3 font-display text-lg font-semibold uppercase leading-tight text-black sm:mb-4 sm:text-xl";
+
+export const homeNeedsSection =
+  "bg-gradient-to-b from-primary to-primary-hover pb-[var(--section-y)] pt-[4.5rem] md:pt-24 lg:pt-28";
 
 /** Business / secondary light hero */
 export const hero =

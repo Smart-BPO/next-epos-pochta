@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import { localePath, stripLocalePrefix } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
@@ -31,132 +31,194 @@ function isActivePath(currentPath: string, href: string) {
   return current === target || current.startsWith(target);
 }
 
+function MenuIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden
+      className="text-black"
+    >
+      {open ? (
+        <path
+          d="M5 5 15 15M15 5 5 15"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+        />
+      ) : (
+        <path
+          d="M3.5 6h13M3.5 10h13M3.5 14h13"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+        />
+      )}
+    </svg>
+  );
+}
+
 export function Header({ locale, content }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname() || "/";
   const { path: currentPath } = stripLocalePrefix(pathname);
   const requestHref = localePath(locale, "/request-price/");
   const trackHref = localePath(locale, "/tracking/");
-  const menuLabel = locale === "uz" ? "Menyu" : "Меню";
-  const actionsLabel = locale === "uz" ? "Amallar" : "Действия";
+  const menuLabel = open ? content.ui.close : content.ui.menu;
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-black/5 bg-white/95 backdrop-blur-md">
-      <div
-        className={cn(
-          pageContainer,
-          "flex min-h-[var(--header-height)] items-center justify-between gap-3",
-        )}
-      >
-        <Link
-          href={localePath(locale, "/")}
-          className="relative h-9 w-[92px] shrink-0"
-          aria-label={SITE_CONFIG.name}
+    <>
+      <header className="sticky top-0 z-40 border-b border-black/5 bg-white/95 backdrop-blur-md">
+        <div
+          className={cn(
+            pageContainer,
+            "grid h-[var(--header-height)] grid-cols-[auto_1fr_auto] items-center gap-3 lg:gap-5",
+          )}
         >
-          <Image
-            src="/images/brand/logo.svg"
-            alt={SITE_CONFIG.name}
-            width={92}
-            height={36}
-            className="h-9 w-auto"
-            priority
-            unoptimized
-          />
-        </Link>
+          <Link
+            href={localePath(locale, "/")}
+            className="relative z-10 flex h-8 w-[84px] shrink-0 items-center sm:h-9 sm:w-[92px]"
+            aria-label={SITE_CONFIG.name}
+          >
+            <Image
+              src="/images/brand/logo.svg"
+              alt={SITE_CONFIG.name}
+              width={92}
+              height={36}
+              className="h-full w-auto"
+              priority
+              unoptimized
+            />
+          </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
-          {content.nav.map((item) => {
-            const active = isActivePath(currentPath, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={localePath(locale, item.href)}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "rounded-xl px-3 py-4 text-base font-medium xl:px-4",
-                  active
-                    ? "bg-black/[0.04] text-black"
-                    : "text-black/60 hover:text-black",
-                )}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+          <nav
+            className="hidden min-w-0 items-center justify-center lg:flex"
+            aria-label="Main"
+          >
+            <div className="flex items-center justify-center gap-0.5 xl:gap-1">
+              {content.nav.map((item) => {
+                const active = isActivePath(currentPath, item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={localePath(locale, item.href)}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "whitespace-nowrap rounded-full font-medium transition-colors",
+                      "px-2.5 py-1.5 text-[0.8125rem] xl:px-3.5 xl:py-2 xl:text-sm",
+                      active
+                        ? "bg-black/[0.05] text-black"
+                        : "text-black/55 hover:bg-black/[0.03] hover:text-black",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <span className="hidden lg:inline">
-            <Button href={trackHref} variant="secondary">
+          <div className="min-w-0 lg:hidden" aria-hidden />
+
+          <div className="flex items-center justify-end gap-2">
+            <Link
+              href={trackHref}
+              className="hidden whitespace-nowrap rounded-full px-2.5 py-1.5 text-[0.8125rem] font-medium text-black/55 transition-colors hover:bg-black/[0.03] hover:text-black xl:inline-flex xl:text-sm"
+            >
               {content.ui.track}
-            </Button>
-          </span>
-          <span className="hidden sm:inline">
-            <LanguageSwitcher locale={locale} />
-          </span>
-          <Button
-            href={requestHref}
-            className="!min-h-9 !px-3 !py-2 text-sm lg:!min-h-[var(--tap-min)] lg:!px-6 lg:!py-4 lg:text-base"
-          >
-            {content.ui.calculate}
-          </Button>
-          <button
-            type="button"
-            className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-xl border border-black/10 bg-white px-2 text-sm lg:hidden"
-            aria-expanded={open}
-            aria-controls="mobile-nav"
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? content.ui.close : content.ui.menu}
-          </button>
-        </div>
-      </div>
+            </Link>
 
+            <LanguageSwitcher locale={locale} size="compact" />
+
+            <Button
+              href={requestHref}
+              className="!hidden !h-10 !min-h-10 !shrink-0 !rounded-full !px-4 !py-0 text-sm lg:!inline-flex"
+            >
+              {content.ui.calculate}
+            </Button>
+
+            <button
+              type="button"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/[0.04] lg:hidden"
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              aria-label={menuLabel}
+              onClick={() => setOpen((v) => !v)}
+            >
+              <MenuIcon open={open} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Sibling of header — backdrop-filter on header would collapse a nested fixed panel */}
       <div
         id="mobile-nav"
         className={cn(
-          "border-t border-black/5 bg-white px-[var(--page-padding)] pb-5 pt-4 lg:hidden",
+          "fixed inset-x-0 bottom-0 top-[var(--header-height)] z-50 overflow-y-auto bg-white lg:hidden",
           !open && "hidden",
         )}
       >
-        <p className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-black/40">
-          {menuLabel}
-        </p>
-        <nav aria-label="Main">
-          {content.nav.map((item) => {
-            const active = isActivePath(currentPath, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={localePath(locale, item.href)}
-                onClick={() => setOpen(false)}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex min-h-[var(--tap-min)] items-center border-b border-black/5 py-1",
-                  active ? "font-medium text-black" : "text-black/60",
-                )}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="mx-auto flex w-[min(calc(100%-2*var(--page-padding)),var(--page-max))] flex-col gap-6 py-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+          <nav aria-label="Main" className="flex flex-col">
+            {content.nav.map((item) => {
+              const active = isActivePath(currentPath, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={localePath(locale, item.href)}
+                  onClick={() => setOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex min-h-12 items-center border-b border-black/5 text-base font-medium",
+                    active ? "text-black" : "text-black/60",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
 
-        <p className="m-0 mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-black/40">
-          {actionsLabel}
-        </p>
-        <div className="grid gap-3">
-          <Button href={trackHref} variant="secondary" onClick={() => setOpen(false)}>
-            {content.ui.track}
-          </Button>
-          <div className="sm:hidden">
-            <LanguageSwitcher locale={locale} />
+          <div className="grid gap-2.5">
+            <Button
+              href={trackHref}
+              variant="secondary"
+              className="w-full !rounded-full"
+              onClick={() => setOpen(false)}
+            >
+              {content.ui.track}
+            </Button>
+            <Button
+              href={requestHref}
+              className="w-full !rounded-full"
+              onClick={() => setOpen(false)}
+            >
+              {content.ui.calculate}
+            </Button>
           </div>
-          <Button href={requestHref} onClick={() => setOpen(false)}>
-            {content.ui.calculate}
-          </Button>
         </div>
       </div>
-    </header>
+    </>
   );
 }
