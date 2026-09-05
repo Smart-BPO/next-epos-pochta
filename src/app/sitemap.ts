@@ -3,6 +3,7 @@ import { pagePaths } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import { listPublishedSlugs } from "@/lib/news/repository";
 import { listDeliveryCitySlugs } from "@/data/delivery-cities";
+import { listDeliveryRouteParams, routePath } from "@/data/delivery-routes";
 import { getCanonicalSiteUrl, isIndexableDeployment } from "@/utils/seo/indexing";
 
 const pagePriority: Record<string, number> = {
@@ -67,6 +68,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: now,
         changeFrequency: "monthly",
         priority: 0.8,
+      });
+    }
+  }
+
+  for (const { from, to } of listDeliveryRouteParams()) {
+    const path = routePath(from, to);
+    for (const locale of ["uz", "ru"] as const) {
+      entries.push({
+        url: `${base}${localePath(locale, path)}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.75,
       });
     }
   }

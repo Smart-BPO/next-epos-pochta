@@ -51,25 +51,27 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
           <h2 className={`${homeSectionTitle} text-white`}>
             {copy.business.segmentsTitle}
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4 lg:gap-5">
             {copy.business.segments.map((segment, index) => (
               <article
                 key={segment.title}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
+                className="flex h-full flex-col gap-2.5 rounded-2xl border border-black/20 bg-white p-3 sm:gap-4 sm:rounded-3xl sm:p-[var(--card-pad)]"
               >
-                <h3 className="m-0 min-h-[2.5em] font-display text-xl font-semibold uppercase leading-tight text-black md:text-2xl">
+                <h3 className="m-0 min-h-[2.5em] font-display text-[0.8125rem] font-semibold uppercase leading-tight text-black sm:text-xl md:text-2xl">
                   {segment.title}
                 </h3>
-                <div className="relative h-[10rem] w-full shrink-0 overflow-hidden sm:h-[12.5rem]">
+                <div className="relative h-[6.5rem] w-full shrink-0 overflow-hidden sm:h-[12.5rem]">
                   <Image
                     src={SEGMENT_IMAGES[index % SEGMENT_IMAGES.length]}
                     alt=""
                     fill
                     className="object-contain object-center"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 25vw"
                   />
                 </div>
-                <p className="m-0 flex-1 text-base text-black/60">{segment.text}</p>
+                <p className="m-0 flex-1 text-xs leading-snug text-black/60 sm:text-base">
+                  {segment.text}
+                </p>
               </article>
             ))}
           </div>
@@ -79,22 +81,25 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
       <section className={section}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.business.capabilitiesTitle}</h2>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             {copy.business.capabilities.map((item, index) => (
               <article
                 key={item}
-                className="flex h-full flex-col gap-4 rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]"
+                className="flex h-full flex-col gap-2.5 rounded-2xl border border-black/20 bg-white p-3 sm:gap-4 sm:rounded-3xl sm:p-[var(--card-pad)]"
               >
-                <div className="relative size-12 shrink-0">
+                <div className="relative size-9 shrink-0 sm:size-12">
                   <Image
                     src={CAPABILITY_ICONS[index % CAPABILITY_ICONS.length]}
                     alt=""
                     width={48}
                     height={48}
                     unoptimized
+                    className="h-full w-full"
                   />
                 </div>
-                <p className="m-0 text-lg text-black/60 md:text-xl">{item}</p>
+                <p className="m-0 text-sm leading-snug text-black/60 sm:text-lg md:text-xl">
+                  {item}
+                </p>
               </article>
             ))}
           </div>

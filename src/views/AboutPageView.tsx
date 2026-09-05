@@ -71,26 +71,29 @@ export function AboutPageView({ locale }: { locale: Locale }) {
       <section className={sectionMuted}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={sectionTitle}>{copy.about.legalTitle}</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <article className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
-              <h3 className="m-0 mb-2 text-lg font-semibold text-black">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <article className="rounded-2xl border border-black/20 bg-white p-3 sm:rounded-3xl sm:p-[var(--card-pad)]">
+              <h3 className="m-0 mb-2 text-sm font-semibold text-black sm:text-lg">
                 {SITE_CONFIG.legalName}
               </h3>
-              <p className="m-0 text-sm text-black/60">
+              <p className="m-0 text-xs leading-snug text-black/60 sm:text-sm">
                 ИНН / STIR: {SITE_CONFIG.address.inn}
                 <br />
                 ОКЭД / OKED: {SITE_CONFIG.address.oked}
               </p>
             </article>
-            <article className="rounded-3xl border border-black/20 bg-white p-[var(--card-pad)]">
-              <h3 className="m-0 mb-2 text-lg font-semibold text-black">
+            <article className="rounded-2xl border border-black/20 bg-white p-3 sm:rounded-3xl sm:p-[var(--card-pad)]">
+              <h3 className="m-0 mb-2 text-sm font-semibold text-black sm:text-lg">
                 {locale === "uz" ? "Manzil" : "Адрес"}
               </h3>
-              <p className="m-0 text-sm text-black/60">{SITE_CONFIG.address.line}</p>
+              <p className="m-0 text-xs leading-snug text-black/60 sm:text-sm">
+                {SITE_CONFIG.address.line}
+              </p>
               <Button
                 href={localePath(locale, "/contacts/")}
                 variant="secondary"
-                className="mt-4"
+                size="sm"
+                className="mt-3 sm:mt-4"
               >
                 {copy.footer.contacts}
               </Button>

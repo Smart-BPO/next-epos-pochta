@@ -58,4 +58,10 @@ export const SEO_PRIORITY_QUERIES = {
     "доставка в андижан",
     "samarqandga yetkazib berish",
   ],
+  routes: [
+    "доставка из ташкента в самарканд",
+    "доставка из ташкента в бухару",
+    "toshkentdan samarqandga yetkazib berish",
+    "toshkentdan buxoroga yetkazib berish",
+  ],
 } as const;

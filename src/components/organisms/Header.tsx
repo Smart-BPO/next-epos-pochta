@@ -152,7 +152,8 @@ export function Header({ locale, content }: HeaderProps) {
 
             <Button
               href={requestHref}
-              className="!hidden !h-10 !min-h-10 !shrink-0 !rounded-full !px-4 !py-0 text-sm lg:!inline-flex"
+              size="sm"
+              className="!hidden lg:!inline-flex"
             >
               {content.ui.calculate}
             </Button>
@@ -204,14 +205,14 @@ export function Header({ locale, content }: HeaderProps) {
             <Button
               href={trackHref}
               variant="secondary"
-              className="w-full !rounded-full"
+              width="full"
               onClick={() => setOpen(false)}
             >
               {content.ui.track}
             </Button>
             <Button
               href={requestHref}
-              className="w-full !rounded-full"
+              width="full"
               onClick={() => setOpen(false)}
             >
               {content.ui.calculate}

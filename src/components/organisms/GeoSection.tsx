@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
@@ -122,7 +121,8 @@ export function GeoSection({
                   <Button
                     type="button"
                     variant="primary"
-                    className="w-full shrink-0 !min-h-11 sm:w-auto sm:self-stretch"
+                    width="mobile"
+                    className="sm:self-stretch"
                     onClick={() => {
                       if (matches[0]) {
                         applyMatch(matches[0].regionId);
@@ -171,38 +171,39 @@ export function GeoSection({
               ) : null}
 
               {activeRegion ? (
-                <div className="mt-4 rounded-2xl border border-primary/15 bg-primary-soft/60 p-3.5 sm:p-4">
+                <div className="mt-4 flex flex-col gap-1.5">
                   <p className="m-0 font-display text-base font-semibold uppercase tracking-[-0.02em] text-black">
                     {mapRegionLabel(activeRegion, locale)}
                   </p>
-                  <p className="mt-1.5 m-0 text-sm leading-snug text-black/60">
+                  <p className="m-0 text-sm leading-snug text-black/60">
                     {copy.home.geoAvailable}
                   </p>
 
                   {regionSettlements.length > 0 ? (
-                    <p className="mt-2 m-0 text-xs leading-relaxed text-black/50">
+                    <p className="m-0 text-xs leading-relaxed text-black/50">
                       {regionSettlements
                         .map((item) => settlementLabel(item, locale))
                         .join(" · ")}
                     </p>
                   ) : null}
 
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-2 flex flex-wrap gap-2">
                     {activeRegion.deliverySlug ? (
-                      <Link
+                      <Button
                         href={localePath(
                           locale,
                           `/delivery/${activeRegion.deliverySlug}/`,
                         )}
-                        className="inline-flex min-h-10 items-center rounded-full border border-primary bg-white px-4 text-sm font-semibold text-primary transition-colors hover:bg-primary-soft"
+                        variant="secondary"
+                        size="sm"
                       >
                         {openCityLabel}
-                      </Link>
+                      </Button>
                     ) : null}
                     <Button
                       href={localePath(locale, "/calculator/")}
                       variant="primary"
-                      className="!min-h-10 !px-4 !py-2 text-sm"
+                      size="sm"
                     >
                       {copy.ui.calculate}
                     </Button>

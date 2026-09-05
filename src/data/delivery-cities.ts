@@ -1,9 +1,12 @@
 /**
  * City landing pages for local SEO — unique copy per city, no tariffs.
  * URL: /delivery/[slug]/ and /ru/delivery/[slug]/
+ * Route pages use short IATA-like codes: /delivery/{fromCode}/{toCode}/
  */
 export interface DeliveryCity {
   slug: string;
+  /** Short route code (Aviasales-style), e.g. tas, skd */
+  code: string;
   nameEn: string;
   nameRu: string;
   nameUz: string;
@@ -26,6 +29,7 @@ export interface DeliveryCity {
 export const DELIVERY_CITIES: DeliveryCity[] = [
   {
     slug: "tashkent",
+    code: "tas",
     nameEn: "Tashkent",
     nameRu: "Ташкент",
     nameUz: "Toshkent",
@@ -89,6 +93,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "samarkand",
+    code: "skd",
     nameEn: "Samarkand",
     nameRu: "Самарканд",
     nameUz: "Samarqand",
@@ -152,6 +157,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "bukhara",
+    code: "bhk",
     nameEn: "Bukhara",
     nameRu: "Бухара",
     nameUz: "Buxoro",
@@ -215,6 +221,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "namangan",
+    code: "nma",
     nameEn: "Namangan",
     nameRu: "Наманган",
     nameUz: "Namangan",
@@ -278,6 +285,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "andijan",
+    code: "azn",
     nameEn: "Andijan",
     nameRu: "Андижан",
     nameUz: "Andijon",
@@ -341,6 +349,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "fergana",
+    code: "feg",
     nameEn: "Fergana",
     nameRu: "Фергана",
     nameUz: "Fargʻona",
@@ -404,6 +413,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "nukus",
+    code: "ncu",
     nameEn: "Nukus",
     nameRu: "Нукус",
     nameUz: "Nukus",
@@ -467,6 +477,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "karshi",
+    code: "ksq",
     nameEn: "Karshi",
     nameRu: "Карши",
     nameUz: "Qarshi",
@@ -530,6 +541,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "termez",
+    code: "tmj",
     nameEn: "Termez",
     nameRu: "Термез",
     nameUz: "Termiz",
@@ -593,6 +605,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "navoi",
+    code: "nvi",
     nameEn: "Navoi",
     nameRu: "Навои",
     nameUz: "Navoiy",
@@ -656,6 +669,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "jizzakh",
+    code: "jiz",
     nameEn: "Jizzakh",
     nameRu: "Джизак",
     nameUz: "Jizzax",
@@ -719,6 +733,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
   },
   {
     slug: "urgench",
+    code: "ugc",
     nameEn: "Urgench",
     nameRu: "Ургенч",
     nameUz: "Urganch",
@@ -786,6 +801,19 @@ export function getDeliveryCityBySlug(slug: string): DeliveryCity | undefined {
   return DELIVERY_CITIES.find((city) => city.slug === slug);
 }
 
+export function getDeliveryCityByCode(code: string): DeliveryCity | undefined {
+  const normalized = code.trim().toLowerCase();
+  return DELIVERY_CITIES.find((city) => city.code === normalized);
+}
+
 export function listDeliveryCitySlugs(): string[] {
   return DELIVERY_CITIES.map((city) => city.slug);
+}
+
+export function listDeliveryCityCodes(): string[] {
+  return DELIVERY_CITIES.map((city) => city.code);
+}
+
+export function cityDisplayName(city: DeliveryCity, locale: "uz" | "ru"): string {
+  return locale === "uz" ? city.nameUz : city.nameRu;
 }

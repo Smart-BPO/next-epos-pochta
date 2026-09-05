@@ -93,7 +93,7 @@ export function FaqExplorer({ faq }: { faq: FaqCopy }) {
 
       <div className="flex flex-col gap-6">
         {categoryId === "all" && !normalizedQuery ? (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
             {faq.categories.map((cat) => {
               const count = faq.items.filter(
                 (item) => item.categoryId === cat.id,
@@ -103,15 +103,15 @@ export function FaqExplorer({ faq }: { faq: FaqCopy }) {
                   key={cat.id}
                   type="button"
                   onClick={() => setCategoryId(cat.id)}
-                  className="rounded-2xl border border-black/10 bg-white p-4 text-left transition-[border-color,box-shadow] hover:border-primary/35 hover:shadow-[0_10px_28px_rgb(15_18_24/0.06)]"
+                  className="rounded-2xl border border-black/10 bg-white p-3 text-left transition-[border-color,box-shadow] hover:border-primary/35 hover:shadow-[0_10px_28px_rgb(15_18_24/0.06)] sm:p-4"
                 >
-                  <span className="font-display text-base font-semibold uppercase text-black">
+                  <span className="font-display text-sm font-semibold uppercase leading-snug text-black sm:text-base">
                     {cat.title}
                   </span>
-                  <span className="mt-1 block text-sm text-black/55">
+                  <span className="mt-1 block text-xs leading-snug text-black/55 sm:text-sm">
                     {cat.description}
                   </span>
-                  <span className="mt-3 block text-xs font-medium text-primary">
+                  <span className="mt-2 block text-xs font-medium text-primary sm:mt-3">
                     {count}
                   </span>
                 </button>

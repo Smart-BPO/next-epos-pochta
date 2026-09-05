@@ -45,7 +45,7 @@ export function GeoSearch({
             aria-label={copy.home.geoSearchPlaceholder}
             className={`${fieldControl} min-w-0 flex-1 placeholder:text-black/40`}
           />
-          <Button type="submit" variant="secondary" className="w-full shrink-0 sm:w-auto">
+          <Button type="submit" variant="secondary" width="mobile">
             {copy.ui.geoCheck}
           </Button>
         </form>

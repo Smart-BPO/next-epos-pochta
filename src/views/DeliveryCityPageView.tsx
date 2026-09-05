@@ -3,7 +3,8 @@ import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import type { DeliveryCity } from "@/data/delivery-cities";
-import { DELIVERY_CITIES } from "@/data/delivery-cities";
+import { DELIVERY_CITIES, cityDisplayName } from "@/data/delivery-cities";
+import { routePath, routesFrom, routesTo } from "@/data/delivery-routes";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -25,9 +26,12 @@ import {
 
 function calcHref(locale: Locale, city: DeliveryCity) {
   const params = new URLSearchParams();
-  const toLabel = locale === "uz" ? city.nameUz : city.nameRu;
-  params.set("to", toLabel);
+  params.set("to", cityDisplayName(city, locale));
   return `${localePath(locale, "/calculator/")}?${params.toString()}`;
+}
+
+function chipClassName() {
+  return "inline-block rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-medium text-black hover:border-primary hover:text-primary";
 }
 
 export function DeliveryCityPageView({
@@ -38,18 +42,20 @@ export function DeliveryCityPageView({
   city: DeliveryCity;
 }) {
   const copy = getContent(locale);
-  const name = locale === "uz" ? city.nameUz : city.nameRu;
+  const name = cityDisplayName(city, locale);
   const lead = locale === "uz" ? city.leadUz : city.leadRu;
   const body = locale === "uz" ? city.bodyUz : city.bodyRu;
   const faq = locale === "uz" ? city.faqUz : city.faqRu;
   const eta = locale === "uz" ? city.etaHintUz : city.etaHintRu;
   const title =
     locale === "uz"
-      ? `${name} shahriga yetkazib berish`
-      : `Доставка в ${name}`;
+      ? `${name}: yetkazib berish va joʻnatish`
+      : `Доставка в ${name} и из ${name}`;
   const homePath = localePath(locale, "/");
   const listPath = localePath(locale, "/delivery/");
   const cityPath = localePath(locale, `/delivery/${city.slug}/`);
+  const outbound = routesFrom(city.code);
+  const inbound = routesTo(city.code);
 
   return (
     <>
@@ -136,6 +142,61 @@ export function DeliveryCityPageView({
       </section>
 
       <section className={section}>
+        <PageContainer className="flex flex-col gap-8">
+          <div>
+            <h2 className={sectionTitle}>
+              {locale === "uz"
+                ? `${name}dan mashhur yoʻnalishlar`
+                : `Популярные направления из ${name}`}
+            </h2>
+            <p className="m-0 mb-4 max-w-2xl text-sm text-black/55">
+              {locale === "uz"
+                ? "Yoʻnalish sahifasida masofa va muddat orientiri, kalkulyator va qaytarish marshruti."
+                : "На странице маршрута — ориентир по расстоянию и сроку, калькулятор и обратное направление."}
+            </p>
+            <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+              {outbound.map((r) => (
+                <li key={r.to.code}>
+                  <Link
+                    href={localePath(
+                      locale,
+                      routePath(r.from.code, r.to.code),
+                    )}
+                    className={chipClassName()}
+                  >
+                    {name} → {cityDisplayName(r.to, locale)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className={sectionTitle}>
+              {locale === "uz"
+                ? `${name}ga yetkazib berish`
+                : `Доставка в ${name} из…`}
+            </h2>
+            <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+              {inbound.map((r) => (
+                <li key={r.from.code}>
+                  <Link
+                    href={localePath(
+                      locale,
+                      routePath(r.from.code, r.to.code),
+                    )}
+                    className={chipClassName()}
+                  >
+                    {cityDisplayName(r.from, locale)} → {name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </PageContainer>
+      </section>
+
+      <section className={sectionMuted}>
         <PageContainer className="max-w-3xl">
           <h2 className={sectionTitle}>
             {locale === "uz" ? "Savol-javoblar" : "Вопросы и ответы"}
@@ -149,7 +210,7 @@ export function DeliveryCityPageView({
         </PageContainer>
       </section>
 
-      <section className={sectionMuted}>
+      <section className={section}>
         <PageContainer>
           <h2 className={sectionTitle}>
             {locale === "uz" ? "Boshqa shaharlar" : "Другие города"}
@@ -159,9 +220,9 @@ export function DeliveryCityPageView({
               <li key={c.slug}>
                 <Link
                   href={localePath(locale, `/delivery/${c.slug}/`)}
-                  className="inline-block rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-medium text-black hover:border-primary hover:text-primary"
+                  className={chipClassName()}
                 >
-                  {locale === "uz" ? c.nameUz : c.nameRu}
+                  {cityDisplayName(c, locale)}
                 </Link>
               </li>
             ))}
@@ -180,8 +241,8 @@ export function DeliveryIndexPageView({ locale }: { locale: Locale }) {
       : "Доставка по городам";
   const lead =
     locale === "uz"
-      ? "Oʻzbekistonning asosiy shaharlari boʻylab kuryerlik yetkazib berish. Shaharni tanlang — kalkulyator va menejer bilan tasdiqlash."
-      : "Курьерская доставка по ключевым городам Узбекистана. Выберите город — калькулятор и подтверждение с менеджером.";
+      ? "Oʻzbekistonning asosiy shaharlari boʻylab kuryerlik yetkazib berish. Shaharni oching — mashhur yoʻnalishlar (masalan, Toshkent → Samarqand) va kalkulyator."
+      : "Курьерская доставка по ключевым городам Узбекистана. Откройте город — популярные маршруты (например Ташкент → Самарканд) и калькулятор.";
 
   return (
     <>
@@ -205,17 +266,20 @@ export function DeliveryIndexPageView({ locale }: { locale: Locale }) {
       </section>
       <section className={sectionMuted}>
         <PageContainer>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:gap-3 lg:grid-cols-3">
             {DELIVERY_CITIES.map((city) => (
               <Link
                 key={city.slug}
                 href={localePath(locale, `/delivery/${city.slug}/`)}
-                className="rounded-3xl border border-black/15 bg-white p-5 transition-transform hover:-translate-y-0.5"
+                className="rounded-2xl border border-black/15 bg-white p-3 transition-transform hover:-translate-y-0.5 sm:rounded-3xl sm:p-5"
               >
-                <h2 className="m-0 font-display text-lg font-semibold uppercase text-black">
-                  {locale === "uz" ? city.nameUz : city.nameRu}
+                <h2 className="m-0 font-display text-[0.8125rem] font-semibold uppercase leading-snug text-black sm:text-lg">
+                  {cityDisplayName(city, locale)}
                 </h2>
-                <p className="m-0 mt-2 text-sm text-black/60">
+                <p className="m-0 mt-1 text-[0.65rem] uppercase tracking-wide text-black/35 sm:text-xs">
+                  {city.code}
+                </p>
+                <p className="m-0 mt-1.5 text-xs leading-snug text-black/60 sm:mt-2 sm:text-sm">
                   {locale === "uz" ? city.etaHintUz : city.etaHintRu}
                 </p>
               </Link>

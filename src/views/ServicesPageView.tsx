@@ -146,7 +146,7 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
 
                 <div className="min-w-0">
                   <h2 className={sectionTitle}>{service.title}</h2>
-                  <div className="grid gap-4 text-base text-black/70">
+                  <div className="grid grid-cols-2 gap-3 text-sm text-black/70 sm:gap-4 sm:text-base">
                     <p className="m-0">
                       <strong className="font-semibold text-black">
                         {labels.audience}:
@@ -159,7 +159,7 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
                       </strong>{" "}
                       {service.howItWorks}
                     </p>
-                    <div>
+                    <div className="col-span-2">
                       <strong className="font-semibold text-black">
                         {labels.includes}:
                       </strong>
@@ -181,7 +181,7 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
                       </strong>{" "}
                       {service.neededForQuote}
                     </p>
-                    <p className="m-0">
+                    <p className="col-span-2 m-0">
                       <strong className="font-semibold text-black">
                         {labels.limits}:
                       </strong>{" "}

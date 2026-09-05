@@ -13,12 +13,10 @@ import { trackEvent } from "@/lib/analytics/events";
 import {
   homeActionBar,
   homeActionBridge,
-  homeActionBtn,
   homeActionDivider,
   homeActionField,
   homeActionIsland,
   homeActionLabel,
-  homeActionNote,
   homeActionPane,
   homeActionRow,
   homeActionSwap,
@@ -95,7 +93,7 @@ export function HomeActionBar({
             <div className={homeActionPane}>
               <h2 className={homeActionLabel}>{copy.home.trackTitle}</h2>
               <form
-                className={homeActionRow}
+                className="flex min-w-0 flex-col gap-2 sm:gap-3"
                 onSubmit={(e) => {
                   e.preventDefault();
                   submitTrack();
@@ -112,15 +110,10 @@ export function HomeActionBar({
                   className={homeActionField}
                   autoComplete="off"
                 />
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  className={homeActionBtn}
-                >
+                <Button type="submit" variant="secondary" size="sm" width="full">
                   {copy.ui.track}
                 </Button>
               </form>
-              <p className={homeActionNote}>{copy.home.trackHint}</p>
             </div>
 
             <div className={homeActionDivider} aria-hidden />
@@ -173,15 +166,10 @@ export function HomeActionBar({
                     className="min-w-0 flex-1"
                   />
                 </div>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className={`${homeActionBtn} !w-full`}
-                >
+                <Button type="submit" variant="primary" size="sm" width="full">
                   {copy.home.quoteCta}
                 </Button>
               </form>
-              <p className={homeActionNote}>{copy.home.quoteNote}</p>
             </div>
           </div>
         </PageContainer>

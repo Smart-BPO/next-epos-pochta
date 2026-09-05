@@ -72,12 +72,6 @@ export const homeActionSwap =
 export const homeActionDivider =
   "h-px w-full shrink-0 bg-black/10 lg:mx-0 lg:h-auto lg:w-px lg:self-stretch";
 
-export const homeActionNote =
-  "m-0 text-xs leading-snug text-black/55 sm:text-sm sm:text-black/60 lg:hidden";
-
-export const homeActionBtn =
-  "!min-h-10 w-auto shrink-0 !px-3.5 !py-2 text-sm sm:!min-h-12 sm:!px-6 sm:!py-3";
-
 export const homeNeedsSection =
   "relative bg-gradient-to-b from-primary to-primary-hover py-[var(--section-y)] lg:pt-[5.5rem]";
 export const homeNeedsGrid =
@@ -105,23 +99,39 @@ export const heroNote =
 export const heroActions =
   "flex flex-wrap gap-3 sm:gap-4 animate-hero-rise [animation-delay:220ms]";
 
+/** Interactive chrome shared by all button sizes/variants. */
 export const btnBase =
-  "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent px-5 py-2.5 text-sm font-semibold leading-5 transition-[background,color,border-color,transform,box-shadow,opacity] duration-[160ms] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-[var(--tap-min)] sm:px-6 sm:py-3.5 sm:text-base sm:font-medium";
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent font-semibold leading-5 transition-[background,color,border-color,transform,box-shadow,opacity] duration-[160ms] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60";
 
-export const btnPrimary =
-  `${btnBase} bg-primary text-white shadow-[0_4px_14px_rgb(211_2_3/0.22)] hover:bg-primary-hover hover:shadow-[0_6px_18px_rgb(211_2_3/0.28)]`;
+/** Compact — header, form rows, dense cards (aligns with homeActionField). */
+export const btnSizeSm =
+  "min-h-10 px-4 py-2 text-sm sm:min-h-12 sm:px-5 sm:py-2.5";
 
-export const btnSecondary =
-  `${btnBase} border-primary bg-white text-primary shadow-[0_1px_2px_rgb(15_18_24/0.04)] hover:bg-primary-soft`;
+/** Default CTAs across the site. */
+export const btnSizeMd =
+  "min-h-11 px-5 py-2.5 text-sm sm:min-h-[var(--tap-min)] sm:px-6 sm:py-3.5 sm:text-base sm:font-medium";
 
-export const btnGhost = `${btnBase} bg-transparent text-ink`;
+/** Emphasized hero / final CTAs. */
+export const btnSizeLg =
+  "min-h-12 px-6 py-3 text-base sm:min-h-14 sm:px-8 sm:py-3.5 sm:text-lg sm:font-medium";
 
-export const btnOnDark =
-  `${btnBase} bg-primary text-white shadow-[0_4px_14px_rgb(211_2_3/0.28)] hover:bg-primary-hover`;
+export const btnWidthAuto = "w-auto";
+export const btnWidthFull = "w-full";
+/** Full width on mobile, intrinsic from sm+. */
+export const btnWidthMobile = "w-full sm:w-auto";
 
-export const btnHeroPrimary = btnPrimary;
+export const btnTonePrimary =
+  "bg-primary text-white shadow-[0_4px_14px_rgb(211_2_3/0.22)] hover:bg-primary-hover hover:shadow-[0_6px_18px_rgb(211_2_3/0.28)]";
 
-export const btnHeroSecondary = btnSecondary;
+export const btnToneSecondary =
+  "border-primary bg-white text-primary shadow-[0_1px_2px_rgb(15_18_24/0.04)] hover:bg-primary-soft";
+
+export const btnToneGhost = "bg-transparent text-ink hover:bg-black/[0.04]";
+
+/** Composed recipes (default md size) for rare non-Button usages. */
+export const btnPrimary = `${btnBase} ${btnSizeMd} ${btnTonePrimary}`;
+export const btnSecondary = `${btnBase} ${btnSizeMd} ${btnToneSecondary}`;
+export const btnGhost = `${btnBase} ${btnSizeMd} ${btnToneGhost}`;
 
 /** Home section titles — Figma uppercase display. */
 export const homeSectionTitle =

@@ -268,6 +268,53 @@ export function getDeliveryCitySchema(
   };
 }
 
+export function getDeliveryRouteSchema(
+  locale: Locale,
+  route: {
+    from: (typeof DELIVERY_CITIES)[number];
+    to: (typeof DELIVERY_CITIES)[number];
+    distanceKm: number;
+  },
+) {
+  const siteUrl = siteOrigin();
+  const path = localePath(
+    locale,
+    `/delivery/${route.from.code}/${route.to.code}/`,
+  );
+  const fromName = locale === "uz" ? route.from.nameUz : route.from.nameRu;
+  const toName = locale === "uz" ? route.to.nameUz : route.to.nameRu;
+  const name =
+    locale === "uz"
+      ? `${fromName}dan ${toName}ga yetkazib berish`
+      : `Доставка из ${fromName} в ${toName}`;
+  const description =
+    locale === "uz"
+      ? `${fromName} — ${toName} kuryerlik yetkazib berish (~${route.distanceKm} km). Orientir kalkulyatorda, yakuniy narx — menejer.`
+      : `Курьерская доставка ${fromName} — ${toName} (~${route.distanceKm} км). Ориентир в калькуляторе, финальную цену подтверждает менеджер.`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name,
+    description,
+    url: `${siteUrl}${path}`,
+    provider: { "@id": `${siteUrl}/#organization` },
+    serviceType: "Courier delivery",
+    areaServed: [
+      {
+        "@type": "City",
+        name: route.from.nameEn,
+        containedInPlace: { "@type": "Country", name: "Uzbekistan" },
+      },
+      {
+        "@type": "City",
+        name: route.to.nameEn,
+        containedInPlace: { "@type": "Country", name: "Uzbekistan" },
+      },
+    ],
+  };
+}
+
 export function getGlobalJsonLdGraph() {
   const org = getCourierServiceSchema();
   const site = getWebSiteSchema();

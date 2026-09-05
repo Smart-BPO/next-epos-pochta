@@ -1,17 +1,16 @@
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
+import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { PageCta } from "@/components/organisms/PageCta";
 import { SITE_CONFIG } from "@/utils/consts";
 import {
-  btnSecondary,
   homeSectionTitle,
   pageIntro,
   pageIntroTitle,
   sectionLead,
   sectionMuted,
 } from "@/styles/ui";
-import { cn } from "@/lib/cn";
 
 function officeMapEmbedSrc(lat: number, lng: number) {
   const ll = `${lng},${lat}`;
@@ -106,14 +105,15 @@ export function ContactsPageView({ locale }: { locale: Locale }) {
                 <p className="mt-2 m-0 text-sm text-black/50">
                   {copy.contacts.mapNote}
                 </p>
-                <a
+                <Button
                   href={mapsUrl}
+                  variant="secondary"
+                  className="mt-4"
                   target="_blank"
                   rel="noreferrer"
-                  className={cn(btnSecondary, "mt-4 inline-flex")}
                 >
                   {copy.contacts.openInMaps}
-                </a>
+                </Button>
               </div>
             </div>
           </div>

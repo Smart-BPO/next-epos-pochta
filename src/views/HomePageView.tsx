@@ -117,7 +117,9 @@ export function HomePageView({ locale }: { locale: Locale }) {
                         : `${localePath(locale, "/calculator/")}?category=${item.id}`
                     }
                     variant="secondary"
-                    className="mt-auto w-full !min-h-10 !px-2 !py-2 text-xs sm:!min-h-11 sm:!px-4 sm:text-sm"
+                    size="sm"
+                    width="full"
+                    className="mt-auto"
                   >
                     <span className="sm:hidden">{copy.ui.calculate}</span>
                     <span className="hidden sm:inline">
@@ -245,14 +247,14 @@ export function HomePageView({ locale }: { locale: Locale }) {
                 <Button
                   href={`${localePath(locale, "/business/")}#api`}
                   variant="secondary"
-                  className="w-full sm:w-auto"
+                  width="mobile"
                 >
                   {copy.ui.learnApi}
                 </Button>
                 <Button
                   href={localePath(locale, "/business/connect/")}
                   variant="primary"
-                  className="w-full sm:w-auto"
+                  width="mobile"
                 >
                   {copy.ui.getOffer}
                 </Button>

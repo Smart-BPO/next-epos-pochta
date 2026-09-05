@@ -153,11 +153,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                   inputMode="text"
                   className={`${fieldControl} w-full`}
                 />
-                <Button
-                  type="submit"
-                  disabled={pending}
-                  className="w-full shrink-0 sm:w-auto"
-                >
+                <Button type="submit" disabled={pending} width="mobile">
                   {copy.ui.track}
                 </Button>
               </div>
