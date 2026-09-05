@@ -101,6 +101,16 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
+  async rewrites() {
+    const supabaseUrl = (process.env.SUPABASE_URL || "").replace(/\/$/, "");
+    if (!supabaseUrl) return [];
+    return [
+      {
+        source: "/media/:path*",
+        destination: `${supabaseUrl}/storage/v1/object/public/epos-media/:path*`,
+      },
+    ];
+  },
   async redirects() {
     return [
       {

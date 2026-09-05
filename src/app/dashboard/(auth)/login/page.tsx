@@ -1,6 +1,9 @@
 import { DashboardLoginForm } from "@/components/dashboard/DashboardLoginForm";
 import { countAdmins } from "@/lib/cms/auth";
-import { hasSupabaseAdminConfig, hasSupabaseBrowserConfig } from "@/lib/supabase/env";
+import {
+  hasSupabaseAdminConfig,
+  hasSupabaseSessionConfig,
+} from "@/lib/supabase/env";
 import { getEnv } from "@/utils/env";
 import Link from "next/link";
 
@@ -43,9 +46,8 @@ export default async function DashboardLoginPage({
 }) {
   const params = await searchParams;
   const adminCount = await countAdmins();
-  // countAdmins needs service role; if missing, still offer setup when browser config exists
   const canOfferSetup =
-    hasSupabaseBrowserConfig() &&
+    hasSupabaseSessionConfig() &&
     Boolean(getEnv("CMS_BOOTSTRAP_SECRET", "SETUP_SECRET")) &&
     (hasSupabaseAdminConfig() ? adminCount === 0 : true);
 

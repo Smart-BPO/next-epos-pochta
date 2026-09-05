@@ -1,10 +1,12 @@
+import {
+  hasSupabaseAdminConfig,
+  publicMediaPath,
+} from "@/lib/supabase/env";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { uploadMediaAction } from "./actions";
 
 export default async function DashboardMediaPage() {
   let files: { name: string; created_at?: string | null }[] = [];
-  let baseUrl = "";
 
   if (hasSupabaseAdminConfig()) {
     const client = createSupabaseAdminClient();
@@ -13,17 +15,14 @@ export default async function DashboardMediaPage() {
       sortBy: { column: "created_at", order: "desc" },
     });
     files = data ?? [];
-    const { data: pub } = client.storage
-      .from("epos-media")
-      .getPublicUrl("covers/placeholder");
-    baseUrl = pub.publicUrl.replace(/\/covers\/placeholder$/, "");
   }
 
   return (
     <div>
       <h1 className="m-0 font-display text-2xl font-bold">Медиа</h1>
       <p className="mt-1 text-sm text-black/50">
-        Bucket <code>epos-media</code> — обложки новостей
+        Загрузка через сервер. Публичный путь: <code>/media/…</code> (прокси
+        Storage, без ключей в браузере).
       </p>
       <form
         action={uploadMediaAction}
@@ -48,7 +47,7 @@ export default async function DashboardMediaPage() {
           <li className="text-sm text-black/40">Пока пусто</li>
         ) : (
           files.map((f) => {
-            const url = `${baseUrl}/covers/${f.name}`;
+            const url = publicMediaPath(`covers/${f.name}`);
             return (
               <li
                 key={f.name}

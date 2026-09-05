@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { touchAdminLastLogin } from "@/lib/cms/auth";
 import {
-  hasSupabaseBrowserConfig,
+  hasSupabaseSessionConfig,
   requireSupabasePublishableKey,
   requireSupabaseUrl,
 } from "@/lib/supabase/env";
@@ -26,10 +26,9 @@ export async function loginAction(
   _prev: { error?: string } | null,
   formData: FormData,
 ): Promise<{ error?: string }> {
-  if (!hasSupabaseBrowserConfig()) {
+  if (!hasSupabaseSessionConfig()) {
     return {
-      error:
-        "Нет NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY на сервере",
+      error: "Нет SUPABASE_URL / SUPABASE_ANON_KEY на сервере",
     };
   }
 

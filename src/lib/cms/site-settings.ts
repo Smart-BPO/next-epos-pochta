@@ -3,7 +3,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   hasSupabaseAdminConfig,
-  hasSupabaseBrowserConfig,
+  hasSupabaseSessionConfig,
 } from "@/lib/supabase/env";
 import { cache } from "react";
 
@@ -69,7 +69,7 @@ function mapRow(row: SettingsRow): SiteSettingsOverlay {
 
 export const getSiteSettings = cache(async (): Promise<SiteSettingsOverlay> => {
   const base = defaults();
-  if (!hasSupabaseBrowserConfig() && !hasSupabaseAdminConfig()) return base;
+  if (!hasSupabaseSessionConfig() && !hasSupabaseAdminConfig()) return base;
 
   try {
     if (hasSupabaseAdminConfig()) {

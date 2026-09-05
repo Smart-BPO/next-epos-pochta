@@ -1,28 +1,37 @@
 import { getEnv, requireEnv } from "@/utils/env";
 
+/**
+ * Supabase credentials are server-only.
+ * Never use NEXT_PUBLIC_SUPABASE_* — those would ship to the browser bundle.
+ */
+function assertNoPublicSupabaseEnv() {
+  const leaked = [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    "NEXT_PUBLIC_SUPABASE_SECRET_KEY",
+    "NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY",
+  ].filter((key) => Boolean(process.env[key]?.trim()));
+  if (leaked.length > 0) {
+    throw new Error(
+      `Remove public Supabase env (use server-only names): ${leaked.join(", ")}`,
+    );
+  }
+}
+
 export function getSupabaseUrl(): string {
-  return getEnv("SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL");
+  assertNoPublicSupabaseEnv();
+  return getEnv("SUPABASE_URL");
 }
 
 export function getSupabasePublishableKey(): string {
-  return getEnv(
-    "SUPABASE_ANON_KEY",
-    "SUPABASE_PUBLISHABLE_KEY",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-  );
+  assertNoPublicSupabaseEnv();
+  return getEnv("SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEY");
 }
 
 export function getSupabaseSecretKey(): string {
-  if (process.env.NEXT_PUBLIC_SUPABASE_SECRET_KEY) {
-    throw new Error(
-      "Invalid env: NEXT_PUBLIC_SUPABASE_SECRET_KEY must not be set.",
-    );
-  }
-  const secret = getEnv(
-    "SUPABASE_SECRET_KEY",
-    "SUPABASE_SERVICE_ROLE_KEY",
-  );
+  assertNoPublicSupabaseEnv();
+  const secret = getEnv("SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY");
   const publishable = getSupabasePublishableKey();
   if (secret && publishable && secret === publishable) {
     throw new Error("Invalid env: secret key must not match anon key.");
@@ -31,25 +40,36 @@ export function getSupabaseSecretKey(): string {
 }
 
 export function requireSupabaseUrl(): string {
-  return requireEnv("SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL");
+  assertNoPublicSupabaseEnv();
+  return requireEnv("SUPABASE_URL");
 }
 
 export function requireSupabasePublishableKey(): string {
-  return requireEnv(
-    "SUPABASE_ANON_KEY",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-  );
+  assertNoPublicSupabaseEnv();
+  return requireEnv("SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEY");
 }
 
 export function requireSupabaseSecretKey(): string {
+  assertNoPublicSupabaseEnv();
   return requireEnv("SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY");
 }
 
-export function hasSupabaseBrowserConfig(): boolean {
+/** URL + anon key present (cookie session / SSR auth). */
+export function hasSupabaseSessionConfig(): boolean {
   return Boolean(getSupabaseUrl() && getSupabasePublishableKey());
+}
+
+/** @deprecated use hasSupabaseSessionConfig */
+export function hasSupabaseBrowserConfig(): boolean {
+  return hasSupabaseSessionConfig();
 }
 
 export function hasSupabaseAdminConfig(): boolean {
   return Boolean(getSupabaseUrl() && getSupabaseSecretKey());
+}
+
+/** Same-origin public media path (proxied to Storage by Next rewrite). */
+export function publicMediaPath(objectPath: string): string {
+  const clean = objectPath.replace(/^\/+/, "");
+  return `/media/${clean}`;
 }

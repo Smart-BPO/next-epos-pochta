@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { AdminUser } from "@/lib/cms/auth";
 import { canAccess } from "@/lib/cms/auth";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
+import { logoutAction } from "@/app/dashboard/(auth)/logout/actions";
 
 export function DashboardChrome({
   admin,
@@ -31,7 +32,7 @@ export function DashboardChrome({
               </Link>
             ))}
           </nav>
-          <form action="/api/dashboard/logout/" method="post" className="mt-8">
+          <form action={logoutAction} className="mt-8">
             <button
               type="submit"
               className="w-full rounded-lg border border-black/10 px-3 py-2 text-left text-sm text-black/55 hover:bg-black/[0.03]"
@@ -46,7 +47,7 @@ export function DashboardChrome({
               <p className="m-0 font-display text-sm font-bold uppercase text-primary">
                 EPOS CMS
               </p>
-              <form action="/api/dashboard/logout/" method="post">
+              <form action={logoutAction}>
                 <button type="submit" className="text-xs font-semibold text-black/50">
                   Выйти
                 </button>

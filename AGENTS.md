@@ -8,7 +8,7 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 - Content: static TS seed (`src/data`, `src/i18n`) with CMS overlays (news, site settings, delivery hub copy)
 - Locales: `uz` (default, unprefixed) and `ru` (`/ru/`)
 - Tracking page stays a stub until tracking API — `TODO(tracking-api)`; dashboard can set shipment `track_number` manually
-- Env: `NEXT_PUBLIC_SUPABASE_*` + server-only `SUPABASE_SERVICE_ROLE_KEY` (+ `CMS_BOOTSTRAP_SECRET` for first owner)
+- Env: server-only `SUPABASE_URL` + `SUPABASE_ANON_KEY` + `SUPABASE_SERVICE_ROLE_KEY` (+ `CMS_BOOTSTRAP_SECRET` for first owner). Never `NEXT_PUBLIC_SUPABASE_*`.
 
 ## Product rules
 
