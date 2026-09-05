@@ -26,6 +26,8 @@ export type PageKey =
   | "businessConnect"
   | "tracking"
   | "requestPrice"
+  | "calculator"
+  | "faq"
   | "about"
   | "news"
   | "contacts"
@@ -40,6 +42,8 @@ export const pagePaths: Record<PageKey, string> = {
   businessConnect: "/business/connect/",
   tracking: "/tracking/",
   requestPrice: "/request-price/",
+  calculator: "/calculator/",
+  faq: "/faq/",
   about: "/about/",
   news: "/news/",
   contacts: "/contacts/",

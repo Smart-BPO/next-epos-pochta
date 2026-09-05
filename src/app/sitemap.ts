@@ -13,6 +13,8 @@ const indexablePages = [
   "contacts",
   "privacy",
   "terms",
+  "calculator",
+  "faq",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -13,9 +13,15 @@ export const uzCopy: SiteCopy = {
       "Muntazam olib ketish, ommaviy joʻnatmalar, qaytarishlar, yetkazib berishda toʻlov, API va hisobotlar.",
     trackingTitle: "Joʻnatmani kuzatish",
     trackingDescription: "EPOS POCHTA trek-raqami boʻyicha statusni tekshiring.",
-    requestPriceTitle: "Narxni hisoblash",
+    requestPriceTitle: "Biznes uchun tijorat taklifi",
     requestPriceDescription:
-      "Yoʻnalish va yuk parametrlari boʻyicha taxminiy hisob. Yakuniy narxni menejer tasdiqlaydi.",
+      "Internet-doʻkonlar va kompaniyalar uchun qisqa soʻrovnoma: hajm, xizmatlar va aloqa. Menejer individual shartlarni tayyorlaydi.",
+    calculatorTitle: "Narx kalkulyatori",
+    calculatorDescription:
+      "Yoʻnalish, ogʻirlik va oʻlchamlar boʻyicha taxminiy hisob. Oferta emas — yakuniy narxni menejer tasdiqlaydi.",
+    faqTitle: "Savol-javoblar",
+    faqDescription:
+      "EPOS POCHTA yetkazib berish, narx, muddatlar va qoʻllab-quvvatlash boʻyicha javoblar.",
     businessConnectTitle: "Biznes uchun ulanish",
     businessConnectDescription:
       "Muntazam yetkazib berish, API va korporativ shartlarni ulash uchun bosqichma-bosqich ariza.",
@@ -82,10 +88,10 @@ export const uzCopy: SiteCopy = {
     heroLead:
       "Joʻnatmani sizdan olamiz, qabul qiluvchiga yetkazamiz va har bosqichda statusni xabar qilamiz",
     heroNote: "Jismoniy shaxslar, internet-doʻkonlar va kompaniyalar uchun",
-    trackTitle: "Pochta qayerda?",
+    trackTitle: "Joʻnatmani kuzatish",
     trackPlaceholder: "Trek-raqamni kiriting",
     trackHint: "Trek-raqam kvitansiyada yoki SMS da koʻrsatiladi",
-    quoteTitle: "Yetkazib berish narxi va muddatini bilib oling",
+    quoteTitle: "Yetkazib berish narxini hisoblang",
     quoteFrom: "Qayerdan",
     quoteTo: "Qayerga",
     quoteCategory: "Nima yuboramiz",
@@ -183,53 +189,147 @@ export const uzCopy: SiteCopy = {
     geoEmpty: "Mavjudlikni tekshirish uchun shahar nomini kiriting.",
     geoAvailable:
       "Ushbu aholi punktiga yetkazib berish mavjud. Taxminiy muddatni menejer hisobda aniqlaydi.",
-    faqTitle: "Koʻp soʻraladigan savollar",
-    faq: [
-      {
-        question: "Qanday joʻnatmalar qabul qilinadi?",
-        answer:
-          "Hujjatlar, pochtalar va xaridorlarga tovarlar — kelishilgan cheklovlar doirasida. Taqiqlangan toifalar roʻyxati shartlarda eʼlon qilinadi.",
-      },
-      {
-        question: "Narxni qanday bilaman?",
-        answer:
-          "Forma orqali soʻrov qoldiring. Saytda tarif jadvallari va avtomatik yakuniy narx yoʻq.",
-      },
-      {
-        question: "Yetkazib berish qancha vaqt oladi?",
-        answer:
-          "Muddat yoʻnalish va usulga bogʻliq. Menejer narx bilan birga taxminiy muddatni aytadi.",
-      },
-      {
-        question: "Kuryer chaqirish mumkinmi?",
-        answer:
-          "Ha. «Kuryer chaqirish» ni tanlang yoki narx soʻrash formasida kuryer olib ketishini belgilang.",
-      },
-      {
-        question: "Trek-raqamni qayerdan topaman?",
-        answer: "Topshirish kvitansiyasida yoki SMS xabarnomada.",
-      },
-      {
-        question: "Qabul qiluvchi joyida boʻlmasa?",
-        answer:
-          "Uchtagacha bepul topshirish urinishi nazarda tutilgan. Qaytarish shartlari rasmiylashtirishda aniqlanadi.",
-      },
-      {
-        question: "Yetkazib berishda toʻlov bormi?",
-        answer:
-          "Ha, kelishilgan ssenariylar uchun. Formada belgilang — menejer shartlarni tasdiqlaydi.",
-      },
-      {
-        question: "Biznes va API qanday ulanadi?",
-        answer:
-          "«Biznes uchun» sahifasida korporativ ariza qoldiring. Jarayonlarni aniqlab, ulanish shartlarini taklif qilamiz.",
-      },
-    ],
     newsTitle: "Yangiliklar",
     newsLead: "Xizmat eʼlonlari, geografiya va biznes yechimlari",
     newsAll: "Barcha yangiliklar",
     finalTitle: "Pochta yuborish kerakmi?",
     finalLead: "Maʼlumot qoldiring — yetkazib berish narxini hisoblaymiz",
+  },
+  faq: {
+    title: "Savol-javoblar",
+    lead: "Mavzular boʻyicha qidiruv, toifalar va EPOS POCHTA yetkazib berish haqida batafsil javoblar. Topa olmasangiz — qoʻllab-quvvatlashga yozing.",
+    searchPlaceholder: "Savol yoki javob boʻyicha qidirish…",
+    allCategories: "Barcha mavzular",
+    emptySearch: "Hech narsa topilmadi. Boshqa soʻrov yozing yoki qoʻllab-quvvatlashga murojaat qiling.",
+    resultsLabel: "Topildi: {count}",
+    topicsTitle: "Mavzular",
+    categories: [
+      {
+        id: "shipments",
+        title: "Joʻnatmalar",
+        description: "Nima qabul qilamiz va qadoqlash",
+      },
+      {
+        id: "pricing",
+        title: "Narx",
+        description: "Kalkulyator va narx tasdiqi",
+      },
+      {
+        id: "delivery",
+        title: "Yetkazib berish",
+        description: "Muddat, kuryer va topshirish",
+      },
+      {
+        id: "tracking",
+        title: "Kuzatish",
+        description: "Trek-raqam va statuslar",
+      },
+      {
+        id: "business",
+        title: "Biznes",
+        description: "API, hajm va korporativ shartlar",
+      },
+    ],
+    items: [
+      {
+        id: "accept",
+        categoryId: "shipments",
+        question: "Qanday joʻnatmalar qabul qilinadi?",
+        answer:
+          "Hujjatlar, pochtalar va xaridorlarga tovarlar — kelishilgan cheklovlar doirasida. Taqiqlangan toifalar xizmat shartlarida. Tarkibga shubha boʻlsa, topshirishdan oldin menejerdan soʻrang.",
+      },
+      {
+        id: "packaging",
+        categoryId: "shipments",
+        question: "Maxsus qadoq kerakmi?",
+        answer:
+          "Ha: qadoq yoʻlda shikastlanishdan himoya qilishi kerak. Hujjatlar uchun qattiq konvert yoki papka, tovarlar uchun mahkamlangan quti. Talablar rasmiylashtirishda aniqlanadi.",
+      },
+      {
+        id: "price",
+        categoryId: "pricing",
+        question: "Narxni qanday bilaman?",
+        answer:
+          "Yoʻnalish, ogʻirlik va oʻlchamlar boʻyicha kalkulyatordan taxminiy hisob oling. Bu oferta emas. Yakuniy narxni menejer ariza yoki biznes soʻrovnomasidan keyin tasdiqlaydi.",
+      },
+      {
+        id: "tariffs",
+        categoryId: "pricing",
+        question: "Nega saytda tarif jadvali yoʻq?",
+        answer:
+          "Narx yoʻnalish, ogʻirlik, oʻlcham, olib ketish/yetkazish usuli va hajmga bogʻliq. Ochiq narxnomalar joylamaymiz — kalkulyatorda orientir va menejer orqali individual hisob beramiz.",
+      },
+      {
+        id: "eta",
+        categoryId: "delivery",
+        question: "Yetkazib berish qancha vaqt oladi?",
+        answer:
+          "Muddat yoʻnalish va rejimga bogʻliq. Kalkulyatorda orientir koʻrsatiladi, menejer yakuniy narx bilan muddatni tasdiqlaydi.",
+      },
+      {
+        id: "courier",
+        categoryId: "delivery",
+        question: "Kuryer chaqirish mumkinmi?",
+        answer:
+          "Ha. Arizada kuryer olib ketishini belgilang yoki qoʻllab-quvvatlashga yozing — vaqt va manzilni kelishamiz. Muntazam olib ketish uchun biznes ariza qoldiring.",
+      },
+      {
+        id: "attempts",
+        categoryId: "delivery",
+        question: "Qabul qiluvchi joyida boʻlmasa?",
+        answer:
+          "Uchtagacha bepul topshirish urinishi nazarda tutilgan. Qaytarish va qayta yetkazish shartlari rasmiylashtirishda aniqlanadi.",
+      },
+      {
+        id: "cod",
+        categoryId: "delivery",
+        question: "Yetkazib berishda toʻlov bormi?",
+        answer:
+          "Ha, kelishilgan ssenariylar uchun — koʻpincha e-commerce. Arizada COD ni belgilang: menejer yoʻnalish boʻyicha imkoniyatni tasdiqlaydi.",
+      },
+      {
+        id: "track-number",
+        categoryId: "tracking",
+        question: "Trek-raqamni qayerdan topaman?",
+        answer:
+          "Topshirish kvitansiyasida yoki SMS da. Statuslarni koʻrish uchun «Kuzatish» sahifasiga raqamni kiriting.",
+      },
+      {
+        id: "track-delay",
+        categoryId: "tracking",
+        question: "Status yangilanmasa nima qilaman?",
+        answer:
+          "Raqamni tekshiring va bosqichlar orasidagi yangilanishni kuting. Uzoq oʻzgarmasa — trek-raqam bilan qoʻllab-quvvatlash yoki Telegramga yozing.",
+      },
+      {
+        id: "api",
+        categoryId: "business",
+        question: "Biznes va API qanday ulanadi?",
+        answer:
+          "«Biznes uchun» sahifasida yoki tijorat taklifi soʻrovnomasida korporativ ariza qoldiring. Hajm va jarayonlarni aniqlab, API va hisobot ulanishini taklif qilamiz.",
+      },
+      {
+        id: "volume",
+        categoryId: "business",
+        question: "Muntazam joʻnatmalar uchun shartlar bormi?",
+        answer:
+          "Ha. Doimiy oqimli doʻkon va kompaniyalar uchun muntazam olib ketish, qaytarish, COD va hisobotlarni kelishamiz. Soʻrovnoma yoki ulanish formasidan boshlang.",
+      },
+    ],
+    supportTitle: "Qoʻllab-quvvatlash",
+    supportLead:
+      "Trek-raqam, status, hisob arizasi va biznes ulanishi boʻyicha yordam beramiz.",
+    companyTitle: "Kompaniya haqida",
+    contactsTitle: "Sayt boʻlimlari",
+    legalTitle: "Rekvizitlar",
+    addressLabel: "Manzil",
+    phoneLabel: "Telefon",
+    emailLabel: "Email",
+    messengersTitle: "Messenger va ijtimoiy tarmoqlar",
+    ctaCalculate: "Kalkulyatorni ochish",
+    ctaBusiness: "Biznes uchun ariza",
+    ctaTrack: "Joʻnatmani kuzatish",
+    ctaContacts: "Bizga yozish",
   },
   services: {
     intro:
@@ -444,57 +544,117 @@ export const uzCopy: SiteCopy = {
     resultTitle: "Joʻnatma statusi",
   },
   requestPrice: {
-    title: "Narxni hisoblash",
-    lead: "Yoʻnalish va yuk parametrlarini kiriting — taxminiy smetani koʻrsatamiz. Yakuniy narxni menejer tasdiqlaydi.",
+    title: "Biznes uchun tijorat taklifi",
+    lead: "4 ta qisqa savolga javob bering — menejer hajmingiz va yoʻnalishlaringiz uchun shartlarni tayyorlaydi. Saytda ochiq tarif va oferta yoʻq.",
     priceNote:
-      "Saytdagi hisob taxminiydir va oferta emas. Yakuniy narx va muddatni menejer arizadan keyin tasdiqlaydi.",
-    estimateTitle: "Taxminiy smeta",
-    estimateRangeLabel: "Narx boʻyicha orientir",
-    estimateEtaLabel: "Taxminiy muddat",
-    estimateDisclaimer:
-      "Yakuniy narx emas. Menejer yoʻnalish va yukni tekshirgach tarifni aniqlaydi.",
-    estimateUnknownDimsNote:
-      "Oʻlchamlar koʻrsatilmagan — smeta 1 kg minimal ogʻirlik boʻyicha. Menejer tortishdan keyin aniqlaydi.",
-    trustTitle: "Keyin nima boʻladi",
+      "Bu individual hisob uchun ariza. Yakuniy narx va muddatni menejer kelishuvdan keyin tasdiqlaydi.",
+    trustTitle: "Nega qulay",
     trustItems: [
-      "Narx va muddat orientiri allaqachon ekranda",
-      "Aloqa qoldiring — yakuniy hisobni tasdiqlaymiz",
-      "Telefon, Telegram yoki email orqali javob beramiz",
+      "2–3 daqiqa — va ariza menejerda",
+      "Hajm, API va muntazam olib ketishga mos shartlar",
+      "Telefon, Telegram yoki email orqali bogʻlanamiz",
     ],
-    steps: ["Yoʻnalish va yuk", "Smeta", "Aloqa"],
-    successTitle: "Soʻrov qabul qilindi",
+    steps: ["Yuk", "Hajm", "Xizmatlar", "Aloqa"],
+    progressTemplate: "{current}-qadam / {total}",
+    questionCargo: "Asosan nima yuborasiz?",
+    questionVolume: "Oyiga nechta joʻnatma?",
+    questionServices: "Qaysi xizmatlar kerak?",
+    questionServicesHint: "Bir nechtasini tanlash mumkin",
+    questionContact: "Taklifni qayerga yuboraylik?",
+    questionContactLead:
+      "Kompaniya aloqasini qoldiring — menejer tijorat taklifi bilan bogʻlanadi.",
+    cargoOptions: [
+      {
+        id: "documents",
+        title: "Hujjatlar",
+        description: "Shartnomalar, aktlar, yozishmalar",
+      },
+      {
+        id: "parcels",
+        title: "Pochta",
+        description: "Shaxsiy va korporativ joʻnatmalar",
+      },
+      {
+        id: "goods",
+        title: "Xaridorlarga tovarlar",
+        description: "Internet-doʻkon buyurtmalari",
+      },
+      {
+        id: "mixed",
+        title: "Aralash oqim",
+        description: "Bir necha turdagi joʻnatmalar",
+      },
+    ],
+    volumeOptions: [
+      {
+        id: "1-50",
+        title: "50 gacha",
+        description: "Start yoki pilot hajm",
+      },
+      {
+        id: "51-200",
+        title: "51–200",
+        description: "Muntazam joʻnatmalar",
+      },
+      {
+        id: "201-1000",
+        title: "201–1000",
+        description: "Oʻsib borayotgan e-commerce",
+      },
+      {
+        id: "1000+",
+        title: "1000+",
+        description: "Ommaviy joʻnatmalar",
+      },
+    ],
+    serviceOptions: [
+      { id: "pickup", title: "Muntazam olib ketish" },
+      { id: "door", title: "Eshikgacha yetkazish" },
+      { id: "cod", title: "Yetkazib berishda toʻlov" },
+      { id: "api", title: "API va statuslar" },
+      { id: "returns", title: "Qaytarishlar" },
+    ],
+    successTitle: "Ariza qabul qilindi",
     successText:
-      "EPOS POCHTA menejeri siz bilan bogʻlanib, narx va muddatni tasdiqlaydi.",
+      "EPOS POCHTA menejeri siz bilan bogʻlanib, hajmingiz uchun tijorat taklifini tayyorlaydi.",
     fields: {
-      fromRegion: "Yuborish viloyati",
-      fromCity: "Yuborish shahri yoki tumani",
-      toRegion: "Qabul qilish viloyati",
-      toCity: "Qabul qilish shahri yoki tumani",
-      pickup: "Kuryer olib ketishi",
-      doorDelivery: "Eshikgacha yetkazish",
-      category: "Toifa",
-      description: "Tarkibning qisqa tavsifi",
-      places: "Joylar soni",
-      weight: "Taxminiy ogʻirlik, kg",
-      length: "Uzunlik, sm",
-      width: "Kenglik, sm",
-      height: "Balandlik, sm",
-      unknownDims: "Aniq ogʻirlik va oʻlchamlarni bilmayman",
-      urgent: "Shoshilinch yetkazish",
-      cod: "Yetkazib berishda toʻlov",
-      declaredValue: "Eʼlon qilingan qiymat",
-      preferredDate: "Olib ketish sanasi",
-      clientType: "Mijoz turi",
-      contactMethod: "Aloqa usuli",
       monthlyVolume: "Oyiga joʻnatmalar soni",
       needApi: "API kerakligi",
       comment: "Izoh",
+      routes: "Asosiy yoʻnalishlar yoki shaharlar",
       yes: "Ha",
       no: "Yoʻq",
-      catDocuments: "Hujjatlar",
-      catParcel: "Pochta",
-      catGoods: "Tovar",
-      catOther: "Boshqa",
+    },
+  },
+  calculator: {
+    title: "Narx kalkulyatori",
+    lead: "Shaharlar, ogʻirlik va oʻlchamlarni kiriting — taxminiy narx va muddatni koʻrsatamiz. Bu yakuniy tarif emas.",
+    breadcrumbHome: "Bosh sahifa",
+    breadcrumbCurrent: "Kalkulyator",
+    disclaimer:
+      "Hisob taxminiydir va oferta emas. Yakuniy narx va muddatni menejer tasdiqlaydi.",
+    fromLabel: "Qayerdan",
+    toLabel: "Qayerga",
+    cityPlaceholder: "Shaharni tanlang",
+    swap: "Manzillarni almashtirish",
+    weightLabel: "Ogʻirlik",
+    lengthLabel: "Uzunlik",
+    widthLabel: "Kenglik",
+    heightLabel: "Balandlik",
+    unitKg: "kg",
+    unitCm: "sm",
+    limitsNote:
+      "Kalkulyator limitlari: ogʻirlik 0–30 kg, har bir tomon 0–100 sm. Katta yuk uchun menejerga ariza qoldiring.",
+    calculateCta: "Narxni hisoblash",
+    resetCta: "Tozalash",
+    resultTitle: "Taxminiy smeta",
+    resultRangeLabel: "Narx boʻyicha orientir",
+    resultEtaLabel: "Taxminiy muddat",
+    billableLabel: "Hisobiy ogʻirlik",
+    confirmCta: "Menejer bilan tasdiqlash",
+    errors: {
+      fromCity: "Yuboruvchi shahrini tanlang",
+      toCity: "Qabul qiluvchi shahrini tanlang",
     },
   },
   about: {

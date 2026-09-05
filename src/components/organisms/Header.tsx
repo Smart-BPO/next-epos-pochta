@@ -64,7 +64,7 @@ export function Header({ locale, content }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname() || "/";
   const { path: currentPath } = stripLocalePrefix(pathname);
-  const requestHref = localePath(locale, "/request-price/");
+  const requestHref = localePath(locale, "/calculator/");
   const trackHref = localePath(locale, "/tracking/");
   const menuLabel = open ? content.ui.close : content.ui.menu;
 

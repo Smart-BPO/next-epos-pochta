@@ -10,6 +10,8 @@ import { BusinessPageView } from "@/views/BusinessPageView";
 import { BusinessConnectPageView } from "@/views/BusinessConnectPageView";
 import { TrackingPageView } from "@/views/TrackingPageView";
 import { RequestPricePageView } from "@/views/RequestPricePageView";
+import { CalculatorPageView } from "@/views/CalculatorPageView";
+import { FaqPageView } from "@/views/FaqPageView";
 import { AboutPageView } from "@/views/AboutPageView";
 import { ContactsPageView } from "@/views/ContactsPageView";
 import { NewsListPageView } from "@/views/NewsListPageView";
@@ -105,6 +107,34 @@ export function createRequestPricePage(locale: Locale) {
           <Suspense fallback={suspenseFallback}>
             <RequestPricePageView locale={locale} />
           </Suspense>
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createCalculatorPage(locale: Locale) {
+  return {
+    generateMetadata: () => getLocalizedPageMetadata(locale, "calculator"),
+    Page: async function CalculatorPage() {
+      return (
+        <SiteLayout locale={locale}>
+          <Suspense fallback={suspenseFallback}>
+            <CalculatorPageView locale={locale} />
+          </Suspense>
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createFaqPage(locale: Locale) {
+  return {
+    generateMetadata: () => getLocalizedPageMetadata(locale, "faq"),
+    Page: async function FaqPage() {
+      return (
+        <SiteLayout locale={locale}>
+          <FaqPageView locale={locale} />
         </SiteLayout>
       );
     },

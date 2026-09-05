@@ -6,17 +6,12 @@ import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { BusinessLogisticsScene } from "@/components/molecules/BusinessLogisticsScene";
 import { DeliveryChain } from "@/components/molecules/DeliveryChain";
-import { FaqList } from "@/components/molecules/FaqList";
 import { GeoSearch } from "@/components/molecules/GeoSearch";
-import { HomeQuoteTeaser } from "@/components/molecules/HomeQuoteTeaser";
+import { HomeActionBar } from "@/components/molecules/HomeActionBar";
 import { NewsCard } from "@/components/molecules/NewsCard";
-import { QuickTrackForm } from "@/components/molecules/QuickTrackForm";
-import { JsonLd } from "@/components/seo/JsonLd";
 import { getLatestNews } from "@/lib/news/repository";
-import { getFaqSchema } from "@/utils/seo/json-ld";
 import {
   homeHero,
-  homeHeroActions,
   homeHeroCopy,
   homeHeroGrid,
   homeHeroLead,
@@ -27,7 +22,6 @@ import {
   homeNeedsCard,
   homeNeedsGrid,
   homeNeedsSection,
-  homeQuoteBridge,
   homeSectionLead,
   homeSectionTitle,
   section,
@@ -67,30 +61,12 @@ export function HomePageView({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <JsonLd data={getFaqSchema(copy.home.faq)} />
-
       <section className={homeHero}>
         <PageContainer className={homeHeroGrid}>
           <div className={homeHeroCopy}>
             <h1 className={homeHeroTitle}>{copy.home.heroTitle}</h1>
             <p className={homeHeroLead}>{copy.home.heroLead}</p>
             <p className={homeHeroNote}>{copy.home.heroNote}</p>
-            <div className={homeHeroActions}>
-              <Button
-                href={localePath(locale, "/request-price/")}
-                variant="heroPrimary"
-                className="min-w-0 flex-1 !min-h-11 !px-4 !py-2.5 text-sm sm:flex-none sm:!px-5"
-              >
-                {copy.ui.calculate}
-              </Button>
-              <Button
-                href={`${localePath(locale, "/request-price/")}?pickup=1`}
-                variant="heroSecondary"
-                className="min-w-0 flex-1 !min-h-11 !px-3 !py-2.5 text-sm sm:flex-none sm:!px-5"
-              >
-                {copy.ui.callCourier}
-              </Button>
-            </div>
           </div>
 
           <div className={homeHeroVisual}>
@@ -103,22 +79,11 @@ export function HomePageView({ locale }: { locale: Locale }) {
               priority
               unoptimized
             />
-            <QuickTrackForm locale={locale} copy={copy} variant="hero" />
           </div>
         </PageContainer>
       </section>
 
-      <section className="relative z-10 bg-white pb-5 pt-1 lg:hidden">
-        <PageContainer>
-          <QuickTrackForm locale={locale} copy={copy} variant="card" />
-        </PageContainer>
-      </section>
-
-      <div className={homeQuoteBridge}>
-        <PageContainer>
-          <HomeQuoteTeaser locale={locale} copy={copy} />
-        </PageContainer>
-      </div>
+      <HomeActionBar locale={locale} copy={copy} />
 
       <section className={homeNeedsSection}>
         <PageContainer className="flex flex-col gap-4 sm:gap-5 md:gap-7">
@@ -146,12 +111,20 @@ export function HomePageView({ locale }: { locale: Locale }) {
                   {item.description}
                 </p>
                 <Button
-                  href={`${localePath(locale, "/request-price/")}?category=${item.id}`}
+                  href={
+                    item.id === "regular"
+                      ? localePath(locale, "/request-price/")
+                      : localePath(locale, "/calculator/")
+                  }
                   variant="secondary"
                   className="mt-auto w-full !min-h-10 !px-2 !py-2 text-xs sm:!min-h-11 sm:!px-4 sm:text-sm"
                 >
                   <span className="sm:hidden">{copy.ui.calculate}</span>
-                  <span className="hidden sm:inline">{copy.ui.requestPrice}</span>
+                  <span className="hidden sm:inline">
+                    {item.id === "regular"
+                      ? copy.ui.requestPrice
+                      : copy.ui.calculate}
+                  </span>
                 </Button>
               </article>
             ))}
@@ -338,13 +311,6 @@ export function HomePageView({ locale }: { locale: Locale }) {
           </PageContainer>
         </section>
       ) : null}
-
-      <section id="faq" className={`${section} scroll-mt-[var(--header-height)]`}>
-        <PageContainer className="flex flex-col gap-6 md:gap-9">
-          <h2 className={homeSectionTitle}>{copy.home.faqTitle}</h2>
-          <FaqList items={copy.home.faq} />
-        </PageContainer>
-      </section>
 
       <section className="pb-[var(--section-y)]">
         <PageContainer>

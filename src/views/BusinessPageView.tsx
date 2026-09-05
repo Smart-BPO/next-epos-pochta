@@ -74,7 +74,7 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
           <h2 className={`${homeSectionTitle} text-white`}>
             {copy.business.segmentsTitle}
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-5">
             {copy.business.segments.map((segment, index) => (
               <article
                 key={segment.title}
@@ -89,7 +89,7 @@ export function BusinessPageView({ locale }: { locale: Locale }) {
                     alt=""
                     fill
                     className="object-contain object-center"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                 </div>
                 <p className="m-0 flex-1 text-base text-black/60">{segment.text}</p>

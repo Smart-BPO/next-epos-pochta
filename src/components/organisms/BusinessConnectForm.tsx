@@ -33,6 +33,7 @@ import {
   formShell,
   formStepActive,
   formStepDone,
+  formStepIdle,
   formStepPill,
   formSteps,
 } from "@/styles/ui";
@@ -183,8 +184,11 @@ export function BusinessConnectForm({
             key={label}
             className={cn(
               formStepPill,
-              index === step && formStepActive,
-              index < step && formStepDone,
+              index === step
+                ? formStepActive
+                : index < step
+                  ? formStepDone
+                  : formStepIdle,
             )}
           >
             {label}

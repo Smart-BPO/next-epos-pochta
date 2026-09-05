@@ -74,7 +74,7 @@ export function FormCheckbox({
       <Field
         type="checkbox"
         name={name}
-        className="mt-0.5 h-[1.15rem] w-[1.15rem]"
+        className="mt-0.5 h-[1.15rem] w-[1.15rem] shrink-0 accent-[var(--color-primary)]"
       />
       <span>{label}</span>
     </label>

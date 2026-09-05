@@ -90,7 +90,7 @@ export function SiteFooter({ locale, content }: SiteFooterProps) {
               {content.footer.support}
             </p>
             <Link
-              href={`${localePath(locale, "/")}#faq`}
+              href={localePath(locale, "/faq/")}
               className="inline-flex min-w-0 items-center gap-2 text-sm text-black hover:text-primary"
             >
               <Image
