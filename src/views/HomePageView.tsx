@@ -83,53 +83,55 @@ export function HomePageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className={homeNeedsSection}>
+      <div className="relative">
         <HomeActionBar locale={locale} copy={copy} />
-        <PageContainer className="flex flex-col gap-4 sm:gap-5 md:gap-7">
-          <h2
-            className={`${homeSectionTitle} text-[1.35rem] text-white sm:text-[length:var(--home-title)]`}
-          >
-            {copy.home.needsTitle}
-          </h2>
-          <div className={homeNeedsGrid}>
-            {copy.home.needs.map((item) => (
-              <article key={item.id} className={homeNeedsCard}>
-                <h3 className="m-0 font-display text-sm font-semibold uppercase leading-tight text-black sm:text-lg md:text-xl">
-                  {item.title}
-                </h3>
-                <div className="relative mx-auto h-20 w-full shrink-0 overflow-hidden sm:h-28 lg:h-[10.5rem]">
-                  <Image
-                    src={NEED_IMAGES[item.id] ?? NEED_IMAGES.documents}
-                    alt=""
-                    fill
-                    className="object-contain object-center"
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 25vw"
-                  />
-                </div>
-                <p className="m-0 hidden flex-1 text-sm text-black/60 sm:block sm:text-base">
-                  {item.description}
-                </p>
-                <Button
-                  href={
-                    item.id === "regular"
-                      ? localePath(locale, "/request-price/")
-                      : `${localePath(locale, "/calculator/")}?category=${item.id}`
-                  }
-                  variant="secondary"
-                  className="mt-auto w-full !min-h-10 !px-2 !py-2 text-xs sm:!min-h-11 sm:!px-4 sm:text-sm"
-                >
-                  <span className="sm:hidden">{copy.ui.calculate}</span>
-                  <span className="hidden sm:inline">
-                    {item.id === "regular"
-                      ? copy.ui.requestPrice
-                      : copy.ui.calculate}
-                  </span>
-                </Button>
-              </article>
-            ))}
-          </div>
-        </PageContainer>
-      </section>
+        <section className={homeNeedsSection}>
+          <PageContainer className="flex flex-col gap-4 sm:gap-5 md:gap-7">
+            <h2
+              className={`${homeSectionTitle} text-[1.35rem] text-white sm:text-[length:var(--home-title)]`}
+            >
+              {copy.home.needsTitle}
+            </h2>
+            <div className={homeNeedsGrid}>
+              {copy.home.needs.map((item) => (
+                <article key={item.id} className={homeNeedsCard}>
+                  <h3 className="m-0 font-display text-sm font-semibold uppercase leading-tight text-black sm:text-lg md:text-xl">
+                    {item.title}
+                  </h3>
+                  <div className="relative mx-auto h-20 w-full shrink-0 overflow-hidden sm:h-28 lg:h-[10.5rem]">
+                    <Image
+                      src={NEED_IMAGES[item.id] ?? NEED_IMAGES.documents}
+                      alt=""
+                      fill
+                      className="object-contain object-center"
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                  <p className="m-0 hidden flex-1 text-sm text-black/60 sm:block sm:text-base">
+                    {item.description}
+                  </p>
+                  <Button
+                    href={
+                      item.id === "regular"
+                        ? localePath(locale, "/request-price/")
+                        : `${localePath(locale, "/calculator/")}?category=${item.id}`
+                    }
+                    variant="secondary"
+                    className="mt-auto w-full !min-h-10 !px-2 !py-2 text-xs sm:!min-h-11 sm:!px-4 sm:text-sm"
+                  >
+                    <span className="sm:hidden">{copy.ui.calculate}</span>
+                    <span className="hidden sm:inline">
+                      {item.id === "regular"
+                        ? copy.ui.requestPrice
+                        : copy.ui.calculate}
+                    </span>
+                  </Button>
+                </article>
+              ))}
+            </div>
+          </PageContainer>
+        </section>
+      </div>
 
       <section className={section}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
@@ -166,29 +168,31 @@ export function HomePageView({ locale }: { locale: Locale }) {
       <section className={section}>
         <PageContainer className="flex flex-col gap-6 md:gap-9">
           <h2 className={homeSectionTitle}>{copy.home.howTitle}</h2>
-          <div className="flex flex-col items-center gap-4 md:gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
+          <div className="flex flex-col items-center gap-3 sm:gap-4 md:gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
             {copy.home.howSteps.map((step, index) => (
               <div
                 key={step.title}
-                className="flex w-full flex-col items-center gap-4 md:gap-6 lg:w-auto lg:min-w-0 lg:flex-1 lg:flex-row lg:gap-0"
+                className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6 lg:w-auto lg:min-w-0 lg:flex-1 lg:flex-row lg:gap-0"
               >
-                <article className="flex aspect-square w-full max-w-[min(100%,18.125rem)] flex-col items-center justify-center gap-3 overflow-hidden rounded-full border border-black/20 bg-white px-6 py-5 text-center sm:gap-4 sm:px-8 sm:py-6 lg:mx-auto">
-                  <p className="m-0 font-display text-5xl font-semibold uppercase text-black/30 md:text-6xl">
+                <article className="flex aspect-square w-full max-w-[min(100%,14rem)] flex-col items-center justify-center gap-2 overflow-hidden rounded-full border border-black/20 bg-white px-5 py-4 text-center sm:max-w-[min(100%,16rem)] sm:gap-3 sm:px-7 sm:py-5 md:max-w-[min(100%,18.125rem)] md:gap-4 md:px-8 md:py-6 lg:mx-auto">
+                  <p className="m-0 font-display text-4xl font-semibold uppercase text-black/30 sm:text-5xl md:text-6xl">
                     {index + 1}
                   </p>
-                  <h3 className="m-0 text-lg font-medium text-black sm:text-xl md:text-2xl">
+                  <h3 className="m-0 text-base font-medium text-black sm:text-xl md:text-2xl">
                     {step.title}
                   </h3>
-                  <p className="m-0 text-base text-black/60 sm:text-lg">{step.text}</p>
+                  <p className="m-0 text-sm text-black/60 sm:text-base md:text-lg">
+                    {step.text}
+                  </p>
                 </article>
                 {index < copy.home.howSteps.length - 1 ? (
-                  <div className="z-10 shrink-0 rounded-full bg-gradient-to-b from-primary to-primary-hover px-4 py-2 lg:-mx-2 xl:-mx-3">
+                  <div className="z-10 shrink-0 rounded-full bg-gradient-to-b from-primary to-primary-hover px-3 py-1.5 sm:px-4 sm:py-2 lg:-mx-2 xl:-mx-3">
                     <Image
                       src="/images/home/steps/arrow.svg"
                       alt=""
                       width={32}
                       height={32}
-                      className="rotate-90 lg:rotate-0"
+                      className="size-6 rotate-90 sm:size-8 lg:rotate-0"
                       unoptimized
                     />
                   </div>
@@ -201,7 +205,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
 
       <section className="bg-gradient-to-b from-primary to-primary-hover py-[var(--section-y)]">
         <PageContainer>
-          <div className="grid items-stretch gap-8 overflow-hidden rounded-3xl bg-white p-6 shadow-[0_16px_48px_rgb(15_18_24/0.12)] sm:p-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-6 lg:p-10 xl:gap-10">
+          <div className="grid items-stretch gap-6 overflow-hidden rounded-3xl bg-white p-5 shadow-[0_16px_48px_rgb(15_18_24/0.12)] sm:gap-8 sm:p-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-6 lg:p-10 xl:gap-10">
             <div className="flex flex-col gap-5 lg:gap-6 lg:py-1">
               <p className="m-0 text-sm font-semibold uppercase tracking-[0.08em] text-primary">
                 {copy.home.businessEyebrow}
@@ -213,7 +217,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
                 {copy.home.businessLead}
               </p>
 
-              <ul className="m-0 mt-1 grid list-none grid-cols-2 gap-x-5 gap-y-6 p-0 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-7">
+              <ul className="m-0 mt-1 grid list-none grid-cols-2 gap-x-4 gap-y-5 p-0 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-7">
                 {copy.home.businessItems.map((item, index) => (
                   <li
                     key={item}
@@ -224,7 +228,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
                       alt=""
                       width={36}
                       height={36}
-                      className="size-9"
+                      className="size-8 sm:size-9"
                       unoptimized
                     />
                     <span className="text-sm font-medium leading-snug text-black sm:text-[0.95rem]">
@@ -332,7 +336,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
               alt=""
               width={442}
               height={230}
-              className="pointer-events-none relative mx-auto mt-8 block h-auto w-full max-w-md select-none object-contain object-bottom md:absolute md:-bottom-1 md:right-0 md:mx-0 md:mt-0 md:h-[min(100%,18.5rem)] md:w-[min(52%,28rem)] md:max-w-none md:object-cover md:object-top"
+              className="pointer-events-none relative mx-auto mt-6 block h-auto w-full max-w-xs select-none object-contain object-bottom sm:mt-8 sm:max-w-md md:absolute md:-bottom-1 md:right-0 md:mx-0 md:mt-0 md:h-[min(100%,18.5rem)] md:w-[min(52%,28rem)] md:max-w-none md:object-cover md:object-top"
               sizes="(max-width: 768px) 100vw, 28rem"
             />
           </div>

@@ -61,7 +61,7 @@ export function DeliveryChain({ locale }: { locale: Locale }) {
   const labels = getContent(locale).home.chainSteps;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-black/10 bg-[linear-gradient(180deg,#fff_0%,#faf7f7_100%)] px-3 py-6 sm:px-5 sm:py-8 md:px-6 md:py-10">
+    <div className="relative overflow-x-hidden rounded-3xl border border-black/10 bg-[linear-gradient(180deg,#fff_0%,#faf7f7_100%)] px-3 py-5 max-md:overflow-y-visible sm:px-5 sm:py-8 md:overflow-hidden md:px-6 md:py-10">
       {/* Desktop / tablet horizontal path */}
       <div className="relative hidden md:block">
         {/* Line between first and last column centers (5 equal cols → 10% … 90%) */}
@@ -111,34 +111,34 @@ export function DeliveryChain({ locale }: { locale: Locale }) {
       </div>
 
       {/* Mobile vertical path */}
-      <ol className="relative m-0 grid list-none gap-0 p-0 md:hidden">
+      <ol className="relative m-0 grid list-none gap-0 overflow-visible p-0 md:hidden">
         <div
           aria-hidden
-          className="absolute bottom-8 left-6 top-8 w-1 rounded-full bg-gradient-to-b from-primary to-primary-hover"
+          className="absolute bottom-10 left-[1.35rem] top-10 w-1 rounded-full bg-gradient-to-b from-primary to-primary-hover"
         />
         {STEPS.map((step, index) => (
           <li
             key={step.id}
-            className="relative flex items-center gap-4 py-4 pl-2"
+            className="relative flex min-h-[5.5rem] items-center gap-3 py-3 pl-1"
           >
             <span
               aria-hidden
-              className="relative z-[1] ml-[0.85rem] size-3 shrink-0 rounded-full border-2 border-white bg-primary shadow-sm"
+              className="relative z-[1] ml-[0.95rem] size-3 shrink-0 rounded-full border-2 border-white bg-primary shadow-sm"
             />
             {index < STEPS.length - 1 ? (
-              <ParcelMarker className="left-3 top-full z-[1] -translate-x-1/2 -translate-y-1/2" />
+              <ParcelMarker className="left-[1.35rem] top-full z-[1] -translate-x-1/2 -translate-y-1/2 size-8" />
             ) : null}
             <div className="flex min-w-0 flex-1 items-center gap-3">
-              <div className="relative h-24 w-28 shrink-0">
+              <div className="relative h-20 w-24 shrink-0">
                 <Image
                   src={step.src}
                   alt=""
                   fill
                   className="object-contain object-center drop-shadow-md"
-                  sizes="7rem"
+                  sizes="6rem"
                 />
               </div>
-              <p className="m-0 text-sm font-medium uppercase tracking-wide text-black/60">
+              <p className="m-0 text-sm font-medium uppercase leading-snug tracking-wide text-black/60">
                 {labels[index]}
               </p>
             </div>

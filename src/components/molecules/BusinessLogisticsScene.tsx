@@ -7,13 +7,13 @@ import Image from "next/image";
 export function BusinessLogisticsScene() {
   return (
     <div
-      className="relative mx-auto aspect-[560/480] w-full max-w-[36rem] overflow-hidden lg:max-w-none lg:h-full lg:min-h-[26rem] lg:aspect-auto"
+      className="relative mx-auto aspect-[560/420] w-full max-w-[22rem] overflow-hidden sm:max-w-[28rem] sm:aspect-[560/480] lg:max-w-none lg:h-full lg:min-h-[26rem] lg:aspect-auto"
       aria-hidden
     >
       {/* Ground wash */}
       <div className="pointer-events-none absolute inset-[8%_4%_2%] rounded-[50%] bg-[radial-gradient(ellipse_at_50%_70%,rgb(245_246_248)_0%,transparent_72%)]" />
 
-      {/* Route aligned to object anchors */}
+      {/* Route aligned to object anchors — desktop/tablet only */}
       <svg
         className="pointer-events-none absolute inset-0 z-[1] hidden h-full w-full md:block"
         viewBox="0 0 560 480"

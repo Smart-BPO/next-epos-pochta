@@ -15,12 +15,12 @@ export const pageIntroTitle =
 
 export const anchorSection = "scroll-mt-[var(--header-height)]";
 
-/** Home hero — title + map; white action island bridges into needs below. */
+/** Home hero — title + map; action island bridges into needs on lg+. */
 export const homeHero =
   "relative isolate overflow-visible bg-white";
 
 export const homeHeroGrid =
-  "relative grid items-start gap-4 py-6 pb-16 max-lg:grid-cols-1 sm:gap-5 sm:py-8 sm:pb-20 md:py-10 md:pb-20 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:pb-14 lg:pt-10 xl:pb-16";
+  "relative grid items-start gap-4 py-6 pb-8 max-lg:grid-cols-1 sm:gap-5 sm:py-8 sm:pb-10 md:py-10 md:pb-12 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:pb-14 lg:pt-10 xl:pb-16";
 
 export const homeHeroCopy =
   "relative z-10 flex max-w-[32rem] flex-col items-stretch gap-3 lg:items-start lg:gap-4";
@@ -34,21 +34,25 @@ export const homeHeroLead =
 export const homeHeroNote =
   "m-0 animate-hero-rise text-sm text-black/55 [animation-delay:140ms]";
 
+/** Mobile: map under copy. Desktop: in-flow grid cell with map filling it. */
 export const homeHeroVisual =
-  "pointer-events-none absolute inset-x-0 bottom-0 top-10 -z-0 opacity-[0.2] max-lg:max-h-[16rem] lg:relative lg:inset-auto lg:z-0 lg:min-h-[20rem] lg:w-full lg:opacity-100";
+  "relative z-0 mt-2 w-full max-h-[12rem] sm:max-h-[14rem] lg:mt-0 lg:min-h-[20rem] lg:max-h-none lg:w-full";
 
 export const homeHeroMap =
-  "pointer-events-none relative mx-auto block h-auto w-full max-w-[18rem] select-none object-contain object-bottom sm:max-w-[22rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-right";
+  "pointer-events-none relative mx-auto block h-auto w-full max-w-[16rem] select-none object-contain object-bottom opacity-90 sm:max-w-[20rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-right lg:opacity-100";
 
-/** Absolute bridge on the needs section top edge (−50% = half white / half red). */
+/**
+ * Mobile: in-flow white section between hero and needs.
+ * lg+: absolute bridge on the needs top edge (−50% = half white / half red).
+ */
 export const homeActionBar =
-  "pointer-events-none absolute inset-x-0 top-0 z-20 -translate-y-1/2";
+  "relative z-10 bg-white py-6 sm:py-8 lg:pointer-events-none lg:absolute lg:inset-x-0 lg:top-0 lg:z-20 lg:-translate-y-1/2 lg:bg-transparent lg:py-0";
 
 export const homeActionBridge =
   "pointer-events-auto";
 
 export const homeActionIsland =
-  "flex flex-col gap-5 rounded-3xl border border-black/20 bg-white p-5 shadow-[0_12px_40px_rgb(15_18_24/0.1)] sm:gap-6 sm:p-6 lg:flex-row lg:items-stretch lg:gap-0 lg:p-5 xl:px-6 xl:py-5";
+  "flex flex-col gap-5 rounded-3xl border border-black/15 bg-white p-4 shadow-[0_4px_20px_rgb(15_18_24/0.06)] sm:gap-6 sm:p-6 sm:shadow-[0_12px_40px_rgb(15_18_24/0.1)] lg:flex-row lg:items-stretch lg:gap-0 lg:border-black/20 lg:p-5 xl:px-6 xl:py-5";
 
 export const homeActionPane =
   "flex min-w-0 flex-1 flex-col justify-center gap-2.5 lg:gap-3 lg:px-5 first:lg:pl-0 last:lg:pr-0";
@@ -60,7 +64,7 @@ export const homeActionRow =
   "flex min-w-0 flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-3 lg:flex-nowrap";
 
 export const homeActionField =
-  "min-h-12 min-w-0 flex-1 rounded-xl border border-black/20 bg-white px-3.5 py-3 text-base text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/20";
+  "min-h-12 min-w-0 w-full flex-1 rounded-xl border border-black/20 bg-white px-3.5 py-3 text-base text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 export const homeActionSwap =
   "inline-flex size-6 shrink-0 items-center justify-center self-center text-black transition-opacity hover:opacity-70";
@@ -72,10 +76,10 @@ export const homeActionNote =
   "m-0 text-sm leading-snug text-black/60 lg:hidden";
 
 export const homeActionBtn =
-  "!min-h-12 shrink-0 !px-5 !py-3 text-sm sm:!px-6";
+  "!min-h-12 w-full shrink-0 !px-5 !py-3 text-sm sm:w-auto sm:!px-6";
 
 export const homeNeedsSection =
-  "relative bg-gradient-to-b from-primary to-primary-hover pb-10 pt-28 sm:pb-12 sm:pt-32 md:pb-[var(--section-y)] lg:pt-[5.5rem]";
+  "relative bg-gradient-to-b from-primary to-primary-hover py-[var(--section-y)] lg:pt-[5.5rem]";
 export const homeNeedsGrid =
   "grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4 lg:gap-5";
 
