@@ -135,42 +135,65 @@ export function etaLabel(locale: Locale, band: EtaBand): string {
   return "Обычно 3–5 рабочих дней (ориентир)";
 }
 
+/** Genitive forms for «из {city}» in route titles / meta. */
+const RU_FROM_GENITIVE: Record<string, string> = {
+  tas: "Ташкента",
+  skd: "Самарканда",
+  bhk: "Бухары",
+  nma: "Намангана",
+  azn: "Андижана",
+  feg: "Ферганы",
+  ncu: "Нукуса",
+  ksq: "Карши",
+  tmj: "Термеза",
+  nvi: "Навои",
+  jiz: "Джизака",
+  ugc: "Ургенча",
+};
+
 export function routeTitle(locale: Locale, route: DeliveryRoute): string {
-  const from = cityDisplayName(route.from, locale);
   const to = cityDisplayName(route.to, locale);
-  return locale === "uz"
-    ? `${from}dan ${to}ga yetkazib berish`
-    : `Доставка из ${from} в ${to}`;
+  if (locale === "uz") {
+    const from = cityDisplayName(route.from, locale);
+    return `${from}dan ${to}ga yetkazib berish`;
+  }
+  // Russian: из + genitive, в + accusative (nominative for these city names)
+  const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
+  return `Доставка из ${fromGen} в ${to}`;
 }
 
 export function routeMetaTitle(locale: Locale, route: DeliveryRoute): string {
-  const from = cityDisplayName(route.from, locale);
   const to = cityDisplayName(route.to, locale);
-  return locale === "uz"
-    ? `${from} — ${to} yetkazib berish | EPOS POCHTA`
-    : `Доставка из ${from} в ${to} — EPOS POCHTA`;
+  if (locale === "uz") {
+    const from = cityDisplayName(route.from, locale);
+    return `${from} — ${to} yetkazib berish | EPOS POCHTA`;
+  }
+  const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
+  return `Доставка из ${fromGen} в ${to} — EPOS POCHTA`;
 }
 
 export function routeMetaDescription(
   locale: Locale,
   route: DeliveryRoute,
 ): string {
-  const from = cityDisplayName(route.from, locale);
   const to = cityDisplayName(route.to, locale);
   const eta = etaLabel(locale, route.etaBand);
   if (locale === "uz") {
+    const from = cityDisplayName(route.from, locale);
     return `${from}dan ${to}ga kuryerlik yetkazib berish (~${route.distanceKm} km). ${eta}. Kalkulyatorda orientir, yakuniy narx — menejer tasdigʻi.`;
   }
-  return `Курьерская доставка из ${from} в ${to} (~${route.distanceKm} км). ${eta}. Ориентир в калькуляторе, финальную цену подтверждает менеджер.`;
+  const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
+  return `Курьерская доставка из ${fromGen} в ${to} (~${route.distanceKm} км). ${eta}. Ориентир в калькуляторе, финальную цену подтверждает менеджер.`;
 }
 
 export function routeLead(locale: Locale, route: DeliveryRoute): string {
-  const from = cityDisplayName(route.from, locale);
   const to = cityDisplayName(route.to, locale);
   if (locale === "uz") {
+    const from = cityDisplayName(route.from, locale);
     return `${from}dan ${to}ga hujjat, pochta va biznes joʻnatmalarini EPOS POCHTA orqali yuboring. Masofa taxminan ${route.distanceKm} km. Narx va muddat — kalkulyatorda orientir; bu oferta emas, menejer tasdiqlaydi.`;
   }
-  return `Отправьте документы, посылки и B2B-отправления из ${from} в ${to} с EPOS POCHTA. Расстояние около ${route.distanceKm} км. Срок и стоимость — ориентир в калькуляторе; это не оферта, итог подтверждает менеджер.`;
+  const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
+  return `Отправьте документы, посылки и B2B-отправления из ${fromGen} в ${to} с EPOS POCHTA. Расстояние около ${route.distanceKm} км. Срок и стоимость — ориентир в калькуляторе; это не оферта, итог подтверждает менеджер.`;
 }
 
 export function routeFaq(

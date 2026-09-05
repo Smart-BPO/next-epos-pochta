@@ -115,6 +115,23 @@ const nextConfig = {
       },
     ];
   },
+  /**
+   * Public Aviasales-style URLs: /delivery/tas/skd/
+   * Physical App Router path must not sit next to /delivery/[city]
+   * (Next forbids sibling dynamic segments with different names).
+   */
+  async rewrites() {
+    return [
+      {
+        source: "/delivery/:from/:to/",
+        destination: "/delivery/route/:from/:to/",
+      },
+      {
+        source: "/ru/delivery/:from/:to/",
+        destination: "/ru/delivery/route/:from/:to/",
+      },
+    ];
+  },
   async headers() {
     return [
       {
