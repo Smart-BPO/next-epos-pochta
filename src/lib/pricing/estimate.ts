@@ -3,7 +3,7 @@
  * Not a tariff — manager confirms final price after the lead.
  */
 
-export const ESTIMATE_FORMULA_VERSION = "2026-09-v2";
+export const ESTIMATE_FORMULA_VERSION = "2026-09-v3";
 
 export type EstimateZone = "same_city" | "same_region" | "inter_region";
 
@@ -25,10 +25,17 @@ export interface EstimateInput {
 }
 
 export interface QuoteEstimate {
+  /** Exact calculated amount for the entered params (still confirmed by manager). */
+  amount: number;
+  /** @deprecated use amount */
   min: number;
+  /** @deprecated use amount */
   max: number;
   currency: "UZS";
+  etaDays: number;
+  /** @deprecated use etaDays */
   etaDaysMin: number;
+  /** @deprecated use etaDays */
   etaDaysMax: number;
   zone: EstimateZone;
   billableKg: number;
@@ -59,7 +66,6 @@ const PICKUP_SURCHARGE = 12_000;
 const DOOR_SURCHARGE = 15_000;
 const URGENT_MULTIPLIER = 1.35;
 const PLACE_SURCHARGE = 5_000;
-const SPREAD = 0.12;
 
 const CATEGORY_FACTOR: Record<string, number> = {
   documents: 0.85,
@@ -129,16 +135,20 @@ export function estimateQuote(input: EstimateInput): QuoteEstimate {
   if (input.urgent) mid *= URGENT_MULTIPLIER;
   mid *= categoryFactor;
 
-  const min = roundToHundred(mid * (1 - SPREAD));
-  const max = roundToHundred(mid * (1 + SPREAD));
+  const amount = roundToHundred(mid);
   const eta = ZONE_ETA[zone];
+  const etaDays = input.urgent
+    ? Math.max(1, eta.min)
+    : Math.max(eta.min, Math.round((eta.min + eta.max) / 2));
 
   return {
-    min,
-    max,
+    amount,
+    min: amount,
+    max: amount,
     currency: "UZS",
-    etaDaysMin: input.urgent ? Math.max(1, eta.min - 1) : eta.min,
-    etaDaysMax: input.urgent ? Math.max(eta.min, eta.max - 1) : eta.max,
+    etaDays,
+    etaDaysMin: etaDays,
+    etaDaysMax: etaDays,
     zone,
     billableKg: Math.round(billable * 10) / 10,
     formulaVersion: ESTIMATE_FORMULA_VERSION,

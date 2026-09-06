@@ -162,9 +162,7 @@ export function CalculatorForm({
 
   const daysLabel =
     estimate &&
-    (locale === "uz"
-      ? `${estimate.etaDaysMin}–${estimate.etaDaysMax} kun`
-      : `${estimate.etaDaysMin}–${estimate.etaDaysMax} дн.`);
+    (locale === "uz" ? `${estimate.etaDays} kun` : `${estimate.etaDays} дн.`);
 
   const confirmHref = (() => {
     const params = new URLSearchParams();
@@ -311,8 +309,7 @@ export function CalculatorForm({
                 {c.resultRangeLabel}
               </p>
               <p className="m-0 mt-1 font-display text-xl font-semibold text-black sm:text-2xl">
-                {formatUzs(estimate.min, locale)} –{" "}
-                {formatUzs(estimate.max, locale)} {estimate.currency}
+                {formatUzs(estimate.amount, locale)} {estimate.currency}
               </p>
             </div>
             <div>

@@ -599,7 +599,7 @@ export const ruCopy: SiteCopy = {
   },
   calculator: {
     title: "Калькулятор стоимости",
-    lead: "Укажите города, вес и габариты — покажем ориентировочную стоимость и срок. Это не финальный тариф.",
+    lead: "Укажите города, вес и габариты — рассчитаем смету и срок.",
     breadcrumbHome: "Главная",
     breadcrumbCurrent: "Калькулятор",
     disclaimer:
@@ -618,9 +618,9 @@ export const ruCopy: SiteCopy = {
       "Лимиты калькулятора: вес 0–30 кг, каждая сторона 0–100 см. Для большего груза оставьте заявку менеджеру.",
     calculateCta: "Рассчитать стоимость",
     resetCta: "Сбросить",
-    resultTitle: "Ориентировочная смета",
-    resultRangeLabel: "Ориентир по стоимости",
-    resultEtaLabel: "Ориентировочный срок",
+    resultTitle: "Смета",
+    resultRangeLabel: "Стоимость",
+    resultEtaLabel: "Срок",
     billableLabel: "Расчётный вес",
     confirmCta: "Подтвердить с менеджером",
     errors: {

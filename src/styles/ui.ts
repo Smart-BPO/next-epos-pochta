@@ -55,16 +55,19 @@ export const homeActionIsland =
   "flex flex-col gap-4 rounded-3xl border border-black/12 bg-white p-4 shadow-[0_4px_20px_rgb(15_18_24/0.06)] sm:gap-6 sm:p-6 sm:shadow-[0_12px_40px_rgb(15_18_24/0.1)] lg:flex-row lg:items-stretch lg:gap-0 lg:border-black/20 lg:p-5 xl:px-6 xl:py-5";
 
 export const homeActionPane =
-  "flex min-w-0 flex-1 flex-col justify-center gap-2 sm:gap-2.5 lg:gap-3 lg:px-5 first:lg:pl-0 last:lg:pr-0";
+  "flex min-w-0 flex-1 flex-col justify-center gap-2 sm:gap-2.5 lg:flex-row lg:items-center lg:gap-3 lg:px-4 xl:gap-4 xl:px-5 first:lg:pl-0 last:lg:pr-0";
 
 export const homeActionLabel =
-  "m-0 font-display text-[0.9375rem] font-semibold uppercase leading-tight tracking-[-0.02em] text-black sm:text-lg lg:text-[1.05rem] xl:text-lg";
+  "m-0 shrink-0 font-display text-[0.9375rem] font-semibold uppercase leading-tight tracking-[-0.02em] text-black sm:text-lg lg:max-w-[8.5rem] lg:text-[0.95rem] xl:max-w-[10.5rem] xl:text-[1.05rem]";
 
 export const homeActionRow =
-  "flex min-w-0 flex-row items-center gap-1.5 sm:gap-3 lg:flex-nowrap";
+  "flex min-w-0 flex-1 flex-row items-center gap-1.5 sm:gap-3";
 
 export const homeActionField =
   "min-h-10 min-w-0 w-full flex-1 rounded-xl border border-black/15 bg-white px-2.5 py-2 text-sm text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/15 sm:min-h-12 sm:px-3.5 sm:py-3 sm:text-base";
+
+export const homeActionControls =
+  "flex min-w-0 w-full flex-1 flex-col gap-2 sm:gap-3 lg:flex-row lg:items-center lg:gap-3";
 
 export const homeActionSwap =
   "inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-surface-muted text-black/65 transition-colors hover:border-black/20 hover:bg-white hover:text-black sm:size-9";

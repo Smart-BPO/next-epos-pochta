@@ -581,7 +581,7 @@ export const uzCopy: SiteCopy = {
   },
   calculator: {
     title: "Narx kalkulyatori",
-    lead: "Shaharlar, ogʻirlik va oʻlchamlarni kiriting — taxminiy narx va muddatni koʻrsatamiz. Bu yakuniy tarif emas.",
+    lead: "Shaharlar, ogʻirlik va oʻlchamlarni kiriting — smeta va muddat hisoblanadi.",
     breadcrumbHome: "Bosh sahifa",
     breadcrumbCurrent: "Kalkulyator",
     disclaimer:
@@ -600,9 +600,9 @@ export const uzCopy: SiteCopy = {
       "Kalkulyator limitlari: ogʻirlik 0–30 kg, har bir tomon 0–100 sm. Katta yuk uchun menejerga ariza qoldiring.",
     calculateCta: "Narxni hisoblash",
     resetCta: "Tozalash",
-    resultTitle: "Taxminiy smeta",
-    resultRangeLabel: "Narx boʻyicha orientir",
-    resultEtaLabel: "Taxminiy muddat",
+    resultTitle: "Smeta",
+    resultRangeLabel: "Narx",
+    resultEtaLabel: "Muddat",
     billableLabel: "Hisobiy ogʻirlik",
     confirmCta: "Menejer bilan tasdiqlash",
     errors: {
