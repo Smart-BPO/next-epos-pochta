@@ -6,6 +6,7 @@ import type { Locale } from "@/i18n/config";
 import {
   getSettlementById,
   settlementLabel,
+  uzbekistanHubSettlements,
   uzbekistanSettlements,
   type Settlement,
   type SettlementLevel,
@@ -35,8 +36,8 @@ type SettlementSelectProps = {
 
 const LEVEL_ORDER: Record<SettlementLevel, number> = {
   city: 0,
-  district: 1,
-  region: 2,
+  region: 1,
+  district: 2,
 };
 
 function levelBadge(level: SettlementLevel, locale: Locale) {
@@ -48,6 +49,10 @@ function levelBadge(level: SettlementLevel, locale: Locale) {
   if (level === "city") return "город";
   if (level === "district") return "район";
   return "область";
+}
+
+function hubsHeading(locale: Locale) {
+  return locale === "uz" ? "Yirik shaharlar" : "Крупные города";
 }
 
 function toOption(settlement: Settlement, locale: Locale): SettlementOption {
@@ -69,6 +74,15 @@ function toOption(settlement: Settlement, locale: Locale): SettlementOption {
       .join(" ")
       .toLowerCase(),
   };
+}
+
+/** Prefer exact / prefix city matches when typing «Ташкент». */
+function matchRank(option: SettlementOption, q: string): number {
+  const label = option.label.toLowerCase();
+  const exact = label === q ? 0 : 1;
+  const prefix = label.startsWith(q) ? 0 : 1;
+  const level = LEVEL_ORDER[option.level];
+  return exact * 1000 + prefix * 100 + level;
 }
 
 const defaultClassNames: ClassNamesConfig<
@@ -137,14 +151,22 @@ export function SettlementSelect({
   variant = "default",
 }: SettlementSelectProps) {
   const [mounted, setMounted] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const options = useMemo(() => {
-    const byRegion = new Map<string, SettlementOption[]>();
+    const hubIds = new Set(uzbekistanHubSettlements.map((s) => s.id));
+    const hubOptions = uzbekistanHubSettlements.map((s) =>
+      toOption(s, locale),
+    );
 
-    const sorted = [...uzbekistanSettlements].sort((a, b) => {
+    const byRegion = new Map<string, SettlementOption[]>();
+    const rest = uzbekistanSettlements.filter((s) => !hubIds.has(s.id));
+
+    const sorted = [...rest].sort((a, b) => {
       const regionCmp = a.regionId.localeCompare(b.regionId);
       if (regionCmp !== 0) return regionCmp;
       const levelCmp = LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level];
@@ -164,11 +186,30 @@ export function SettlementSelect({
       byRegion.set(groupKey, list);
     }
 
-    return [...byRegion.entries()].map(([label, groupOptions]) => ({
+    const regionGroups = [...byRegion.entries()].map(([label, groupOptions]) => ({
       label,
       options: groupOptions,
     }));
+
+    return [
+      { label: hubsHeading(locale), options: hubOptions },
+      ...regionGroups,
+    ];
   }, [locale]);
+
+  const rankedOptions = useMemo(() => {
+    const q = inputValue.trim().toLowerCase();
+    if (!q) return options;
+
+    return options
+      .map((group) => ({
+        ...group,
+        options: [...group.options]
+          .filter((opt) => opt.searchText.includes(q) || opt.label.toLowerCase().includes(q))
+          .sort((a, b) => matchRank(a, q) - matchRank(b, q)),
+      }))
+      .filter((group) => group.options.length > 0);
+  }, [options, inputValue]);
 
   const selected = useMemo(() => {
     if (!value) return null;
@@ -193,20 +234,25 @@ export function SettlementSelect({
 
   return (
     <div className={cn("min-w-0", className)}>
-      <Select<SettlementOption, false>
+      <Select<SettlementOption, false, GroupBase<SettlementOption>>
         inputId={id}
         instanceId={instanceId}
-        options={options}
+        options={rankedOptions}
         value={selected}
         onChange={(opt) => onChange(opt?.value ?? "")}
+        onInputChange={(next, meta) => {
+          if (meta.action === "input-change" || meta.action === "set-value") {
+            setInputValue(next);
+          }
+          if (meta.action === "menu-close" || meta.action === "input-blur") {
+            setInputValue("");
+          }
+          return next;
+        }}
         placeholder={placeholder}
         isClearable={isClearable}
         isSearchable
-        filterOption={(option, raw) => {
-          const q = raw.trim().toLowerCase();
-          if (!q) return true;
-          return option.data.searchText.includes(q);
-        }}
+        filterOption={() => true}
         unstyled
         classNames={variant === "compact" ? compactClassNames : defaultClassNames}
         formatOptionLabel={(option) => (

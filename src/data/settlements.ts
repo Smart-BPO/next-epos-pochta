@@ -3,6 +3,7 @@ import {
   getAllDistricts,
   getAllRegions,
 } from "uzbgeo";
+import { DELIVERY_CITIES } from "@/data/delivery-cities";
 
 export type SettlementLevel = "region" | "district" | "city";
 
@@ -96,3 +97,17 @@ export function settlementLabel(
 export const uzbekistanCities = uzbekistanSettlements.filter(
   (s) => s.level === "city",
 );
+
+/**
+ * Top-level hub cities for quick route entry (delivery network hubs).
+ * E.g. Tashkent, Samarkand, Nukus — not districts / tumans.
+ */
+export const uzbekistanHubSettlements: Settlement[] = (() => {
+  const byId = new Map(uzbekistanSettlements.map((s) => [s.id, s]));
+  // Keep delivery-hub order (Tashkent first, …).
+  return DELIVERY_CITIES.flatMap((c) => {
+    if (!c.settlementId) return [];
+    const settlement = byId.get(c.settlementId);
+    return settlement ? [settlement] : [];
+  });
+})();
