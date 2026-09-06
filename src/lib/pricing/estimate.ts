@@ -3,7 +3,7 @@
  * Not a tariff — manager confirms final price after the lead.
  */
 
-export const ESTIMATE_FORMULA_VERSION = "2026-09-v1";
+export const ESTIMATE_FORMULA_VERSION = "2026-09-v2";
 
 export type EstimateZone = "same_city" | "same_region" | "inter_region";
 
@@ -102,12 +102,11 @@ export function volumetricKg(
 }
 
 export function billableWeightKg(input: EstimateInput): number {
-  if (input.unknownDims || input.weightKg == null || input.weightKg <= 0) {
+  // Use the entered mass only — dimensions do not override weight.
+  if (input.weightKg == null || input.weightKg <= 0) {
     return 1;
   }
-  const vol = volumetricKg(input.lengthCm, input.widthCm, input.heightCm);
-  if (vol == null) return input.weightKg;
-  return Math.max(input.weightKg, vol);
+  return input.weightKg;
 }
 
 function roundToHundred(n: number) {

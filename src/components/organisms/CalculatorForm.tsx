@@ -16,16 +16,7 @@ import { trackEvent } from "@/lib/analytics/events";
 import { estimateQuote, formatUzs } from "@/lib/pricing/estimate";
 import { matchCityQuery } from "@/lib/pricing/matchCity";
 import { CALC_LIMITS, CALC_QUICK_CITIES } from "@/lib/pricing/limits";
-import { cn } from "@/lib/cn";
-import {
-  alertInfo,
-  card,
-  fieldLabel,
-  quizChip,
-  quizChipActive,
-  quizChipIdle,
-  quizChips,
-} from "@/styles/ui";
+import { fieldLabel } from "@/styles/ui";
 
 function SwapIcon() {
   return (
@@ -72,10 +63,10 @@ function CityField({
   content: SiteCopy;
   error?: string;
 }) {
-  const quick = CALC_QUICK_CITIES;
+  const showHints = !value;
 
   return (
-    <div className="grid gap-2">
+    <div className="grid min-w-0 gap-1.5">
       <label htmlFor={id} className={fieldLabel}>
         {label}
       </label>
@@ -87,25 +78,24 @@ function CityField({
         onChange={onChange}
         placeholder={content.calculator.cityPlaceholder}
       />
-      <div className={quizChips}>
-        {quick.map((cityId) => {
-          const settlement = getSettlementById(cityId);
-          if (!settlement) return null;
-          return (
-            <button
-              key={cityId}
-              type="button"
-              className={cn(
-                quizChip,
-                value === cityId ? quizChipActive : quizChipIdle,
-              )}
-              onClick={() => onChange(cityId)}
-            >
-              {settlementLabel(settlement, locale)}
-            </button>
-          );
-        })}
-      </div>
+      {showHints ? (
+        <div className="flex flex-wrap gap-1.5 pt-0.5">
+          {CALC_QUICK_CITIES.map((cityId) => {
+            const settlement = getSettlementById(cityId);
+            if (!settlement) return null;
+            return (
+              <button
+                key={cityId}
+                type="button"
+                className="rounded-full border border-black/10 bg-white px-2.5 py-1 text-xs font-medium text-black/55 transition-colors hover:border-primary/35 hover:text-primary"
+                onClick={() => onChange(cityId)}
+              >
+                {settlementLabel(settlement, locale)}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
       {error ? <p className="m-0 text-sm text-danger">{error}</p> : null}
     </div>
   );
@@ -212,120 +202,129 @@ export function CalculatorForm({
   };
 
   return (
-    <div className={cn(card, "grid gap-6")}>
-      <div className="grid gap-5 lg:grid-cols-[1fr_auto_1fr] lg:items-start">
-        <CityField
-          id="calc-from"
-          label={c.fromLabel}
-          value={fromCity}
-          onChange={setFromCity}
-          locale={locale}
-          content={content}
-          error={fromError}
-        />
+    <div className="grid gap-0 overflow-hidden rounded-3xl border border-black/10 bg-white">
+      <div className="grid gap-4 border-b border-black/[0.06] p-4 sm:gap-5 sm:p-6 lg:p-7">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start lg:gap-3">
+          <CityField
+            id="calc-from"
+            label={c.fromLabel}
+            value={fromCity}
+            onChange={setFromCity}
+            locale={locale}
+            content={content}
+            error={fromError}
+          />
 
-        <div className="flex items-center justify-center lg:pt-10">
-          <button
-            type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/15 text-black/60 transition-colors hover:border-primary/40 hover:text-primary"
-            aria-label={c.swap}
-            onClick={() => {
-              setFromCity(toCity);
-              setToCity(fromCity);
-            }}
-          >
-            <SwapIcon />
-          </button>
+          <div className="flex items-center justify-center lg:pt-9">
+            <button
+              type="button"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-black/10 text-black/45 transition-colors hover:border-primary/30 hover:text-primary"
+              aria-label={c.swap}
+              onClick={() => {
+                setFromCity(toCity);
+                setToCity(fromCity);
+              }}
+            >
+              <SwapIcon />
+            </button>
+          </div>
+
+          <CityField
+            id="calc-to"
+            label={c.toLabel}
+            value={toCity}
+            onChange={setToCity}
+            locale={locale}
+            content={content}
+            error={toError}
+          />
         </div>
-
-        <CityField
-          id="calc-to"
-          label={c.toLabel}
-          value={toCity}
-          onChange={setToCity}
-          locale={locale}
-          content={content}
-          error={toError}
-        />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <RangeSlider
-          id="calc-weight"
-          label={c.weightLabel}
-          value={weight}
-          min={CALC_LIMITS.weightKg.min}
-          max={CALC_LIMITS.weightKg.max}
-          step={CALC_LIMITS.weightKg.step}
-          unit={c.unitKg}
-          onChange={setWeight}
-        />
-        <RangeSlider
-          id="calc-length"
-          label={c.lengthLabel}
-          value={length}
-          min={CALC_LIMITS.lengthCm.min}
-          max={CALC_LIMITS.lengthCm.max}
-          step={CALC_LIMITS.lengthCm.step}
-          unit={c.unitCm}
-          onChange={setLength}
-        />
-        <RangeSlider
-          id="calc-width"
-          label={c.widthLabel}
-          value={width}
-          min={CALC_LIMITS.widthCm.min}
-          max={CALC_LIMITS.widthCm.max}
-          step={CALC_LIMITS.widthCm.step}
-          unit={c.unitCm}
-          onChange={setWidth}
-        />
-        <RangeSlider
-          id="calc-height"
-          label={c.heightLabel}
-          value={height}
-          min={CALC_LIMITS.heightCm.min}
-          max={CALC_LIMITS.heightCm.max}
-          step={CALC_LIMITS.heightCm.step}
-          unit={c.unitCm}
-          onChange={setHeight}
-        />
+      <div className="grid gap-4 bg-[#fafafa] p-4 sm:gap-5 sm:p-6 lg:p-7">
+        <div className="grid gap-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-5">
+          <RangeSlider
+            id="calc-weight"
+            label={c.weightLabel}
+            value={weight}
+            min={CALC_LIMITS.weightKg.min}
+            max={CALC_LIMITS.weightKg.max}
+            step={CALC_LIMITS.weightKg.step}
+            unit={c.unitKg}
+            onChange={setWeight}
+          />
+          <RangeSlider
+            id="calc-length"
+            label={c.lengthLabel}
+            value={length}
+            min={CALC_LIMITS.lengthCm.min}
+            max={CALC_LIMITS.lengthCm.max}
+            step={CALC_LIMITS.lengthCm.step}
+            unit={c.unitCm}
+            onChange={setLength}
+          />
+          <RangeSlider
+            id="calc-width"
+            label={c.widthLabel}
+            value={width}
+            min={CALC_LIMITS.widthCm.min}
+            max={CALC_LIMITS.widthCm.max}
+            step={CALC_LIMITS.widthCm.step}
+            unit={c.unitCm}
+            onChange={setWidth}
+          />
+          <RangeSlider
+            id="calc-height"
+            label={c.heightLabel}
+            value={height}
+            min={CALC_LIMITS.heightCm.min}
+            max={CALC_LIMITS.heightCm.max}
+            step={CALC_LIMITS.heightCm.step}
+            unit={c.unitCm}
+            onChange={setHeight}
+          />
+        </div>
+        <p className="m-0 text-xs leading-relaxed text-black/45">{c.limitsNote}</p>
       </div>
 
-      <p className="m-0 text-xs text-ink-muted">{c.limitsNote}</p>
-
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3 border-t border-black/[0.06] bg-white p-4 sm:p-6 lg:px-7 lg:py-5">
         <Button type="button" variant="primary" onClick={calculate}>
           {c.calculateCta}
         </Button>
-        <Button type="button" variant="secondary" onClick={reset}>
+        <button
+          type="button"
+          onClick={reset}
+          className="px-1 text-sm font-medium text-primary underline-offset-2 hover:underline"
+        >
           {c.resetCta}
-        </Button>
+        </button>
       </div>
 
       {showResult && estimate ? (
-        <div className="grid gap-4 rounded-2xl border border-black/10 bg-surface-muted p-5">
-          <h2 className="m-0 font-display text-xl font-semibold uppercase text-black">
+        <div className="grid gap-4 border-t border-black/[0.06] bg-white p-4 sm:p-6 lg:p-7">
+          <h2 className="m-0 font-display text-lg font-semibold uppercase tracking-wide text-black sm:text-xl">
             {c.resultTitle}
           </h2>
-          <div>
-            <p className="m-0 text-sm text-ink-muted">{c.resultRangeLabel}</p>
-            <p className="m-0 mt-1 font-display text-2xl font-semibold text-black">
-              {formatUzs(estimate.min, locale)} –{" "}
-              {formatUzs(estimate.max, locale)} {estimate.currency}
-            </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="m-0 text-xs font-medium uppercase tracking-wide text-black/40">
+                {c.resultRangeLabel}
+              </p>
+              <p className="m-0 mt-1 font-display text-xl font-semibold text-black sm:text-2xl">
+                {formatUzs(estimate.min, locale)} –{" "}
+                {formatUzs(estimate.max, locale)} {estimate.currency}
+              </p>
+            </div>
+            <div>
+              <p className="m-0 text-xs font-medium uppercase tracking-wide text-black/40">
+                {c.resultEtaLabel}
+              </p>
+              <p className="m-0 mt-1 text-lg font-medium text-black">{daysLabel}</p>
+            </div>
           </div>
-          <div>
-            <p className="m-0 text-sm text-ink-muted">{c.resultEtaLabel}</p>
-            <p className="m-0 mt-1 text-lg font-medium text-black">{daysLabel}</p>
-          </div>
-          <p className="m-0 text-sm text-ink-muted">
-            {c.billableLabel}: {estimate.billableKg} {c.unitKg}
-          </p>
-          <div className={`${alertInfo} mb-0 rounded-xl`}>{c.disclaimer}</div>
           <Link
             href={confirmHref}
-            className="font-medium text-primary underline-offset-2 hover:underline"
+            className="w-fit font-medium text-primary underline-offset-2 hover:underline"
             onClick={() =>
               trackEvent("request_price_start", { source: "calculator" })
             }

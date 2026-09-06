@@ -10,7 +10,6 @@ import { CalculatorForm } from "@/components/organisms/CalculatorForm";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getBreadcrumbSchema } from "@/utils/seo/json-ld";
 import {
-  alertInfo,
   pageIntro,
   pageIntroTitle,
   sectionLead,
@@ -70,9 +69,6 @@ export function CalculatorPageView({ locale }: { locale: Locale }) {
 
       <section className={sectionMuted}>
         <PageContainer className="max-w-4xl">
-          <div className={`${alertInfo} mb-6 rounded-2xl`}>
-            {copy.calculator.disclaimer}
-          </div>
           <CalculatorForm
             locale={locale}
             content={copy}
