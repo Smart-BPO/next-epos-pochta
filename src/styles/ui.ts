@@ -102,39 +102,95 @@ export const heroNote =
 export const heroActions =
   "flex flex-wrap gap-3 sm:gap-4 animate-hero-rise [animation-delay:220ms]";
 
-/** Interactive chrome shared by all button sizes/variants. */
+/**
+ * Button atoms — sizes/tones read from CSS vars in `tokens.css`.
+ * Change `--btn-height-*`, `--btn-px-*`, `--btn-text-*` to resize sitewide.
+ */
 export const btnBase =
-  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent font-semibold leading-5 transition-[background,color,border-color,transform,box-shadow,opacity] duration-[160ms] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex shrink-0 cursor-pointer items-center justify-center rounded-[var(--btn-radius)] border border-transparent [font-weight:var(--btn-weight)] leading-none transition-[background,color,border-color,transform,box-shadow,opacity] duration-[var(--motion-fast)] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60";
 
-/** Compact — header, form rows, dense cards (aligns with homeActionField). */
+/** Header / dense chrome. */
+export const btnSizeXs =
+  "h-[var(--btn-height-xs)] min-h-[var(--btn-height-xs)] gap-[var(--btn-gap-xs)] px-[var(--btn-px-xs)] text-[length:var(--btn-text-xs)] [font-weight:var(--btn-weight-medium)] [--btn-shadow-current:var(--btn-shadow-xs)] [--btn-shadow-current-hover:var(--btn-shadow-xs-hover)]";
+
+/** Compact — forms, cards, secondary actions. */
 export const btnSizeSm =
-  "min-h-10 px-4 py-2 text-sm sm:min-h-12 sm:px-5 sm:py-2.5";
+  "h-[var(--btn-height-sm)] min-h-[var(--btn-height-sm)] gap-[var(--btn-gap)] px-[var(--btn-px-sm)] text-[length:var(--btn-text-sm)]";
 
 /** Default CTAs across the site. */
 export const btnSizeMd =
-  "min-h-11 px-5 py-2.5 text-sm sm:min-h-[var(--tap-min)] sm:px-6 sm:py-3.5 sm:text-base sm:font-medium";
+  "h-[var(--btn-height-md)] min-h-[var(--btn-height-md)] gap-[var(--btn-gap)] px-[var(--btn-px-md)] text-[length:var(--btn-text-md)] [font-weight:var(--btn-weight-medium)]";
 
 /** Emphasized hero / final CTAs. */
 export const btnSizeLg =
-  "min-h-12 px-6 py-3 text-base sm:min-h-14 sm:px-8 sm:py-3.5 sm:text-lg sm:font-medium";
+  "h-[var(--btn-height-lg)] min-h-[var(--btn-height-lg)] gap-[var(--btn-gap)] px-[var(--btn-px-lg)] text-[length:var(--btn-text-lg)] [font-weight:var(--btn-weight-medium)]";
 
 export const btnWidthAuto = "w-auto";
 export const btnWidthFull = "w-full";
 /** Full width on mobile, intrinsic from sm+. */
 export const btnWidthMobile = "w-full sm:w-auto";
 
-export const btnTonePrimary =
-  "bg-primary text-white shadow-[0_4px_14px_rgb(211_2_3/0.22)] hover:bg-primary-hover hover:shadow-[0_6px_18px_rgb(211_2_3/0.28)]";
+/** Solid brand CTA. */
+export const btnToneMain =
+  "bg-[var(--btn-main-bg)] text-[var(--btn-main-fg)] shadow-[var(--btn-shadow-current)] hover:bg-[var(--btn-main-bg-hover)] hover:shadow-[var(--btn-shadow-current-hover)]";
 
+/** @deprecated use `main` — kept as alias for existing call sites. */
+export const btnTonePrimary = btnToneMain;
+
+/** Brand outline. */
 export const btnToneSecondary =
-  "border-primary bg-white text-primary shadow-[0_1px_2px_rgb(15_18_24/0.04)] hover:bg-primary-soft";
+  "border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] shadow-[var(--shadow-sm)] hover:bg-[var(--btn-secondary-bg-hover)]";
 
-export const btnToneGhost = "bg-transparent text-ink hover:bg-black/[0.04]";
+/** Soft brand fill. */
+export const btnToneAccent =
+  "bg-[var(--btn-accent-bg)] text-[var(--btn-accent-fg)] hover:bg-[var(--btn-accent-bg-hover)]";
+
+/** Transparent text action. */
+export const btnToneGhost =
+  "bg-transparent text-[var(--btn-ghost-fg)] hover:bg-[var(--btn-ghost-bg-hover)]";
+
+/** Neutral outline. */
+export const btnToneOutline =
+  "border-[var(--btn-outline-border)] bg-[var(--btn-outline-bg)] text-[var(--btn-outline-fg)] hover:bg-[var(--btn-outline-bg-hover)]";
+
+/** Quiet filled surface. */
+export const btnToneMuted =
+  "bg-[var(--btn-muted-bg)] text-[var(--btn-muted-fg)] hover:bg-[var(--btn-muted-bg-hover)]";
+
+/** Destructive / error. */
+export const btnToneDanger =
+  "bg-[var(--btn-danger-bg)] text-[var(--btn-danger-fg)] shadow-[var(--btn-shadow-current)] hover:bg-[var(--btn-danger-bg-hover)] hover:shadow-[var(--btn-shadow-current-hover)]";
+
+/** Positive confirmation. */
+export const btnToneSuccess =
+  "bg-[var(--btn-success-bg)] text-[var(--btn-success-fg)] hover:bg-[var(--btn-success-bg-hover)]";
+
+/** Telegram channel actions. */
+export const btnToneTelegram =
+  "bg-[var(--btn-telegram-bg)] text-[var(--btn-telegram-fg)] hover:bg-[var(--btn-telegram-bg-hover)]";
+
+/** Shared header control shell (track link, language, icon). */
+export const headerControl =
+  "inline-flex h-[var(--control-height)] min-h-[var(--control-height)] shrink-0 items-center justify-center gap-[var(--btn-gap-xs)] rounded-[var(--btn-radius)] px-[var(--btn-px-xs)] text-[length:var(--btn-text-xs)] font-medium leading-none transition-colors";
+
+export const headerControlQuiet = `${headerControl} text-black/55 hover:bg-black/[0.04] hover:text-black`;
+
+export const headerControlOutline = `${headerControl} border border-black/10 bg-white text-black hover:border-black/20`;
+
+export const headerControlIcon =
+  "inline-flex h-[var(--control-height)] w-[var(--control-height)] shrink-0 items-center justify-center rounded-[var(--btn-radius)] transition-colors hover:bg-black/[0.04]";
 
 /** Composed recipes (default md size) for rare non-Button usages. */
-export const btnPrimary = `${btnBase} ${btnSizeMd} ${btnTonePrimary}`;
+export const btnPrimary = `${btnBase} ${btnSizeMd} ${btnToneMain}`;
+export const btnMain = btnPrimary;
 export const btnSecondary = `${btnBase} ${btnSizeMd} ${btnToneSecondary}`;
+export const btnAccent = `${btnBase} ${btnSizeMd} ${btnToneAccent}`;
 export const btnGhost = `${btnBase} ${btnSizeMd} ${btnToneGhost}`;
+export const btnOutline = `${btnBase} ${btnSizeMd} ${btnToneOutline}`;
+export const btnMuted = `${btnBase} ${btnSizeMd} ${btnToneMuted}`;
+export const btnDanger = `${btnBase} ${btnSizeMd} ${btnToneDanger}`;
+export const btnSuccess = `${btnBase} ${btnSizeMd} ${btnToneSuccess}`;
+export const btnTelegram = `${btnBase} ${btnSizeMd} ${btnToneTelegram}`;
 
 /** Home section titles — Figma uppercase display. */
 export const homeSectionTitle =

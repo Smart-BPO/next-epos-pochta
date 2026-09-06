@@ -2,16 +2,22 @@
   --color-primary: #d30203;
   --color-primary-hover: #a30101;
   --color-primary-soft: #fde8e8;
+  --color-primary-soft-hover: #fbd0d0;
   --color-ink: #0f1218;
   --color-ink-muted: #5a6472;
   --color-border: #e4e7ec;
   --color-surface: #ffffff;
   --color-surface-muted: #f5f6f8;
+  --color-surface-muted-hover: #e8eaee;
   --color-surface-deep: #141820;
   --color-success: #0f7a3e;
+  --color-success-hover: #0c6332;
   --color-warning: #b45309;
+  --color-warning-hover: #92400e;
   --color-danger: #d30203;
+  --color-danger-hover: #a30101;
   --color-telegram: #229ed9;
+  --color-telegram-hover: #1b8fbf;
   /* Figma mobile 360: 8px gutters; desktop grows to 104px */
   --page-padding: clamp(0.5rem, 4vw, 6.5rem);
   --page-max: 77rem;
@@ -31,6 +37,91 @@
   --motion-fast: 160ms;
   --motion-base: 420ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /*
+   * Button / control scale — change these to resize chrome sitewide.
+   * Button sizes: xs (header) | sm | md (default) | lg
+   */
+  --btn-height-xs: 2rem;
+  --btn-height-sm: 2.5rem;
+  --btn-height-md: 2.75rem;
+  --btn-height-lg: 3rem;
+  --btn-px-xs: 0.75rem;
+  --btn-px-sm: 1rem;
+  --btn-px-md: 1.25rem;
+  --btn-px-lg: 1.5rem;
+  --btn-text-xs: 0.8125rem;
+  --btn-text-sm: 0.875rem;
+  --btn-text-md: 0.875rem;
+  --btn-text-lg: 1rem;
+  --btn-gap-xs: 0.25rem;
+  --btn-gap: 0.5rem;
+  --btn-weight: 600;
+  --btn-weight-medium: 500;
+  --btn-radius: 9999px;
+  --btn-shadow: 0 4px 14px rgb(211 2 3 / 0.22);
+  --btn-shadow-hover: 0 6px 18px rgb(211 2 3 / 0.28);
+  --btn-shadow-xs: 0 2px 8px rgb(211 2 3 / 0.18);
+  --btn-shadow-xs-hover: 0 3px 10px rgb(211 2 3 / 0.22);
+  --btn-shadow-current: var(--btn-shadow);
+  --btn-shadow-current-hover: var(--btn-shadow-hover);
+  /* Shared header track / lang / icon targets */
+  --control-height: var(--btn-height-xs);
+
+  /*
+   * Button variants — change these to restyle tones sitewide.
+   * Variants: main | secondary | accent | ghost | outline | muted | danger | success | telegram
+   * (`primary` is an alias of `main`)
+   */
+  --btn-main-bg: var(--color-primary);
+  --btn-main-bg-hover: var(--color-primary-hover);
+  --btn-main-fg: #ffffff;
+
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-bg-hover: var(--color-primary-soft);
+  --btn-secondary-fg: var(--color-primary);
+  --btn-secondary-border: var(--color-primary);
+
+  --btn-accent-bg: var(--color-primary-soft);
+  --btn-accent-bg-hover: var(--color-primary-soft-hover);
+  --btn-accent-fg: var(--color-primary);
+
+  --btn-ghost-fg: var(--color-ink);
+  --btn-ghost-bg-hover: rgb(0 0 0 / 0.04);
+
+  --btn-outline-bg: #ffffff;
+  --btn-outline-bg-hover: var(--color-surface-muted);
+  --btn-outline-fg: var(--color-ink);
+  --btn-outline-border: rgb(0 0 0 / 0.12);
+
+  --btn-muted-bg: var(--color-surface-muted);
+  --btn-muted-bg-hover: var(--color-surface-muted-hover);
+  --btn-muted-fg: var(--color-ink);
+
+  --btn-danger-bg: var(--color-danger);
+  --btn-danger-bg-hover: var(--color-danger-hover);
+  --btn-danger-fg: #ffffff;
+
+  --btn-success-bg: var(--color-success);
+  --btn-success-bg-hover: var(--color-success-hover);
+  --btn-success-fg: #ffffff;
+
+  --btn-telegram-bg: var(--color-telegram);
+  --btn-telegram-bg-hover: var(--color-telegram-hover);
+  --btn-telegram-fg: #ffffff;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --btn-height-sm: 3rem;
+    --btn-height-md: var(--tap-min);
+    --btn-height-lg: 3.5rem;
+    --btn-px-sm: 1.25rem;
+    --btn-px-md: 1.5rem;
+    --btn-px-lg: 2rem;
+    --btn-text-md: 1rem;
+    --btn-text-lg: 1.125rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -45,16 +136,22 @@
   --color-primary: var(--color-primary);
   --color-primary-hover: var(--color-primary-hover);
   --color-primary-soft: var(--color-primary-soft);
+  --color-primary-soft-hover: var(--color-primary-soft-hover);
   --color-ink: var(--color-ink);
   --color-ink-muted: var(--color-ink-muted);
   --color-border: var(--color-border);
   --color-surface: var(--color-surface);
   --color-surface-muted: var(--color-surface-muted);
+  --color-surface-muted-hover: var(--color-surface-muted-hover);
   --color-surface-deep: var(--color-surface-deep);
   --color-success: var(--color-success);
+  --color-success-hover: var(--color-success-hover);
   --color-warning: var(--color-warning);
+  --color-warning-hover: var(--color-warning-hover);
   --color-danger: var(--color-danger);
+  --color-danger-hover: var(--color-danger-hover);
   --color-telegram: var(--color-telegram);
+  --color-telegram-hover: var(--color-telegram-hover);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
   --radius-sm: var(--radius-sm);
@@ -67,9 +164,18 @@
   --spacing-tap: var(--tap-min);
   --spacing-section: var(--section-y);
   --spacing-card: var(--card-pad);
+  --spacing-control: var(--control-height);
+  --spacing-btn-xs: var(--btn-height-xs);
+  --spacing-btn-sm: var(--btn-height-sm);
+  --spacing-btn-md: var(--btn-height-md);
+  --spacing-btn-lg: var(--btn-height-lg);
   --max-width-page: var(--page-max);
   --text-home-title: var(--home-title);
   --text-home-lead: var(--home-lead);
+  --text-btn-xs: var(--btn-text-xs);
+  --text-btn-sm: var(--btn-text-sm);
+  --text-btn-md: var(--btn-text-md);
+  --text-btn-lg: var(--btn-text-lg);
   --animate-hero-rise: hero-rise var(--motion-base) var(--ease-out) both;
 }
 

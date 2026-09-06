@@ -7,6 +7,7 @@ import type { Locale } from "@/i18n/config";
 import { localeLabels, locales } from "@/i18n/config";
 import { switchLocalePath } from "@/i18n/paths";
 import { cn } from "@/lib/cn";
+import { headerControlOutline } from "@/styles/ui";
 
 export function LanguageSwitcher({
   locale,
@@ -46,10 +47,9 @@ export function LanguageSwitcher({
       <button
         type="button"
         className={cn(
-          "inline-flex items-center gap-1 rounded-full border border-black/10 bg-white font-medium text-black transition-colors hover:border-black/20",
           compact
-            ? "h-9 min-w-9 justify-center px-2.5 text-sm"
-            : "h-10 min-h-10 gap-1.5 px-3 text-sm",
+            ? headerControlOutline
+            : "inline-flex h-10 min-h-10 items-center justify-center gap-1.5 rounded-[var(--btn-radius)] border border-black/10 bg-white px-3 text-sm font-medium leading-none text-black transition-colors hover:border-black/20",
         )}
         aria-label="Language"
         aria-haspopup="listbox"
@@ -60,8 +60,8 @@ export function LanguageSwitcher({
         {localeLabels[locale]}
         <svg
           aria-hidden
-          width="12"
-          height="12"
+          width={compact ? 10 : 12}
+          height={compact ? 10 : 12}
           viewBox="0 0 12 12"
           className={cn(
             "shrink-0 text-black/45 transition-transform duration-150",

@@ -11,7 +11,11 @@ import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
 import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher";
 import { cn } from "@/lib/cn";
-import { pageContainer } from "@/styles/ui";
+import {
+  headerControlIcon,
+  headerControlQuiet,
+  pageContainer,
+} from "@/styles/ui";
 
 interface HeaderProps {
   locale: Locale;
@@ -140,10 +144,10 @@ export function Header({ locale, content }: HeaderProps) {
 
           <div className="min-w-0 lg:hidden" aria-hidden />
 
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-end gap-1.5">
             <Link
               href={trackHref}
-              className="hidden whitespace-nowrap rounded-full px-2.5 py-1.5 text-[0.8125rem] font-medium text-black/55 transition-colors hover:bg-black/[0.03] hover:text-black xl:inline-flex xl:text-sm"
+              className={cn(headerControlQuiet, "hidden whitespace-nowrap lg:inline-flex")}
             >
               {content.ui.track}
             </Link>
@@ -152,7 +156,7 @@ export function Header({ locale, content }: HeaderProps) {
 
             <Button
               href={requestHref}
-              size="sm"
+              size="xs"
               className="!hidden lg:!inline-flex"
             >
               {content.ui.calculate}
@@ -160,7 +164,7 @@ export function Header({ locale, content }: HeaderProps) {
 
             <button
               type="button"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/[0.04] lg:hidden"
+              className={cn(headerControlIcon, "lg:hidden")}
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={menuLabel}

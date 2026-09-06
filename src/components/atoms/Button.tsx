@@ -5,16 +5,45 @@ import {
   btnSizeLg,
   btnSizeMd,
   btnSizeSm,
+  btnSizeXs,
+  btnToneAccent,
+  btnToneDanger,
   btnToneGhost,
-  btnTonePrimary,
+  btnToneMain,
+  btnToneMuted,
+  btnToneOutline,
   btnToneSecondary,
+  btnToneSuccess,
+  btnToneTelegram,
   btnWidthAuto,
   btnWidthFull,
   btnWidthMobile,
 } from "@/styles/ui";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
-export type ButtonSize = "sm" | "md" | "lg";
+/**
+ * Button tones (CSS vars in `tokens.css`):
+ * - main / primary — solid brand CTA
+ * - secondary — brand outline
+ * - accent — soft brand fill
+ * - ghost — transparent
+ * - outline — neutral border
+ * - muted — quiet surface fill
+ * - danger / success / telegram — semantic
+ */
+export type ButtonVariant =
+  | "main"
+  | "primary"
+  | "secondary"
+  | "accent"
+  | "ghost"
+  | "outline"
+  | "muted"
+  | "danger"
+  | "success"
+  | "telegram";
+
+/** `xs` = header chrome; `sm` compact; `md` default; `lg` hero. */
+export type ButtonSize = "xs" | "sm" | "md" | "lg";
 /** `mobile` = full width below sm, auto from sm+. */
 export type ButtonWidth = "auto" | "full" | "mobile";
 
@@ -33,12 +62,20 @@ interface ButtonProps {
 }
 
 const toneClass: Record<ButtonVariant, string> = {
-  primary: btnTonePrimary,
+  main: btnToneMain,
+  primary: btnToneMain,
   secondary: btnToneSecondary,
+  accent: btnToneAccent,
   ghost: btnToneGhost,
+  outline: btnToneOutline,
+  muted: btnToneMuted,
+  danger: btnToneDanger,
+  success: btnToneSuccess,
+  telegram: btnToneTelegram,
 };
 
 const sizeClass: Record<ButtonSize, string> = {
+  xs: btnSizeXs,
   sm: btnSizeSm,
   md: btnSizeMd,
   lg: btnSizeLg,
@@ -62,7 +99,7 @@ function isExternalHref(href: string) {
 export function Button({
   href,
   children,
-  variant = "primary",
+  variant = "main",
   size = "md",
   width = "auto",
   className = "",

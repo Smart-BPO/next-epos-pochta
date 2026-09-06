@@ -1,6 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
@@ -27,6 +34,14 @@ export function GeoSection({
 }) {
   const [query, setQuery] = useState("");
   const [activeIso, setActiveIso] = useState<MapRegionIso | null>("UZTK");
+  const [listOpen, setListOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [menuBox, setMenuBox] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
+  const searchWrapRef = useRef<HTMLDivElement>(null);
 
   const activeRegion = activeIso ? MAP_REGION_BY_ISO[activeIso] : null;
 
@@ -40,7 +55,7 @@ export function GeoSection({
           locale === "uz" ? item.regionUz.toLowerCase() : item.regionRu.toLowerCase();
         return label.includes(q) || region.includes(q) || item.id.includes(q);
       })
-      .slice(0, 4);
+      .slice(0, 6);
   }, [query, locale]);
 
   const regionSettlements = useMemo(() => {
@@ -62,6 +77,66 @@ export function GeoSection({
     if (region) setActiveIso(region.iso);
   };
 
+  const showMenu = listOpen && query.trim().length > 0;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!showMenu) {
+      setMenuBox(null);
+      return;
+    }
+
+    const update = () => {
+      const el = searchWrapRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      setMenuBox({
+        top: rect.bottom + 6,
+        left: rect.left,
+        width: rect.width,
+      });
+    };
+
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [showMenu, matches.length, query]);
+
+  useEffect(() => {
+    if (!showMenu) return;
+
+    const onPointerDown = (event: MouseEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (searchWrapRef.current?.contains(target)) return;
+      if (
+        target instanceof Element &&
+        target.closest("[data-geo-search-menu]")
+      ) {
+        return;
+      }
+      setListOpen(false);
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setListOpen(false);
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [showMenu]);
+
   const mapHint =
     locale === "uz"
       ? "Xaritada viloyatni bosing yoki shahar nomini qidiring"
@@ -69,6 +144,12 @@ export function GeoSection({
 
   const openCityLabel =
     locale === "uz" ? "Shahar sahifasi" : "Страница города";
+
+  const pickMatch = (item: (typeof matches)[number]) => {
+    applyMatch(item.regionId);
+    setQuery(settlementLabel(item, locale));
+    setListOpen(false);
+  };
 
   return (
     <section
@@ -87,88 +168,112 @@ export function GeoSection({
             </div>
 
             <div className="rounded-3xl border border-black/12 bg-white p-4 shadow-[0_4px_20px_rgb(15_18_24/0.05)] sm:p-5">
-              <label className="grid gap-2">
-                <span className="sr-only">{copy.home.geoSearchPlaceholder}</span>
-                <div className="flex flex-col gap-2.5 sm:flex-row sm:items-stretch">
-                  <input
-                    value={query}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setQuery(next);
-                      const q = next.trim().toLowerCase();
-                      if (!q) return;
-                      const hit = uzbekistanSettlements.find((item) => {
-                        const label = settlementLabel(item, locale).toLowerCase();
-                        return (
-                          label.includes(q) ||
-                          item.regionUz.toLowerCase().includes(q) ||
-                          item.regionRu.toLowerCase().includes(q)
-                        );
-                      });
-                      if (hit) applyMatch(hit.regionId);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && matches[0]) {
-                        e.preventDefault();
-                        applyMatch(matches[0].regionId);
-                        setQuery(settlementLabel(matches[0], locale));
-                      }
-                    }}
-                    placeholder={copy.home.geoSearchPlaceholder}
-                    className={`${fieldControl} min-w-0 flex-1`}
-                    autoComplete="off"
-                  />
-                  <Button
-                    type="button"
-                    variant="primary"
-                    width="mobile"
-                    className="sm:self-stretch"
-                    onClick={() => {
-                      if (matches[0]) {
-                        applyMatch(matches[0].regionId);
-                        setQuery(settlementLabel(matches[0], locale));
-                      }
-                    }}
-                  >
-                    {copy.ui.geoCheck}
-                  </Button>
-                </div>
-              </label>
+              <div ref={searchWrapRef} className="relative">
+                <label className="grid gap-2">
+                  <span className="sr-only">{copy.home.geoSearchPlaceholder}</span>
+                  <div className="flex flex-col gap-2.5 sm:flex-row sm:items-stretch">
+                    <input
+                      value={query}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        setQuery(next);
+                        setListOpen(true);
+                        const q = next.trim().toLowerCase();
+                        if (!q) return;
+                        const hit = uzbekistanSettlements.find((item) => {
+                          const label = settlementLabel(item, locale).toLowerCase();
+                          return (
+                            label.includes(q) ||
+                            item.regionUz.toLowerCase().includes(q) ||
+                            item.regionRu.toLowerCase().includes(q)
+                          );
+                        });
+                        if (hit) applyMatch(hit.regionId);
+                      }}
+                      onFocus={() => {
+                        if (query.trim()) setListOpen(true);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && matches[0]) {
+                          e.preventDefault();
+                          pickMatch(matches[0]);
+                        }
+                      }}
+                      placeholder={copy.home.geoSearchPlaceholder}
+                      className={`${fieldControl} min-w-0 flex-1`}
+                      autoComplete="off"
+                      role="combobox"
+                      aria-expanded={showMenu}
+                      aria-controls="geo-search-menu"
+                      aria-autocomplete="list"
+                    />
+                    <Button
+                      type="button"
+                      variant="primary"
+                      width="mobile"
+                      className="sm:self-stretch"
+                      onClick={() => {
+                        if (matches[0]) {
+                          pickMatch(matches[0]);
+                          return;
+                        }
+                        setListOpen(Boolean(query.trim()));
+                      }}
+                    >
+                      {copy.ui.geoCheck}
+                    </Button>
+                  </div>
+                </label>
+              </div>
 
-              {query.trim() && matches.length === 0 ? (
-                <p className="mt-3 m-0 text-sm text-black/55">
-                  {copy.home.geoEmpty}
-                </p>
-              ) : null}
-
-              {matches.length > 0 ? (
-                <ul className="mt-3 m-0 grid list-none gap-1 p-0">
-                  {matches.map((item) => (
-                    <li key={item.id}>
-                      <button
-                        type="button"
-                        className="flex w-full items-center justify-between gap-3 rounded-xl border border-transparent px-3 py-2 text-left transition-colors hover:border-black/10 hover:bg-surface-muted"
-                        onClick={() => {
-                          applyMatch(item.regionId);
-                          setQuery(settlementLabel(item, locale));
-                        }}
-                      >
-                        <span className="min-w-0">
-                          <strong className="block truncate text-sm font-semibold text-black">
-                            {settlementLabel(item, locale)}
-                          </strong>
-                          <span className="text-xs text-black/50">
-                            {locale === "uz" ? item.regionUz : item.regionRu}
-                          </span>
-                        </span>
-                        <span className="shrink-0 text-xs font-medium text-primary">
-                          {locale === "uz" ? "Tanlash" : "Выбрать"}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+              {mounted && showMenu && menuBox
+                ? createPortal(
+                    <div
+                      id="geo-search-menu"
+                      data-geo-search-menu
+                      role="listbox"
+                      className="fixed z-[80] max-h-64 overflow-auto rounded-2xl border border-black/12 bg-white p-1.5 shadow-[0_12px_40px_rgb(15_18_24/0.14)]"
+                      style={{
+                        top: menuBox.top,
+                        left: menuBox.left,
+                        width: menuBox.width,
+                      }}
+                    >
+                      {matches.length === 0 ? (
+                        <p className="m-0 px-3 py-2.5 text-sm text-black/55">
+                          {copy.home.geoEmpty}
+                        </p>
+                      ) : (
+                        <ul className="m-0 grid list-none gap-0.5 p-0">
+                          {matches.map((item) => (
+                            <li key={item.id} role="option">
+                              <button
+                                type="button"
+                                className="flex w-full items-center justify-between gap-3 rounded-xl border border-transparent px-3 py-2 text-left transition-colors hover:border-black/10 hover:bg-surface-muted"
+                                onClick={() => pickMatch(item)}
+                              >
+                                <span className="min-w-0">
+                                  <strong className="block truncate text-sm font-semibold text-black">
+                                    {settlementLabel(item, locale)}
+                                  </strong>
+                                  <span className="text-xs text-black/50">
+                                    {locale === "uz"
+                                      ? item.regionUz
+                                      : item.regionRu}
+                                  </span>
+                                </span>
+                                <span className="shrink-0 text-xs font-medium text-primary">
+                                  {locale === "uz" ? "Tanlash" : "Выбрать"}
+                                </span>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>,
+                    document.body,
+                  )
+                : null}
 
               {activeRegion ? (
                 <div className="mt-4 flex flex-col gap-1.5">
@@ -221,6 +326,7 @@ export function GeoSection({
               onSelect={(iso) => {
                 selectIso(iso);
                 setQuery("");
+                setListOpen(false);
               }}
             />
           </div>

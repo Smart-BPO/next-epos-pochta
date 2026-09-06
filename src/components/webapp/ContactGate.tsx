@@ -137,7 +137,7 @@ export function ContactGate({ onLinked }: ContactGateProps) {
       </div>
 
       {isTelegram ? (
-        <Button type="button" variant="primary" width="full" disabled={busy} onClick={onShareTelegram}>
+        <Button type="button" variant="telegram" width="full" disabled={busy} onClick={onShareTelegram}>
           {copy.shareContact}
         </Button>
       ) : null}
