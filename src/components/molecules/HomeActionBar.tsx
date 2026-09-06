@@ -93,7 +93,7 @@ export function HomeActionBar({
             <div className={homeActionPane}>
               <h2 className={homeActionLabel}>{copy.home.trackTitle}</h2>
               <form
-                className="flex min-w-0 flex-col gap-2 sm:gap-3"
+                className="flex min-w-0 flex-col gap-2 sm:gap-3 lg:flex-row lg:items-center lg:gap-3"
                 onSubmit={(e) => {
                   e.preventDefault();
                   submitTrack();
@@ -110,7 +110,13 @@ export function HomeActionBar({
                   className={homeActionField}
                   autoComplete="off"
                 />
-                <Button type="submit" variant="secondary" size="sm" width="full">
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  size="sm"
+                  width="full"
+                  className="lg:w-auto lg:shrink-0"
+                >
                   {copy.ui.track}
                 </Button>
               </form>
@@ -121,13 +127,13 @@ export function HomeActionBar({
             <div className={`${homeActionPane} lg:min-w-[22rem] lg:flex-[1.35]`}>
               <h2 className={homeActionLabel}>{copy.home.quoteTitle}</h2>
               <form
-                className="flex min-w-0 flex-col gap-2 sm:gap-3"
+                className="flex min-w-0 flex-col gap-2 sm:gap-3 lg:flex-row lg:items-center lg:gap-3"
                 onSubmit={(e) => {
                   e.preventDefault();
                   submitQuote();
                 }}
               >
-                <div className={homeActionRow}>
+                <div className={`${homeActionRow} lg:min-w-0 lg:flex-1`}>
                   <label className="sr-only" htmlFor="home-action-from">
                     {copy.home.quoteFrom}
                   </label>
@@ -166,7 +172,13 @@ export function HomeActionBar({
                     className="min-w-0 flex-1"
                   />
                 </div>
-                <Button type="submit" variant="primary" size="sm" width="full">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="sm"
+                  width="full"
+                  className="lg:w-auto lg:shrink-0"
+                >
                   {copy.home.quoteCta}
                 </Button>
               </form>

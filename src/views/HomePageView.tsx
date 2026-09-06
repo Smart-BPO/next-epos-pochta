@@ -110,24 +110,6 @@ export async function HomePageView({ locale }: { locale: Locale }) {
                   <p className="m-0 hidden flex-1 text-sm text-black/60 sm:block sm:text-base">
                     {item.description}
                   </p>
-                  <Button
-                    href={
-                      item.id === "regular"
-                        ? localePath(locale, "/request-price/")
-                        : `${localePath(locale, "/calculator/")}?category=${item.id}`
-                    }
-                    variant="secondary"
-                    size="sm"
-                    width="full"
-                    className="mt-auto"
-                  >
-                    <span className="sm:hidden">{copy.ui.calculate}</span>
-                    <span className="hidden sm:inline">
-                      {item.id === "regular"
-                        ? copy.ui.requestPrice
-                        : copy.ui.calculate}
-                    </span>
-                  </Button>
                 </article>
               ))}
             </div>
