@@ -69,7 +69,7 @@ export function NewsRichEditor({
     editorProps: {
       attributes: {
         class:
-          "min-h-[220px] px-3 py-3 text-sm leading-relaxed outline-none prose prose-sm max-w-none",
+          "min-h-[220px] max-w-none overflow-x-auto break-words px-3 py-3 text-sm leading-relaxed outline-none prose prose-sm [&_img]:max-w-full [&_pre]:overflow-x-auto [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto",
       },
     },
   });
@@ -113,7 +113,7 @@ export function NewsRichEditor({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-black/10 bg-white">
+    <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-black/10 bg-white">
       <div className="flex flex-wrap gap-1 border-b border-black/[0.06] bg-[#fafbfc] px-2 py-1.5">
         <ToolbarButton
           active={editor.isActive("bold")}

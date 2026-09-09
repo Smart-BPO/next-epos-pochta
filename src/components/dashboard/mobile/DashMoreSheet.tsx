@@ -4,12 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { AdminUser } from "@/lib/cms/auth";
 import {
-  NAV_GROUPS,
+  NAV_GROUP_IDS,
   type DashboardNavItem,
 } from "@/components/dashboard/nav";
+import { resolveNavLabel } from "@/components/dashboard/DashboardNav";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { DashBottomSheet } from "@/components/dashboard/mobile/DashBottomSheet";
 import { DashNavIcon } from "@/components/dashboard/mobile/DashNavIcon";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import { DashLocaleSwitcher } from "@/components/dashboard/DashLocaleSwitcher";
 import { IconLogout } from "@/components/dashboard/icons";
 import { logoutAction } from "@/app/dashboard/(auth)/logout/actions";
 import { cn } from "@/lib/cn";
@@ -44,22 +47,26 @@ export function DashMoreSheet({
   admin: AdminUser;
 }) {
   const pathname = usePathname() || "/dashboard/";
+  const t = useDashT();
   const name = admin.displayName || admin.email.split("@")[0] || "Admin";
 
   return (
     <DashBottomSheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Ещё"
+      title={t.common.moreMenu}
     >
       <div className="space-y-5">
-        {NAV_GROUPS.map((group) => {
-          const groupItems = rest.filter((item) => item.group === group.id);
+        <div className="flex justify-end px-2">
+          <DashLocaleSwitcher />
+        </div>
+        {NAV_GROUP_IDS.map((groupId) => {
+          const groupItems = rest.filter((item) => item.group === groupId);
           if (groupItems.length === 0) return null;
           return (
-            <div key={group.id}>
+            <div key={groupId}>
               <p className="m-0 mb-1.5 px-2 text-[0.65rem] font-semibold uppercase tracking-wide text-black/30">
-                {group.label}
+                {t.nav.groups[groupId]}
               </p>
               <ul className="m-0 grid list-none gap-0.5 p-0">
                 {groupItems.map((item) => {
@@ -83,7 +90,7 @@ export function DashMoreSheet({
                         >
                           <DashNavIcon href={item.href} className="size-5" />
                         </span>
-                        {item.label}
+                        {resolveNavLabel(item, t.nav)}
                       </Link>
                     </li>
                   );
@@ -116,7 +123,7 @@ export function DashMoreSheet({
               className="flex w-full items-center gap-2.5 rounded-xl px-3 py-3 text-sm font-medium text-black/55 transition hover:bg-black/[0.03] hover:text-black"
             >
               <IconLogout className="size-5" />
-              Выйти
+              {t.logout}
             </button>
           </form>
         </div>

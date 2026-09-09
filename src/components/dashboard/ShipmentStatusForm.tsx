@@ -1,7 +1,10 @@
 "use client";
 
 import * as Yup from "yup";
-import { SHIPMENT_STATUS_LABELS } from "@/components/dashboard/DashStatusBadge";
+import {
+  useShipmentStatusLabels,
+} from "@/components/dashboard/DashStatusBadge";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import {
   DashForm,
   DashSelect,
@@ -12,11 +15,6 @@ import { valuesToFormData } from "@/components/dashboard/ds/useDashFormSubmit";
 import { dashBtnSecondary } from "@/styles/dashboard";
 
 const STATUSES = ["draft", "pending_manager", "confirmed", "cancelled"] as const;
-
-const schema = Yup.object({
-  status: Yup.string().oneOf([...STATUSES]).required(),
-  track_number: trackCodeOptionalSchema(),
-});
 
 type Values = {
   status: string;
@@ -36,10 +34,18 @@ export function ShipmentStatusForm({
   action: (formData: FormData) => Promise<void>;
   disabled?: boolean;
 }) {
+  const t = useDashT();
+  const labels = useShipmentStatusLabels();
+
+  const schema = Yup.object({
+    status: Yup.string().oneOf([...STATUSES]).required(),
+    track_number: trackCodeOptionalSchema(t),
+  });
+
   if (disabled) {
     return (
       <div className="text-xs text-black/55">
-        <div>{SHIPMENT_STATUS_LABELS[status] ?? status}</div>
+        <div>{labels[status] ?? status}</div>
         {trackNumber ? (
           <div className="mt-1 font-mono text-black/40">{trackNumber}</div>
         ) : null}
@@ -56,8 +62,8 @@ export function ShipmentStatusForm({
         track_number: trackNumber ?? "",
       }}
       schema={schema}
-      successMessage="Отправление сохранено"
-      errorMessage="Не удалось сохранить"
+      successMessage={t.shipments.saved}
+      errorMessage={t.shipments.saveFailed}
       className="flex w-full min-w-0 flex-col gap-2"
       onSubmit={async (values) => {
         const fd = valuesToFormData({ id, ...values });
@@ -69,14 +75,14 @@ export function ShipmentStatusForm({
           <DashSelect name="status" className="!gap-0">
             {STATUSES.map((s) => (
               <option key={s} value={s}>
-                {SHIPMENT_STATUS_LABELS[s] ?? s}
+                {labels[s] ?? s}
               </option>
             ))}
           </DashSelect>
           <DashTrackCodeInput
             name="track_number"
             label={undefined}
-            placeholder="Трек-номер"
+            placeholder={t.shipments.trackPlaceholder}
             className="!gap-0 [&_input]:py-1.5 [&_input]:text-xs"
           />
           <button
@@ -84,7 +90,7 @@ export function ShipmentStatusForm({
             disabled={isSubmitting}
             className={`${dashBtnSecondary} py-1.5 text-xs`}
           >
-            {isSubmitting ? "…" : "Сохранить"}
+            {isSubmitting ? t.common.saving : t.common.save}
           </button>
         </>
       )}

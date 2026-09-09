@@ -1,9 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import {
+  useDashLocale,
+  useDashT,
+} from "@/components/dashboard/DashLocaleProvider";
 import { LeadStatusSelect } from "@/components/dashboard/LeadStatusSelect";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import { DashCrudPage, DashListView } from "@/components/dashboard/ds";
+import { dashIntlLocale } from "@/i18n/dashboard";
 import {
   formatDashDate,
   leadClientLabel,
@@ -20,19 +25,6 @@ export type LeadListRow = {
   created_at: string;
 };
 
-const STATUS_OPTS = [
-  { value: "new", label: "Новые" },
-  { value: "in_progress", label: "В работе" },
-  { value: "done", label: "Готово" },
-  { value: "spam", label: "Спам" },
-];
-
-const TYPE_OPTS = [
-  { value: "price", label: "Прайс" },
-  { value: "business", label: "Бизнес" },
-  { value: "contact", label: "Контакт" },
-];
-
 export function LeadsListClient({
   rows,
   readOnly,
@@ -42,31 +34,46 @@ export function LeadsListClient({
   readOnly: boolean;
   updateStatusAction: (formData: FormData) => Promise<void>;
 }) {
+  const t = useDashT();
+  const { locale } = useDashLocale();
+  const intlLocale = dashIntlLocale(locale);
+  const typeLabels = {
+    price: t.leads.typePrice,
+    business: t.leads.typeBusiness,
+    contact: t.leads.typeContact,
+  };
+
   return (
-    <DashCrudPage
-      title="Заявки"
-      lead="Сайт → epos_leads. Финальная цена только после подтверждения менеджером."
-    >
+    <DashCrudPage title={t.leads.title} lead={t.leads.lead}>
       <DashListView
         storageKey="leads"
         rows={rows}
         rowKey={(r) => r.id}
-        emptyTitle="Нет заявок"
-        emptyLead="Новые лиды появятся здесь после отправки форм на сайте."
+        emptyTitle={t.leads.emptyTitle}
+        emptyLead={t.leads.emptyLead}
         defaultSortId="created"
         defaultSortDir="desc"
         defaultPageSize={50}
         filters={[
           {
             id: "status",
-            label: "Статус",
-            options: STATUS_OPTS,
+            label: t.leads.filterStatus,
+            options: [
+              { value: "new", label: t.badge.lead.new },
+              { value: "in_progress", label: t.badge.lead.in_progress },
+              { value: "done", label: t.badge.lead.done },
+              { value: "spam", label: t.badge.lead.spam },
+            ],
             getValue: (r) => r.status,
           },
           {
             id: "type",
-            label: "Тип",
-            options: TYPE_OPTS,
+            label: t.leads.filterType,
+            options: [
+              { value: "price", label: typeLabels.price },
+              { value: "business", label: typeLabels.business },
+              { value: "contact", label: typeLabels.contact },
+            ],
             getValue: (r) => r.type,
           },
         ]}
@@ -87,7 +94,7 @@ export function LeadsListClient({
           },
           {
             id: "client",
-            header: "Клиент",
+            header: t.list.client,
             searchText: (r) => leadClientLabel(r.payload),
             sortValue: (r) => leadClientLabel(r.payload),
             cell: (row) => (
@@ -98,7 +105,7 @@ export function LeadsListClient({
           },
           {
             id: "route",
-            header: "Направление",
+            header: t.list.route,
             searchText: (r) => leadRouteLabel(r.type, r.payload),
             sortValue: (r) => leadRouteLabel(r.type, r.payload),
             cell: (row) => (
@@ -109,18 +116,18 @@ export function LeadsListClient({
           },
           {
             id: "type",
-            header: "Тип",
+            header: t.list.type,
             sortValue: (r) => r.type,
             cell: (row) => (
               <span className="text-xs font-medium text-black/55">
-                {leadTypeLabel(row.type)}
+                {leadTypeLabel(row.type, typeLabels)}
                 <span className="text-black/35"> /{row.locale}</span>
               </span>
             ),
           },
           {
             id: "status",
-            header: "Статус",
+            header: t.list.status,
             sortValue: (r) => r.status,
             cell: (row) => (
               <div className="flex flex-col gap-2">
@@ -136,11 +143,11 @@ export function LeadsListClient({
           },
           {
             id: "created",
-            header: "Дата",
+            header: t.list.when,
             sortValue: (r) => r.created_at,
             cell: (row) => (
               <span className="text-xs text-black/45">
-                {formatDashDate(row.created_at)}
+                {formatDashDate(row.created_at, intlLocale)}
               </span>
             ),
           },

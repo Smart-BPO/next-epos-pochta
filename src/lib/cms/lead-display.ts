@@ -34,15 +34,18 @@ export function leadRouteLabel(type: string, payload: unknown): string {
   return "Расчёт";
 }
 
-export function leadTypeLabel(type: string): string {
-  if (type === "price") return "Цена";
-  if (type === "business") return "Бизнес";
-  if (type === "contact") return "Контакт";
+export function leadTypeLabel(
+  type: string,
+  labels?: { price: string; business: string; contact: string },
+): string {
+  if (type === "price") return labels?.price ?? "Цена";
+  if (type === "business") return labels?.business ?? "Бизнес";
+  if (type === "contact") return labels?.contact ?? "Контакт";
   return type;
 }
 
-export function formatDashDate(iso: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
+export function formatDashDate(iso: string, locale: string = "ru-RU") {
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",

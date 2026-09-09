@@ -1,5 +1,18 @@
 import { publicMediaPath } from "@/lib/supabase/env";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import {
+  isMediaFolder,
+  MEDIA_FOLDERS,
+  type MediaFileRow,
+  type MediaFolder,
+} from "@/lib/cms/media-folders";
+
+export {
+  MEDIA_FOLDERS,
+  isMediaFolder,
+  type MediaFileRow,
+  type MediaFolder,
+} from "@/lib/cms/media-folders";
 
 export const MEDIA_BUCKET = "epos-media";
 /** Legacy + news folders under storage. */
@@ -12,13 +25,6 @@ export const MEDIA_ALLOWED_MIME = new Set([
   "image/webp",
   "image/gif",
   "image/svg+xml",
-]);
-
-const ALLOWED_FOLDERS = new Set([
-  "covers",
-  "news/covers",
-  "news/inline",
-  "news/og",
 ]);
 
 export function assertMediaPath(path: string) {
@@ -43,9 +49,9 @@ export function assertMediaFile(file: {
   }
 }
 
-function normalizeFolder(folder?: string): string {
+function normalizeFolder(folder?: string): MediaFolder {
   const raw = (folder ?? "covers").replace(/^\/+|\/+$/g, "");
-  if (!ALLOWED_FOLDERS.has(raw)) {
+  if (!isMediaFolder(raw)) {
     throw new Error("Invalid folder");
   }
   return raw;
@@ -82,12 +88,53 @@ export async function deleteMediaPath(path: string) {
   if (error) throw new Error(error.message);
 }
 
-export async function listMediaCovers(limit = 100) {
+/** List files from every allowed media folder. */
+export async function listMediaFiles(
+  limitPerFolder = 200,
+): Promise<MediaFileRow[]> {
   const client = createSupabaseAdminClient();
-  const { data, error } = await client.storage.from(MEDIA_BUCKET).list("covers", {
-    limit,
-    sortBy: { column: "created_at", order: "desc" },
+  const chunks = await Promise.all(
+    MEDIA_FOLDERS.map(async (folder) => {
+      const { data, error } = await client.storage
+        .from(MEDIA_BUCKET)
+        .list(folder, {
+          limit: limitPerFolder,
+          sortBy: { column: "created_at", order: "desc" },
+        });
+      if (error) throw new Error(error.message);
+
+      return (data ?? [])
+        .filter((f) => Boolean(f.id) && f.name && !f.name.startsWith("."))
+        .map((f): MediaFileRow => {
+          const path = `${folder}/${f.name}`;
+          const size =
+            f.metadata &&
+            typeof f.metadata === "object" &&
+            "size" in f.metadata &&
+            typeof (f.metadata as { size?: unknown }).size === "number"
+              ? (f.metadata as { size: number }).size
+              : null;
+          return {
+            name: f.name,
+            path,
+            folder,
+            url: publicMediaPath(path),
+            created_at: f.created_at ?? null,
+            size,
+          };
+        });
+    }),
+  );
+
+  return chunks.flat().sort((a, b) => {
+    const ta = a.created_at ? Date.parse(a.created_at) : 0;
+    const tb = b.created_at ? Date.parse(b.created_at) : 0;
+    return tb - ta;
   });
-  if (error) throw new Error(error.message);
-  return (data ?? []).filter((f) => f.name && !f.name.startsWith("."));
+}
+
+/** @deprecated Prefer listMediaFiles — kept for callers that only need legacy covers. */
+export async function listMediaCovers(limit = 100) {
+  const all = await listMediaFiles(limit);
+  return all.filter((f) => f.folder === "covers");
 }

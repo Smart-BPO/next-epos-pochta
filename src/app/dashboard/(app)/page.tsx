@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { requireAdmin } from "@/lib/cms/auth";
+import { getDashT, dashIntlLocale } from "@/i18n/dashboard";
 import {
   IconCheck,
   IconChevron,
@@ -41,7 +42,7 @@ type ShipmentRow = {
   created_at: string;
 };
 
-function greetingRu(date = new Date()) {
+function greetingFor(copy: { greetingMorning: string; greetingDay: string; greetingEvening: string }, date = new Date()) {
   const hour = Number(
     new Intl.DateTimeFormat("en-GB", {
       hour: "numeric",
@@ -49,13 +50,13 @@ function greetingRu(date = new Date()) {
       timeZone: "Asia/Tashkent",
     }).format(date),
   );
-  if (hour < 12) return "Доброе утро";
-  if (hour < 18) return "Добрый день";
-  return "Добрый вечер";
+  if (hour < 12) return copy.greetingMorning;
+  if (hour < 18) return copy.greetingDay;
+  return copy.greetingEvening;
 }
 
-function formatLongDate(date = new Date()) {
-  return new Intl.DateTimeFormat("ru-RU", {
+function formatLongDate(intlLocale: string, date = new Date()) {
+  return new Intl.DateTimeFormat(intlLocale, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -63,8 +64,8 @@ function formatLongDate(date = new Date()) {
   }).format(date);
 }
 
-function formatShortDate(iso: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
+function formatShortDate(iso: string, intlLocale: string) {
+  return new Intl.DateTimeFormat(intlLocale, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -290,6 +291,8 @@ function Sparkline({
 
 export default async function DashboardOverviewPage() {
   const admin = await requireAdmin();
+  const { t, locale } = await getDashT();
+  const intl = dashIntlLocale(locale);
   const name = admin.displayName || admin.email.split("@")[0] || "Owner";
   const { leads, shipments, contacts } = await fetchOverview();
 
@@ -357,7 +360,7 @@ export default async function DashboardOverviewPage() {
       iconBg: "bg-emerald-50",
     },
     {
-      label: "WebApp контакты",
+      label: t.contacts.title,
       value: contacts,
       hint: "мини-приложение",
       hintClass: "text-black/45",
@@ -372,10 +375,10 @@ export default async function DashboardOverviewPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className={dashPageTitle}>
-            {greetingRu()}, {name}
+            {greetingFor(t.overview)}, {name}
           </h1>
           <p className={dashPageLead}>
-            Вот что происходит с доставкой и заявками сегодня
+            {t.overview.lead}
           </p>
         </div>
           <div
@@ -406,7 +409,7 @@ export default async function DashboardOverviewPage() {
               strokeLinecap="round"
             />
           </svg>
-          {formatLongDate()}
+          {formatLongDate(intl)}
         </div>
       </div>
 
@@ -588,7 +591,7 @@ export default async function DashboardOverviewPage() {
                         </span>
                       </DashTd>
                       <DashTd className="hidden text-black/50 md:table-cell">
-                        {formatShortDate(row.created_at)}
+                        {formatShortDate(row.created_at, intl)}
                       </DashTd>
                       <DashTd>
                         <Link

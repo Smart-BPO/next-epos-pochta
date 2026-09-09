@@ -1,6 +1,7 @@
 "use client";
 
-import { LEAD_STATUS_LABELS } from "@/components/dashboard/DashStatusBadge";
+import { useLeadStatusLabels } from "@/components/dashboard/DashStatusBadge";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { dashInput } from "@/styles/dashboard";
 import { toast } from "react-toastify";
 
@@ -17,10 +18,13 @@ export function LeadStatusSelect({
   action: (formData: FormData) => Promise<void>;
   disabled?: boolean;
 }) {
+  const t = useDashT();
+  const labels = useLeadStatusLabels();
+
   if (disabled) {
     return (
       <span className="text-xs text-black/45">
-        {LEAD_STATUS_LABELS[status] ?? status}
+        {labels[status] ?? status}
       </span>
     );
   }
@@ -30,9 +34,9 @@ export function LeadStatusSelect({
       action={async (fd) => {
         try {
           await action(fd);
-          toast.success("Статус заявки обновлён");
+          toast.success(t.form.successDefault);
         } catch {
-          toast.error("Не удалось обновить статус");
+          toast.error(t.errors.saveFailed);
         }
       }}
     >
@@ -45,7 +49,7 @@ export function LeadStatusSelect({
       >
         {STATUSES.map((s) => (
           <option key={s} value={s}>
-            {LEAD_STATUS_LABELS[s] ?? s}
+            {labels[s] ?? s}
           </option>
         ))}
       </select>

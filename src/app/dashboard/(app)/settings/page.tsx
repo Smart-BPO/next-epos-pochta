@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { getSiteSettings } from "@/lib/cms/site-settings";
-import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
+import { DashDenied } from "@/components/dashboard/DashDenied";
 import { saveSettingsAction } from "./actions";
 import {
   dashBtnPrimary,
@@ -14,9 +14,7 @@ import {
 export default async function DashboardSettingsPage() {
   const admin = await requireAccess("settings");
   if (!admin) {
-    return (
-      <DashAccessDenied title="Настройки" lead="Нет доступа к разделу." />
-    );
+    return <DashDenied section="settings" />;
   }
 
   const s = await getSiteSettings();

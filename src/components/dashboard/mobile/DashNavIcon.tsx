@@ -12,6 +12,7 @@ import {
   IconStaff,
   IconTelegram,
   IconUsers,
+  type DashIconProps,
 } from "@/components/dashboard/icons";
 
 export function DashNavIcon({
@@ -21,7 +22,9 @@ export function DashNavIcon({
   href: string;
   className?: string;
 }) {
-  const props = { className: cn("size-[1.125rem] shrink-0", className) };
+  const props: DashIconProps = {
+    className: cn("size-[1.125rem] shrink-0", className),
+  };
   if (href === "/dashboard/") return <IconOverview {...props} />;
   if (href.startsWith("/dashboard/leads")) return <IconLeads {...props} />;
   if (href.includes("/webapp/contacts")) return <IconUsers {...props} />;

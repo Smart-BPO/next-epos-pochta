@@ -4,35 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import {
-  NAV_GROUPS,
+  NAV_GROUP_IDS,
   type DashboardNavItem,
 } from "@/components/dashboard/nav";
-import {
-  IconLeads,
-  IconMap,
-  IconMedia,
-  IconNews,
-  IconOverview,
-  IconPackage,
-  IconSettings,
-  IconStaff,
-  IconTelegram,
-  IconUsers,
-} from "@/components/dashboard/icons";
-
-function IconFor({ href }: { href: string }) {
-  if (href === "/dashboard/") return <IconOverview />;
-  if (href.startsWith("/dashboard/leads")) return <IconLeads />;
-  if (href.includes("/webapp/contacts")) return <IconUsers />;
-  if (href.includes("/webapp/shipments")) return <IconPackage />;
-  if (href.startsWith("/dashboard/news")) return <IconNews />;
-  if (href.startsWith("/dashboard/delivery")) return <IconMap />;
-  if (href.includes("/telegram")) return <IconTelegram />;
-  if (href.startsWith("/dashboard/settings")) return <IconSettings />;
-  if (href.startsWith("/dashboard/media")) return <IconMedia />;
-  if (href.startsWith("/dashboard/users")) return <IconStaff />;
-  return <IconOverview />;
-}
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
+import { DashNavIcon } from "@/components/dashboard/mobile/DashNavIcon";
 
 function isActive(pathname: string, href: string) {
   const path = pathname.endsWith("/") ? pathname : `${pathname}/`;
@@ -41,6 +17,14 @@ function isActive(pathname: string, href: string) {
     return path === "/dashboard/settings/" || path === "/dashboard/settings";
   }
   return path === href || path.startsWith(href);
+}
+
+function useNavLabel(item: DashboardNavItem, short = false) {
+  const t = useDashT();
+  if (short && item.shortLabelKey) {
+    return t.nav[item.shortLabelKey];
+  }
+  return t.nav[item.labelKey];
 }
 
 function NavLink({
@@ -52,6 +36,8 @@ function NavLink({
   active: boolean;
   variant: "side" | "mobile";
 }) {
+  const label = useNavLabel(item, variant === "mobile");
+
   if (variant === "mobile") {
     return (
       <Link
@@ -63,8 +49,8 @@ function NavLink({
             : "border-black/10 bg-white text-black/65",
         )}
       >
-        <IconFor href={item.href} />
-        {item.label}
+        <DashNavIcon href={item.href} />
+        {label}
       </Link>
     );
   }
@@ -83,9 +69,9 @@ function NavLink({
         <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary" />
       ) : null}
       <span className={cn(active ? "text-primary" : "text-black/40")}>
-        <IconFor href={item.href} />
+        <DashNavIcon href={item.href} />
       </span>
-      {item.label}
+      {label}
     </Link>
   );
 }
@@ -98,6 +84,7 @@ export function DashboardNav({
   variant?: "side" | "mobile";
 }) {
   const pathname = usePathname() || "/dashboard/";
+  const t = useDashT();
 
   if (variant === "mobile") {
     return (
@@ -116,13 +103,13 @@ export function DashboardNav({
 
   return (
     <nav className="flex flex-1 flex-col gap-4 px-2">
-      {NAV_GROUPS.map((group) => {
-        const groupItems = items.filter((item) => item.group === group.id);
+      {NAV_GROUP_IDS.map((groupId) => {
+        const groupItems = items.filter((item) => item.group === groupId);
         if (groupItems.length === 0) return null;
         return (
-          <div key={group.id}>
+          <div key={groupId}>
             <p className="m-0 mb-1 px-3 text-[0.65rem] font-semibold uppercase tracking-wide text-black/30">
-              {group.label}
+              {t.nav.groups[groupId]}
             </p>
             <div className="flex flex-col gap-0.5">
               {groupItems.map((item) => (
@@ -139,4 +126,13 @@ export function DashboardNav({
       })}
     </nav>
   );
+}
+
+export function resolveNavLabel(
+  item: DashboardNavItem,
+  nav: ReturnType<typeof useDashT>["nav"],
+  short = false,
+) {
+  if (short && item.shortLabelKey) return nav[item.shortLabelKey];
+  return nav[item.labelKey];
 }

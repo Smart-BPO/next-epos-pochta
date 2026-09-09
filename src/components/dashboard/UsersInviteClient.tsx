@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import * as Yup from "yup";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
+import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import {
   DashCrudPage,
   DashForm,
@@ -11,22 +13,13 @@ import {
   DashTextInput,
   valuesToFormData,
 } from "@/components/dashboard/ds";
+import { dashFormat } from "@/i18n/dashboard";
 import {
   emailRequired,
   passwordMin,
 } from "@/lib/dashboard/schemas";
 import { toast } from "react-toastify";
 import { dashBtnPrimary, dashBtnSecondary, dashInput } from "@/styles/dashboard";
-import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
-
-const inviteSchema = Yup.object({
-  display_name: Yup.string().trim().default(""),
-  email: emailRequired(),
-  password: passwordMin(8),
-  role: Yup.string()
-    .oneOf(["crm", "editor", "viewer", "owner"])
-    .required(),
-});
 
 type InviteValues = {
   display_name: string;
@@ -57,19 +50,29 @@ export function UsersInviteClient({
   setRoleAction: (formData: FormData) => Promise<void>;
   setActiveAction: (formData: FormData) => Promise<void>;
 }) {
+  const t = useDashT();
   const [open, setOpen] = useState(false);
+
+  const inviteSchema = Yup.object({
+    display_name: Yup.string().trim().default(""),
+    email: emailRequired(t),
+    password: passwordMin(8, t),
+    role: Yup.string()
+      .oneOf(["crm", "editor", "viewer", "owner"])
+      .required(t.errors.required),
+  });
 
   return (
     <DashCrudPage
-      title="Сотрудники"
-      lead="Owner · editor · CRM · viewer. CRM — заявки и WebApp; editor — контент; viewer — только чтение."
+      title={t.users.title}
+      lead={t.users.lead}
       primaryAction={
         <button
           type="button"
           className={dashBtnPrimary}
           onClick={() => setOpen(true)}
         >
-          Добавить
+          {t.users.add}
         </button>
       }
     >
@@ -77,27 +80,27 @@ export function UsersInviteClient({
         storageKey="users"
         rows={rows}
         rowKey={(r) => r.user_id}
-        emptyTitle="Нет сотрудников"
+        emptyTitle={t.users.emptyTitle}
         defaultSortId="name"
         defaultSortDir="asc"
         filters={[
           {
             id: "role",
-            label: "Роль",
+            label: t.list.role,
             options: [
-              { value: "owner", label: "owner" },
-              { value: "editor", label: "editor" },
-              { value: "crm", label: "crm" },
-              { value: "viewer", label: "viewer" },
+              { value: "owner", label: t.badge.role.owner },
+              { value: "editor", label: t.badge.role.editor },
+              { value: "crm", label: t.badge.role.crm },
+              { value: "viewer", label: t.badge.role.viewer },
             ],
             getValue: (r) => r.role,
           },
           {
             id: "active",
-            label: "Статус",
+            label: t.list.status,
             options: [
-              { value: "1", label: "Активен" },
-              { value: "0", label: "Неактивен" },
+              { value: "1", label: t.list.active },
+              { value: "0", label: t.list.inactive },
             ],
             getValue: (r) => (r.is_active ? "1" : "0"),
           },
@@ -105,7 +108,7 @@ export function UsersInviteClient({
         columns={[
           {
             id: "name",
-            header: "Сотрудник",
+            header: t.users.title,
             searchText: (r) =>
               `${r.display_name} ${r.email} ${r.role}`,
             sortValue: (r) => r.display_name || r.email,
@@ -118,7 +121,7 @@ export function UsersInviteClient({
                   <DashStatusBadge kind="role" value={row.role} />
                   {!row.is_active ? (
                     <span className="text-xs font-semibold text-black/40">
-                      неактивен
+                      {t.list.inactive}
                     </span>
                   ) : null}
                 </div>
@@ -128,7 +131,7 @@ export function UsersInviteClient({
           },
           {
             id: "role",
-            header: "Роль",
+            header: t.list.role,
             sortValue: (r) => r.role,
             hideInCard: true,
             cell: (row) => (
@@ -138,19 +141,19 @@ export function UsersInviteClient({
         ]}
         actions={(row) =>
           row.user_id === meId ? (
-            <span className="text-xs font-semibold text-black/35">Вы</span>
+            <span className="text-xs font-semibold text-black/35">{t.you}</span>
           ) : (
             <div className="flex flex-wrap items-center justify-end gap-2">
               <form
                 action={async (fd) => {
                   try {
                     await setRoleAction(fd);
-                    toast.success("Роль обновлена");
+                    toast.success(t.users.roleUpdated);
                   } catch (err) {
                     toast.error(
                       err instanceof Error
                         ? err.message
-                        : "Не удалось сменить роль",
+                        : t.errors.saveFailed,
                     );
                   }
                 }}
@@ -162,16 +165,16 @@ export function UsersInviteClient({
                   defaultValue={row.role}
                   className={`${dashInput} py-1.5 text-xs`}
                 >
-                  <option value="crm">crm</option>
-                  <option value="editor">editor</option>
-                  <option value="viewer">viewer</option>
-                  <option value="owner">owner</option>
+                  <option value="crm">{t.badge.role.crm}</option>
+                  <option value="editor">{t.badge.role.editor}</option>
+                  <option value="viewer">{t.badge.role.viewer}</option>
+                  <option value="owner">{t.badge.role.owner}</option>
                 </select>
                 <button
                   type="submit"
                   className={`${dashBtnSecondary} py-1.5 text-xs`}
                 >
-                  Роль
+                  {t.users.role}
                 </button>
               </form>
               <form
@@ -179,13 +182,13 @@ export function UsersInviteClient({
                   try {
                     await setActiveAction(fd);
                     toast.success(
-                      row.is_active ? "Деактивирован" : "Активирован",
+                      row.is_active ? t.users.deactivated : t.users.activated,
                     );
                   } catch (err) {
                     toast.error(
                       err instanceof Error
                         ? err.message
-                        : "Не удалось обновить",
+                        : t.errors.saveFailed,
                     );
                   }
                 }}
@@ -197,7 +200,7 @@ export function UsersInviteClient({
                   value={row.is_active ? "false" : "true"}
                 />
                 <button type="submit" className={dashBtnSecondary}>
-                  {row.is_active ? "Деактивировать" : "Активировать"}
+                  {row.is_active ? t.users.deactivate : t.users.activate}
                 </button>
               </form>
             </div>
@@ -208,7 +211,7 @@ export function UsersInviteClient({
       <DashModal
         open={open}
         onOpenChange={setOpen}
-        title="Добавить сотрудника"
+        title={t.users.inviteTitle}
         size="md"
       >
         <DashForm<InviteValues>
@@ -219,7 +222,7 @@ export function UsersInviteClient({
             role: "crm",
           }}
           schema={inviteSchema}
-          successMessage="Сотрудник создан"
+          successMessage={t.users.created}
           onSubmit={async (values) => {
             await inviteAction(valuesToFormData(values));
             setOpen(false);
@@ -229,35 +232,35 @@ export function UsersInviteClient({
             <>
               <DashTextInput
                 name="display_name"
-                label="Имя"
-                placeholder="Имя"
+                label={t.users.displayName}
+                placeholder={t.users.displayName}
               />
               <DashTextInput
                 name="email"
-                label="Email"
+                label={t.users.email}
                 type="email"
                 autoComplete="off"
-                placeholder="Email"
+                placeholder={t.users.email}
               />
               <DashTextInput
                 name="password"
-                label="Пароль"
+                label={t.users.password}
                 type="password"
                 autoComplete="new-password"
-                placeholder="Минимум 8 символов"
+                placeholder={dashFormat(t.errors.passwordMin, { n: 8 })}
               />
-              <DashSelect name="role" label="Роль">
-                <option value="crm">crm — заявки / WebApp</option>
-                <option value="editor">editor — контент</option>
-                <option value="viewer">viewer — только чтение</option>
-                <option value="owner">owner</option>
+              <DashSelect name="role" label={t.users.role}>
+                <option value="crm">{t.users.roleCrm}</option>
+                <option value="editor">{t.users.roleEditor}</option>
+                <option value="viewer">{t.users.roleViewer}</option>
+                <option value="owner">{t.users.roleOwner}</option>
               </DashSelect>
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className={`${dashBtnPrimary} w-fit`}
               >
-                {isSubmitting ? "…" : "Создать"}
+                {isSubmitting ? t.common.saving : t.common.create}
               </button>
             </>
           )}

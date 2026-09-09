@@ -1,47 +1,66 @@
+"use client";
+
 import { cn } from "@/lib/cn";
 import { dashBadgeBase } from "@/styles/dashboard";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
+import type { DashCopy } from "@/i18n/dashboard";
 
 type Tone = {
   label: string;
   className: string;
 };
 
-const LEAD: Record<string, Tone> = {
-  new: { label: "Новая", className: "bg-[#fee2e2] text-[#b91c1c]" },
-  in_progress: { label: "В работе", className: "bg-[#fef3c7] text-[#b45309]" },
-  done: { label: "Готово", className: "bg-[#dcfce7] text-[#15803d]" },
-  spam: { label: "Спам", className: "bg-black/[0.06] text-black/50" },
+const LEAD_CLASS: Record<string, string> = {
+  new: "bg-[#fee2e2] text-[#b91c1c]",
+  in_progress: "bg-[#fef3c7] text-[#b45309]",
+  done: "bg-[#dcfce7] text-[#15803d]",
+  spam: "bg-black/[0.06] text-black/50",
 };
 
-const SHIPMENT: Record<string, Tone> = {
-  draft: { label: "Черновик", className: "bg-black/[0.06] text-black/50" },
-  pending_manager: {
-    label: "Ждёт менеджера",
-    className: "bg-[#fef3c7] text-[#b45309]",
-  },
-  confirmed: { label: "Подтверждено", className: "bg-[#dbeafe] text-[#1d4ed8]" },
-  cancelled: { label: "Отменено", className: "bg-black/[0.06] text-black/45" },
+const SHIPMENT_CLASS: Record<string, string> = {
+  draft: "bg-black/[0.06] text-black/50",
+  pending_manager: "bg-[#fef3c7] text-[#b45309]",
+  confirmed: "bg-[#dbeafe] text-[#1d4ed8]",
+  cancelled: "bg-black/[0.06] text-black/45",
 };
 
-const NEWS: Record<string, Tone> = {
-  draft: { label: "Черновик", className: "bg-black/[0.06] text-black/50" },
-  published: { label: "Опубликовано", className: "bg-[#dcfce7] text-[#15803d]" },
+const NEWS_CLASS: Record<string, string> = {
+  draft: "bg-black/[0.06] text-black/50",
+  published: "bg-[#dcfce7] text-[#15803d]",
 };
 
-const ROLE: Record<string, Tone> = {
-  owner: { label: "Owner", className: "bg-primary-soft text-primary" },
-  editor: { label: "Editor", className: "bg-[#dbeafe] text-[#1d4ed8]" },
-  crm: { label: "CRM", className: "bg-[#fef3c7] text-[#b45309]" },
-  viewer: { label: "Viewer", className: "bg-black/[0.06] text-black/50" },
+const ROLE_CLASS: Record<string, string> = {
+  owner: "bg-primary-soft text-primary",
+  editor: "bg-[#dbeafe] text-[#1d4ed8]",
+  crm: "bg-[#fef3c7] text-[#b45309]",
+  viewer: "bg-black/[0.06] text-black/50",
 };
 
-const SOURCE: Record<string, Tone> = {
-  telegram_contact: {
-    label: "Telegram",
-    className: "bg-[#e0f2fe] text-[#0369a1]",
-  },
-  manual: { label: "Вручную", className: "bg-black/[0.06] text-black/50" },
+const SOURCE_CLASS: Record<string, string> = {
+  telegram_contact: "bg-[#e0f2fe] text-[#0369a1]",
+  manual: "bg-black/[0.06] text-black/50",
 };
+
+function toneFrom(
+  labels: Record<string, string>,
+  classes: Record<string, string>,
+  value: string,
+): Tone {
+  return {
+    label: labels[value] ?? value,
+    className: classes[value] ?? "bg-black/[0.06] text-black/50",
+  };
+}
+
+export function badgeLabelsFromCopy(copy: DashCopy) {
+  return {
+    lead: copy.badge.lead as Record<string, string>,
+    shipment: copy.badge.shipment as Record<string, string>,
+    news: copy.badge.news as Record<string, string>,
+    role: copy.badge.role as Record<string, string>,
+    source: copy.badge.source as Record<string, string>,
+  };
+}
 
 export function DashStatusBadge({
   kind,
@@ -50,28 +69,31 @@ export function DashStatusBadge({
   kind: "lead" | "shipment" | "news" | "role" | "source";
   value: string;
 }) {
-  const map =
+  const t = useDashT();
+  const labels = badgeLabelsFromCopy(t);
+  const tone =
     kind === "lead"
-      ? LEAD
+      ? toneFrom(labels.lead, LEAD_CLASS, value)
       : kind === "shipment"
-        ? SHIPMENT
+        ? toneFrom(labels.shipment, SHIPMENT_CLASS, value)
         : kind === "news"
-          ? NEWS
+          ? toneFrom(labels.news, NEWS_CLASS, value)
           : kind === "role"
-            ? ROLE
-            : SOURCE;
-  const tone = map[value] ?? {
-    label: value,
-    className: "bg-black/[0.06] text-black/50",
-  };
+            ? toneFrom(labels.role, ROLE_CLASS, value)
+            : toneFrom(labels.source, SOURCE_CLASS, value);
+
   return (
     <span className={cn(dashBadgeBase, tone.className)}>{tone.label}</span>
   );
 }
 
-export const LEAD_STATUS_LABELS: Record<string, string> = Object.fromEntries(
-  Object.entries(LEAD).map(([k, v]) => [k, v.label]),
-);
+/** @deprecated Prefer useDashT().badge — kept for forms that need static map. */
+export function useShipmentStatusLabels() {
+  const t = useDashT();
+  return t.badge.shipment as Record<string, string>;
+}
 
-export const SHIPMENT_STATUS_LABELS: Record<string, string> =
-  Object.fromEntries(Object.entries(SHIPMENT).map(([k, v]) => [k, v.label]));
+export function useLeadStatusLabels() {
+  const t = useDashT();
+  return t.badge.lead as Record<string, string>;
+}

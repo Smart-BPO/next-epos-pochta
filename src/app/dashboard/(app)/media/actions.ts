@@ -12,11 +12,13 @@ export async function uploadMediaAction(formData: FormData) {
     throw new Error("File required");
   }
 
+  const folder = String(formData.get("folder") ?? "covers").trim() || "covers";
   const buffer = Buffer.from(await file.arrayBuffer());
   await uploadMediaBuffer({
     buffer,
     contentType: file.type || "application/octet-stream",
     fileName: file.name,
+    folder,
   });
 
   revalidatePath("/dashboard/media");

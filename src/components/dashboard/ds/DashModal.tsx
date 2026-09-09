@@ -53,6 +53,7 @@ export function DashModal({
   footer,
   size = "md",
   mobileAsSheet = true,
+  closeLabel = "Закрыть",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -61,6 +62,7 @@ export function DashModal({
   footer?: ReactNode;
   size?: DashModalSize;
   mobileAsSheet?: boolean;
+  closeLabel?: string;
 }) {
   const titleId = useId();
   const isClient = useIsClient();
@@ -116,7 +118,7 @@ export function DashModal({
             {title}
           </h2>
           <button type="button" className={dashBtnGhost} onClick={close}>
-            Закрыть
+            {closeLabel}
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4">

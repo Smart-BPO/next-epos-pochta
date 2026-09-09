@@ -1,9 +1,13 @@
 /** Shared dashboard chrome / surface tokens (EPOS CMS mock style). */
 export const dashShell =
-  "min-h-dvh bg-[#f5f6f8] text-ink [--dash-tabbar-h:4.25rem]";
+  "h-dvh overflow-hidden bg-[#f5f6f8] text-ink [--dash-tabbar-h:4.25rem]";
 
 export const dashAside =
-  "hidden w-[15.5rem] shrink-0 flex-col border-r border-black/[0.06] bg-white lg:flex";
+  "hidden h-dvh w-[15.5rem] shrink-0 flex-col border-r border-black/[0.06] bg-white lg:flex";
+
+/** Scrollable main column next to the fixed sidebar. */
+export const dashMainColumn =
+  "flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto";
 
 /** Main content bottom clearance for fixed mobile tab bar. */
 export const dashMainMobilePad =

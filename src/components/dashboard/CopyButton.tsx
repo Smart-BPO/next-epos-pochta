@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 
 export function CopyButton({
   value,
-  label = "Копировать",
+  label,
 }: {
   value: string;
   label?: string;
 }) {
+  const t = useDashT();
   const [copied, setCopied] = useState(false);
   if (!value) return null;
+  const shown = label ?? t.common.copy;
 
   return (
     <button
@@ -21,14 +24,14 @@ export function CopyButton({
         try {
           await navigator.clipboard.writeText(value);
           setCopied(true);
-          toast.success("Скопировано");
+          toast.success(t.common.copied);
           window.setTimeout(() => setCopied(false), 1500);
         } catch {
-          toast.error("Не удалось скопировать");
+          toast.error(t.errors.generic);
         }
       }}
     >
-      {copied ? "Скопировано" : label}
+      {copied ? t.common.copied : shown}
     </button>
   );
 }

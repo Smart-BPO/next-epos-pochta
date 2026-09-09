@@ -1,16 +1,21 @@
 "use client";
 
-import { ShipmentStatusForm } from "@/components/dashboard/ShipmentStatusForm";
+import {
+  useDashLocale,
+  useDashT,
+} from "@/components/dashboard/DashLocaleProvider";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import { ShipmentStatusForm } from "@/components/dashboard/ShipmentStatusForm";
 import { DashCrudPage, DashListView } from "@/components/dashboard/ds";
+import { dashIntlLocale } from "@/i18n/dashboard";
 import { formatDashDate } from "@/lib/cms/lead-display";
 
-const STATUS_LABEL: Record<string, string> = {
-  draft: "Черновик",
-  pending_manager: "Ждёт менеджера",
-  confirmed: "Подтверждено",
-  cancelled: "Отменено",
-};
+const STATUS_KEYS = [
+  "draft",
+  "pending_manager",
+  "confirmed",
+  "cancelled",
+] as const;
 
 export type WebappShipmentRow = {
   id: string;
@@ -33,26 +38,27 @@ export function WebappShipmentsClient({
   readOnly: boolean;
   updateAction: (formData: FormData) => Promise<void>;
 }) {
+  const t = useDashT();
+  const { locale } = useDashLocale();
+  const intlLocale = dashIntlLocale(locale);
+
   return (
-    <DashCrudPage
-      title="WebApp отправления"
-      lead="Статус и трек вручную. Тариф не публикуется — только менеджер."
-    >
+    <DashCrudPage title={t.shipments.title} lead={t.shipments.lead}>
       <DashListView
         storageKey="webapp-shipments"
         rows={rows}
         rowKey={(r) => r.id}
-        emptyTitle="Нет отправлений"
-        emptyLead="Заявки из мини-приложения появятся здесь."
+        emptyTitle={t.shipments.emptyTitle}
+        emptyLead={t.shipments.emptyLead}
         defaultSortId="created"
         defaultSortDir="desc"
         filters={[
           {
             id: "status",
-            label: "Статус",
-            options: Object.entries(STATUS_LABEL).map(([value, label]) => ({
+            label: t.list.status,
+            options: STATUS_KEYS.map((value) => ({
               value,
-              label,
+              label: t.badge.shipment[value],
             })),
             getValue: (r) => r.status,
           },
@@ -70,7 +76,7 @@ export function WebappShipmentsClient({
           },
           {
             id: "route",
-            header: "Маршрут",
+            header: t.list.route,
             searchText: (r) =>
               `${r.from_label} ${r.to_label} ${r.track_number ?? ""}`,
             sortValue: (r) => `${r.from_label}→${r.to_label}`,
@@ -89,7 +95,7 @@ export function WebappShipmentsClient({
           },
           {
             id: "contact",
-            header: "Контакт",
+            header: t.list.contact,
             searchText: (r) => `${r.phone} ${r.contact_session_id}`,
             sortValue: (r) => r.phone,
             cell: (row) => (
@@ -103,7 +109,7 @@ export function WebappShipmentsClient({
           },
           {
             id: "status",
-            header: "Статус",
+            header: t.list.status,
             sortValue: (r) => r.status,
             cell: (row) => (
               <DashStatusBadge kind="shipment" value={row.status} />
@@ -111,7 +117,7 @@ export function WebappShipmentsClient({
           },
           {
             id: "actions",
-            header: "Действия",
+            header: t.common.actions,
             cell: (row) => (
               <ShipmentStatusForm
                 id={row.id}
@@ -124,11 +130,11 @@ export function WebappShipmentsClient({
           },
           {
             id: "created",
-            header: "Когда",
+            header: t.list.when,
             sortValue: (r) => r.created_at,
             cell: (row) => (
               <span className="text-xs text-black/45">
-                {formatDashDate(row.created_at)}
+                {formatDashDate(row.created_at, intlLocale)}
               </span>
             ),
           },

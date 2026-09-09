@@ -61,7 +61,7 @@ export function DashImageField({
   };
 
   return (
-    <div className={cn("grid gap-2", className)}>
+    <div className={cn("grid min-w-0 gap-2", className)}>
       <p className="m-0 text-xs font-semibold uppercase tracking-wide text-black/40">
         {label}
       </p>
@@ -126,7 +126,7 @@ export function DashImageField({
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className={cn(dashInput, "font-mono text-xs")}
+          className={cn(dashInput, "min-w-0 font-mono text-xs")}
           aria-label="URL изображения"
         />
       ) : null}

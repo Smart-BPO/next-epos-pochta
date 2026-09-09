@@ -1,12 +1,12 @@
 import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { listNewsAdminRows } from "@/lib/cms/news";
-import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
+import { DashDenied } from "@/components/dashboard/DashDenied";
 import { NewsListClient } from "@/components/dashboard/NewsListClient";
 
 export default async function DashboardNewsPage() {
   const admin = await requireAccess("news");
   if (!admin) {
-    return <DashAccessDenied title="Новости" lead="Нет доступа к разделу." />;
+    return <DashDenied section="news" />;
   }
 
   const rows = await listNewsAdminRows();

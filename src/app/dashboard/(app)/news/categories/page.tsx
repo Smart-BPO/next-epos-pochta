@@ -1,6 +1,6 @@
 import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { listNewsCategories } from "@/lib/cms/news-categories";
-import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
+import { DashDenied } from "@/components/dashboard/DashDenied";
 import { NewsCategoriesClient } from "@/components/dashboard/NewsCategoriesClient";
 import {
   deleteNewsCategoryAction,
@@ -10,9 +10,7 @@ import {
 export default async function NewsCategoriesPage() {
   const admin = await requireAccess("news");
   if (!admin) {
-    return (
-      <DashAccessDenied title="Категории новостей" lead="Нет доступа." />
-    );
+    return <DashDenied section="categories" />;
   }
 
   const rows = await listNewsCategories({ includeInactive: true });

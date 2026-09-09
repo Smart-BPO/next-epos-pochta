@@ -30,7 +30,7 @@ export default async function EditNewsPage({
   const cats = await listNewsCategories({ includeInactive: true });
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 max-w-full space-y-4">
       <DashBreadcrumbs
         items={[
           { href: "/dashboard/news/", label: "Новости" },

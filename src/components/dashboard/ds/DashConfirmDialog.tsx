@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DashModal } from "@/components/dashboard/ds/DashModal";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import {
   dashBtnDanger,
   dashBtnSecondary,
@@ -13,8 +14,8 @@ export function DashConfirmDialog({
   onOpenChange,
   title,
   lead,
-  confirmLabel = "Подтвердить",
-  cancelLabel = "Отмена",
+  confirmLabel,
+  cancelLabel,
   danger = true,
   loading = false,
   onConfirm,
@@ -29,8 +30,11 @@ export function DashConfirmDialog({
   loading?: boolean;
   onConfirm: () => void | Promise<void>;
 }) {
+  const t = useDashT();
   const [busy, setBusy] = useState(false);
   const pending = loading || busy;
+  const confirm = confirmLabel ?? t.common.confirm;
+  const cancel = cancelLabel ?? t.common.cancel;
 
   return (
     <DashModal
@@ -38,6 +42,7 @@ export function DashConfirmDialog({
       onOpenChange={onOpenChange}
       title={title}
       size="sm"
+      closeLabel={t.common.close}
       footer={
         <>
           <button
@@ -46,7 +51,7 @@ export function DashConfirmDialog({
             disabled={pending}
             onClick={() => onOpenChange(false)}
           >
-            {cancelLabel}
+            {cancel}
           </button>
           <button
             type="button"
@@ -62,7 +67,7 @@ export function DashConfirmDialog({
               }
             }}
           >
-            {pending ? "…" : confirmLabel}
+            {pending ? t.common.saving : confirm}
           </button>
         </>
       }

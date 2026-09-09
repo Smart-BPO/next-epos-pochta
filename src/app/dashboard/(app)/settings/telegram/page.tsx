@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { requireAdmin, canAccess, canMutate } from "@/lib/cms/auth";
-import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
+import { DashDenied } from "@/components/dashboard/DashDenied";
 import { DashBreadcrumbs } from "@/components/dashboard/ui";
 import {
   defaultTelegramWebhookUrl,
@@ -63,12 +63,7 @@ function StatusPill({
 export default async function DashboardTelegramSettingsPage() {
   const admin = await requireAdmin();
   if (!canAccess(admin.role, "settings")) {
-    return (
-      <DashAccessDenied
-        title="Telegram"
-        lead="Нет доступа к настройкам Telegram."
-      />
-    );
+    return <DashDenied section="telegram" />;
   }
 
   const tokenOk = hasTelegramBotToken();

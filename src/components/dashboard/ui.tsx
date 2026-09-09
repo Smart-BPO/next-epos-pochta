@@ -209,10 +209,12 @@ export function DashFormField({
   return (
     <label
       htmlFor={htmlFor}
-      className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40"
+      className="grid min-w-0 gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40"
     >
       {label}
-      <span className="font-normal normal-case">{children}</span>
+      <span className="block min-w-0 max-w-full font-normal normal-case">
+        {children}
+      </span>
     </label>
   );
 }

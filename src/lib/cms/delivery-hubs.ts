@@ -8,7 +8,7 @@ import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 
 type FaqItem = { question: string; answer: string };
 
-type HubRow = {
+export type DeliveryHubAdminRow = {
   code: string;
   slug: string;
   name_en: string;
@@ -29,6 +29,8 @@ type HubRow = {
   meta_description_uz: string;
   is_active: boolean;
 };
+
+type HubRow = DeliveryHubAdminRow;
 
 function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
@@ -111,7 +113,7 @@ export async function getDeliveryCityBySlugAsync(
   return cities.find((c) => c.slug === slug);
 }
 
-export async function listDeliveryHubAdminRows() {
+export async function listDeliveryHubAdminRows(): Promise<DeliveryHubAdminRow[]> {
   if (!hasSupabaseAdminConfig()) return [];
   const client = createSupabaseAdminClient();
   const { data } = await client
@@ -120,5 +122,5 @@ export async function listDeliveryHubAdminRows() {
       "code, slug, name_en, name_ru, name_uz, settlement_id, eta_hint_ru, eta_hint_uz, lead_ru, lead_uz, body_ru, body_uz, faq_ru, faq_uz, meta_title_ru, meta_title_uz, meta_description_ru, meta_description_uz, is_active",
     )
     .order("code");
-  return (data ?? []) as HubRow[];
+  return (data ?? []) as DeliveryHubAdminRow[];
 }

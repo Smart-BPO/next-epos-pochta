@@ -1,7 +1,7 @@
 import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
+import { DashDenied } from "@/components/dashboard/DashDenied";
 import {
   LeadsListClient,
   type LeadListRow,
@@ -11,12 +11,7 @@ import { updateLeadStatusAction } from "./actions";
 export default async function DashboardLeadsPage() {
   const admin = await requireAccess("leads");
   if (!admin) {
-    return (
-      <DashAccessDenied
-        title="Заявки"
-        lead="Раздел для ролей CRM / owner / viewer."
-      />
-    );
+    return <DashDenied section="leads" />;
   }
   const readOnly = !canMutate(admin.role, "leads");
 

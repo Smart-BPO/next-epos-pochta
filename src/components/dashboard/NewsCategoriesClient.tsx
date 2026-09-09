@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import * as Yup from "yup";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import {
   DashCheckbox,
   DashCodeInput,
@@ -14,23 +15,11 @@ import {
   DashTextInput,
   valuesToFormData,
 } from "@/components/dashboard/ds";
+import { dashFormat } from "@/i18n/dashboard";
 import { slugCodeSchema } from "@/lib/dashboard/schemas";
 import { toast } from "react-toastify";
 import { dashBtnPrimary, dashBtnSecondary } from "@/styles/dashboard";
 import type { NewsCategoryRow } from "@/lib/cms/news-categories";
-
-const categorySchema = Yup.object({
-  id: slugCodeSchema(),
-  label_uz: Yup.string().trim().required("Label UZ обязателен"),
-  label_ru: Yup.string().trim().required("Label RU обязателен"),
-  sort_order: Yup.number()
-    .transform((value, originalValue) =>
-      String(originalValue ?? "").trim() === "" ? 0 : Number(originalValue),
-    )
-    .min(0)
-    .required(),
-  is_active: Yup.boolean().required(),
-});
 
 type CategoryValues = {
   id: string;
@@ -51,8 +40,22 @@ export function NewsCategoriesClient({
   saveAction: (formData: FormData) => Promise<void>;
   deleteAction: (formData: FormData) => Promise<void>;
 }) {
+  const t = useDashT();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<NewsCategoryRow | null>(null);
+
+  const categorySchema = Yup.object({
+    id: slugCodeSchema(t),
+    label_uz: Yup.string().trim().required(t.errors.required),
+    label_ru: Yup.string().trim().required(t.errors.required),
+    sort_order: Yup.number()
+      .transform((value, originalValue) =>
+        String(originalValue ?? "").trim() === "" ? 0 : Number(originalValue),
+      )
+      .min(0)
+      .required(t.errors.required),
+    is_active: Yup.boolean().required(),
+  });
 
   const initial: CategoryValues = editing
     ? {
@@ -82,17 +85,17 @@ export function NewsCategoriesClient({
 
   return (
     <DashCrudPage
-      title="Категории новостей"
-      lead="Таксономия для фильтров и редактора. Seed: company / product / business / geography."
+      title={t.categories.title}
+      lead={t.categories.lead}
       secondaryActions={
         <Link href="/dashboard/news/" className={dashBtnSecondary}>
-          ← Статьи
+          {t.categories.backToArticles}
         </Link>
       }
       primaryAction={
         canWrite ? (
           <button type="button" className={dashBtnPrimary} onClick={openCreate}>
-            Добавить
+            {t.categories.add}
           </button>
         ) : undefined
       }
@@ -101,16 +104,16 @@ export function NewsCategoriesClient({
         storageKey="news-categories"
         rows={rows}
         rowKey={(r) => r.id}
-        emptyTitle="Нет категорий"
+        emptyTitle={t.categories.emptyTitle}
         defaultSortId="sort"
         defaultSortDir="asc"
         filters={[
           {
             id: "active",
-            label: "Статус",
+            label: t.list.status,
             options: [
-              { value: "1", label: "active" },
-              { value: "0", label: "inactive" },
+              { value: "1", label: t.list.active },
+              { value: "0", label: t.list.inactive },
             ],
             getValue: (r) => (r.isActive ? "1" : "0"),
           },
@@ -118,7 +121,7 @@ export function NewsCategoriesClient({
         columns={[
           {
             id: "id",
-            header: "ID",
+            header: t.list.pageAddress,
             searchText: (r) =>
               `${r.id} ${r.labelUz} ${r.labelRu}`,
             sortValue: (r) => r.id,
@@ -130,7 +133,7 @@ export function NewsCategoriesClient({
           },
           {
             id: "labels",
-            header: "Labels",
+            header: t.list.labels,
             sortValue: (r) => r.labelUz,
             cell: (row) => (
               <span className="text-sm text-black/65">
@@ -140,7 +143,7 @@ export function NewsCategoriesClient({
           },
           {
             id: "sort",
-            header: "Sort",
+            header: t.list.sort,
             sortValue: (r) => r.sortOrder,
             cell: (row) => (
               <span className="text-sm text-black/55">{row.sortOrder}</span>
@@ -148,7 +151,7 @@ export function NewsCategoriesClient({
           },
           {
             id: "active",
-            header: "Статус",
+            header: t.list.status,
             sortValue: (r) => (r.isActive ? 1 : 0),
             cell: (row) => (
               <span
@@ -158,7 +161,7 @@ export function NewsCategoriesClient({
                     : "text-xs font-semibold text-black/40"
                 }
               >
-                {row.isActive ? "active" : "inactive"}
+                {row.isActive ? t.list.active : t.list.inactive}
               </span>
             ),
           },
@@ -168,8 +171,10 @@ export function NewsCategoriesClient({
             ? (row) => (
                 <DashRowActions
                   onEdit={() => openEdit(row)}
-                  confirmTitle="Удалить категорию?"
-                  confirmLead={`«${row.id}» будет удалена.`}
+                  confirmTitle={t.categories.deleteConfirm}
+                  confirmLead={dashFormat(t.categories.deleteLead, {
+                    id: row.id,
+                  })}
                   onDelete={async () => {
                     await deleteAction(valuesToFormData({ id: row.id }));
                   }}
@@ -188,19 +193,17 @@ export function NewsCategoriesClient({
                               is_active: !row.isActive,
                             }),
                           );
-                          toast.success(
-                            row.isActive ? "Выключено" : "Включено",
-                          );
+                          toast.success(t.categories.saved);
                         } catch (err) {
                           toast.error(
                             err instanceof Error
                               ? err.message
-                              : "Не удалось обновить",
+                              : t.errors.saveFailed,
                           );
                         }
                       }}
                     >
-                      {row.isActive ? "Выкл." : "Вкл."}
+                      {row.isActive ? t.categories.off : t.categories.on}
                     </button>
                   }
                 />
@@ -213,7 +216,7 @@ export function NewsCategoriesClient({
         <DashModal
           open={open}
           onOpenChange={setOpen}
-          title={editing ? "Изменить категорию" : "Новая категория"}
+          title={editing ? t.categories.edit : t.categories.add}
           size="md"
         >
           <DashForm<CategoryValues>
@@ -221,7 +224,7 @@ export function NewsCategoriesClient({
             enableReinitialize
             initialValues={initial}
             schema={categorySchema}
-            successMessage="Категория сохранена"
+            successMessage={t.categories.saved}
             onSubmit={async (values) => {
               await saveAction(valuesToFormData(values));
               setOpen(false);
@@ -232,26 +235,34 @@ export function NewsCategoriesClient({
               <>
                 <DashCodeInput
                   name="id"
-                  label="ID (slug)"
-                  hint="Латиница, цифры, _ и -"
+                  label={t.list.pageAddress}
                   disabled={Boolean(editing)}
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <DashTextInput name="label_uz" label="Label UZ" />
-                  <DashTextInput name="label_ru" label="Label RU" />
+                  <DashTextInput
+                    name="label_uz"
+                    label={t.categories.labelUz}
+                  />
+                  <DashTextInput
+                    name="label_ru"
+                    label={t.categories.labelRu}
+                  />
                 </div>
                 <DashTextInput
                   name="sort_order"
-                  label="Sort"
+                  label={t.list.sort}
                   type="number"
                 />
-                <DashCheckbox name="is_active" label="Active" />
+                <DashCheckbox
+                  name="is_active"
+                  label={t.categories.active}
+                />
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className={`${dashBtnPrimary} w-fit`}
                 >
-                  {isSubmitting ? "…" : "Сохранить"}
+                  {isSubmitting ? t.common.saving : t.common.save}
                 </button>
               </>
             )}

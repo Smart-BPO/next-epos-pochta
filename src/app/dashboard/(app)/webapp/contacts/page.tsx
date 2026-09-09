@@ -1,7 +1,7 @@
 import { requireAccess } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
+import { DashDenied } from "@/components/dashboard/DashDenied";
 import {
   WebappContactsClient,
   type WebappContactRow,
@@ -10,9 +10,7 @@ import {
 export default async function WebappContactsPage() {
   const session = await requireAccess("webapp");
   if (!session) {
-    return (
-      <DashAccessDenied title="WebApp контакты" lead="Нет доступа." />
-    );
+    return <DashDenied section="contacts" />;
   }
 
   let rows: WebappContactRow[] = [];

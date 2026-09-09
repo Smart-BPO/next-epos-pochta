@@ -3,14 +3,15 @@
 import { useState, type ReactNode } from "react";
 import { toast } from "react-toastify";
 import { DashConfirmDialog } from "@/components/dashboard/ds/DashConfirmDialog";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { dashBtnGhost, dashBtnSecondary } from "@/styles/dashboard";
 
 export function DashRowActions({
   onEdit,
   onDelete,
-  editLabel = "Изменить",
-  deleteLabel = "Удалить",
-  confirmTitle = "Удалить?",
+  editLabel,
+  deleteLabel,
+  confirmTitle,
   confirmLead,
   extra,
 }: {
@@ -22,14 +23,17 @@ export function DashRowActions({
   confirmLead?: string;
   extra?: ReactNode;
 }) {
+  const t = useDashT();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const edit = editLabel ?? t.common.edit;
+  const del = deleteLabel ?? t.common.delete;
 
   return (
     <div className="inline-flex flex-wrap items-center justify-end gap-1">
       {extra}
       {onEdit ? (
         <button type="button" className={dashBtnGhost} onClick={onEdit}>
-          {editLabel}
+          {edit}
         </button>
       ) : null}
       {onDelete ? (
@@ -39,21 +43,21 @@ export function DashRowActions({
             className={dashBtnSecondary}
             onClick={() => setConfirmOpen(true)}
           >
-            {deleteLabel}
+            {del}
           </button>
           <DashConfirmDialog
             open={confirmOpen}
             onOpenChange={setConfirmOpen}
-            title={confirmTitle}
+            title={confirmTitle ?? `${del}?`}
             lead={confirmLead}
-            confirmLabel={deleteLabel}
+            confirmLabel={del}
             onConfirm={async () => {
               try {
                 await onDelete();
-                toast.success("Удалено");
+                toast.success(t.common.deleted);
               } catch (err) {
                 toast.error(
-                  err instanceof Error ? err.message : "Не удалось удалить",
+                  err instanceof Error ? err.message : t.errors.deleteFailed,
                 );
                 throw err;
               }

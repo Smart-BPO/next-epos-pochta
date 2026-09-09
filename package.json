@@ -24,6 +24,7 @@
     "@tiptap/react": "^3.31.3",
     "@tiptap/starter-kit": "^3.31.3",
     "formik": "^2.4.9",
+    "lucide-react": "^1.43.0",
     "next": "16.3.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

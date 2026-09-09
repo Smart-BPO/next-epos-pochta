@@ -8,92 +8,90 @@ export type DashboardNavArea =
   | "users"
   | "media";
 
+export type DashboardNavLabelKey =
+  | "overview"
+  | "leads"
+  | "contacts"
+  | "shipments"
+  | "news"
+  | "delivery"
+  | "media"
+  | "settings"
+  | "telegram"
+  | "users";
+
 export type DashboardNavItem = {
   href: string;
-  label: string;
-  /** Compact label for mobile tab bar. */
-  shortLabel: string;
+  labelKey: DashboardNavLabelKey;
+  /** Compact label key for mobile tab bar (optional override). */
+  shortLabelKey?: "contactsShort" | "shipmentsShort" | "deliveryShort";
   area: DashboardNavArea;
   group: "ops" | "content" | "system";
 };
 
-export const NAV_GROUPS: Array<{
-  id: DashboardNavItem["group"];
-  label: string;
-}> = [
-  { id: "ops", label: "Операции" },
-  { id: "content", label: "Контент" },
-  { id: "system", label: "Система" },
-];
+export const NAV_GROUP_IDS = ["ops", "content", "system"] as const;
 
 export const DASHBOARD_NAV: DashboardNavItem[] = [
   {
     href: "/dashboard/",
-    label: "Обзор",
-    shortLabel: "Обзор",
+    labelKey: "overview",
     area: "overview",
     group: "ops",
   },
   {
     href: "/dashboard/leads/",
-    label: "Заявки",
-    shortLabel: "Заявки",
+    labelKey: "leads",
     area: "leads",
     group: "ops",
   },
   {
     href: "/dashboard/webapp/contacts/",
-    label: "WebApp контакты",
-    shortLabel: "Контакты",
+    labelKey: "contacts",
+    shortLabelKey: "contactsShort",
     area: "webapp",
     group: "ops",
   },
   {
     href: "/dashboard/webapp/shipments/",
-    label: "WebApp отправления",
-    shortLabel: "Отправления",
+    labelKey: "shipments",
+    shortLabelKey: "shipmentsShort",
     area: "webapp",
     group: "ops",
   },
   {
     href: "/dashboard/news/",
-    label: "Новости",
-    shortLabel: "Новости",
+    labelKey: "news",
     area: "news",
     group: "content",
   },
   {
     href: "/dashboard/delivery/",
-    label: "Хабы доставки",
-    shortLabel: "Хабы",
+    labelKey: "delivery",
+    shortLabelKey: "deliveryShort",
     area: "delivery",
     group: "content",
   },
   {
     href: "/dashboard/media/",
-    label: "Медиа",
-    shortLabel: "Медиа",
+    labelKey: "media",
     area: "media",
     group: "content",
   },
   {
     href: "/dashboard/settings/",
-    label: "Настройки",
-    shortLabel: "Настройки",
+    labelKey: "settings",
     area: "settings",
     group: "system",
   },
   {
     href: "/dashboard/settings/telegram/",
-    label: "Telegram",
-    shortLabel: "Telegram",
+    labelKey: "telegram",
     area: "settings",
     group: "system",
   },
   {
     href: "/dashboard/users/",
-    label: "Сотрудники",
-    shortLabel: "Сотрудники",
+    labelKey: "users",
     area: "users",
     group: "system",
   },

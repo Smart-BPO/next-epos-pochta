@@ -1,9 +1,13 @@
+"use client";
+
 import type { AdminUser } from "@/lib/cms/auth";
 import { canAccess } from "@/lib/cms/auth";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { DashboardToaster } from "@/components/dashboard/DashboardToaster";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import { DashLocaleSwitcher } from "@/components/dashboard/DashLocaleSwitcher";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import {
   DashMobileNav,
   DashMobileTopBar,
@@ -12,6 +16,7 @@ import { IconLogout } from "@/components/dashboard/icons";
 import { logoutAction } from "@/app/dashboard/(auth)/logout/actions";
 import {
   dashAside,
+  dashMainColumn,
   dashMainMobilePad,
   dashShell,
 } from "@/styles/dashboard";
@@ -33,19 +38,27 @@ export function DashboardChrome({
   admin: AdminUser;
   children: React.ReactNode;
 }) {
+  const t = useDashT();
   const items = DASHBOARD_NAV.filter((item) => canAccess(admin.role, item.area));
   const name = admin.displayName || admin.email.split("@")[0] || "Admin";
 
   return (
-    <div className={dashShell}>
+    <div className={dashShell} lang={undefined}>
       <DashboardToaster />
-      <div className="flex min-h-dvh w-full">
+      <div className="flex h-dvh w-full">
         <aside className={dashAside}>
           <div className="px-5 pt-5 pb-3">
-            <p className="m-0 font-display text-[0.95rem] font-bold tracking-[-0.02em] text-primary">
-              EPOS CMS
-            </p>
-            <p className="m-0 mt-0.5 truncate text-xs text-black/40">{admin.email}</p>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="m-0 font-display text-[0.95rem] font-bold tracking-[-0.02em] text-primary">
+                  {t.brand}
+                </p>
+                <p className="m-0 mt-0.5 truncate text-xs text-black/40">
+                  {admin.email}
+                </p>
+              </div>
+              <DashLocaleSwitcher />
+            </div>
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2">
@@ -59,7 +72,7 @@ export function DashboardChrome({
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-black/50 transition hover:bg-black/[0.03] hover:text-black"
               >
                 <IconLogout />
-                Выйти
+                {t.logout}
               </button>
             </form>
             <div className="flex items-center gap-2.5 rounded-xl bg-[#f7f8fa] px-2.5 py-2">
@@ -81,9 +94,9 @@ export function DashboardChrome({
           </div>
         </aside>
 
-        <div className="min-w-0 flex-1">
+        <div className={dashMainColumn}>
           <DashMobileTopBar admin={admin} />
-          <main className={cn("p-4 sm:p-5 lg:p-6", dashMainMobilePad)}>
+          <main className={cn("min-w-0 p-4 sm:p-5 lg:p-6", dashMainMobilePad)}>
             {children}
           </main>
           <DashMobileNav admin={admin} items={items} />

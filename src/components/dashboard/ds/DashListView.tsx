@@ -14,6 +14,8 @@ import {
   DashTd,
   DashTh,
 } from "@/components/dashboard/ui";
+import { useDashLocale, useDashT } from "@/components/dashboard/DashLocaleProvider";
+import { dashFormat, dashIntlLocale } from "@/i18n/dashboard";
 import {
   dashBtnGhost,
   dashBtnSecondary,
@@ -52,6 +54,7 @@ const PAGE_SIZES = [10, 25, 50, 100] as const;
 function compareValues(
   a: string | number | boolean | null | undefined | Date,
   b: string | number | boolean | null | undefined | Date,
+  intlLocale: string,
 ): number {
   if (a == null && b == null) return 0;
   if (a == null) return 1;
@@ -65,7 +68,7 @@ function compareValues(
   if (typeof a === "boolean" && typeof b === "boolean") {
     return Number(a) - Number(b);
   }
-  return String(a).localeCompare(String(b), "ru", {
+  return String(a).localeCompare(String(b), intlLocale, {
     numeric: true,
     sensitivity: "base",
   });
@@ -135,7 +138,7 @@ export function DashListView<T>({
   actions,
   renderCard,
   title,
-  emptyTitle = "Пусто",
+  emptyTitle,
   emptyLead,
   defaultView = "table",
   defaultPageSize = 25,
@@ -163,6 +166,9 @@ export function DashListView<T>({
   toolbarExtra?: ReactNode;
   className?: string;
 }) {
+  const t = useDashT();
+  const { locale } = useDashLocale();
+  const intlLocale = dashIntlLocale(locale);
   const [view, setViewPersist] = usePersistedView(storageKey, defaultView);
   const [query, setQuery] = useState("");
   const [filterState, setFilterState] = useState<Record<string, string>>({});
@@ -203,11 +209,15 @@ export function DashListView<T>({
     if (!col?.sortValue) return filtered;
     const copy = [...filtered];
     copy.sort((a, b) => {
-      const cmp = compareValues(col.sortValue!(a), col.sortValue!(b));
+      const cmp = compareValues(
+        col.sortValue!(a),
+        col.sortValue!(b),
+        intlLocale,
+      );
       return sortDir === "asc" ? cmp : -cmp;
     });
     return copy;
-  }, [filtered, columns, sortId, sortDir]);
+  }, [filtered, columns, sortId, sortDir, intlLocale]);
 
   const pageCount = Math.max(1, Math.ceil(sorted.length / pageSize));
   const safePage = Math.min(page, pageCount - 1);
@@ -245,38 +255,42 @@ export function DashListView<T>({
   if (rows.length === 0) {
     return (
       <div className={cn(dashCard, "p-6", className)}>
-        <DashEmptyState title={emptyTitle} lead={emptyLead} />
+        <DashEmptyState
+          title={emptyTitle || t.common.emptyTitle}
+          lead={emptyLead}
+        />
       </div>
     );
   }
 
+  const fieldLabel =
+    "text-[0.65rem] font-semibold uppercase tracking-wide text-black/40 leading-none";
+  /** Shared control height so search / select / view toggle share one baseline. */
+  const fieldControl = cn(dashInput, "h-10 py-0 leading-none");
+
   return (
     <div className={cn("space-y-3", className)}>
       <div className="flex flex-wrap items-end gap-2">
-          <label className="grid min-w-[12rem] flex-1 gap-1">
-            <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-black/40">
-              Поиск
-            </span>
+          <label className="grid min-w-[12rem] flex-1 gap-1.5">
+            <span className={fieldLabel}>{t.common.search}</span>
             <input
               type="search"
               value={query}
               onChange={(e) => setQueryReset(e.target.value)}
-              placeholder="Имя, телефон, id…"
-              className={dashInput}
+              placeholder={t.common.searchPlaceholder}
+              className={fieldControl}
             />
           </label>
 
           {(filters ?? []).map((f) => (
-            <label key={f.id} className="grid gap-1">
-              <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-black/40">
-                {f.label}
-              </span>
+            <label key={f.id} className="grid gap-1.5">
+              <span className={fieldLabel}>{f.label}</span>
               <select
-                className={`${dashInput} min-w-[8rem]`}
+                className={cn(fieldControl, "min-w-[8rem]")}
                 value={filterState[f.id] ?? ""}
                 onChange={(e) => setFilterReset(f.id, e.target.value)}
               >
-                <option value="">{f.allLabel ?? "Все"}</option>
+                <option value="">{f.allLabel ?? t.common.all}</option>
                 {f.options.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -286,12 +300,10 @@ export function DashListView<T>({
             </label>
           ))}
 
-          <label className="grid gap-1">
-            <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-black/40">
-              На странице
-            </span>
+          <label className="grid gap-1.5">
+            <span className={fieldLabel}>{t.common.perPage}</span>
             <select
-              className={`${dashInput} min-w-[5rem]`}
+              className={cn(fieldControl, "min-w-[5rem]")}
               value={pageSize}
               onChange={(e) => setPageSizeReset(Number(e.target.value))}
             >
@@ -303,52 +315,63 @@ export function DashListView<T>({
             </select>
           </label>
 
-          <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-end gap-2">
             {toolbarExtra}
-            <div className="inline-flex rounded-xl border border-black/10 bg-white p-0.5">
-              <button
-                type="button"
-                className={cn(
-                  "rounded-lg px-3 py-1.5 text-xs font-semibold transition",
-                  view === "table"
-                    ? "bg-primary text-white"
-                    : "text-black/55 hover:bg-black/[0.03]",
-                )}
-                onClick={() => setViewPersist("table")}
+            <div className="grid gap-1.5">
+              <span className={fieldLabel}>{t.common.view}</span>
+              <div
+                className="inline-flex h-10 items-stretch rounded-xl border border-black/10 bg-white p-0.5"
+                role="group"
+                aria-label={t.common.view}
               >
-                Таблица
-              </button>
-              <button
-                type="button"
-                className={cn(
-                  "rounded-lg px-3 py-1.5 text-xs font-semibold transition",
-                  view === "cards"
-                    ? "bg-primary text-white"
-                    : "text-black/55 hover:bg-black/[0.03]",
-                )}
-                onClick={() => setViewPersist("cards")}
-              >
-                Карточки
-              </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "rounded-[0.625rem] px-3 text-xs font-semibold transition",
+                    view === "table"
+                      ? "bg-primary text-white"
+                      : "text-black/55 hover:bg-black/[0.03]",
+                  )}
+                  onClick={() => setViewPersist("table")}
+                >
+                  {t.common.table}
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "rounded-[0.625rem] px-3 text-xs font-semibold transition",
+                    view === "cards"
+                      ? "bg-primary text-white"
+                      : "text-black/55 hover:bg-black/[0.03]",
+                  )}
+                  onClick={() => setViewPersist("cards")}
+                >
+                  {t.common.cards}
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
       <p className="m-0 text-xs text-black/45">
         {sorted.length === 0
-          ? "Ничего не найдено"
-          : `Показано ${safePage * pageSize + 1}–${Math.min(
-              (safePage + 1) * pageSize,
-              sorted.length,
-            )} из ${sorted.length}`}
-        {rows.length !== sorted.length ? ` (всего ${rows.length})` : ""}
+          ? t.common.nothingFound
+          : `${dashFormat(t.common.showing, {
+              from: safePage * pageSize + 1,
+              to: Math.min((safePage + 1) * pageSize, sorted.length),
+              total: sorted.length,
+            })}${
+              rows.length !== sorted.length
+                ? ` ${dashFormat(t.common.totalHint, { n: rows.length })}`
+                : ""
+            }`}
       </p>
 
       {sorted.length === 0 ? (
         <div className={`${dashCard} p-6`}>
           <DashEmptyState
-            title="Нет результатов"
-            lead="Сбросьте поиск или фильтры."
+            title={t.common.nothingFound}
+            lead={t.common.emptyFilteredLead}
           />
         </div>
       ) : view === "table" ? (
@@ -447,10 +470,13 @@ export function DashListView<T>({
             disabled={safePage <= 0}
             onClick={() => setPage((p) => Math.max(0, p - 1))}
           >
-            ← Назад
+            {t.common.prev}
           </button>
           <span className="text-xs font-medium text-black/50">
-            Стр. {safePage + 1} / {pageCount}
+            {dashFormat(t.common.pageOf, {
+              page: safePage + 1,
+              pages: pageCount,
+            })}
           </span>
           <button
             type="button"
@@ -458,7 +484,7 @@ export function DashListView<T>({
             disabled={safePage >= pageCount - 1}
             onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
           >
-            Вперёд →
+            {t.common.next}
           </button>
           <button
             type="button"
@@ -469,7 +495,7 @@ export function DashListView<T>({
               setPage(0);
             }}
           >
-            Сбросить фильтры
+            {t.common.resetFilters}
           </button>
         </div>
       ) : query || Object.values(filterState).some(Boolean) ? (
@@ -482,7 +508,7 @@ export function DashListView<T>({
             setPage(0);
           }}
         >
-          Сбросить фильтры
+          {t.common.resetFilters}
         </button>
       ) : null}
     </div>

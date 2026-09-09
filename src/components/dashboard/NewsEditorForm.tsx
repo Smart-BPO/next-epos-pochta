@@ -135,7 +135,7 @@ export function NewsEditorForm({
   );
 
   return (
-    <>
+    <div className="min-w-0 max-w-full">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <DashStatusBadge kind="news" value={values.status} />
@@ -163,11 +163,11 @@ export function NewsEditorForm({
       <form
         id="news-editor-form"
         action={saveNewsAction}
-        className="relative grid gap-5 pb-28 lg:grid-cols-[minmax(0,1fr)_20rem] lg:pb-24"
+        className="relative grid w-full min-w-0 max-w-full gap-5 pb-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] lg:items-start lg:pb-24 xl:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]"
       >
         {values.id ? <input type="hidden" name="id" value={values.id} /> : null}
 
-        <div className="min-w-0 space-y-4">
+        <div className="min-w-0 max-w-full space-y-4">
           <div className="flex gap-2">
             {(["uz", "ru"] as const).map((loc) => (
               <button
@@ -243,7 +243,9 @@ export function NewsEditorForm({
           </div>
         </div>
 
-        <aside className={`${dashCard} sticky top-4 h-fit space-y-4 p-4`}>
+        <aside
+          className={`${dashCard} min-w-0 max-w-full space-y-4 overflow-x-hidden p-4 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain`}
+        >
           <DashFormField label="Статус">
             <select
               name="status"
@@ -274,7 +276,7 @@ export function NewsEditorForm({
               type="datetime-local"
               name="published_at_local"
               defaultValue={toDatetimeLocal(values.publishedAt)}
-              className={dashInput}
+              className={`${dashInput} min-w-0 max-w-full`}
             />
           </DashFormField>
 
@@ -379,6 +381,6 @@ export function NewsEditorForm({
           </button>
         </form>
       ) : null}
-    </>
+    </div>
   );
 }

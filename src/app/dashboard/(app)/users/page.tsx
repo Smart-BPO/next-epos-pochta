@@ -1,7 +1,7 @@
 import { requireAccess } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
+import { DashDenied } from "@/components/dashboard/DashDenied";
 import {
   UsersInviteClient,
   type StaffRow,
@@ -15,12 +15,7 @@ import {
 export default async function DashboardUsersPage() {
   const me = await requireAccess("users");
   if (!me) {
-    return (
-      <DashAccessDenied
-        title="Сотрудники"
-        lead="Раздел доступен только роли owner."
-      />
-    );
+    return <DashDenied section="users" />;
   }
 
   let rows: StaffRow[] = [];

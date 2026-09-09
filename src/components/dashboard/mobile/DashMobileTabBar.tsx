@@ -6,6 +6,8 @@ import { createPortal } from "react-dom";
 import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/cn";
 import type { DashboardNavItem } from "@/components/dashboard/nav";
+import { resolveNavLabel } from "@/components/dashboard/DashboardNav";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { IconMore } from "@/components/dashboard/icons";
 import { DashNavIcon } from "@/components/dashboard/mobile/DashNavIcon";
 
@@ -35,6 +37,7 @@ export function DashMobileTabBar({
 }) {
   const pathname = usePathname() || "/dashboard/";
   const isClient = useIsClient();
+  const t = useDashT();
 
   if (!isClient) return null;
 
@@ -45,7 +48,7 @@ export function DashMobileTabBar({
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
         height: "calc(var(--dash-tabbar-h) + env(safe-area-inset-bottom, 0px))",
       }}
-      aria-label="Мобильная навигация"
+      aria-label={t.common.moreMenu}
     >
       <div
         className="mx-auto grid h-[var(--dash-tabbar-h)] max-w-lg"
@@ -67,7 +70,9 @@ export function DashMobileTabBar({
               <span className={cn(active ? "text-primary" : "text-black/35")}>
                 <DashNavIcon href={item.href} className="size-5" />
               </span>
-              <span className="max-w-full truncate">{item.shortLabel}</span>
+              <span className="max-w-full truncate">
+                {resolveNavLabel(item, t.nav, true)}
+              </span>
             </Link>
           );
         })}
@@ -82,7 +87,7 @@ export function DashMobileTabBar({
           aria-haspopup="dialog"
         >
           <IconMore className="size-5" />
-          <span>Ещё</span>
+          <span>{t.common.moreMenu}</span>
         </button>
       </div>
     </nav>,

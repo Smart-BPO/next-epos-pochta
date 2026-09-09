@@ -1,7 +1,7 @@
 import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
+import { DashDenied } from "@/components/dashboard/DashDenied";
 import {
   WebappShipmentsClient,
   type WebappShipmentRow,
@@ -11,9 +11,7 @@ import { updateShipmentAction } from "./actions";
 export default async function WebappShipmentsPage() {
   const admin = await requireAccess("webapp");
   if (!admin) {
-    return (
-      <DashAccessDenied title="WebApp отправления" lead="Нет доступа." />
-    );
+    return <DashDenied section="shipments" />;
   }
   const readOnly = !canMutate(admin.role, "webapp");
 
