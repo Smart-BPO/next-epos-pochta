@@ -8,7 +8,7 @@ export const SEO_OPS_CHECKLIST = [
     title: "Google Search Console",
     items: [
       "Verify domain via NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION",
-      "Submit https://epospochta.uz/sitemap.xml",
+      "Submit https://epos-pochta.uz/sitemap.xml",
       "Monitor coverage for /delivery/* and /calculator/",
     ],
   },

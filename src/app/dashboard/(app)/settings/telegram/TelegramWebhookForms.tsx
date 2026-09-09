@@ -6,6 +6,7 @@ import {
   deleteTelegramWebhookAction,
   refreshTelegramWebhookAction,
   sendTelegramTestAction,
+  setTelegramWebAppMenuAction,
   setTelegramWebhookAction,
 } from "./actions";
 import {
@@ -37,9 +38,11 @@ function ActionResult({ state }: { state: TelegramActionState | null }) {
 
 export function TelegramWebhookForms({
   defaultWebhookUrl,
+  defaultWebAppUrl,
   isOwner,
 }: {
   defaultWebhookUrl: string;
+  defaultWebAppUrl: string;
   isOwner: boolean;
 }) {
   const [setState, setAction, setPending] = useActionState(
@@ -58,8 +61,13 @@ export function TelegramWebhookForms({
     sendTelegramTestAction,
     null,
   );
+  const [menuState, menuAction, menuPending] = useActionState(
+    setTelegramWebAppMenuAction,
+    null,
+  );
 
-  const busy = setPending || delPending || refreshPending || testPending;
+  const busy =
+    setPending || delPending || refreshPending || testPending || menuPending;
 
   return (
     <div className="grid max-w-3xl gap-4">
@@ -67,6 +75,45 @@ export function TelegramWebhookForms({
       <ActionResult state={delState} />
       <ActionResult state={refreshState} />
       <ActionResult state={testState} />
+      <ActionResult state={menuState} />
+
+      {isOwner ? (
+        <form action={menuAction} className={`${dashCardPad} grid gap-3`}>
+          <h2 className={dashSectionTitle}>Кнопка Mini App (menu button)</h2>
+          <p className="m-0 text-sm text-black/45">
+            Bot API <code className="text-xs">setChatMenuButton</code>. Домен
+            должен быть разрешён в @BotFather →{" "}
+            <code className="text-xs">/setdomain</code> →{" "}
+            <code className="text-xs">epos-pochta.uz</code>.
+          </p>
+          <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
+            WebApp URL
+            <input
+              name="webapp_url"
+              defaultValue={defaultWebAppUrl}
+              disabled={busy}
+              className={`${dashInput} font-normal normal-case`}
+            />
+          </label>
+          <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
+            Текст кнопки (до 16)
+            <input
+              name="button_text"
+              defaultValue="EPOS"
+              maxLength={16}
+              disabled={busy}
+              className={`${dashInput} font-normal normal-case`}
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={busy}
+            className={`${dashBtnPrimary} w-fit disabled:opacity-60`}
+          >
+            {menuPending ? "Установка…" : "Установить Mini App кнопку"}
+          </button>
+        </form>
+      ) : null}
 
       {isOwner ? (
         <form action={setAction} className={`${dashCardPad} grid gap-3`}>
@@ -104,8 +151,8 @@ export function TelegramWebhookForms({
         </form>
       ) : (
         <p className={`${dashCardPad} text-sm text-black/55`}>
-          Установка и удаление webhook доступны только owner. Вы можете
-          обновить статус и отправить тест.
+          Установка webhook / Mini App кнопки — только owner. Можно обновить
+          статус и отправить тест.
         </p>
       )}
 

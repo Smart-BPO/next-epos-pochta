@@ -5,13 +5,16 @@ import { headers } from "next/headers";
 import { requireAdmin, canAccess } from "@/lib/cms/auth";
 import {
   defaultTelegramWebhookUrl,
+  defaultTelegramWebAppUrl,
   deleteWebhook,
+  getChatMenuButton,
   getMe,
   getTelegramChatId,
   getTelegramWebhookSecret,
   getWebhookInfo,
   hasTelegramBotToken,
   sendMessage,
+  setWebAppMenuButton,
   setWebhook,
 } from "@/lib/telegram/bot";
 import { getCanonicalSiteUrl } from "@/utils/seo/indexing";
@@ -150,4 +153,41 @@ export async function sendTelegramTestAction(
     return { ok: false, error: result.description };
   }
   return { ok: true, message: `Тест отправлен в chat ${chatId}` };
+}
+
+export async function setTelegramWebAppMenuAction(
+  _prev: TelegramActionState | null,
+  formData: FormData,
+): Promise<TelegramActionState> {
+  try {
+    await requireTelegramAdmin({ ownerOnly: true });
+  } catch {
+    return { ok: false, error: "Только owner может ставить Mini App кнопку" };
+  }
+  if (!hasTelegramBotToken()) {
+    return { ok: false, error: "На сервере нет TELEGRAM_BOT_TOKEN" };
+  }
+
+  const origin = await resolveSiteOrigin();
+  const customUrl = String(formData.get("webapp_url") ?? "").trim();
+  const text = String(formData.get("button_text") ?? "EPOS").trim() || "EPOS";
+  const url = customUrl || defaultTelegramWebAppUrl(origin);
+
+  const result = await setWebAppMenuButton({ url, text });
+  revalidateTelegramSettings();
+  if (!result.ok) {
+    return { ok: false, error: result.description };
+  }
+
+  const check = await getChatMenuButton();
+  const checkLabel = check.ok
+    ? check.result.type === "web_app"
+      ? `web_app → ${check.result.web_app.url}`
+      : check.result.type
+    : check.description;
+
+  return {
+    ok: true,
+    message: `Menu button set: «${text.slice(0, 16)}» → ${url}. getChatMenuButton: ${checkLabel}. Если в клиенте не видно — в @BotFather выполните /setdomain → epos-pochta.uz`,
+  };
 }

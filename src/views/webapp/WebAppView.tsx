@@ -9,6 +9,7 @@ import { getWebAppCopy } from "@/data/webapp-copy";
 import {
   clearContactSession,
   readContactSession,
+  writeContactSession,
   type WebAppContactSession,
 } from "@/lib/webapp/session";
 import { Button } from "@/components/atoms/Button";
@@ -17,7 +18,7 @@ import { SITE_CONFIG } from "@/utils/consts";
 type Step = "boot" | "contact" | "shipment" | "success";
 
 export function WebAppView() {
-  const { ready, locale, setLocale, isTelegram } = useTelegram();
+  const { ready, locale, setLocale, isTelegram, initData } = useTelegram();
   const copy = getWebAppCopy(locale);
   const [step, setStep] = useState<Step>("boot");
   const [contact, setContact] = useState<WebAppContactSession | null>(null);
@@ -25,14 +26,61 @@ export function WebAppView() {
 
   useEffect(() => {
     if (!ready) return;
-    const existing = readContactSession();
-    if (existing) {
-      setContact(existing);
-      setStep("shipment");
-    } else {
-      setStep("contact");
-    }
-  }, [ready]);
+    let cancelled = false;
+
+    const boot = async () => {
+      const existing = readContactSession();
+      if (existing) {
+        if (cancelled) return;
+        setContact(existing);
+        setStep("shipment");
+        return;
+      }
+
+      if (initData) {
+        try {
+          const res = await fetch("/api/webapp/session/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ initData }),
+          });
+          const json = (await res.json()) as {
+            found?: boolean;
+            session?: WebAppContactSession & { locale?: string };
+          };
+          if (json.found && json.session?.sessionId && json.session.phone) {
+            const session: WebAppContactSession = {
+              sessionId: json.session.sessionId,
+              phone: json.session.phone,
+              firstName: json.session.firstName,
+              lastName: json.session.lastName,
+              telegramUserId: json.session.telegramUserId,
+              telegramUsername: json.session.telegramUsername,
+              linkedAt: json.session.linkedAt,
+              source: json.session.source,
+            };
+            writeContactSession(session);
+            if (json.session.locale === "ru" || json.session.locale === "uz") {
+              setLocale(json.session.locale);
+            }
+            if (cancelled) return;
+            setContact(session);
+            setStep("shipment");
+            return;
+          }
+        } catch {
+          // fall through to contact gate
+        }
+      }
+
+      if (!cancelled) setStep("contact");
+    };
+
+    void boot();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, initData, setLocale]);
 
   if (!ready || step === "boot") {
     return (

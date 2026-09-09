@@ -64,17 +64,17 @@ export const homeActionRow =
   "flex min-w-0 flex-1 flex-row items-center gap-1.5 sm:gap-2.5";
 
 export const homeActionField =
-  "box-border h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] min-w-0 w-full flex-1 rounded-xl border border-black/15 bg-white px-3 text-sm leading-none text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/15";
+  "box-border h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] min-w-0 w-full flex-1 rounded-[var(--home-action-control-radius)] border border-black/15 bg-white px-3 text-sm leading-none text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/15";
 
 export const homeActionControls =
   "flex min-w-0 w-full flex-1 flex-col gap-2 sm:gap-3 lg:flex-row lg:items-center lg:gap-2.5";
 
-/** Force Button (any size) to match island control height. */
+/** Force Button height + radius to match island fields (not sitewide pill). */
 export const homeActionButton =
-  "!h-[var(--home-action-control-h)] !min-h-[var(--home-action-control-h)] !px-4 !py-0 !text-sm";
+  "!h-[var(--home-action-control-h)] !min-h-[var(--home-action-control-h)] !rounded-[var(--home-action-control-radius)] !px-4 !py-0 !text-sm";
 
 export const homeActionSwap =
-  "inline-flex size-[var(--home-action-control-h)] shrink-0 items-center justify-center rounded-full border border-black/10 bg-surface-muted text-black/65 transition-colors hover:border-black/20 hover:bg-white hover:text-black";
+  "inline-flex size-[var(--home-action-control-h)] shrink-0 items-center justify-center rounded-[var(--home-action-control-radius)] border border-black/10 bg-surface-muted text-black/65 transition-colors hover:border-black/20 hover:bg-white hover:text-black";
 
 export const homeActionDivider =
   "h-px w-full shrink-0 bg-black/10 lg:mx-0 lg:h-auto lg:w-px lg:self-stretch";

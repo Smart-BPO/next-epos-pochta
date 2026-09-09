@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 
 /** Public origin used for canonical, Open Graph, sitemap, robots, JSON-LD. */
-export const CANONICAL_SITE_URL = "https://epospochta.uz";
+export const CANONICAL_SITE_URL = "https://epos-pochta.uz";
 
 export const PRODUCTION_HOSTS = new Set([
-  "epospochta.uz",
-  "www.epospochta.uz",
   "epos-pochta.uz",
   "www.epos-pochta.uz",
+  // Legacy aliases — still HTTPS / redirect targets
+  "epospochta.uz",
+  "www.epospochta.uz",
 ]);
 
 const STAGING_HOSTS = new Set(["localhost", "127.0.0.1"]);

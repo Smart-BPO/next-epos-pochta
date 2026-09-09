@@ -1,7 +1,7 @@
 // @ts-check
 // Plain JS so Hostinger (glibc < 2.29) can load config without native SWC.
 
-const PROD_SITE = "https://epospochta.uz";
+const PROD_SITE = "https://epos-pochta.uz";
 const siteUrl = PROD_SITE;
 
 /**
@@ -71,6 +71,8 @@ const nextConfig = {
       bodySizeLimit: "1mb",
       allowedOrigins: [
         siteOrigin(siteUrl),
+        "epos-pochta.uz",
+        "www.epos-pochta.uz",
         "epospochta.uz",
         "www.epospochta.uz",
         "localhost:3000",

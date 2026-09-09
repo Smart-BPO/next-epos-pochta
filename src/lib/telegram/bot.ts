@@ -27,6 +27,7 @@ export type TelegramBotUser = {
   can_join_groups?: boolean;
   can_read_all_group_messages?: boolean;
   supports_inline_queries?: boolean;
+  has_main_web_app?: boolean;
 };
 
 function botToken(): string {
@@ -48,6 +49,19 @@ export function getTelegramWebhookSecret(): string {
 export function defaultTelegramWebhookUrl(siteOrigin: string): string {
   const base = siteOrigin.replace(/\/+$/, "");
   return `${base}/api/telegram/webhook/`;
+}
+
+/** Public Mini App URL (HTTPS). Override with TELEGRAM_WEBAPP_URL if needed. */
+export function defaultTelegramWebAppUrl(siteOrigin?: string): string {
+  const fromEnv = env("TELEGRAM_WEBAPP_URL");
+  if (fromEnv) return fromEnv.replace(/\/?$/, "/");
+  // Live production host (epos-pochta.uz).
+  const base = (siteOrigin || "https://epos-pochta.uz").replace(/\/+$/, "");
+  return `${base}/webapp/`;
+}
+
+function env(name: string): string {
+  return (process.env[name] ?? "").trim();
 }
 
 async function callTelegramApi<T>(
@@ -123,28 +137,107 @@ export function deleteWebhook(dropPendingUpdates = true) {
 
 export type TelegramInlineKeyboardButton = {
   text: string;
-  callback_data: string;
+  callback_data?: string;
+  web_app?: { url: string };
+  url?: string;
 };
 
 export type TelegramInlineKeyboardMarkup = {
   inline_keyboard: TelegramInlineKeyboardButton[][];
 };
 
+export type TelegramMenuButton =
+  | { type: "commands" }
+  | { type: "default" }
+  | { type: "web_app"; text: string; web_app: { url: string } };
+
+export type TelegramReplyMarkup =
+  | TelegramInlineKeyboardMarkup
+  | {
+      keyboard: Array<
+        Array<{
+          text: string;
+          request_contact?: boolean;
+          request_location?: boolean;
+        }>
+      >;
+      resize_keyboard?: boolean;
+      one_time_keyboard?: boolean;
+      selective?: boolean;
+    }
+  | { remove_keyboard: true; selective?: boolean };
+
 export function sendMessage(params: {
   chatId: string | number;
   text: string;
   disableWebPagePreview?: boolean;
-  replyMarkup?: TelegramInlineKeyboardMarkup;
+  /** Telegram parse_mode, e.g. Markdown or HTML */
+  parseMode?: "Markdown" | "MarkdownV2" | "HTML";
+  replyMarkup?: TelegramReplyMarkup;
 }) {
   const body: Record<string, unknown> = {
     chat_id: params.chatId,
     text: params.text.slice(0, 3900),
     disable_web_page_preview: params.disableWebPagePreview ?? true,
   };
+  if (params.parseMode) body.parse_mode = params.parseMode;
   if (params.replyMarkup) {
     body.reply_markup = params.replyMarkup;
   }
   return callTelegramApi<{ message_id: number }>("sendMessage", body);
+}
+
+export function getChatMenuButton(chatId?: string | number) {
+  const body: Record<string, unknown> = {};
+  if (chatId != null && chatId !== "") body.chat_id = chatId;
+  return callTelegramApi<TelegramMenuButton>("getChatMenuButton", body);
+}
+
+/** Default menu button for all private chats (omit chatId). */
+export function setChatMenuButton(params: {
+  menuButton: TelegramMenuButton;
+  chatId?: string | number;
+}) {
+  const body: Record<string, unknown> = {
+    menu_button: params.menuButton,
+  };
+  if (params.chatId != null && params.chatId !== "") {
+    body.chat_id = params.chatId;
+  }
+  return callTelegramApi<true>("setChatMenuButton", body);
+}
+
+export function setWebAppMenuButton(params?: {
+  url?: string;
+  text?: string;
+  siteOrigin?: string;
+  chatId?: string | number;
+}) {
+  const url = params?.url || defaultTelegramWebAppUrl(params?.siteOrigin);
+  const text = (params?.text || "EPOS").slice(0, 16);
+  return setChatMenuButton({
+    chatId: params?.chatId,
+    menuButton: {
+      type: "web_app",
+      text,
+      web_app: { url },
+    },
+  });
+}
+
+export function setMyCommands(
+  commands: Array<{ command: string; description: string }>,
+) {
+  return callTelegramApi<true>("setMyCommands", { commands });
+}
+
+export function webAppInlineKeyboard(
+  url: string,
+  label = "EPOS Mini App",
+): TelegramInlineKeyboardMarkup {
+  return {
+    inline_keyboard: [[{ text: label, web_app: { url } }]],
+  };
 }
 
 export function answerCallbackQuery(params: {

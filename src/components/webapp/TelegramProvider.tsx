@@ -39,7 +39,15 @@ export function TelegramProvider({ children }: { children: ReactNode }) {
     const boot = () => {
       const tg = getTelegramWebApp();
       setWebApp(tg);
-      setLocale(detectWebAppLocale("uz"));
+
+      const params = new URLSearchParams(window.location.search);
+      const langParam = params.get("lang");
+      if (langParam === "ru" || langParam === "uz") {
+        setLocale(langParam);
+      } else {
+        setLocale(detectWebAppLocale("uz"));
+      }
+
       if (tg) {
         try {
           tg.ready();

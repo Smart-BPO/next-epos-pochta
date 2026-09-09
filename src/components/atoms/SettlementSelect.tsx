@@ -127,7 +127,7 @@ const compactClassNames: ClassNamesConfig<
   ...defaultClassNames,
   control: ({ isFocused }) =>
     cn(
-      "h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] rounded-xl border bg-white px-0.5 text-sm leading-none text-ink shadow-none!",
+      "h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] rounded-[var(--home-action-control-radius)] border bg-white px-0.5 text-sm leading-none text-ink shadow-none!",
       isFocused
         ? "border-primary ring-2 ring-primary/15"
         : "border-black/15",
@@ -219,7 +219,7 @@ export function SettlementSelect({
 
   const shellClass =
     variant === "compact"
-      ? "flex h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] items-center rounded-xl border border-black/15 bg-white px-2.5 text-sm leading-none text-black/40"
+      ? "flex h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] items-center rounded-[var(--home-action-control-radius)] border border-black/15 bg-white px-2.5 text-sm leading-none text-black/40"
       : "flex min-h-11 items-center rounded-xl border border-black/15 bg-white px-3.5 text-sm text-black/40 sm:min-h-[var(--tap-min)] sm:px-4 sm:text-base";
 
   if (!mounted) {

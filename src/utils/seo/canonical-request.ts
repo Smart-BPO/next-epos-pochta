@@ -1,8 +1,11 @@
 import type { NextRequest } from "next/server";
 import { CANONICAL_SITE_URL, PRODUCTION_HOSTS } from "./indexing";
 
+const CANONICAL_HOST = new URL(CANONICAL_SITE_URL).host;
+
 /**
  * One-hop 308 to canonical https apex + trailing slash.
+ * Also redirects legacy hosts (epospochta.uz) → epos-pochta.uz.
  */
 export function getCanonicalRedirectFromHeaders(
   headers: Headers,
@@ -31,6 +34,10 @@ export function getCanonicalRedirectFromHeaders(
     needsRedirect = true;
   }
 
+  if (PRODUCTION_HOSTS.has(hostname) && hostname !== CANONICAL_HOST) {
+    needsRedirect = true;
+  }
+
   const pathname = nextUrl.pathname;
   if (pathname !== "/" && !pathname.endsWith("/") && !pathname.includes(".")) {
     target.pathname = `${pathname}/`;
@@ -38,7 +45,8 @@ export function getCanonicalRedirectFromHeaders(
   }
 
   if (needsRedirect) {
-    target.host = new URL(CANONICAL_SITE_URL).host;
+    target.protocol = "https:";
+    target.host = CANONICAL_HOST;
     return target;
   }
 

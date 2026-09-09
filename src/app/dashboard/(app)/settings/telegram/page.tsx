@@ -5,6 +5,8 @@ import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import { DashBreadcrumbs } from "@/components/dashboard/ui";
 import {
   defaultTelegramWebhookUrl,
+  defaultTelegramWebAppUrl,
+  getChatMenuButton,
   getMe,
   getTelegramChatId,
   getTelegramWebhookSecret,
@@ -74,11 +76,14 @@ export default async function DashboardTelegramSettingsPage() {
   const secretOk = Boolean(getTelegramWebhookSecret());
   const origin = await siteOriginFromRequest();
   const suggestedUrl = defaultTelegramWebhookUrl(origin);
+  const suggestedWebAppUrl = defaultTelegramWebAppUrl(
+    origin.includes("localhost") ? "https://epos-pochta.uz" : origin,
+  );
   const isOwner = admin.role === "owner";
 
-  const [me, info] = tokenOk
-    ? await Promise.all([getMe(), getWebhookInfo()])
-    : [null, null];
+  const [me, info, menu] = tokenOk
+    ? await Promise.all([getMe(), getWebhookInfo(), getChatMenuButton()])
+    : [null, null, null];
 
   const webhookActive = Boolean(info?.ok && info.result.url);
 
@@ -178,6 +183,18 @@ export default async function DashboardTelegramSettingsPage() {
                     : "—"}
                 </span>,
               ],
+              [
+                "Menu button",
+                <span key="menu" className="break-all font-medium text-ink">
+                  {menu?.ok
+                    ? menu.result.type === "web_app"
+                      ? `${menu.result.text} → ${menu.result.web_app.url}`
+                      : menu.result.type
+                    : menu && !menu.ok
+                      ? menu.description
+                      : "—"}
+                </span>,
+              ],
             ] as const
           ).map(([label, value]) => (
             <div
@@ -196,6 +213,7 @@ export default async function DashboardTelegramSettingsPage() {
       {tokenOk && admin.role !== "viewer" ? (
         <TelegramWebhookForms
           defaultWebhookUrl={suggestedUrl}
+          defaultWebAppUrl={suggestedWebAppUrl}
           isOwner={isOwner}
         />
       ) : (
@@ -210,7 +228,8 @@ export default async function DashboardTelegramSettingsPage() {
         <h2 className={dashSectionTitle}>Команды и кнопки</h2>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-black/60">
           <li>
-            <code className="text-xs">/start</code> — ссылка на mini-app и сайт
+            <code className="text-xs">/start</code> — онбординг (UZ/RU) → телефон
+            → кнопка Mini App
           </li>
           <li>
             <code className="text-xs">/id</code> — показать chat_id (для

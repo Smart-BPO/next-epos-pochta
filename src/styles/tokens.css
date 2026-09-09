@@ -69,6 +69,8 @@
   --control-height: var(--btn-height-xs);
   /* Home track/quote island — one height for input, select, CTA */
   --home-action-control-h: 2.5rem;
+  /* Match fields + CTAs in HomeActionBar (site buttons stay pill via --btn-radius). */
+  --home-action-control-radius: 0.75rem;
 
   /*
    * Button variants — change these to restyle tones sitewide.
