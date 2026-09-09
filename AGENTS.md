@@ -14,7 +14,7 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
   - Server-only: `SUPABASE_URL` + `SUPABASE_ANON_KEY` (or `SUPABASE_PUBLISHABLE_KEY`) + `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_SECRET_KEY` / `SUPABASE_API_KEY` (+ `CMS_BOOTSTRAP_SECRET` only for first owner). Never `NEXT_PUBLIC_SUPABASE_*`.
   - Telegram: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, optional `TELEGRAM_WEBHOOK_SECRET` — manage webhook in `/dashboard/settings/telegram/`
   - SMS (Play Mobile): `PLAYMOBILE_BASE_URL`, `PLAYMOBILE_LOGIN`, `PLAYMOBILE_PASSWORD`, `PLAYMOBILE_ORIGINATOR` — see `src/lib/sms/playmobile.ts`
-  - Remotes: `origin` (diasbek) = dev; `production` (Smart-BPO) = prod for epos-pochta.uz
+  - Remotes: keep **in sync** — `origin` (diasbek) and `production` (Smart-BPO / epos-pochta.uz). Local `origin` is configured with dual push URLs; always `git push origin` (or push both explicitly). Never leave production behind after a requested push.
 
 ## Product rules
 
