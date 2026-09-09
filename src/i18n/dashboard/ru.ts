@@ -83,6 +83,7 @@ export const dashRu: DashCopy = {
     view: "Вид",
     table: "Таблица",
     cards: "Карточки",
+    kanban: "Канбан",
     all: "Все",
     back: "Назад",
     next: "Вперёд →",
@@ -180,6 +181,19 @@ export const dashRu: DashCopy = {
     greetingMorning: "Доброе утро",
     greetingDay: "Добрый день",
     greetingEvening: "Добрый вечер",
+    dateRange: "Период",
+    dateRangeHelp: "Фильтр заявок на обзоре по дате создания.",
+    allDates: "Все даты",
+    from: "С",
+    to: "По",
+    applyDates: "Готово",
+    prevMonth: "Предыдущий месяц",
+    nextMonth: "Следующий месяц",
+    presetMonth: "Месяц",
+    preset30d: "30 дней",
+    preset90d: "90 дней",
+    totalRecent: "Всего за 90 дней",
+    totalInRange: "Всего за период",
   },
 
   login: {
@@ -208,6 +222,8 @@ export const dashRu: DashCopy = {
     typeContact: "Контакт",
     draftStep: "Шаг {step}",
     resumeLink: "Ссылка для продолжения",
+    kanbanEmpty: "Пусто",
+    moved: "Статус обновлён",
   },
 
   contacts: {

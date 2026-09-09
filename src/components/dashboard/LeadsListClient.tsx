@@ -7,6 +7,7 @@ import {
 } from "@/components/dashboard/DashLocaleProvider";
 import { LeadStatusSelect } from "@/components/dashboard/LeadStatusSelect";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import { LeadsKanbanBoard } from "@/components/dashboard/LeadsKanbanBoard";
 import { DashCrudPage, DashListView } from "@/components/dashboard/ds";
 import { dashIntlLocale } from "@/i18n/dashboard";
 import {
@@ -22,6 +23,7 @@ export type LeadListRow = {
   type: string;
   locale: string;
   status: string;
+  sort_order: number;
   payload: {
     pageUrl?: string;
     data?: Record<string, unknown>;
@@ -59,6 +61,9 @@ export function LeadsListClient({
         defaultSortId="created"
         defaultSortDir="desc"
         defaultPageSize={50}
+        renderKanban={(filtered) => (
+          <LeadsKanbanBoard rows={filtered} readOnly={readOnly} />
+        )}
         filters={[
           {
             id: "status",

@@ -20,10 +20,22 @@ export default async function DashboardLeadsPage() {
     const client = createSupabaseAdminClient();
     const { data } = await client
       .from("epos_leads")
-      .select("id, type, locale, status, payload, created_at")
+      .select("id, type, locale, status, payload, created_at, sort_order")
+      .order("sort_order", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(500);
-    rows = (data ?? []) as LeadListRow[];
+    rows = (data ?? []).map((row) => {
+      const r = row as LeadListRow & { sort_order?: number | null };
+      return {
+        id: r.id,
+        type: r.type,
+        locale: r.locale,
+        status: r.status,
+        payload: r.payload,
+        created_at: r.created_at,
+        sort_order: typeof r.sort_order === "number" ? r.sort_order : 0,
+      };
+    });
   }
 
   return (

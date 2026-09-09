@@ -81,6 +81,7 @@ export type DashCopy = {
     view: string;
     table: string;
     cards: string;
+    kanban: string;
     all: string;
     back: string;
     next: string;
@@ -172,6 +173,19 @@ export type DashCopy = {
     greetingMorning: string;
     greetingDay: string;
     greetingEvening: string;
+    dateRange: string;
+    dateRangeHelp: string;
+    allDates: string;
+    from: string;
+    to: string;
+    applyDates: string;
+    prevMonth: string;
+    nextMonth: string;
+    presetMonth: string;
+    preset30d: string;
+    preset90d: string;
+    totalRecent: string;
+    totalInRange: string;
   };
 
   login: {
@@ -200,6 +214,8 @@ export type DashCopy = {
     typeContact: string;
     draftStep: string;
     resumeLink: string;
+    kanbanEmpty: string;
+    moved: string;
   };
 
   contacts: {

@@ -48,7 +48,7 @@ export type DashListFilterDef<T> = {
   getValue: (row: T) => string;
 };
 
-export type DashListViewMode = "table" | "cards";
+export type DashListViewMode = "table" | "cards" | "kanban";
 
 const PAGE_SIZES = [10, 25, 50, 100] as const;
 
@@ -83,7 +83,7 @@ function readStoredView(key?: string): DashListViewMode | null {
   if (!key || typeof window === "undefined") return null;
   try {
     const v = window.localStorage.getItem(viewStorageKey(key));
-    return v === "table" || v === "cards" ? v : null;
+    return v === "table" || v === "cards" || v === "kanban" ? v : null;
   } catch {
     return null;
   }
@@ -138,6 +138,7 @@ export function DashListView<T>({
   filters,
   actions,
   renderCard,
+  renderKanban,
   title,
   emptyTitle,
   emptyLead,
@@ -156,6 +157,8 @@ export function DashListView<T>({
   actions?: (row: T) => ReactNode;
   /** Custom card; default builds from columns */
   renderCard?: (row: T, actionsNode: ReactNode) => ReactNode;
+  /** When set, enables Kanban in the view toggle and renders it for filtered rows */
+  renderKanban?: (rows: T[]) => ReactNode;
   title?: string;
   emptyTitle?: string;
   emptyLead?: string;
@@ -171,6 +174,9 @@ export function DashListView<T>({
   const { locale } = useDashLocale();
   const intlLocale = dashIntlLocale(locale);
   const [view, setViewPersist] = usePersistedView(storageKey, defaultView);
+  const kanbanEnabled = Boolean(renderKanban);
+  const effectiveView: DashListViewMode =
+    view === "kanban" && !kanbanEnabled ? "table" : view;
   const [query, setQuery] = useState("");
   const [filterState, setFilterState] = useState<Record<string, string>>({});
   const [sortId, setSortId] = useState<string | null>(
@@ -183,10 +189,16 @@ export function DashListView<T>({
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
+  const activeFilters = useMemo(() => {
+    if (effectiveView !== "kanban") return filters ?? [];
+    // Status is expressed as columns on the board.
+    return (filters ?? []).filter((f) => f.id !== "status");
+  }, [filters, effectiveView]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter((row) => {
-      for (const f of filters ?? []) {
+      for (const f of activeFilters) {
         const selected = filterState[f.id] ?? "";
         if (selected && f.getValue(row) !== selected) return false;
       }
@@ -203,7 +215,7 @@ export function DashListView<T>({
         .toLowerCase();
       return hay.includes(q);
     });
-  }, [rows, query, filterState, filters, columns]);
+  }, [rows, query, filterState, activeFilters, columns]);
 
   const sorted = useMemo(() => {
     const col = columns.find((c) => c.id === sortId && c.sortValue);
@@ -284,7 +296,7 @@ export function DashListView<T>({
             />
           </label>
 
-          {(filters ?? []).map((f) => (
+          {(activeFilters ?? []).map((f) => (
             <label key={f.id} className="grid gap-1.5">
               <span className={fieldLabel}>{f.label}</span>
               <select
@@ -302,20 +314,22 @@ export function DashListView<T>({
             </label>
           ))}
 
-          <label className="grid gap-1.5">
-            <span className={fieldLabel}>{t.common.perPage}</span>
-            <select
-              className={cn(selectControl, "min-w-[5rem]")}
-              value={pageSize}
-              onChange={(e) => setPageSizeReset(Number(e.target.value))}
-            >
-              {PAGE_SIZES.map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </label>
+          {effectiveView !== "kanban" ? (
+            <label className="grid gap-1.5">
+              <span className={fieldLabel}>{t.common.perPage}</span>
+              <select
+                className={cn(selectControl, "min-w-[5rem]")}
+                value={pageSize}
+                onChange={(e) => setPageSizeReset(Number(e.target.value))}
+              >
+                {PAGE_SIZES.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
 
           <div className="ml-auto flex flex-wrap items-end gap-2">
             {toolbarExtra}
@@ -330,7 +344,7 @@ export function DashListView<T>({
                   type="button"
                   className={cn(
                     "rounded-[0.625rem] px-3 text-xs font-semibold transition",
-                    view === "table"
+                    effectiveView === "table"
                       ? "bg-primary text-white"
                       : "text-black/55 hover:bg-black/[0.03]",
                   )}
@@ -342,7 +356,7 @@ export function DashListView<T>({
                   type="button"
                   className={cn(
                     "rounded-[0.625rem] px-3 text-xs font-semibold transition",
-                    view === "cards"
+                    effectiveView === "cards"
                       ? "bg-primary text-white"
                       : "text-black/55 hover:bg-black/[0.03]",
                   )}
@@ -350,11 +364,26 @@ export function DashListView<T>({
                 >
                   {t.common.cards}
                 </button>
+                {kanbanEnabled ? (
+                  <button
+                    type="button"
+                    className={cn(
+                      "rounded-[0.625rem] px-3 text-xs font-semibold transition",
+                      effectiveView === "kanban"
+                        ? "bg-primary text-white"
+                        : "text-black/55 hover:bg-black/[0.03]",
+                    )}
+                    onClick={() => setViewPersist("kanban")}
+                  >
+                    {t.common.kanban}
+                  </button>
+                ) : null}
               </div>
             </div>
           </div>
         </div>
 
+      {effectiveView !== "kanban" ? (
       <p className="m-0 text-xs text-black/45">
         {sorted.length === 0
           ? t.common.nothingFound
@@ -368,15 +397,33 @@ export function DashListView<T>({
                 : ""
             }`}
       </p>
+      ) : (
+        <p className="m-0 text-xs text-black/45">
+          {filtered.length === 0
+            ? t.common.nothingFound
+            : `${filtered.length}`}
+        </p>
+      )}
 
-      {sorted.length === 0 ? (
+      {effectiveView === "kanban" && renderKanban ? (
+        filtered.length === 0 ? (
+          <div className={`${dashCard} p-6`}>
+            <DashEmptyState
+              title={t.common.nothingFound}
+              lead={t.common.emptyFilteredLead}
+            />
+          </div>
+        ) : (
+          renderKanban(filtered)
+        )
+      ) : sorted.length === 0 ? (
         <div className={`${dashCard} p-6`}>
           <DashEmptyState
             title={t.common.nothingFound}
             lead={t.common.emptyFilteredLead}
           />
         </div>
-      ) : view === "table" ? (
+      ) : effectiveView === "table" ? (
         <DashTableShell title={title}>
           <DashTable>
             <thead>
@@ -464,7 +511,7 @@ export function DashListView<T>({
         </ul>
       )}
 
-      {pageCount > 1 ? (
+      {effectiveView !== "kanban" && pageCount > 1 ? (
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"

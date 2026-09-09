@@ -1,12 +1,13 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import type { AdminUser } from "@/lib/cms/auth-shared";
 import { canAccess } from "@/lib/cms/auth-shared";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { DashboardToaster } from "@/components/dashboard/DashboardToaster";
 import { DashTopBar } from "@/components/dashboard/chrome/DashTopBar";
-import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { DashMobileNav } from "@/components/dashboard/mobile/DashMobileNav";
 import type { DashNotificationsSnapshot } from "@/lib/cms/notifications";
 import {
@@ -16,6 +17,7 @@ import {
   dashShell,
 } from "@/styles/dashboard";
 import { cn } from "@/lib/cn";
+import { SITE_CONFIG } from "@/utils/consts";
 
 export function DashboardChrome({
   admin,
@@ -26,7 +28,6 @@ export function DashboardChrome({
   notifications: DashNotificationsSnapshot;
   children: React.ReactNode;
 }) {
-  const t = useDashT();
   const items = DASHBOARD_NAV.filter((item) => canAccess(admin.role, item.area));
 
   return (
@@ -34,11 +35,23 @@ export function DashboardChrome({
       <DashboardToaster />
       <div className="flex h-dvh w-full">
         <aside className={dashAside}>
-          <div className="px-5 pt-5 pb-3">
-            <p className="m-0 font-display text-[0.95rem] font-bold tracking-[-0.02em] text-primary">
-              {t.brand}
-            </p>
-            <p className="m-0 mt-0.5 truncate text-xs text-black/40">
+          <div className="border-b border-black/[0.06] px-5 pt-5 pb-4">
+            <Link
+              href="/dashboard/"
+              className="inline-flex h-8 w-[84px] items-center"
+              aria-label={SITE_CONFIG.name}
+            >
+              <Image
+                src="/images/brand/logo.svg"
+                alt={SITE_CONFIG.name}
+                width={92}
+                height={36}
+                className="h-full w-auto"
+                priority
+                unoptimized
+              />
+            </Link>
+            <p className="m-0 mt-2 truncate text-xs text-black/40">
               {admin.email}
             </p>
           </div>

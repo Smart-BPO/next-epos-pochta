@@ -83,6 +83,7 @@ export const dashUz: DashCopy = {
     view: "Koʻrinish",
     table: "Jadval",
     cards: "Kartochkalar",
+    kanban: "Kanban",
     all: "Hammasi",
     back: "Orqaga",
     next: "Keyingi →",
@@ -180,6 +181,19 @@ export const dashUz: DashCopy = {
     greetingMorning: "Hayrli tong",
     greetingDay: "Hayrli kun",
     greetingEvening: "Hayrli kech",
+    dateRange: "Davr",
+    dateRangeHelp: "Ko‘rinishdagi arizalarni yaratilgan sana bo‘yicha filtrlang.",
+    allDates: "Barcha sanalar",
+    from: "Dan",
+    to: "Gacha",
+    applyDates: "Tayyor",
+    prevMonth: "Oldingi oy",
+    nextMonth: "Keyingi oy",
+    presetMonth: "Oy",
+    preset30d: "30 kun",
+    preset90d: "90 kun",
+    totalRecent: "90 kun ichida jami",
+    totalInRange: "Davr bo‘yicha jami",
   },
 
   login: {
@@ -208,6 +222,8 @@ export const dashUz: DashCopy = {
     typeContact: "Aloqa",
     draftStep: "Qadam {step}",
     resumeLink: "Davom ettirish havolasi",
+    kanbanEmpty: "Boʻsh",
+    moved: "Status yangilandi",
   },
 
   contacts: {
