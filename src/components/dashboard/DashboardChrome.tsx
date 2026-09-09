@@ -6,7 +6,6 @@ import type { AdminUser } from "@/lib/cms/auth-shared";
 import { canAccess } from "@/lib/cms/auth-shared";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
-import { DashboardToaster } from "@/components/dashboard/DashboardToaster";
 import { DashTopBar } from "@/components/dashboard/chrome/DashTopBar";
 import { DashMobileNav } from "@/components/dashboard/mobile/DashMobileNav";
 import type { DashNotificationsSnapshot } from "@/lib/cms/notifications";
@@ -32,7 +31,6 @@ export function DashboardChrome({
 
   return (
     <div className={dashShell}>
-      <DashboardToaster />
       <div className="flex h-dvh w-full">
         <aside className={dashAside}>
           <div className="flex h-14 shrink-0 items-center border-b border-black/[0.06] px-5">
