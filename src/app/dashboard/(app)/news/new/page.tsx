@@ -28,19 +28,34 @@ export default async function NewNewsPage() {
         lead="Черновик не попадает на публичный сайт до публикации."
       />
       <NewsEditorForm
-        categories={cats.map((c) => ({ id: c.id, label: `${c.labelRu} (${c.id})` }))}
+        categories={cats.map((c) => ({
+          id: c.id,
+          label: `${c.labelRu} (${c.id})`,
+        }))}
         values={{
           slug: "",
           status: "draft",
           category: cats[0]?.id ?? "company",
           coverImage: "",
+          coverAlt: "",
+          ogImage: "",
+          tags: [],
+          noindex: false,
           publishedAt: new Date().toISOString(),
           titleUz: "",
           excerptUz: "",
-          bodyUz: "",
+          bodyHtmlUz: "<p></p>",
+          seoTitleUz: "",
+          seoDescriptionUz: "",
+          ogTitleUz: "",
+          ogDescriptionUz: "",
           titleRu: "",
           excerptRu: "",
-          bodyRu: "",
+          bodyHtmlRu: "<p></p>",
+          seoTitleRu: "",
+          seoDescriptionRu: "",
+          ogTitleRu: "",
+          ogDescriptionRu: "",
         }}
       />
     </div>

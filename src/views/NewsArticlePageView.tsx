@@ -10,6 +10,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { PageCta } from "@/components/organisms/PageCta";
 import { formatNewsDate, getLatestNews } from "@/lib/news/repository";
 import { getNewsArticleSchema } from "@/utils/seo/json-ld";
+import { sanitizeNewsHtml } from "@/lib/news/body-html";
 import {
   legalContent,
   pageIntro,
@@ -31,6 +32,7 @@ export async function NewsArticlePageView({
   const related = (await getLatestNews(locale, 4))
     .filter((item) => item.slug !== article.slug)
     .slice(0, 3);
+  const safeHtml = sanitizeNewsHtml(article.bodyHtml || "");
 
   return (
     <>
@@ -48,7 +50,7 @@ export async function NewsArticlePageView({
             <div className="relative aspect-[21/9] overflow-hidden rounded-3xl border border-black/20 bg-surface-muted">
               <Image
                 src={article.coverImage}
-                alt=""
+                alt={article.coverAlt || article.title}
                 fill
                 className="object-contain object-center p-6 sm:p-10"
                 sizes="(max-width: 1232px) 100vw, 1232px"
@@ -73,12 +75,10 @@ export async function NewsArticlePageView({
               {formatNewsDate(article.publishedAt, locale)}
             </time>
           </p>
-          {article.body.map((block) => {
-            if (block.startsWith("## ")) {
-              return <h2 key={block}>{block.slice(3)}</h2>;
-            }
-            return <p key={block.slice(0, 48)}>{block}</p>;
-          })}
+          <div
+            className="news-article-body prose prose-neutral max-w-none"
+            dangerouslySetInnerHTML={{ __html: safeHtml }}
+          />
         </PageContainer>
       </section>
 

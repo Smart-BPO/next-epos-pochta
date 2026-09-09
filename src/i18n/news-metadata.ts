@@ -11,11 +11,17 @@ export function getNewsArticleMetadata(
 ): Metadata {
   const path = localePath(locale, `/news/${article.slug}/`);
   const alternates = getLocalizedAlternates(`/news/${article.slug}/`);
+  const title = (article.seoTitle || article.title).trim();
+  const description = (article.seoDescription || article.excerpt).trim();
+  const image =
+    article.ogImage || article.coverImage || "/images/og/default.png";
 
-  return createPageMetadata(article.title, article.excerpt, path, {
+  return createPageMetadata(title, description, path, {
     locale,
     ogLocale: ogLocale[locale],
-    image: article.coverImage ?? "/images/og/default.png",
+    image,
+    ogType: "article",
+    noIndex: Boolean(article.noindex),
     alternates: Object.fromEntries(
       Object.entries(alternates).map(([lang, href]) => [
         lang,

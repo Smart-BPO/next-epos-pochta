@@ -106,6 +106,16 @@ export function IconLogout(props: IconProps) {
   );
 }
 
+export function IconMore(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={base(props)} aria-hidden>
+      <circle cx="6.5" cy="12" r="1.6" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+      <circle cx="17.5" cy="12" r="1.6" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function IconPlus(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={base(props)} aria-hidden>

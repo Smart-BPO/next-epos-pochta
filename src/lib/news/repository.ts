@@ -45,10 +45,17 @@ function localize(
     category: article.category,
     publishedAt: article.publishedAt,
     coverImage: article.coverImage,
+    coverAlt: article.coverAlt,
+    ogImage: article.ogImage,
     tags: article.tags,
+    noindex: article.noindex,
     title: content.title,
     excerpt: content.excerpt,
-    body: content.body,
+    bodyHtml: content.bodyHtml,
+    seoTitle: content.seoTitle,
+    seoDescription: content.seoDescription,
+    ogTitle: content.ogTitle,
+    ogDescription: content.ogDescription,
   };
 }
 

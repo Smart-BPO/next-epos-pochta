@@ -18,6 +18,11 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.6",
     "@supabase/supabase-js": "^2.115.0",
+    "@tiptap/extension-image": "^3.31.3",
+    "@tiptap/extension-link": "^3.31.3",
+    "@tiptap/pm": "^3.31.3",
+    "@tiptap/react": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
     "formik": "^2.4.9",
     "next": "16.3.1",
     "react": "^19.2.8",
@@ -25,6 +30,7 @@
     "react-select": "^5.10.2",
     "react-toastify": "^11.1.0",
     "resend": "^6.20.0",
+    "sanitize-html": "^2.17.7",
     "uzbgeo": "^2.2.0",
     "yup": "^1.7.1"
   },
@@ -33,6 +39,7 @@
     "@types/node": "^22",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "@types/sanitize-html": "^2.16.1",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4.3.3",

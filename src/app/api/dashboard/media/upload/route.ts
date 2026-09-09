@@ -6,18 +6,20 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const admin = await requireMutationApi("media");
+    const admin = await requireMutationApi(["media", "news"]);
     const form = await request.formData();
     const file = form.get("file");
     if (!(file instanceof File) || file.size === 0) {
       return NextResponse.json({ error: "file_required" }, { status: 400 });
     }
+    const folder = String(form.get("folder") ?? "covers").trim() || "covers";
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const result = await uploadMediaBuffer({
       buffer,
       contentType: file.type || "application/octet-stream",
       fileName: file.name,
+      folder,
     });
 
     await writeAuditLog({
@@ -25,6 +27,7 @@ export async function POST(request: Request) {
       action: "media.upload",
       entityType: "storage",
       entityId: result.path,
+      payload: { folder },
     });
 
     return NextResponse.json({ ok: true, ...result });

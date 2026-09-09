@@ -16,7 +16,12 @@ export type NewsSort = "newest" | "oldest" | "title-asc" | "title-desc";
 export interface NewsLocaleContent {
   title: string;
   excerpt: string;
-  body: string[];
+  /** HTML body (TipTap). Legacy arrays are converted on read. */
+  bodyHtml: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
 }
 
 export interface NewsArticle {
@@ -26,7 +31,10 @@ export interface NewsArticle {
   category: NewsCategory;
   publishedAt: string;
   coverImage?: string;
+  coverAlt?: string;
+  ogImage?: string;
   tags?: string[];
+  noindex?: boolean;
   locales: {
     uz: NewsLocaleContent;
     ru: NewsLocaleContent;
@@ -39,10 +47,17 @@ export interface LocalizedNewsArticle {
   category: NewsCategory;
   publishedAt: string;
   coverImage?: string;
+  coverAlt?: string;
+  ogImage?: string;
   tags?: string[];
+  noindex?: boolean;
   title: string;
   excerpt: string;
-  body: string[];
+  bodyHtml: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  ogTitle?: string;
+  ogDescription?: string;
 }
 
 export interface NewsListQuery {

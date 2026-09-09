@@ -1,13 +1,21 @@
-import Link from "next/link";
 import type { AdminUser } from "@/lib/cms/auth";
 import { canAccess } from "@/lib/cms/auth";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { DashboardToaster } from "@/components/dashboard/DashboardToaster";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import {
+  DashMobileNav,
+  DashMobileTopBar,
+} from "@/components/dashboard/mobile/DashMobileNav";
 import { IconLogout } from "@/components/dashboard/icons";
 import { logoutAction } from "@/app/dashboard/(auth)/logout/actions";
-import { dashAside, dashShell } from "@/styles/dashboard";
+import {
+  dashAside,
+  dashMainMobilePad,
+  dashShell,
+} from "@/styles/dashboard";
+import { cn } from "@/lib/cn";
 
 function initials(admin: AdminUser) {
   const raw = (admin.displayName || admin.email || "?").trim();
@@ -74,28 +82,11 @@ export function DashboardChrome({
         </aside>
 
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-10 border-b border-black/[0.06] bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <p className="m-0 font-display text-sm font-bold text-primary">
-                  EPOS CMS
-                </p>
-                <DashStatusBadge kind="role" value={admin.role} />
-              </div>
-              <form action={logoutAction}>
-                <button
-                  type="submit"
-                  className="text-xs font-semibold text-black/50"
-                >
-                  Выйти
-                </button>
-              </form>
-            </div>
-            <div className="mt-2">
-              <DashboardNav items={items} variant="mobile" />
-            </div>
-          </header>
-          <main className="p-4 sm:p-5 lg:p-6">{children}</main>
+          <DashMobileTopBar admin={admin} />
+          <main className={cn("p-4 sm:p-5 lg:p-6", dashMainMobilePad)}>
+            {children}
+          </main>
+          <DashMobileNav admin={admin} items={items} />
         </div>
       </div>
     </div>

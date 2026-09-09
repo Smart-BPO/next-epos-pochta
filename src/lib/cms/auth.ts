@@ -192,11 +192,14 @@ export async function requireMutation(
 
 /** Same as requireMutation but returns 401-style errors (no redirect) for Route Handlers. */
 export async function requireMutationApi(
-  action: AdminMutation,
+  action: AdminMutation | AdminMutation[],
 ): Promise<AdminUser> {
   const admin = await getAdminSession();
   if (!admin) throw new Error("Unauthorized");
-  if (!canMutate(admin.role, action)) throw new Error("Forbidden");
+  const actions = Array.isArray(action) ? action : [action];
+  if (!actions.some((a) => canMutate(admin.role, a))) {
+    throw new Error("Forbidden");
+  }
   return admin;
 }
 

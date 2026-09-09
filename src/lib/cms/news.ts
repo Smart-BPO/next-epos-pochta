@@ -2,6 +2,7 @@ import type { NewsArticle, NewsCategory, NewsStatus } from "@/data/news/types";
 import { newsArticles as siteNewsSeed } from "@/data/news/articles";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { parseStoredBody, sanitizeNewsHtml } from "@/lib/news/body-html";
 import { cache } from "react";
 
 type ArticleRow = {
@@ -10,6 +11,10 @@ type ArticleRow = {
   status: string;
   category: string;
   cover_image: string | null;
+  cover_alt?: string | null;
+  og_image?: string | null;
+  tags?: string[] | null;
+  noindex?: boolean | null;
   published_at: string | null;
 };
 
@@ -19,27 +24,11 @@ type TranslationRow = {
   title: string;
   excerpt: string;
   body: string;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
 };
-
-function parseBody(raw: string): string[] {
-  const trimmed = raw.trim();
-  if (!trimmed) return [];
-  if (trimmed.startsWith("[")) {
-    try {
-      const parsed = JSON.parse(trimmed) as unknown;
-      if (Array.isArray(parsed) && parsed.every((x) => typeof x === "string")) {
-        return parsed;
-      }
-    } catch {
-      // fall through
-    }
-  }
-  return trimmed.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
-}
-
-function serializeBody(body: string[]): string {
-  return JSON.stringify(body);
-}
 
 function isCategory(value: string): value is NewsCategory {
   return /^[a-z0-9][a-z0-9_-]{0,63}$/i.test(value);
@@ -65,16 +54,28 @@ function mapRows(
       category: row.category,
       publishedAt: row.published_at ?? new Date().toISOString(),
       coverImage: row.cover_image ?? undefined,
+      coverAlt: row.cover_alt ?? "",
+      ogImage: row.og_image ?? undefined,
+      tags: Array.isArray(row.tags) ? row.tags : [],
+      noindex: Boolean(row.noindex),
       locales: {
         uz: {
           title: uz.title,
           excerpt: uz.excerpt,
-          body: parseBody(uz.body),
+          bodyHtml: parseStoredBody(uz.body),
+          seoTitle: uz.seo_title ?? "",
+          seoDescription: uz.seo_description ?? "",
+          ogTitle: uz.og_title ?? "",
+          ogDescription: uz.og_description ?? "",
         },
         ru: {
           title: ru.title,
           excerpt: ru.excerpt,
-          body: parseBody(ru.body),
+          bodyHtml: parseStoredBody(ru.body),
+          seoTitle: ru.seo_title ?? "",
+          seoDescription: ru.seo_description ?? "",
+          ogTitle: ru.og_title ?? "",
+          ogDescription: ru.og_description ?? "",
         },
       },
     });
@@ -105,6 +106,10 @@ export const ensureSiteNewsInCms = cache(async (): Promise<number> => {
       status: article.status,
       category: article.category,
       coverImage: article.coverImage,
+      coverAlt: article.coverAlt,
+      ogImage: article.ogImage,
+      tags: article.tags,
+      noindex: article.noindex,
       publishedAt: article.publishedAt,
       locales: article.locales,
     });
@@ -121,7 +126,9 @@ export async function fetchNewsArticlesFromDb(): Promise<NewsArticle[] | null> {
     const admin = createSupabaseAdminClient();
     const { data: articles, error } = await admin
       .from("epos_news_articles")
-      .select("id, slug, status, category, cover_image, published_at")
+      .select(
+        "id, slug, status, category, cover_image, cover_alt, og_image, tags, noindex, published_at",
+      )
       .order("published_at", { ascending: false });
     if (error) {
       console.error("[cms:news:fetch]", error.message);
@@ -132,7 +139,9 @@ export async function fetchNewsArticlesFromDb(): Promise<NewsArticle[] | null> {
     const ids = articles.map((a) => a.id);
     const { data: translations } = await admin
       .from("epos_news_translations")
-      .select("article_id, locale, title, excerpt, body")
+      .select(
+        "article_id, locale, title, excerpt, body, seo_title, seo_description, og_title, og_description",
+      )
       .in("article_id", ids);
 
     return mapRows(
@@ -151,10 +160,14 @@ export type NewsUpsertInput = {
   status: NewsStatus;
   category: NewsCategory;
   coverImage?: string;
+  coverAlt?: string;
+  ogImage?: string;
+  tags?: string[];
+  noindex?: boolean;
   publishedAt?: string;
   locales: {
-    uz: { title: string; excerpt: string; body: string[] };
-    ru: { title: string; excerpt: string; body: string[] };
+    uz: NewsArticle["locales"]["uz"];
+    ru: NewsArticle["locales"]["ru"];
   };
 };
 
@@ -172,6 +185,10 @@ export async function upsertNewsArticle(input: NewsUpsertInput) {
     status: input.status,
     category: input.category,
     cover_image: input.coverImage || null,
+    cover_alt: input.coverAlt ?? "",
+    og_image: input.ogImage || null,
+    tags: input.tags ?? [],
+    noindex: Boolean(input.noindex),
     published_at: publishedAt,
     updated_at: new Date().toISOString(),
   });
@@ -185,7 +202,11 @@ export async function upsertNewsArticle(input: NewsUpsertInput) {
         locale,
         title: loc.title,
         excerpt: loc.excerpt,
-        body: serializeBody(loc.body),
+        body: sanitizeNewsHtml(loc.bodyHtml || "<p></p>"),
+        seo_title: loc.seoTitle ?? "",
+        seo_description: loc.seoDescription ?? "",
+        og_title: loc.ogTitle ?? "",
+        og_description: loc.ogDescription ?? "",
       },
       { onConflict: "article_id,locale" },
     );
@@ -251,13 +272,17 @@ export async function getNewsAdminById(id: string): Promise<NewsArticle | null> 
   const admin = createSupabaseAdminClient();
   const { data: article } = await admin
     .from("epos_news_articles")
-    .select("id, slug, status, category, cover_image, published_at")
+    .select(
+      "id, slug, status, category, cover_image, cover_alt, og_image, tags, noindex, published_at",
+    )
     .eq("id", id)
     .maybeSingle();
   if (!article) return null;
   const { data: translations } = await admin
     .from("epos_news_translations")
-    .select("article_id, locale, title, excerpt, body")
+    .select(
+      "article_id, locale, title, excerpt, body, seo_title, seo_description, og_title, og_description",
+    )
     .eq("article_id", id);
   const mapped = mapRows(
     [article as ArticleRow],

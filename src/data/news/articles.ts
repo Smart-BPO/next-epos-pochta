@@ -1,4 +1,10 @@
 import type { NewsArticle } from "@/data/news/types";
+import { seedBlocksToHtml } from "@/lib/news/body-html";
+
+type SeedLocale = { title: string; excerpt: string; body: string[] };
+type SeedArticle = Omit<NewsArticle, "locales"> & {
+  locales: { uz: SeedLocale; ru: SeedLocale };
+};
 
 /**
  * Static news seed — imported into CMS (`ensureSiteNewsInCms`) when DB is empty.
@@ -6,7 +12,7 @@ import type { NewsArticle } from "@/data/news/types";
  * Body lines starting with "## " render as section headings.
  * No public tariffs or prices in copy.
  */
-export const newsArticles: NewsArticle[] = [
+const newsArticlesSeed: SeedArticle[] = [
   {
     id: "launch",
     slug: "epos-pochta-launch",
@@ -332,3 +338,23 @@ export const newsArticles: NewsArticle[] = [
     },
   },
 ];
+
+function normalizeSeed(article: SeedArticle): NewsArticle {
+  return {
+    ...article,
+    locales: {
+      uz: {
+        title: article.locales.uz.title,
+        excerpt: article.locales.uz.excerpt,
+        bodyHtml: seedBlocksToHtml(article.locales.uz.body),
+      },
+      ru: {
+        title: article.locales.ru.title,
+        excerpt: article.locales.ru.excerpt,
+        bodyHtml: seedBlocksToHtml(article.locales.ru.body),
+      },
+    },
+  };
+}
+
+export const newsArticles: NewsArticle[] = newsArticlesSeed.map(normalizeSeed);

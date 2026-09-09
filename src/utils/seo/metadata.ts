@@ -21,6 +21,7 @@ export function createPageMetadata(
     image?: string;
     locale?: string;
     ogLocale?: string;
+    ogType?: "website" | "article";
     robots?: Metadata["robots"];
     alternates?: Record<string, string>;
     noIndex?: boolean;
@@ -49,7 +50,7 @@ export function createPageMetadata(
       locale: options?.ogLocale ?? "uz_UZ",
       alternateLocale:
         options?.ogLocale === "ru_UZ" ? ["uz_UZ"] : ["ru_UZ"],
-      type: "website",
+      type: options?.ogType ?? "website",
       images: [
         {
           url: options?.image ?? "/images/og/default.png",

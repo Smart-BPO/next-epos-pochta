@@ -199,11 +199,13 @@ export function getNewsArticleSchema(
 ) {
   const siteUrl = siteOrigin();
   const path = localePath(locale, `/news/${article.slug}/`);
-  const image = article.coverImage
-    ? article.coverImage.startsWith("http")
-      ? article.coverImage
-      : `${siteUrl}${article.coverImage}`
-    : `${siteUrl}/images/og/default.png`;
+  const imageSrc =
+    article.ogImage || article.coverImage || "/images/og/default.png";
+  const image = imageSrc.startsWith("http")
+    ? imageSrc
+    : `${siteUrl}${imageSrc}`;
+  const headline = (article.seoTitle || article.title).trim();
+  const description = (article.seoDescription || article.excerpt).trim();
 
   const authorName =
     locale === "uz" ? "EPOS POCHTA tahririyati" : "Редакция EPOS POCHTA";
@@ -211,11 +213,15 @@ export function getNewsArticleSchema(
   return {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
-    headline: article.title,
-    description: article.excerpt,
+    headline,
+    description,
     datePublished: article.publishedAt,
     dateModified: article.publishedAt,
-    image: [image],
+    image: {
+      "@type": "ImageObject",
+      url: image,
+      caption: article.coverAlt || headline,
+    },
     url: `${siteUrl}${path}`,
     inLanguage: locale === "uz" ? "uz" : "ru",
     author: {

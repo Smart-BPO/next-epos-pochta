@@ -28,7 +28,7 @@ export function NewsCard({
         >
           <Image
             src={article.coverImage}
-            alt=""
+            alt={article.coverAlt || article.title}
             fill
             className="object-contain object-center p-2.5 sm:p-4"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
