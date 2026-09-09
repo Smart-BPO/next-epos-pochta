@@ -3,16 +3,27 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { SITE_CONFIG } from "@/utils/consts";
 import { Button } from "@/components/atoms/Button";
+import {
+  COOKIE_CONSENT_EVENT,
+  COOKIE_CONSENT_STORAGE_KEY,
+} from "@/lib/analytics/consent";
 
-const STORAGE_KEY = "epos_cookie_consent";
+function setConsent(value: "accepted" | "declined") {
+  window.localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, value);
+  window.dispatchEvent(new Event(COOKIE_CONSENT_EVENT));
+}
 
 function subscribe(onStoreChange: () => void) {
   window.addEventListener("storage", onStoreChange);
-  return () => window.removeEventListener("storage", onStoreChange);
+  window.addEventListener(COOKIE_CONSENT_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(COOKIE_CONSENT_EVENT, onStoreChange);
+  };
 }
 
 function getConsentSnapshot() {
-  return window.localStorage.getItem(STORAGE_KEY);
+  return window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY);
 }
 
 function getServerSnapshot() {
@@ -59,7 +70,7 @@ export function CookieConsentBanner({
         <Button
           type="button"
           onClick={() => {
-            window.localStorage.setItem(STORAGE_KEY, "accepted");
+            setConsent("accepted");
             setLocalChoice("accepted");
           }}
         >
@@ -69,7 +80,7 @@ export function CookieConsentBanner({
           type="button"
           variant="secondary"
           onClick={() => {
-            window.localStorage.setItem(STORAGE_KEY, "declined");
+            setConsent("declined");
             setLocalChoice("declined");
           }}
         >
