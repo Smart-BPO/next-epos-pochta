@@ -234,6 +234,14 @@ export type DashCopy = {
     lead: string;
     emptyTitle: string;
     emptyLead: string;
+    shipmentsTotal: string;
+    shipmentsPending: string;
+    lastShipment: string;
+    openShipments: string;
+    openTelegram: string;
+    verified: string;
+    unverified: string;
+    noShipments: string;
   };
 
   shipments: {

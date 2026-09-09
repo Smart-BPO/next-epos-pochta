@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   useDashLocale,
@@ -46,21 +46,39 @@ export function WebappShipmentsClient({
   const intlLocale = dashIntlLocale(locale);
   const searchParams = useSearchParams();
   const highlightId = searchParams.get("id");
+  const contactFilter = searchParams.get("contact");
   const highlightRef = useRef<HTMLDivElement | null>(null);
+
+  const scopedRows = useMemo(() => {
+    if (!contactFilter) return rows;
+    return rows.filter((r) => r.contact_session_id === contactFilter);
+  }, [rows, contactFilter]);
 
   useEffect(() => {
     if (!highlightId || !highlightRef.current) return;
     highlightRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [highlightId, rows]);
+  }, [highlightId, scopedRows]);
 
   return (
     <DashCrudPage title={t.shipments.title} lead={t.shipments.lead}>
+      {contactFilter ? (
+        <p className="mb-3 rounded-xl border border-primary/15 bg-primary-soft px-3 py-2 text-xs font-medium text-primary">
+          {t.list.contact}:{" "}
+          <span className="font-mono">{contactFilter}</span>
+          {" · "}
+          <a href="/dashboard/webapp/shipments/" className="underline">
+            {t.common.resetFilters}
+          </a>
+        </p>
+      ) : null}
       <DashListView
         storageKey="webapp-shipments"
-        rows={rows}
+        rows={scopedRows}
         rowKey={(r) => r.id}
         emptyTitle={t.shipments.emptyTitle}
-        emptyLead={t.shipments.emptyLead}
+        emptyLead={
+          contactFilter ? t.contacts.noShipments : t.shipments.emptyLead
+        }
         defaultSortId="created"
         defaultSortDir="desc"
         filters={[
@@ -86,7 +104,8 @@ export function WebappShipmentsClient({
                 ref={row.id === highlightId ? highlightRef : undefined}
                 className={cn(
                   "font-mono text-xs text-black/60",
-                  row.id === highlightId &&
+                  (row.id === highlightId ||
+                    row.contact_session_id === contactFilter) &&
                     "rounded-lg bg-primary-soft px-1.5 py-0.5 font-semibold text-primary",
                 )}
               >

@@ -239,6 +239,14 @@ export const dashRu: DashCopy = {
     lead: "Клиенты Telegram Mini App.",
     emptyTitle: "Нет пользователей",
     emptyLead: "После первого входа появятся здесь.",
+    shipmentsTotal: "Всего",
+    shipmentsPending: "Ждут",
+    lastShipment: "Последнее",
+    openShipments: "Отправления",
+    openTelegram: "Telegram",
+    verified: "Проверен",
+    unverified: "Без initData",
+    noShipments: "Нет отправлений",
   },
 
   shipments: {

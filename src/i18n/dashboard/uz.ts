@@ -239,6 +239,14 @@ export const dashUz: DashCopy = {
     lead: "Telegram Mini App mijozlari.",
     emptyTitle: "Foydalanuvchilar yoʻq",
     emptyLead: "Birinchi kirishdan keyin shu yerda koʻrinadi.",
+    shipmentsTotal: "Jami",
+    shipmentsPending: "Kutmoqda",
+    lastShipment: "Oxirgi",
+    openShipments: "Joʻnatmalar",
+    openTelegram: "Telegram",
+    verified: "Tekshirilgan",
+    unverified: "initData yoʻq",
+    noShipments: "Joʻnatma yoʻq",
   },
 
   shipments: {
