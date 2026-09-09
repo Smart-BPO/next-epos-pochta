@@ -1,10 +1,27 @@
 "use client";
 
+import * as Yup from "yup";
 import { SHIPMENT_STATUS_LABELS } from "@/components/dashboard/DashStatusBadge";
-import { dashBtnSecondary, dashInput } from "@/styles/dashboard";
-import { toast } from "react-toastify";
+import {
+  DashForm,
+  DashSelect,
+  DashTrackCodeInput,
+} from "@/components/dashboard/ds";
+import { trackCodeOptionalSchema } from "@/lib/dashboard/schemas";
+import { valuesToFormData } from "@/components/dashboard/ds/useDashFormSubmit";
+import { dashBtnSecondary } from "@/styles/dashboard";
 
 const STATUSES = ["draft", "pending_manager", "confirmed", "cancelled"] as const;
+
+const schema = Yup.object({
+  status: Yup.string().oneOf([...STATUSES]).required(),
+  track_number: trackCodeOptionalSchema(),
+});
+
+type Values = {
+  status: string;
+  track_number: string;
+};
 
 export function ShipmentStatusForm({
   id,
@@ -31,38 +48,46 @@ export function ShipmentStatusForm({
   }
 
   return (
-    <form
-      action={async (fd) => {
-        try {
-          await action(fd);
-          toast.success("Отправление сохранено");
-        } catch {
-          toast.error("Не удалось сохранить");
-        }
+    <DashForm<Values>
+      initialValues={{
+        status: STATUSES.includes(status as (typeof STATUSES)[number])
+          ? status
+          : "draft",
+        track_number: trackNumber ?? "",
       }}
+      schema={schema}
+      successMessage="Отправление сохранено"
+      errorMessage="Не удалось сохранить"
       className="flex w-full min-w-0 flex-col gap-2"
+      onSubmit={async (values) => {
+        const fd = valuesToFormData({ id, ...values });
+        await action(fd);
+      }}
     >
-      <input type="hidden" name="id" value={id} />
-      <select
-        name="status"
-        defaultValue={status}
-        className={`${dashInput} py-1.5 text-xs`}
-      >
-        {STATUSES.map((s) => (
-          <option key={s} value={s}>
-            {SHIPMENT_STATUS_LABELS[s] ?? s}
-          </option>
-        ))}
-      </select>
-      <input
-        name="track_number"
-        defaultValue={trackNumber}
-        placeholder="Трек-номер"
-        className={`${dashInput} py-1.5 font-mono text-xs`}
-      />
-      <button type="submit" className={`${dashBtnSecondary} py-1.5 text-xs`}>
-        Сохранить
-      </button>
-    </form>
+      {({ isSubmitting }) => (
+        <>
+          <DashSelect name="status" className="!gap-0">
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {SHIPMENT_STATUS_LABELS[s] ?? s}
+              </option>
+            ))}
+          </DashSelect>
+          <DashTrackCodeInput
+            name="track_number"
+            label={undefined}
+            placeholder="Трек-номер"
+            className="!gap-0 [&_input]:py-1.5 [&_input]:text-xs"
+          />
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`${dashBtnSecondary} py-1.5 text-xs`}
+          >
+            {isSubmitting ? "…" : "Сохранить"}
+          </button>
+        </>
+      )}
+    </DashForm>
   );
 }

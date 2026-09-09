@@ -13,6 +13,8 @@ export type TelegramUser = {
   username?: string;
   language_code?: string;
   is_premium?: boolean;
+  /** Temporary HTTPS URL of profile photo (WebApp). */
+  photo_url?: string;
 };
 
 export type TelegramWebApp = {

@@ -12,6 +12,7 @@ export type UpsertWebAppContactInput = {
   locale: WebAppContactLocale;
   source: WebAppContactSource;
   telegramUsername?: string | null;
+  photoUrl?: string | null;
   initDataOk: boolean;
   /**
    * When true (bot share with lost onboarding Map), keep existing DB locale
@@ -42,6 +43,7 @@ type ContactRow = {
   locale: string;
   init_data_ok: boolean;
   telegram_username: string | null;
+  photo_url: string | null;
   source: string;
 };
 
@@ -66,6 +68,8 @@ async function updateExisting(
   const nextInitOk = existing.init_data_ok || input.initDataOk;
   const nextUsername =
     input.telegramUsername?.trim() || existing.telegram_username || null;
+  const nextPhoto =
+    input.photoUrl?.trim() || existing.photo_url || null;
   const nextSource: WebAppContactSource =
     existing.source === "telegram_contact" || input.source === "telegram_contact"
       ? "telegram_contact"
@@ -80,6 +84,7 @@ async function updateExisting(
       locale: nextLocale,
       source: nextSource,
       telegram_username: nextUsername,
+      photo_url: nextPhoto,
       init_data_ok: nextInitOk,
     })
     .eq("session_id", existing.session_id);
@@ -129,7 +134,7 @@ export async function upsertWebAppContact(
   const { data: existing, error: selectError } = await admin
     .from("epos_webapp_contacts")
     .select(
-      "session_id, phone, first_name, last_name, locale, init_data_ok, telegram_username, source",
+      "session_id, phone, first_name, last_name, locale, init_data_ok, telegram_username, photo_url, source",
     )
     .eq("telegram_user_id", input.telegramUserId)
     .maybeSingle();
@@ -153,6 +158,7 @@ export async function upsertWebAppContact(
     source: input.source,
     telegram_user_id: input.telegramUserId,
     telegram_username: input.telegramUsername ?? null,
+    photo_url: input.photoUrl?.trim() || null,
     init_data_ok: input.initDataOk,
   });
 
@@ -171,7 +177,7 @@ export async function upsertWebAppContact(
     const { data: raced, error: raceSelectError } = await admin
       .from("epos_webapp_contacts")
       .select(
-        "session_id, phone, first_name, last_name, locale, init_data_ok, telegram_username, source",
+        "session_id, phone, first_name, last_name, locale, init_data_ok, telegram_username, photo_url, source",
       )
       .eq("telegram_user_id", input.telegramUserId)
       .maybeSingle();

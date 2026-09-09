@@ -14,7 +14,9 @@ type ContactPayload = {
     lastName?: string;
     username?: string;
     languageCode?: string;
+    photoUrl?: string;
   } | null;
+  photoUrl?: string;
   initData?: string;
 };
 
@@ -56,6 +58,12 @@ export async function POST(request: Request) {
     (typeof body.telegramUser?.username === "string"
       ? body.telegramUser.username
       : null);
+  const photoUrl =
+    (typeof body.photoUrl === "string" && body.photoUrl.trim()) ||
+    (typeof body.telegramUser?.photoUrl === "string"
+      ? body.telegramUser.photoUrl.trim()
+      : "") ||
+    null;
 
   try {
     const result = await upsertWebAppContact({
@@ -66,6 +74,7 @@ export async function POST(request: Request) {
       locale,
       source,
       telegramUsername,
+      photoUrl,
       initDataOk: true,
     });
 

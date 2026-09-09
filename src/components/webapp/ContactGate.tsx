@@ -49,6 +49,7 @@ export function ContactGate({ onLinked }: ContactGateProps) {
           locale,
           source: payload.source,
           telegramUser: userSnapshot,
+          photoUrl: user?.photo_url ?? userSnapshot?.photoUrl ?? "",
           initData,
         }),
       });

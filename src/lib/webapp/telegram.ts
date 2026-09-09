@@ -26,6 +26,7 @@ export function telegramUserSnapshot(user?: TelegramUser | null) {
     lastName: user.last_name ?? "",
     username: user.username ?? "",
     languageCode: user.language_code ?? "",
+    photoUrl: user.photo_url ?? "",
   };
 }
 

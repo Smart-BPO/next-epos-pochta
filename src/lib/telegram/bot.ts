@@ -283,3 +283,59 @@ export function leadStatusInlineKeyboard(leadId: string): TelegramInlineKeyboard
     ],
   };
 }
+
+type TelegramPhotoSize = {
+  file_id: string;
+  file_unique_id: string;
+  width: number;
+  height: number;
+  file_size?: number;
+};
+
+type TelegramUserProfilePhotos = {
+  total_count: number;
+  photos: TelegramPhotoSize[][];
+};
+
+type TelegramFile = {
+  file_id: string;
+  file_unique_id: string;
+  file_size?: number;
+  file_path?: string;
+};
+
+export function getUserProfilePhotos(params: {
+  userId: number;
+  limit?: number;
+}) {
+  return callTelegramApi<TelegramUserProfilePhotos>("getUserProfilePhotos", {
+    user_id: params.userId,
+    limit: params.limit ?? 1,
+  });
+}
+
+export function getFile(fileId: string) {
+  return callTelegramApi<TelegramFile>("getFile", { file_id: fileId });
+}
+
+/**
+ * Resolve a fetchable profile photo URL for a Telegram user (server-only).
+ * Uses Bot API; URL embeds the bot token — never send to the browser.
+ */
+export async function resolveTelegramProfilePhotoUrl(
+  telegramUserId: number,
+): Promise<string | null> {
+  const photos = await getUserProfilePhotos({
+    userId: telegramUserId,
+    limit: 1,
+  });
+  if (!photos.ok || photos.result.total_count < 1) return null;
+  const sizes = photos.result.photos[0] ?? [];
+  const best = sizes[sizes.length - 1];
+  if (!best?.file_id) return null;
+  const file = await getFile(best.file_id);
+  if (!file.ok || !file.result.file_path) return null;
+  const token = botToken();
+  if (!token) return null;
+  return `https://api.telegram.org/file/bot${token}/${file.result.file_path}`;
+}
