@@ -3,7 +3,16 @@ import {
   publicMediaPath,
 } from "@/lib/supabase/env";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { uploadMediaAction } from "./actions";
+import { CopyButton } from "@/components/dashboard/CopyButton";
+import {
+  DashEmptyState,
+  DashFormField,
+  DashPageHeader,
+  dashBtnPrimary,
+  dashBtnSecondary,
+  dashCard,
+} from "@/components/dashboard/ui";
+import { deleteMediaAction, uploadMediaAction } from "./actions";
 
 export default async function DashboardMediaPage() {
   let files: { name: string; created_at?: string | null }[] = [];
@@ -14,22 +23,21 @@ export default async function DashboardMediaPage() {
       limit: 100,
       sortBy: { column: "created_at", order: "desc" },
     });
-    files = data ?? [];
+    files = (data ?? []).filter((f) => f.name && !f.name.startsWith("."));
   }
 
   return (
-    <div>
-      <h1 className="m-0 font-display text-2xl font-bold">Медиа</h1>
-      <p className="mt-1 text-sm text-black/50">
-        Загрузка через сервер. Публичный путь: <code>/media/…</code> (прокси
-        Storage, без ключей в браузере).
-      </p>
+    <div className="space-y-5">
+      <DashPageHeader
+        title="Медиа"
+        lead="Загрузка через сервер. Публичный путь: /media/… (прокси Storage)."
+      />
+
       <form
         action={uploadMediaAction}
-        className="mt-6 flex flex-wrap items-end gap-3 rounded-xl border border-black/8 bg-white p-4"
+        className={`${dashCard} flex flex-wrap items-end gap-3 p-5`}
       >
-        <label className="grid gap-1 text-xs font-semibold uppercase text-black/45">
-          Файл
+        <DashFormField label="Файл">
           <input
             type="file"
             name="file"
@@ -37,35 +45,65 @@ export default async function DashboardMediaPage() {
             required
             className="text-sm font-normal normal-case"
           />
-        </label>
-        <button type="submit" className="btn btn-primary">
+        </DashFormField>
+        <button type="submit" className={dashBtnPrimary}>
           Загрузить
         </button>
       </form>
-      <ul className="mt-6 grid gap-2">
-        {files.length === 0 ? (
-          <li className="text-sm text-black/40">Пока пусто</li>
-        ) : (
-          files.map((f) => {
-            const url = publicMediaPath(`covers/${f.name}`);
+
+      {files.length === 0 ? (
+        <DashEmptyState
+          title="Пока пусто"
+          lead="Загрузите обложку для новостей или баннеров."
+        />
+      ) : (
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {files.map((f) => {
+            const path = `covers/${f.name}`;
+            const url = publicMediaPath(path);
             return (
-              <li
-                key={f.name}
-                className="rounded-lg border border-black/8 bg-white px-3 py-2 text-sm"
-              >
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-mono text-xs text-primary hover:underline"
-                >
-                  {url}
-                </a>
+              <li key={f.name} className={`${dashCard} overflow-hidden`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt=""
+                  className="aspect-[16/10] w-full object-cover bg-black/[0.03]"
+                />
+                <div className="space-y-2 p-3">
+                  <p className="m-0 break-all font-mono text-[0.7rem] text-black/55">
+                    {url}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <CopyButton value={url} label="Copy URL" />
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[0.7rem] font-semibold text-primary hover:underline"
+                    >
+                      Открыть
+                    </a>
+                    <form action={deleteMediaAction}>
+                      <input type="hidden" name="path" value={path} />
+                      <button
+                        type="submit"
+                        className="text-[0.7rem] font-semibold text-black/45 hover:text-primary"
+                      >
+                        Удалить
+                      </button>
+                    </form>
+                  </div>
+                </div>
               </li>
             );
-          })
-        )}
-      </ul>
+          })}
+        </ul>
+      )}
+      <p className="m-0 text-sm text-black/40">
+        <a href="/dashboard/news/new/" className={dashBtnSecondary}>
+          К редактору новостей
+        </a>
+      </p>
     </div>
   );
 }

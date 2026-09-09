@@ -2,7 +2,21 @@ import Link from "next/link";
 import type { AdminUser } from "@/lib/cms/auth";
 import { canAccess } from "@/lib/cms/auth";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
+import { DashboardNav } from "@/components/dashboard/DashboardNav";
+import { DashboardToaster } from "@/components/dashboard/DashboardToaster";
+import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import { IconLogout } from "@/components/dashboard/icons";
 import { logoutAction } from "@/app/dashboard/(auth)/logout/actions";
+import { dashAside, dashShell } from "@/styles/dashboard";
+
+function initials(admin: AdminUser) {
+  const raw = (admin.displayName || admin.email || "?").trim();
+  const parts = raw.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
+  }
+  return raw.slice(0, 2).toUpperCase();
+}
 
 export function DashboardChrome({
   admin,
@@ -12,58 +26,74 @@ export function DashboardChrome({
   children: React.ReactNode;
 }) {
   const items = DASHBOARD_NAV.filter((item) => canAccess(admin.role, item.area));
+  const name = admin.displayName || admin.email.split("@")[0] || "Admin";
 
   return (
-    <div className="min-h-dvh bg-[#f6f6f7] text-ink">
-      <div className="mx-auto flex min-h-dvh w-full max-w-7xl">
-        <aside className="hidden w-56 shrink-0 border-r border-black/8 bg-white p-4 lg:block">
-          <p className="m-0 font-display text-sm font-bold uppercase tracking-wide text-primary">
-            EPOS CMS
-          </p>
-          <p className="m-0 mt-1 truncate text-xs text-black/45">{admin.email}</p>
-          <nav className="mt-6 flex flex-col gap-1">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-black/70 hover:bg-black/[0.04] hover:text-black"
+    <div className={dashShell}>
+      <DashboardToaster />
+      <div className="mx-auto flex min-h-dvh w-full max-w-[90rem]">
+        <aside className={dashAside}>
+          <div className="px-5 pt-5 pb-3">
+            <p className="m-0 font-display text-[0.95rem] font-bold tracking-[-0.02em] text-primary">
+              EPOS CMS
+            </p>
+            <p className="m-0 mt-0.5 truncate text-xs text-black/40">{admin.email}</p>
+          </div>
+
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2">
+            <DashboardNav items={items} />
+          </div>
+
+          <div className="mt-auto border-t border-black/[0.06] p-3">
+            <form action={logoutAction} className="mb-2">
+              <button
+                type="submit"
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-black/50 transition hover:bg-black/[0.03] hover:text-black"
               >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <form action={logoutAction} className="mt-8">
-            <button
-              type="submit"
-              className="w-full rounded-lg border border-black/10 px-3 py-2 text-left text-sm text-black/55 hover:bg-black/[0.03]"
-            >
-              Выйти
-            </button>
-          </form>
+                <IconLogout />
+                Выйти
+              </button>
+            </form>
+            <div className="flex items-center gap-2.5 rounded-xl bg-[#f7f8fa] px-2.5 py-2">
+              <span className="grid size-9 place-items-center rounded-full bg-primary text-xs font-bold text-white">
+                {initials(admin)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <span className="block truncate text-sm font-semibold text-ink">
+                    {name}
+                  </span>
+                  <DashStatusBadge kind="role" value={admin.role} />
+                </span>
+                <span className="block truncate text-[0.7rem] text-black/40">
+                  {admin.email}
+                </span>
+              </span>
+            </div>
+          </div>
         </aside>
+
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-10 border-b border-black/8 bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
+          <header className="sticky top-0 z-10 border-b border-black/[0.06] bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
             <div className="flex items-center justify-between gap-3">
-              <p className="m-0 font-display text-sm font-bold uppercase text-primary">
-                EPOS CMS
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="m-0 font-display text-sm font-bold text-primary">
+                  EPOS CMS
+                </p>
+                <DashStatusBadge kind="role" value={admin.role} />
+              </div>
               <form action={logoutAction}>
-                <button type="submit" className="text-xs font-semibold text-black/50">
+                <button
+                  type="submit"
+                  className="text-xs font-semibold text-black/50"
+                >
                   Выйти
                 </button>
               </form>
             </div>
-            <nav className="mt-2 flex gap-2 overflow-x-auto pb-1">
-              {items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="shrink-0 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-black/65"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            <div className="mt-2">
+              <DashboardNav items={items} variant="mobile" />
+            </div>
           </header>
           <main className="p-4 sm:p-6 lg:p-8">{children}</main>
         </div>

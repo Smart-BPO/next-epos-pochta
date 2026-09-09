@@ -58,7 +58,7 @@ export async function saveNewsAction(formData: FormData) {
   revalidatePath("/dashboard/news");
   revalidatePath("/news");
   revalidatePath("/ru/news");
-  redirect(`/dashboard/news/${newsId}/`);
+  redirect(`/dashboard/news/${newsId}/?saved=1`);
 }
 
 export async function deleteNewsAction(formData: FormData) {

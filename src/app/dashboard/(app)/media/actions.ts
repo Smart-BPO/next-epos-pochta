@@ -27,3 +27,16 @@ export async function uploadMediaAction(formData: FormData) {
 
   revalidatePath("/dashboard/media");
 }
+
+export async function deleteMediaAction(formData: FormData) {
+  const admin = await requireAdmin();
+  if (!canAccess(admin.role, "media") || admin.role === "viewer") {
+    throw new Error("Forbidden");
+  }
+  const path = String(formData.get("path") ?? "").trim();
+  if (!path.startsWith("covers/")) throw new Error("Invalid path");
+  const client = createSupabaseAdminClient();
+  const { error } = await client.storage.from("epos-media").remove([path]);
+  if (error) throw new Error(error.message);
+  revalidatePath("/dashboard/media");
+}

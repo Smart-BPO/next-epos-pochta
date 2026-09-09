@@ -1,27 +1,61 @@
 import Link from "next/link";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { requireAdmin } from "@/lib/cms/auth";
 import { LeadStatusSelect } from "@/components/dashboard/LeadStatusSelect";
+import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import {
+  DashEmptyState,
+  DashFilterPills,
+  DashPageHeader,
+  DashTable,
+  DashTableShell,
+  DashTd,
+  DashTh,
+  dashBtnSecondary,
+} from "@/components/dashboard/ui";
+import {
+  formatDashDate,
+  leadClientLabel,
+  leadRouteLabel,
+  leadTypeLabel,
+} from "@/lib/cms/lead-display";
 import { updateLeadStatusAction } from "./actions";
 
 const STATUSES = ["new", "in_progress", "done", "spam"] as const;
+const TYPES = ["price", "business", "contact"] as const;
+const PAGE_SIZE = 50;
+
+function hrefWith(
+  base: Record<string, string>,
+  patch: Record<string, string | undefined>,
+) {
+  const next = { ...base };
+  for (const [k, v] of Object.entries(patch)) {
+    if (!v) delete next[k];
+    else next[k] = v;
+  }
+  const qs = new URLSearchParams(next).toString();
+  return qs ? `/dashboard/leads/?${qs}` : "/dashboard/leads/";
+}
 
 export default async function DashboardLeadsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; type?: string }>;
+  searchParams: Promise<{ status?: string; type?: string; offset?: string }>;
 }) {
+  const admin = await requireAdmin();
+  const readOnly = admin.role === "viewer";
   const params = await searchParams;
   const statusFilter =
     params.status && (STATUSES as readonly string[]).includes(params.status)
       ? params.status
       : "";
   const typeFilter =
-    params.type === "price" ||
-    params.type === "business" ||
-    params.type === "contact"
+    params.type && (TYPES as readonly string[]).includes(params.type)
       ? params.type
       : "";
+  const offset = Math.max(0, Number(params.offset) || 0);
 
   type LeadRow = {
     id: string;
@@ -33,89 +67,163 @@ export default async function DashboardLeadsPage({
   };
 
   let rows: LeadRow[] = [];
+  let total = 0;
   if (hasSupabaseAdminConfig()) {
-    const admin = createSupabaseAdminClient();
-    let q = admin
+    const client = createSupabaseAdminClient();
+    let q = client
       .from("epos_leads")
-      .select("id, type, locale, status, payload, created_at")
+      .select("id, type, locale, status, payload, created_at", {
+        count: "exact",
+      })
       .order("created_at", { ascending: false })
-      .limit(100);
+      .range(offset, offset + PAGE_SIZE - 1);
     if (statusFilter) q = q.eq("status", statusFilter);
     if (typeFilter) q = q.eq("type", typeFilter);
-    const { data } = await q;
+    const { data, count } = await q;
     rows = (data ?? []) as LeadRow[];
+    total = count ?? rows.length;
   }
 
+  const filterBase: Record<string, string> = {};
+  if (statusFilter) filterBase.status = statusFilter;
+  if (typeFilter) filterBase.type = typeFilter;
+
+  const statusPills = [
+    { href: hrefWith(filterBase, { status: undefined, offset: undefined }), label: "Все статусы", active: !statusFilter },
+    ...STATUSES.map((s) => ({
+      href: hrefWith(filterBase, { status: s, offset: undefined }),
+      label:
+        s === "new"
+          ? "Новые"
+          : s === "in_progress"
+            ? "В работе"
+            : s === "done"
+              ? "Готово"
+              : "Спам",
+      active: statusFilter === s,
+    })),
+  ];
+
+  const typePills = [
+    { href: hrefWith(filterBase, { type: undefined, offset: undefined }), label: "Все типы", active: !typeFilter },
+    ...TYPES.map((t) => ({
+      href: hrefWith(filterBase, { type: t, offset: undefined }),
+      label: leadTypeLabel(t),
+      active: typeFilter === t,
+    })),
+  ];
+
+  const nextOffset = offset + PAGE_SIZE;
+  const hasMore = nextOffset < total;
+
   return (
-    <div>
-      <h1 className="m-0 font-display text-2xl font-bold">Заявки</h1>
-      <p className="mt-1 text-sm text-black/50">Сайт → epos_leads</p>
-      <div className="mt-4 flex flex-wrap gap-2 text-sm">
-        <Link
-          href="/dashboard/leads/"
-          className={`rounded-full border px-3 py-1 ${!statusFilter ? "border-primary text-primary" : "border-black/10"}`}
-        >
-          Все
-        </Link>
-        {STATUSES.map((s) => (
-          <Link
-            key={s}
-            href={`/dashboard/leads/?status=${s}`}
-            className={`rounded-full border px-3 py-1 ${statusFilter === s ? "border-primary text-primary" : "border-black/10"}`}
-          >
-            {s}
-          </Link>
-        ))}
+    <div className="space-y-5">
+      <DashPageHeader
+        title="Заявки"
+        lead="Сайт → epos_leads. Финальная цена только после подтверждения менеджером."
+      />
+
+      <div className="space-y-2">
+        <DashFilterPills items={statusPills} />
+        <DashFilterPills items={typePills} />
       </div>
-      <div className="mt-6 overflow-x-auto rounded-xl border border-black/8 bg-white">
-        <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="border-b border-black/8 text-xs uppercase text-black/40">
-            <tr>
-              <th className="px-3 py-2 font-semibold">ID</th>
-              <th className="px-3 py-2 font-semibold">Тип</th>
-              <th className="px-3 py-2 font-semibold">Данные</th>
-              <th className="px-3 py-2 font-semibold">Статус</th>
-              <th className="px-3 py-2 font-semibold">Когда</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
+
+      <DashTableShell
+        title={`Список${total ? ` · ${total}` : ""}`}
+        action={
+          hasMore ? (
+            <Link
+              href={hrefWith(filterBase, { offset: String(nextOffset) })}
+              className="text-sm font-semibold text-primary hover:underline"
+            >
+              Ещё →
+            </Link>
+          ) : null
+        }
+      >
+        {rows.length === 0 ? (
+          <DashEmptyState
+            title="Нет заявок"
+            lead="Новые лиды появятся здесь после отправки форм на сайте."
+          />
+        ) : (
+          <DashTable>
+            <thead>
               <tr>
-                <td colSpan={5} className="px-3 py-8 text-center text-black/40">
-                  Нет заявок
-                </td>
+                <DashTh>ID</DashTh>
+                <DashTh>Клиент</DashTh>
+                <DashTh>Направление</DashTh>
+                <DashTh>Тип</DashTh>
+                <DashTh>Статус</DashTh>
+                <DashTh>Дата</DashTh>
               </tr>
-            ) : (
-              rows.map((row) => (
-                <tr key={row.id} className="border-b border-black/5 align-top">
-                  <td className="px-3 py-3 font-mono text-xs">{row.id}</td>
-                  <td className="px-3 py-3">
-                    {row.type}
-                    <span className="ml-1 text-xs text-black/35">
-                      /{row.locale}
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.id} className="hover:bg-black/[0.015]">
+                  <DashTd>
+                    <Link
+                      href={`/dashboard/leads/${row.id}/`}
+                      className="font-mono text-xs font-semibold text-primary hover:underline"
+                    >
+                      {row.id}
+                    </Link>
+                  </DashTd>
+                  <DashTd className="font-medium text-ink">
+                    {leadClientLabel(row.payload)}
+                  </DashTd>
+                  <DashTd className="text-black/60">
+                    {leadRouteLabel(row.type, row.payload)}
+                  </DashTd>
+                  <DashTd>
+                    <span className="text-xs font-medium text-black/55">
+                      {leadTypeLabel(row.type)}
+                      <span className="text-black/35"> /{row.locale}</span>
                     </span>
-                  </td>
-                  <td className="px-3 py-3 text-xs text-black/65">
-                    <pre className="m-0 max-w-xs overflow-auto whitespace-pre-wrap font-sans">
-                      {JSON.stringify(row.payload?.data ?? row.payload, null, 0)}
-                    </pre>
-                  </td>
-                  <td className="px-3 py-3">
-                    <LeadStatusSelect
-                      id={row.id}
-                      status={row.status}
-                      action={updateLeadStatusAction}
-                    />
-                  </td>
-                  <td className="px-3 py-3 text-xs text-black/45">
-                    {new Date(row.created_at).toLocaleString("ru-RU")}
-                  </td>
+                  </DashTd>
+                  <DashTd>
+                    <div className="flex flex-col gap-2">
+                      <DashStatusBadge kind="lead" value={row.status} />
+                      <LeadStatusSelect
+                        id={row.id}
+                        status={row.status}
+                        action={updateLeadStatusAction}
+                        disabled={readOnly}
+                      />
+                    </div>
+                  </DashTd>
+                  <DashTd className="text-xs text-black/45">
+                    {formatDashDate(row.created_at)}
+                  </DashTd>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </DashTable>
+        )}
+      </DashTableShell>
+
+      {offset > 0 || hasMore ? (
+        <div className="flex flex-wrap gap-2">
+          {offset > 0 ? (
+            <Link
+              href={hrefWith(filterBase, {
+                offset: offset > PAGE_SIZE ? String(offset - PAGE_SIZE) : undefined,
+              })}
+              className={dashBtnSecondary}
+            >
+              ← Назад
+            </Link>
+          ) : null}
+          {hasMore ? (
+            <Link
+              href={hrefWith(filterBase, { offset: String(nextOffset) })}
+              className={dashBtnSecondary}
+            >
+              Показать ещё
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

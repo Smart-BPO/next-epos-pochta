@@ -1,16 +1,36 @@
+import Link from "next/link";
 import { getSiteSettings } from "@/lib/cms/site-settings";
 import { saveSettingsAction } from "./actions";
+import {
+  dashBtnPrimary,
+  dashCardPad,
+  dashInput,
+  dashPageLead,
+  dashPageTitle,
+} from "@/styles/dashboard";
 
 export default async function DashboardSettingsPage() {
   const s = await getSiteSettings();
 
   return (
-    <div>
-      <h1 className="m-0 font-display text-2xl font-bold">Настройки сайта</h1>
-      <p className="mt-1 text-sm text-black/50">
-        NAP, часы, мессенджеры. Тарифы здесь не публикуются.
+    <div className="space-y-6">
+      <div>
+        <h1 className={dashPageTitle}>Настройки сайта</h1>
+        <p className={dashPageLead}>
+          NAP, часы, мессенджеры. Тарифы здесь не публикуются.
+        </p>
+      </div>
+
+      <p>
+        <Link
+          href="/dashboard/settings/telegram/"
+          className="inline-flex items-center rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgb(15_18_24/0.04)] transition hover:border-primary/30"
+        >
+          Telegram webhook →
+        </Link>
       </p>
-      <form action={saveSettingsAction} className="mt-6 grid max-w-xl gap-3">
+
+      <form action={saveSettingsAction} className={`${dashCardPad} grid max-w-xl gap-3`}>
         {(
           [
             ["phone", "Телефон (E.164)", s.phone],
@@ -28,17 +48,17 @@ export default async function DashboardSettingsPage() {
         ).map(([name, label, value]) => (
           <label
             key={name}
-            className="grid gap-1 text-xs font-semibold uppercase text-black/45"
+            className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40"
           >
             {label}
             <input
               name={name}
               defaultValue={value}
-              className="rounded-lg border border-black/12 px-3 py-2 text-sm font-normal normal-case"
+              className={`${dashInput} font-normal normal-case`}
             />
           </label>
         ))}
-        <button type="submit" className="btn btn-primary mt-2 w-fit">
+        <button type="submit" className={`${dashBtnPrimary} mt-1 w-fit`}>
           Сохранить
         </button>
       </form>

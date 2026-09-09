@@ -169,7 +169,7 @@ export async function listNewsAdminRows() {
   const admin = createSupabaseAdminClient();
   const { data } = await admin
     .from("epos_news_articles")
-    .select("id, slug, status, category, published_at, updated_at")
+    .select("id, slug, status, category, cover_image, published_at, updated_at")
     .order("updated_at", { ascending: false });
   return data ?? [];
 }

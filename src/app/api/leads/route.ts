@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import {
+  getTelegramChatId,
+  hasTelegramBotToken,
+  leadStatusInlineKeyboard,
+  sendMessage,
+} from "@/lib/telegram/bot";
 
 type LeadType = "price" | "business" | "contact";
 
@@ -85,25 +91,18 @@ async function notifyTelegram(record: {
   type: LeadType;
   [key: string]: unknown;
 }) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) return false;
+  if (!hasTelegramBotToken()) return false;
+  const chatId = getTelegramChatId();
+  if (!chatId) return false;
 
   const text = `EPOS lead ${record.type.toUpperCase()} ${record.id}\n\n${formatLeadText(record)}`;
-  const response = await fetch(
-    `https://api.telegram.org/bot${token}/sendMessage`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: text.slice(0, 3900),
-        disable_web_page_preview: true,
-      }),
-    },
-  );
-  if (!response.ok) {
-    throw new Error(`telegram_http_${response.status}`);
+  const result = await sendMessage({
+    chatId,
+    text,
+    replyMarkup: leadStatusInlineKeyboard(record.id),
+  });
+  if (!result.ok) {
+    throw new Error(result.description);
   }
   return true;
 }

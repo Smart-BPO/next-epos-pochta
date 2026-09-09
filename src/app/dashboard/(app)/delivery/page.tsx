@@ -1,9 +1,19 @@
+import Link from "next/link";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import {
   seedDeliveryHubsAction,
   updateDeliveryHubAction,
 } from "./actions";
+import {
+  DashEmptyState,
+  DashFormField,
+  DashPageHeader,
+  dashBtnPrimary,
+  dashBtnSecondary,
+  dashCardPad,
+  dashInput,
+} from "@/components/dashboard/ui";
 
 export default async function DashboardDeliveryPage() {
   type Row = {
@@ -35,34 +45,36 @@ export default async function DashboardDeliveryPage() {
   }
 
   return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="m-0 font-display text-2xl font-bold">Хабы доставки</h1>
-          <p className="mt-1 text-sm text-black/50">
-            SEO-тексты хабов. Публичные маршруты пока из TS seed; CMS — редактор
-            copy.
-          </p>
-        </div>
-        <form action={seedDeliveryHubsAction}>
-          <button type="submit" className="btn btn-secondary">
-            Seed из delivery-cities.ts
-          </button>
-        </form>
-      </div>
+    <div className="space-y-5">
+      <DashPageHeader
+        title="Хабы доставки"
+        lead="SEO-тексты хабов. Публичные маршруты пока из TS seed; CMS — редактор copy."
+        actions={
+          <form action={seedDeliveryHubsAction}>
+            <button type="submit" className={dashBtnSecondary}>
+              Seed из delivery-cities.ts
+            </button>
+          </form>
+        }
+      />
 
       {rows.length === 0 ? (
-        <p className="mt-8 text-sm text-black/40">
-          Таблица пуста — нажмите Seed.
-        </p>
+        <DashEmptyState
+          title="Таблица пуста"
+          lead="Нажмите Seed, чтобы заполнить хабы из кода."
+          action={
+            <form action={seedDeliveryHubsAction}>
+              <button type="submit" className={dashBtnPrimary}>
+                Seed сейчас
+              </button>
+            </form>
+          }
+        />
       ) : (
-        <ul className="mt-6 grid gap-4">
+        <ul className="grid gap-4">
           {rows.map((row) => (
-            <li
-              key={row.code}
-              className="rounded-xl border border-black/8 bg-white p-4"
-            >
-              <form action={updateDeliveryHubAction} className="grid gap-2">
+            <li key={row.code} className={dashCardPad}>
+              <form action={updateDeliveryHubAction} className="grid gap-3">
                 <input type="hidden" name="code" value={row.code} />
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="m-0 font-display text-lg font-bold">
@@ -71,68 +83,79 @@ export default async function DashboardDeliveryPage() {
                       {row.code}
                     </span>
                   </p>
-                  <label className="flex items-center gap-2 text-xs">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-black/50">
                     <input
                       type="checkbox"
                       name="is_active"
                       defaultChecked={row.is_active}
+                      className="size-4 rounded border-black/20"
                     />
-                    active
+                    Active
                   </label>
                 </div>
-                <textarea
-                  name="lead_ru"
-                  rows={2}
-                  defaultValue={row.lead_ru}
-                  className="rounded border border-black/12 px-2 py-1 text-sm"
-                  placeholder="Lead RU"
-                />
-                <textarea
-                  name="lead_uz"
-                  rows={2}
-                  defaultValue={row.lead_uz}
-                  className="rounded border border-black/12 px-2 py-1 text-sm"
-                  placeholder="Lead UZ"
-                />
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <input
-                    name="eta_hint_ru"
-                    defaultValue={row.eta_hint_ru}
-                    className="rounded border border-black/12 px-2 py-1 text-sm"
-                    placeholder="ETA RU"
-                  />
-                  <input
-                    name="eta_hint_uz"
-                    defaultValue={row.eta_hint_uz}
-                    className="rounded border border-black/12 px-2 py-1 text-sm"
-                    placeholder="ETA UZ"
-                  />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <DashFormField label="Lead RU">
+                    <textarea
+                      name="lead_ru"
+                      rows={2}
+                      defaultValue={row.lead_ru}
+                      className={dashInput}
+                    />
+                  </DashFormField>
+                  <DashFormField label="Lead UZ">
+                    <textarea
+                      name="lead_uz"
+                      rows={2}
+                      defaultValue={row.lead_uz}
+                      className={dashInput}
+                    />
+                  </DashFormField>
+                  <DashFormField label="ETA RU">
+                    <input
+                      name="eta_hint_ru"
+                      defaultValue={row.eta_hint_ru}
+                      className={dashInput}
+                    />
+                  </DashFormField>
+                  <DashFormField label="ETA UZ">
+                    <input
+                      name="eta_hint_uz"
+                      defaultValue={row.eta_hint_uz}
+                      className={dashInput}
+                    />
+                  </DashFormField>
+                  <DashFormField label="Meta title RU">
+                    <input
+                      name="meta_title_ru"
+                      defaultValue={row.meta_title_ru}
+                      className={dashInput}
+                    />
+                  </DashFormField>
+                  <DashFormField label="Meta title UZ">
+                    <input
+                      name="meta_title_uz"
+                      defaultValue={row.meta_title_uz}
+                      className={dashInput}
+                    />
+                  </DashFormField>
+                  <DashFormField label="Meta description RU">
+                    <textarea
+                      name="meta_description_ru"
+                      rows={2}
+                      defaultValue={row.meta_description_ru}
+                      className={dashInput}
+                    />
+                  </DashFormField>
+                  <DashFormField label="Meta description UZ">
+                    <textarea
+                      name="meta_description_uz"
+                      rows={2}
+                      defaultValue={row.meta_description_uz}
+                      className={dashInput}
+                    />
+                  </DashFormField>
                 </div>
-                <input
-                  name="meta_title_ru"
-                  defaultValue={row.meta_title_ru}
-                  className="rounded border border-black/12 px-2 py-1 text-sm"
-                  placeholder="Meta title RU"
-                />
-                <input
-                  name="meta_title_uz"
-                  defaultValue={row.meta_title_uz}
-                  className="rounded border border-black/12 px-2 py-1 text-sm"
-                  placeholder="Meta title UZ"
-                />
-                <textarea
-                  name="meta_description_ru"
-                  rows={2}
-                  defaultValue={row.meta_description_ru}
-                  className="rounded border border-black/12 px-2 py-1 text-sm"
-                />
-                <textarea
-                  name="meta_description_uz"
-                  rows={2}
-                  defaultValue={row.meta_description_uz}
-                  className="rounded border border-black/12 px-2 py-1 text-sm"
-                />
-                <button type="submit" className="btn btn-primary w-fit text-sm">
+                <button type="submit" className={`${dashBtnPrimary} w-fit`}>
                   Сохранить
                 </button>
               </form>
@@ -140,6 +163,11 @@ export default async function DashboardDeliveryPage() {
           ))}
         </ul>
       )}
+      <p className="m-0 text-sm text-black/40">
+        <Link href="/dashboard/" className="font-semibold text-primary hover:underline">
+          ← Обзор
+        </Link>
+      </p>
     </div>
   );
 }

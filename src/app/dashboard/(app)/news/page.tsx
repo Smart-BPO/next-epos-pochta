@@ -1,63 +1,91 @@
 import Link from "next/link";
 import { listNewsAdminRows } from "@/lib/cms/news";
+import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import {
+  DashEmptyState,
+  DashPageHeader,
+  DashTable,
+  DashTableShell,
+  DashTd,
+  DashTh,
+  dashBtnPrimary,
+} from "@/components/dashboard/ui";
+import { formatDashDate } from "@/lib/cms/lead-display";
 
 export default async function DashboardNewsPage() {
   const rows = await listNewsAdminRows();
 
   return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="m-0 font-display text-2xl font-bold">Новости</h1>
-          <p className="mt-1 text-sm text-black/50">
-            Пустые CMS → публичный сайт использует TS seed
-          </p>
-        </div>
-        <Link href="/dashboard/news/new/" className="btn btn-primary">
-          Новая статья
-        </Link>
-      </div>
-      <div className="mt-6 overflow-x-auto rounded-xl border border-black/8 bg-white">
-        <table className="w-full min-w-[560px] text-left text-sm">
-          <thead className="border-b border-black/8 text-xs uppercase text-black/40">
-            <tr>
-              <th className="px-3 py-2">Slug</th>
-              <th className="px-3 py-2">Статус</th>
-              <th className="px-3 py-2">Категория</th>
-              <th className="px-3 py-2">Обновлено</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
+    <div className="space-y-5">
+      <DashPageHeader
+        title="Новости"
+        lead="Пустые CMS → публичный сайт использует TS seed"
+        actions={
+          <Link href="/dashboard/news/new/" className={dashBtnPrimary}>
+            Новая статья
+          </Link>
+        }
+      />
+      <DashTableShell title="Статьи">
+        {rows.length === 0 ? (
+          <DashEmptyState
+            title="В CMS пока пусто"
+            lead="Сайт читает seed из кода, пока вы не создадите статьи здесь."
+            action={
+              <Link href="/dashboard/news/new/" className={dashBtnPrimary}>
+                Создать первую
+              </Link>
+            }
+          />
+        ) : (
+          <DashTable minWidth="640px">
+            <thead>
               <tr>
-                <td colSpan={4} className="px-3 py-8 text-center text-black/40">
-                  В CMS пока пусто — сайт читает seed из кода
-                </td>
+                <DashTh>Обложка</DashTh>
+                <DashTh>Slug</DashTh>
+                <DashTh>Статус</DashTh>
+                <DashTh>Категория</DashTh>
+                <DashTh>Обновлено</DashTh>
               </tr>
-            ) : (
-              rows.map((row) => (
-                <tr key={row.id} className="border-b border-black/5">
-                  <td className="px-3 py-3">
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.id} className="hover:bg-black/[0.015]">
+                  <DashTd>
+                    {row.cover_image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={row.cover_image}
+                        alt=""
+                        className="size-12 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <span className="grid size-12 place-items-center rounded-lg bg-black/[0.04] text-[0.65rem] text-black/35">
+                        —
+                      </span>
+                    )}
+                  </DashTd>
+                  <DashTd>
                     <Link
                       href={`/dashboard/news/${row.id}/`}
                       className="font-medium text-primary hover:underline"
                     >
                       {row.slug}
                     </Link>
-                  </td>
-                  <td className="px-3 py-3">{row.status}</td>
-                  <td className="px-3 py-3">{row.category}</td>
-                  <td className="px-3 py-3 text-xs text-black/45">
-                    {row.updated_at
-                      ? new Date(row.updated_at).toLocaleString("ru-RU")
-                      : "—"}
-                  </td>
+                  </DashTd>
+                  <DashTd>
+                    <DashStatusBadge kind="news" value={row.status} />
+                  </DashTd>
+                  <DashTd className="text-black/55">{row.category}</DashTd>
+                  <DashTd className="text-xs text-black/45">
+                    {row.updated_at ? formatDashDate(row.updated_at) : "—"}
+                  </DashTd>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </DashTable>
+        )}
+      </DashTableShell>
     </div>
   );
 }

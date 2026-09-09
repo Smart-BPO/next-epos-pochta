@@ -1,5 +1,16 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { CopyButton } from "@/components/dashboard/CopyButton";
+import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import {
+  DashEmptyState,
+  DashPageHeader,
+  DashTable,
+  DashTableShell,
+  DashTd,
+  DashTh,
+} from "@/components/dashboard/ui";
+import { formatDashDate } from "@/lib/cms/lead-display";
 
 export default async function WebappContactsPage() {
   type Row = {
@@ -29,58 +40,76 @@ export default async function WebappContactsPage() {
   }
 
   return (
-    <div>
-      <h1 className="m-0 font-display text-2xl font-bold">WebApp контакты</h1>
-      <p className="mt-1 text-sm text-black/50">Telegram Mini App</p>
-      <div className="mt-6 overflow-x-auto rounded-xl border border-black/8 bg-white">
-        <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-black/8 text-xs uppercase text-black/40">
-            <tr>
-              <th className="px-3 py-2">Сессия</th>
-              <th className="px-3 py-2">Имя</th>
-              <th className="px-3 py-2">Телефон</th>
-              <th className="px-3 py-2">TG</th>
-              <th className="px-3 py-2">initData</th>
-              <th className="px-3 py-2">Когда</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
+    <div className="space-y-5">
+      <DashPageHeader
+        title="WebApp контакты"
+        lead="Контакты из Telegram Mini App"
+      />
+      <DashTableShell title="Список">
+        {rows.length === 0 ? (
+          <DashEmptyState
+            title="Нет контактов"
+            lead="Пользователи мини-приложения появятся после первого входа."
+          />
+        ) : (
+          <DashTable minWidth="820px">
+            <thead>
               <tr>
-                <td colSpan={6} className="px-3 py-8 text-center text-black/40">
-                  Нет контактов
-                </td>
+                <DashTh>Имя</DashTh>
+                <DashTh>Телефон</DashTh>
+                <DashTh>Telegram</DashTh>
+                <DashTh>Источник</DashTh>
+                <DashTh>initData</DashTh>
+                <DashTh>Когда</DashTh>
               </tr>
-            ) : (
-              rows.map((row) => (
-                <tr key={row.session_id} className="border-b border-black/5">
-                  <td className="px-3 py-3 font-mono text-xs">
-                    {row.session_id}
-                  </td>
-                  <td className="px-3 py-3">
-                    {row.first_name} {row.last_name}
-                    <span className="ml-1 text-xs text-black/35">
-                      /{row.locale}
-                    </span>
-                  </td>
-                  <td className="px-3 py-3">{row.phone}</td>
-                  <td className="px-3 py-3 text-xs">
-                    {row.telegram_username
-                      ? `@${row.telegram_username}`
-                      : (row.telegram_user_id ?? "—")}
-                  </td>
-                  <td className="px-3 py-3 text-xs">
-                    {row.init_data_ok ? "ok" : "—"}
-                  </td>
-                  <td className="px-3 py-3 text-xs text-black/45">
-                    {new Date(row.created_at).toLocaleString("ru-RU")}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const name =
+                  `${row.first_name} ${row.last_name}`.trim() || "—";
+                const username = row.telegram_username
+                  ? `@${row.telegram_username}`
+                  : "";
+                return (
+                  <tr key={row.session_id} className="hover:bg-black/[0.015]">
+                    <DashTd>
+                      <div className="font-medium text-ink">{name}</div>
+                      <div className="mt-0.5 font-mono text-[0.65rem] text-black/35">
+                        {row.session_id} · /{row.locale}
+                      </div>
+                    </DashTd>
+                    <DashTd>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span>{row.phone || "—"}</span>
+                        {row.phone ? <CopyButton value={row.phone} /> : null}
+                      </div>
+                    </DashTd>
+                    <DashTd>
+                      <div className="flex flex-wrap items-center gap-2 text-sm">
+                        <span>
+                          {username || row.telegram_user_id || "—"}
+                        </span>
+                        {username ? (
+                          <CopyButton value={username} label="@copy" />
+                        ) : null}
+                      </div>
+                    </DashTd>
+                    <DashTd>
+                      <DashStatusBadge kind="source" value={row.source || "manual"} />
+                    </DashTd>
+                    <DashTd className="text-xs text-black/50">
+                      {row.init_data_ok ? "ok" : "—"}
+                    </DashTd>
+                    <DashTd className="text-xs text-black/45">
+                      {formatDashDate(row.created_at)}
+                    </DashTd>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </DashTable>
+        )}
+      </DashTableShell>
     </div>
   );
 }

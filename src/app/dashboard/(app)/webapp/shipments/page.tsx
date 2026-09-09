@@ -1,16 +1,36 @@
-import Link from "next/link";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { requireAdmin } from "@/lib/cms/auth";
 import { ShipmentStatusForm } from "@/components/dashboard/ShipmentStatusForm";
+import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import {
+  DashEmptyState,
+  DashFilterPills,
+  DashPageHeader,
+  DashTable,
+  DashTableShell,
+  DashTd,
+  DashTh,
+} from "@/components/dashboard/ui";
+import { formatDashDate } from "@/lib/cms/lead-display";
 import { updateShipmentAction } from "./actions";
 
 const STATUSES = ["draft", "pending_manager", "confirmed", "cancelled"] as const;
+
+const STATUS_LABEL: Record<string, string> = {
+  draft: "Черновик",
+  pending_manager: "Ждёт менеджера",
+  confirmed: "Подтверждено",
+  cancelled: "Отменено",
+};
 
 export default async function WebappShipmentsPage({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
+  const admin = await requireAdmin();
+  const readOnly = admin.role === "viewer";
   const params = await searchParams;
   const statusFilter =
     params.status && (STATUSES as readonly string[]).includes(params.status)
@@ -31,8 +51,8 @@ export default async function WebappShipmentsPage({
 
   let rows: Row[] = [];
   if (hasSupabaseAdminConfig()) {
-    const admin = createSupabaseAdminClient();
-    let q = admin
+    const client = createSupabaseAdminClient();
+    let q = client
       .from("epos_webapp_shipments")
       .select(
         "id, contact_session_id, from_label, to_label, weight_kg, status, track_number, phone, created_at",
@@ -44,82 +64,87 @@ export default async function WebappShipmentsPage({
     rows = (data ?? []) as Row[];
   }
 
+  const pills = [
+    {
+      href: "/dashboard/webapp/shipments/",
+      label: "Все",
+      active: !statusFilter,
+    },
+    ...STATUSES.map((s) => ({
+      href: `/dashboard/webapp/shipments/?status=${s}`,
+      label: STATUS_LABEL[s] ?? s,
+      active: statusFilter === s,
+    })),
+  ];
+
   return (
-    <div>
-      <h1 className="m-0 font-display text-2xl font-bold">WebApp отправления</h1>
-      <p className="mt-1 text-sm text-black/50">
-        Статус и трек вручную. Тариф не публикуется — только менеджер.
-      </p>
-      <div className="mt-4 flex flex-wrap gap-2 text-sm">
-        <Link
-          href="/dashboard/webapp/shipments/"
-          className={`rounded-full border px-3 py-1 ${!statusFilter ? "border-primary text-primary" : "border-black/10"}`}
-        >
-          Все
-        </Link>
-        {STATUSES.map((s) => (
-          <Link
-            key={s}
-            href={`/dashboard/webapp/shipments/?status=${s}`}
-            className={`rounded-full border px-3 py-1 ${statusFilter === s ? "border-primary text-primary" : "border-black/10"}`}
-          >
-            {s}
-          </Link>
-        ))}
-      </div>
-      <div className="mt-6 overflow-x-auto rounded-xl border border-black/8 bg-white">
-        <table className="w-full min-w-[800px] text-left text-sm">
-          <thead className="border-b border-black/8 text-xs uppercase text-black/40">
-            <tr>
-              <th className="px-3 py-2">ID</th>
-              <th className="px-3 py-2">Маршрут</th>
-              <th className="px-3 py-2">Контакт</th>
-              <th className="px-3 py-2">Статус / трек</th>
-              <th className="px-3 py-2">Когда</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
+    <div className="space-y-5">
+      <DashPageHeader
+        title="WebApp отправления"
+        lead="Статус и трек вручную. Тариф не публикуется — только менеджер."
+      />
+      <DashFilterPills items={pills} />
+      <DashTableShell title="Список">
+        {rows.length === 0 ? (
+          <DashEmptyState
+            title="Нет отправлений"
+            lead="Заявки из мини-приложения появятся здесь."
+          />
+        ) : (
+          <DashTable minWidth="880px">
+            <thead>
               <tr>
-                <td colSpan={5} className="px-3 py-8 text-center text-black/40">
-                  Нет отправлений
-                </td>
+                <DashTh>ID</DashTh>
+                <DashTh>Маршрут</DashTh>
+                <DashTh>Контакт</DashTh>
+                <DashTh>Статус</DashTh>
+                <DashTh>Действия</DashTh>
+                <DashTh>Когда</DashTh>
               </tr>
-            ) : (
-              rows.map((row) => (
-                <tr key={row.id} className="border-b border-black/5 align-top">
-                  <td className="px-3 py-3 font-mono text-xs">{row.id}</td>
-                  <td className="px-3 py-3">
-                    {row.from_label} → {row.to_label}
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.id} className="align-top hover:bg-black/[0.015]">
+                  <DashTd className="font-mono text-xs text-black/60">
+                    {row.id}
+                  </DashTd>
+                  <DashTd>
+                    <div className="font-medium text-ink">
+                      {row.from_label} → {row.to_label}
+                    </div>
                     {row.weight_kg != null ? (
-                      <span className="ml-1 text-xs text-black/40">
+                      <div className="mt-0.5 text-xs text-black/40">
                         {row.weight_kg} кг
-                      </span>
+                      </div>
                     ) : null}
-                  </td>
-                  <td className="px-3 py-3 text-xs">
+                  </DashTd>
+                  <DashTd className="text-sm">
                     <div>{row.phone}</div>
-                    <div className="font-mono text-black/35">
+                    <div className="mt-0.5 font-mono text-[0.7rem] text-black/35">
                       {row.contact_session_id}
                     </div>
-                  </td>
-                  <td className="px-3 py-3">
+                  </DashTd>
+                  <DashTd>
+                    <DashStatusBadge kind="shipment" value={row.status} />
+                  </DashTd>
+                  <DashTd>
                     <ShipmentStatusForm
                       id={row.id}
                       status={row.status}
                       trackNumber={row.track_number ?? ""}
                       action={updateShipmentAction}
+                      disabled={readOnly}
                     />
-                  </td>
-                  <td className="px-3 py-3 text-xs text-black/45">
-                    {new Date(row.created_at).toLocaleString("ru-RU")}
-                  </td>
+                  </DashTd>
+                  <DashTd className="text-xs text-black/45">
+                    {formatDashDate(row.created_at)}
+                  </DashTd>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </DashTable>
+        )}
+      </DashTableShell>
     </div>
   );
 }

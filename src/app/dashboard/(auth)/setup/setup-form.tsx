@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { bootstrapAdminAction } from "./actions";
+import { dashBtnPrimary, dashCard, dashInput } from "@/styles/dashboard";
 
 export function SetupForm() {
   const [state, formAction, pending] = useActionState(bootstrapAdminAction, null);
@@ -9,7 +10,7 @@ export function SetupForm() {
   return (
     <form
       action={formAction}
-      className="mx-auto w-full max-w-sm rounded-2xl border border-black/10 bg-white p-6 shadow-sm"
+      className={`${dashCard} mx-auto w-full max-w-sm p-6`}
     >
       <h1 className="m-0 font-display text-xl font-bold text-ink">
         Первый владелец
@@ -24,7 +25,7 @@ export function SetupForm() {
           type="password"
           required
           disabled={pending}
-          className="mt-1.5 w-full rounded-lg border border-black/12 px-3 py-2.5 text-sm outline-none focus:border-primary"
+          className={`${dashInput} mt-1.5`}
         />
       </label>
       <label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-black/45">
@@ -33,7 +34,7 @@ export function SetupForm() {
           name="display_name"
           type="text"
           disabled={pending}
-          className="mt-1.5 w-full rounded-lg border border-black/12 px-3 py-2.5 text-sm outline-none focus:border-primary"
+          className={`${dashInput} mt-1.5`}
         />
       </label>
       <label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-black/45">
@@ -44,7 +45,7 @@ export function SetupForm() {
           required
           autoComplete="username"
           disabled={pending}
-          className="mt-1.5 w-full rounded-lg border border-black/12 px-3 py-2.5 text-sm outline-none focus:border-primary"
+          className={`${dashInput} mt-1.5`}
         />
       </label>
       <label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-black/45">
@@ -56,18 +57,18 @@ export function SetupForm() {
           minLength={8}
           autoComplete="new-password"
           disabled={pending}
-          className="mt-1.5 w-full rounded-lg border border-black/12 px-3 py-2.5 text-sm outline-none focus:border-primary"
+          className={`${dashInput} mt-1.5`}
         />
       </label>
       {state?.error ? (
-        <p className="mt-3 text-sm text-primary" role="alert">
+        <p className="mt-3 rounded-xl bg-primary-soft px-3 py-2.5 text-sm text-primary" role="alert">
           {state.error}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={pending}
-        className="btn btn-primary mt-5 w-full disabled:opacity-60"
+        className={`${dashBtnPrimary} mt-5 w-full disabled:opacity-60`}
       >
         {pending ? "Создание…" : "Создать владельца"}
       </button>

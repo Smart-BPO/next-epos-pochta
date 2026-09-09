@@ -25,5 +25,6 @@ export async function updateLeadStatusAction(formData: FormData) {
     .eq("id", id);
 
   revalidatePath("/dashboard/leads");
+  revalidatePath(`/dashboard/leads/${id}`);
   revalidatePath("/dashboard");
 }

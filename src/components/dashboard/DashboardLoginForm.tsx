@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { loginAction } from "@/app/dashboard/(auth)/login/actions";
+import { dashBtnPrimary, dashCard, dashInput } from "@/styles/dashboard";
 
 export function DashboardLoginForm({
   initialError = "",
@@ -16,7 +17,7 @@ export function DashboardLoginForm({
   return (
     <form
       action={formAction}
-      className="mx-auto w-full max-w-sm rounded-2xl border border-black/10 bg-white p-6 shadow-sm"
+      className={`${dashCard} mx-auto w-full max-w-sm p-6`}
     >
       {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
       <h1 className="m-0 font-display text-xl font-bold text-ink">EPOS CMS</h1>
@@ -29,7 +30,7 @@ export function DashboardLoginForm({
           autoComplete="username"
           required
           disabled={pending}
-          className="mt-1.5 w-full rounded-lg border border-black/12 bg-white px-3 py-2.5 text-sm font-normal normal-case text-ink outline-none focus:border-primary"
+          className={`${dashInput} mt-1.5 font-normal normal-case`}
         />
       </label>
       <label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-black/45">
@@ -40,18 +41,18 @@ export function DashboardLoginForm({
           autoComplete="current-password"
           required
           disabled={pending}
-          className="mt-1.5 w-full rounded-lg border border-black/12 bg-white px-3 py-2.5 text-sm font-normal normal-case text-ink outline-none focus:border-primary"
+          className={`${dashInput} mt-1.5 font-normal normal-case`}
         />
       </label>
       {error ? (
-        <p className="mt-3 text-sm text-primary" role="alert">
+        <p className="mt-3 rounded-xl bg-primary-soft px-3 py-2.5 text-sm text-primary" role="alert">
           {error}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={pending}
-        className="btn btn-primary mt-5 w-full disabled:opacity-60"
+        className={`${dashBtnPrimary} mt-5 w-full disabled:opacity-60`}
       >
         {pending ? "Вход…" : "Войти"}
       </button>
