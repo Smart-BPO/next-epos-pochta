@@ -20,8 +20,7 @@ type ContactGateProps = {
 };
 
 export function ContactGate({ onLinked }: ContactGateProps) {
-  const { locale, isTelegram, user, userSnapshot, initData, webApp } =
-    useTelegram();
+  const { locale, user, userSnapshot, initData, webApp } = useTelegram();
   const copy = getWebAppCopy(locale);
   const [phone, setPhone] = useState("");
   const [name, setName] = useState(
@@ -29,6 +28,7 @@ export function ContactGate({ onLinked }: ContactGateProps) {
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [showManual, setShowManual] = useState(false);
 
   const persistContact = async (payload: {
     phone: string;
@@ -129,63 +129,62 @@ export function ContactGate({ onLinked }: ContactGateProps) {
         <p className="m-0 text-sm leading-relaxed text-black/60">
           {copy.contactLead}
         </p>
-        {!isTelegram ? (
-          <p className="m-0 rounded-2xl bg-surface-muted px-3 py-2.5 text-xs leading-snug text-black/55">
-            {copy.outsideTelegram}
-          </p>
-        ) : null}
       </div>
 
-      {isTelegram ? (
-        <Button type="button" variant="telegram" width="full" disabled={busy} onClick={onShareTelegram}>
-          {copy.shareContact}
-        </Button>
+      <Button
+        type="button"
+        variant="telegram"
+        width="full"
+        disabled={busy}
+        onClick={onShareTelegram}
+      >
+        {copy.shareContact}
+      </Button>
+
+      <button
+        type="button"
+        className="text-xs font-semibold uppercase tracking-wide text-black/40"
+        onClick={() => setShowManual((v) => !v)}
+      >
+        {copy.orManual}
+      </button>
+
+      {showManual ? (
+        <form className="flex flex-col gap-3" onSubmit={onManualSubmit}>
+          <label className="grid gap-1.5">
+            <span className={fieldLabel}>{copy.nameLabel}</span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={copy.namePlaceholder}
+              className={fieldControl}
+              autoComplete="name"
+              required
+            />
+          </label>
+          <label className="grid gap-1.5">
+            <span className={fieldLabel}>{copy.phoneLabel}</span>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder={copy.phonePlaceholder}
+              className={fieldControl}
+              inputMode="tel"
+              autoComplete="tel"
+              required
+            />
+          </label>
+          <Button type="submit" variant="secondary" width="full" disabled={busy}>
+            {copy.saveContact}
+          </Button>
+        </form>
       ) : null}
 
-      <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-black/35">
-        <span className="h-px flex-1 bg-black/10" />
-        {copy.orManual}
-        <span className="h-px flex-1 bg-black/10" />
-      </div>
-
-      <form className="flex flex-col gap-3" onSubmit={onManualSubmit}>
-        <label className="grid gap-1.5">
-          <span className={fieldLabel}>{copy.nameLabel}</span>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={copy.namePlaceholder}
-            className={fieldControl}
-            autoComplete="name"
-            required
-          />
-        </label>
-        <label className="grid gap-1.5">
-          <span className={fieldLabel}>{copy.phoneLabel}</span>
-          <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder={copy.phonePlaceholder}
-            className={fieldControl}
-            inputMode="tel"
-            autoComplete="tel"
-            required
-          />
-        </label>
-        {error ? (
-          <p className="m-0 text-sm text-primary" role="alert">
-            {error}
-          </p>
-        ) : null}
-        <Button
-          type="submit"
-          variant={isTelegram ? "secondary" : "primary"}
-          width="full"
-          disabled={busy}
-        >
-          {copy.saveContact}
-        </Button>
-      </form>
+      {error ? (
+        <p className="m-0 text-sm text-primary" role="alert">
+          {error}
+        </p>
+      ) : null}
     </section>
   );
 }

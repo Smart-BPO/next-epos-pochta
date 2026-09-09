@@ -1,36 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { Button } from "@/components/atoms/Button";
 import { getWebAppCopy } from "@/data/webapp-copy";
 import { getSettlementById, settlementLabel } from "@/data/settlements";
 import type { WebAppContactSession } from "@/lib/webapp/session";
+import type { ShipmentDraft } from "@/components/webapp/WebAppNav";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { fieldControl, fieldLabel, fieldTextarea } from "@/styles/ui";
 
 type ShipmentFormProps = {
   contact: WebAppContactSession;
+  initialDraft?: ShipmentDraft | null;
   onSuccess: (shipmentId: string) => void;
   onChangeContact: () => void;
 };
 
 export function ShipmentForm({
   contact,
+  initialDraft,
   onSuccess,
   onChangeContact,
 }: ShipmentFormProps) {
-  const { locale, user, webApp } = useTelegram();
+  const { locale, user, webApp, initData } = useTelegram();
   const copy = getWebAppCopy(locale);
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [weight, setWeight] = useState("");
-  const [length, setLength] = useState("");
-  const [width, setWidth] = useState("");
-  const [height, setHeight] = useState("");
+  const [from, setFrom] = useState(initialDraft?.from ?? "");
+  const [to, setTo] = useState(initialDraft?.to ?? "");
+  const [weight, setWeight] = useState(initialDraft?.weight ?? "");
+  const [length, setLength] = useState(initialDraft?.length ?? "");
+  const [width, setWidth] = useState(initialDraft?.width ?? "");
+  const [height, setHeight] = useState(initialDraft?.height ?? "");
   const [comment, setComment] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!initialDraft) return;
+    setFrom(initialDraft.from);
+    setTo(initialDraft.to);
+    setWeight(initialDraft.weight);
+    setLength(initialDraft.length);
+    setWidth(initialDraft.width);
+    setHeight(initialDraft.height);
+  }, [initialDraft]);
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -61,6 +74,7 @@ export function ShipmentForm({
           widthCm: width,
           heightCm: height,
           comment,
+          initData,
         }),
       });
       const json = (await res.json()) as {

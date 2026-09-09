@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import { verifyTelegramWebAppInitData } from "@/lib/webapp/telegram-init-data";
+import { isNextResponse, requireWebAppInitData } from "@/lib/webapp/auth";
 
 /**
  * Resolve an existing contact by verified Telegram initData user id
@@ -15,15 +15,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const botToken = process.env.TELEGRAM_BOT_TOKEN ?? "";
-  if (!body.initData || !botToken) {
-    return NextResponse.json({ ok: false, found: false });
-  }
-
-  const verified = verifyTelegramWebAppInitData(body.initData, botToken);
-  if (!verified.ok || verified.userId == null) {
-    return NextResponse.json({ ok: false, found: false });
-  }
+  const auth = requireWebAppInitData(body.initData);
+  if (isNextResponse(auth)) return auth;
 
   if (!hasSupabaseAdminConfig()) {
     return NextResponse.json({ ok: true, found: false });
@@ -35,7 +28,7 @@ export async function POST(request: Request) {
     .select(
       "session_id, phone, first_name, last_name, locale, source, telegram_user_id, telegram_username, created_at",
     )
-    .eq("telegram_user_id", verified.userId)
+    .eq("telegram_user_id", auth.userId)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -52,8 +45,8 @@ export async function POST(request: Request) {
       phone: data.phone,
       firstName: data.first_name,
       lastName: data.last_name || "",
-      telegramUserId: data.telegram_user_id ?? verified.userId,
-      telegramUsername: data.telegram_username || verified.username || undefined,
+      telegramUserId: data.telegram_user_id ?? auth.userId,
+      telegramUsername: data.telegram_username || auth.username || undefined,
       linkedAt: data.created_at,
       source:
         data.source === "telegram_contact" ? "telegram_contact" : "manual",

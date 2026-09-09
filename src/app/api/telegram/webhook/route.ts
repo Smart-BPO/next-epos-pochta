@@ -23,6 +23,7 @@ import {
 import { safeEqual } from "@/lib/security/secrets";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { upsertWebAppContact } from "@/lib/webapp/contact";
 
 export const runtime = "nodejs";
 
@@ -85,42 +86,28 @@ const STATUS_LABEL: Record<string, string> = {
   spam: "Спам",
 };
 
-function createSessionId() {
-  const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
-  return `TG-${stamp}-${rand}`;
-}
-
 async function persistBotContact(params: {
   phone: string;
   firstName: string;
   lastName: string;
   locale: BotLocale;
-  telegramUserId: number | null;
+  telegramUserId: number;
   telegramUsername: string | null;
+  /** True when onboarding Map missed locale (serverless); keep DB locale on update. */
+  preserveExistingLocale: boolean;
 }) {
-  const sessionId = createSessionId();
-  if (!hasSupabaseAdminConfig()) {
-    console.info("[telegram:onboard:contact]", JSON.stringify({ sessionId, ...params }));
-    return sessionId;
-  }
-  const admin = createSupabaseAdminClient();
-  const { error } = await admin.from("epos_webapp_contacts").insert({
-    session_id: sessionId,
+  const result = await upsertWebAppContact({
+    telegramUserId: params.telegramUserId,
     phone: params.phone,
-    first_name: params.firstName,
-    last_name: params.lastName,
+    firstName: params.firstName,
+    lastName: params.lastName,
     locale: params.locale,
     source: "telegram_contact",
-    telegram_user_id: params.telegramUserId,
-    telegram_username: params.telegramUsername,
-    init_data_ok: false,
+    telegramUsername: params.telegramUsername,
+    initDataOk: false,
+    preserveExistingLocale: params.preserveExistingLocale,
   });
-  if (error) {
-    console.error("[telegram:onboard:contact]", error.message);
-    throw new Error(error.message);
-  }
-  return sessionId;
+  return result.sessionId;
 }
 
 async function handleLeadCallback(
@@ -280,10 +267,21 @@ async function handleContactMessage(
   }
 
   const session = getOnboardingSession(chatId);
+  const hadOnboardingLocale = Boolean(session?.locale);
   const locale = session?.locale ?? "uz";
   const copy = botOnboardingCopy[locale];
   const phone = normalizeBotPhone(contact.phone_number);
   if (!phone) {
+    await sendMessage({
+      chatId,
+      text: copy.needShare,
+      replyMarkup: shareContactKeyboard(locale),
+    });
+    return;
+  }
+
+  const telegramUserId = message.from?.id ?? contact.user_id ?? null;
+  if (telegramUserId == null) {
     await sendMessage({
       chatId,
       text: copy.needShare,
@@ -302,8 +300,9 @@ async function handleContactMessage(
       firstName,
       lastName,
       locale,
-      telegramUserId: message.from?.id ?? contact.user_id ?? null,
+      telegramUserId,
       telegramUsername: message.from?.username ?? null,
+      preserveExistingLocale: !hadOnboardingLocale,
     });
   } catch {
     await sendMessage({

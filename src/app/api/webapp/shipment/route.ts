@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { isNextResponse, requireWebAppInitData } from "@/lib/webapp/auth";
 
 type ShipmentPayload = {
   sessionId?: string;
@@ -16,6 +17,7 @@ type ShipmentPayload = {
   widthCm?: number | string;
   heightCm?: number | string;
   comment?: string;
+  initData?: string;
 };
 
 function createShipmentId() {
@@ -39,6 +41,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
+  const auth = requireWebAppInitData(body.initData);
+  if (isNextResponse(auth)) return auth;
+
   if (!body.sessionId?.trim()) {
     return NextResponse.json({ error: "contact_required" }, { status: 401 });
   }
@@ -56,8 +61,7 @@ export async function POST(request: Request) {
     contact_session_id: sessionId,
     locale: body.locale === "ru" ? "ru" : "uz",
     phone: body.phone ?? "",
-    telegram_user_id:
-      typeof body.telegramUserId === "number" ? body.telegramUserId : null,
+    telegram_user_id: auth.userId,
     from_settlement_id: body.fromSettlementId,
     to_settlement_id: body.toSettlementId,
     from_label: body.fromLabel ?? "",
@@ -81,11 +85,17 @@ export async function POST(request: Request) {
     const admin = createSupabaseAdminClient();
     const { data: contact } = await admin
       .from("epos_webapp_contacts")
-      .select("session_id")
+      .select("session_id, telegram_user_id")
       .eq("session_id", sessionId)
       .maybeSingle();
     if (!contact) {
       return NextResponse.json({ error: "contact_not_found" }, { status: 401 });
+    }
+    if (
+      contact.telegram_user_id != null &&
+      contact.telegram_user_id !== auth.userId
+    ) {
+      return NextResponse.json({ error: "telegram_mismatch" }, { status: 403 });
     }
 
     const { error } = await admin.from("epos_webapp_shipments").insert(row);
