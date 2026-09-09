@@ -283,15 +283,16 @@ export function OverviewDashboardClient({
   }, [leads, dateFilter.active, dateFilter.dateRange]);
 
   const today = todayKey();
-  const leadsNew = scopedLeads.filter((l) => l.status === "new").length;
+  const pendingShipments = shipments.filter(
+    (s) => s.status === "pending_manager",
+  ).length;
+  const leadsNew =
+    scopedLeads.filter((l) => l.status === "new").length + pendingShipments;
   const leadsProgress = scopedLeads.filter(
     (l) => l.status === "in_progress",
   ).length;
   const doneToday = scopedLeads.filter(
     (l) => l.status === "done" && dayKey(l.created_at) === today,
-  ).length;
-  const pendingShipments = shipments.filter(
-    (s) => s.status === "pending_manager",
   ).length;
 
   const last7 = buildDaySeries(scopedLeads, 7);
@@ -323,18 +324,26 @@ export function OverviewDashboardClient({
     {
       label: "Новые заявки",
       value: leadsNew,
-      hint: `${deltaPct >= 0 ? "+" : ""}${deltaPct}% за 7 дней`,
-      hintClass: deltaPct >= 0 ? "text-emerald-600" : "text-primary",
-      href: "/dashboard/leads/?status=new",
+      hint:
+        pendingShipments > 0
+          ? `${pendingShipments} из Mini App ждут`
+          : `${deltaPct >= 0 ? "+" : ""}${deltaPct}% за 7 дней`,
+      hintClass:
+        pendingShipments > 0
+          ? "text-amber-700"
+          : deltaPct >= 0
+            ? "text-emerald-600"
+            : "text-primary",
+      href: "/dashboard/leads/",
       icon: <IconInbox className="text-primary" />,
       iconBg: "bg-primary-soft",
     },
     {
       label: "В обработке",
       value: leadsProgress,
-      hint: `${pendingShipments} отправлений ждут`,
+      hint: "лиды в работе",
       hintClass: "text-amber-700",
-      href: "/dashboard/leads/?status=in_progress",
+      href: "/dashboard/leads/",
       icon: <IconProgress className="text-amber-600" />,
       iconBg: "bg-amber-50",
     },

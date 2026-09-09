@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   useDashLocale,
   useDashT,
@@ -9,6 +11,7 @@ import { ShipmentStatusForm } from "@/components/dashboard/ShipmentStatusForm";
 import { DashCrudPage, DashListView } from "@/components/dashboard/ds";
 import { dashIntlLocale } from "@/i18n/dashboard";
 import { formatDashDate } from "@/lib/cms/lead-display";
+import { cn } from "@/lib/cn";
 
 const STATUS_KEYS = [
   "draft",
@@ -41,6 +44,14 @@ export function WebappShipmentsClient({
   const t = useDashT();
   const { locale } = useDashLocale();
   const intlLocale = dashIntlLocale(locale);
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get("id");
+  const highlightRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!highlightId || !highlightRef.current) return;
+    highlightRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightId, rows]);
 
   return (
     <DashCrudPage title={t.shipments.title} lead={t.shipments.lead}>
@@ -71,7 +82,16 @@ export function WebappShipmentsClient({
             sortValue: (r) => r.id,
             hideInCard: true,
             cell: (row) => (
-              <span className="font-mono text-xs text-black/60">{row.id}</span>
+              <div
+                ref={row.id === highlightId ? highlightRef : undefined}
+                className={cn(
+                  "font-mono text-xs text-black/60",
+                  row.id === highlightId &&
+                    "rounded-lg bg-primary-soft px-1.5 py-0.5 font-semibold text-primary",
+                )}
+              >
+                {row.id}
+              </div>
             ),
           },
           {
@@ -112,7 +132,14 @@ export function WebappShipmentsClient({
             header: t.list.status,
             sortValue: (r) => r.status,
             cell: (row) => (
-              <DashStatusBadge kind="shipment" value={row.status} />
+              <div className="flex flex-col gap-1.5">
+                <DashStatusBadge kind="shipment" value={row.status} />
+                {row.status === "pending_manager" ? (
+                  <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-amber-700">
+                    {t.shipments.waitingInLeads}
+                  </span>
+                ) : null}
+              </div>
             ),
           },
           {

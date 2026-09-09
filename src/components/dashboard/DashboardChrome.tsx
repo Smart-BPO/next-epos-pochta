@@ -35,7 +35,7 @@ export function DashboardChrome({
       <DashboardToaster />
       <div className="flex h-dvh w-full">
         <aside className={dashAside}>
-          <div className="border-b border-black/[0.06] px-5 pt-5 pb-4">
+          <div className="flex h-14 shrink-0 items-center border-b border-black/[0.06] px-5">
             <Link
               href="/dashboard/"
               className="inline-flex h-8 w-[84px] items-center"
@@ -51,9 +51,6 @@ export function DashboardChrome({
                 unoptimized
               />
             </Link>
-            <p className="m-0 mt-2 truncate text-xs text-black/40">
-              {admin.email}
-            </p>
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2 pb-4">

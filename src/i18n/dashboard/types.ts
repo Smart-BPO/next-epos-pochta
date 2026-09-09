@@ -135,7 +135,12 @@ export type DashCopy = {
       crm: string;
       viewer: string;
     };
-    source: { telegram_contact: string; manual: string };
+    source: {
+      telegram_contact: string;
+      manual: string;
+      website: string;
+      webapp: string;
+    };
   };
 
   list: {
@@ -209,13 +214,19 @@ export type DashCopy = {
     emptyLead: string;
     filterStatus: string;
     filterType: string;
+    filterSource: string;
     typePrice: string;
     typeBusiness: string;
     typeContact: string;
+    typeShipment: string;
     draftStep: string;
     resumeLink: string;
     kanbanEmpty: string;
     moved: string;
+    confirmShipment: string;
+    cancelShipment: string;
+    openShipment: string;
+    waitingInInbox: string;
   };
 
   contacts: {
@@ -233,6 +244,7 @@ export type DashCopy = {
     trackPlaceholder: string;
     saved: string;
     saveFailed: string;
+    waitingInLeads: string;
   };
 
   news: {

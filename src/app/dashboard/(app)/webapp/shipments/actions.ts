@@ -86,5 +86,6 @@ export async function updateShipmentAction(formData: FormData) {
 
   // TODO(tracking-api): sync status / track_number with external tracking when connected
   revalidatePath("/dashboard/webapp/shipments");
+  revalidatePath("/dashboard/leads");
   revalidatePath("/dashboard");
 }

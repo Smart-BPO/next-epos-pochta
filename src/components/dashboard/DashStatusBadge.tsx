@@ -40,6 +40,8 @@ const ROLE_CLASS: Record<string, string> = {
 const SOURCE_CLASS: Record<string, string> = {
   telegram_contact: "bg-[#e0f2fe] text-[#0369a1]",
   manual: "bg-black/[0.06] text-black/50",
+  website: "bg-[#f3e8ff] text-[#7c3aed]",
+  webapp: "bg-[#e0f2fe] text-[#0369a1]",
 };
 
 function toneFrom(

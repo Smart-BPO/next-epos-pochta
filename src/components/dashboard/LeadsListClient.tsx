@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { toast } from "react-toastify";
 import {
   useDashLocale,
   useDashT,
@@ -10,36 +11,94 @@ import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import { LeadsKanbanBoard } from "@/components/dashboard/LeadsKanbanBoard";
 import { DashCrudPage, DashListView } from "@/components/dashboard/ds";
 import { dashIntlLocale } from "@/i18n/dashboard";
-import {
-  formatDashDate,
-  leadClientLabel,
-  leadDraftStep,
-  leadRouteLabel,
-  leadTypeLabel,
-} from "@/lib/cms/lead-display";
+import { formatDashDate, leadDraftStep } from "@/lib/cms/lead-display";
+import type { InboxRow } from "@/lib/cms/inbox";
+import { dashBtnRowSecondary } from "@/styles/dashboard";
 
-export type LeadListRow = {
+export type LeadListRow = InboxRow;
+
+function inboxTypeLabel(
+  type: string,
+  labels: {
+    price: string;
+    business: string;
+    contact: string;
+    shipment: string;
+  },
+) {
+  if (type === "shipment") return labels.shipment;
+  if (type === "price") return labels.price;
+  if (type === "business") return labels.business;
+  if (type === "contact") return labels.contact;
+  return type;
+}
+
+function InboxShipmentActions({
+  id,
+  disabled,
+  action,
+}: {
   id: string;
-  type: string;
-  locale: string;
-  status: string;
-  sort_order: number;
-  payload: {
-    pageUrl?: string;
-    data?: Record<string, unknown>;
-    meta?: { step?: number; complete?: boolean };
-  };
-  created_at: string;
-};
+  disabled: boolean;
+  action: (formData: FormData) => Promise<void>;
+}) {
+  const t = useDashT();
+
+  async function run(status: "confirmed" | "cancelled") {
+    const fd = new FormData();
+    fd.set("id", id);
+    fd.set("status", status);
+    try {
+      await action(fd);
+      toast.success(t.leads.moved);
+    } catch {
+      toast.error(t.errors.saveFailed);
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-1">
+      <DashStatusBadge kind="shipment" value="pending_manager" />
+      {!disabled ? (
+        <>
+          <button
+            type="button"
+            className={dashBtnRowSecondary}
+            onClick={() => void run("confirmed")}
+          >
+            {t.leads.confirmShipment}
+          </button>
+          <button
+            type="button"
+            className={dashBtnRowSecondary}
+            onClick={() => void run("cancelled")}
+          >
+            {t.leads.cancelShipment}
+          </button>
+        </>
+      ) : null}
+      <Link
+        href={`/dashboard/webapp/shipments/?id=${encodeURIComponent(id)}`}
+        className={dashBtnRowSecondary}
+      >
+        {t.leads.openShipment}
+      </Link>
+    </div>
+  );
+}
 
 export function LeadsListClient({
   rows,
   readOnly,
+  shipmentReadOnly = true,
   updateStatusAction,
+  updateShipmentStatusAction,
 }: {
-  rows: LeadListRow[];
+  rows: InboxRow[];
   readOnly: boolean;
+  shipmentReadOnly?: boolean;
   updateStatusAction: (formData: FormData) => Promise<void>;
+  updateShipmentStatusAction: (formData: FormData) => Promise<void>;
 }) {
   const t = useDashT();
   const { locale } = useDashLocale();
@@ -48,6 +107,7 @@ export function LeadsListClient({
     price: t.leads.typePrice,
     business: t.leads.typeBusiness,
     contact: t.leads.typeContact,
+    shipment: t.leads.typeShipment,
   };
 
   return (
@@ -55,16 +115,30 @@ export function LeadsListClient({
       <DashListView
         storageKey="leads"
         rows={rows}
-        rowKey={(r) => r.id}
+        rowKey={(r) => `${r.kind}:${r.id}`}
         emptyTitle={t.leads.emptyTitle}
         emptyLead={t.leads.emptyLead}
         defaultSortId="created"
         defaultSortDir="desc"
         defaultPageSize={50}
         renderKanban={(filtered) => (
-          <LeadsKanbanBoard rows={filtered} readOnly={readOnly} />
+          <LeadsKanbanBoard
+            rows={filtered}
+            readOnly={readOnly}
+            shipmentReadOnly={shipmentReadOnly}
+            updateShipmentStatusAction={updateShipmentStatusAction}
+          />
         )}
         filters={[
+          {
+            id: "source",
+            label: t.leads.filterSource,
+            options: [
+              { value: "website", label: t.badge.source.website },
+              { value: "webapp", label: t.badge.source.webapp },
+            ],
+            getValue: (r) => r.source,
+          },
           {
             id: "status",
             label: t.leads.filterStatus,
@@ -84,6 +158,7 @@ export function LeadsListClient({
               { value: "price", label: typeLabels.price },
               { value: "business", label: typeLabels.business },
               { value: "contact", label: typeLabels.contact },
+              { value: "shipment", label: typeLabels.shipment },
             ],
             getValue: (r) => r.type,
           },
@@ -94,35 +169,47 @@ export function LeadsListClient({
             header: "ID",
             searchText: true,
             sortValue: (r) => r.id,
-            cell: (row) => (
-              <Link
-                href={`/dashboard/leads/${row.id}/`}
-                className="font-mono text-xs font-semibold text-primary hover:underline"
-              >
-                {row.id}
-              </Link>
-            ),
+            cell: (row) =>
+              row.kind === "lead" ? (
+                <Link
+                  href={`/dashboard/leads/${row.id}/`}
+                  className="font-mono text-xs font-semibold text-primary hover:underline"
+                >
+                  {row.id}
+                </Link>
+              ) : (
+                <Link
+                  href={`/dashboard/webapp/shipments/?id=${encodeURIComponent(row.id)}`}
+                  className="font-mono text-xs font-semibold text-primary hover:underline"
+                >
+                  {row.id}
+                </Link>
+              ),
           },
           {
             id: "client",
             header: t.list.client,
-            searchText: (r) => leadClientLabel(r.payload),
-            sortValue: (r) => leadClientLabel(r.payload),
+            searchText: (r) => r.clientLabel,
+            sortValue: (r) => r.clientLabel,
             cell: (row) => (
-              <span className="font-medium text-ink">
-                {leadClientLabel(row.payload)}
-              </span>
+              <span className="font-medium text-ink">{row.clientLabel}</span>
             ),
           },
           {
             id: "route",
             header: t.list.route,
-            searchText: (r) => leadRouteLabel(r.type, r.payload),
-            sortValue: (r) => leadRouteLabel(r.type, r.payload),
+            searchText: (r) => r.routeLabel,
+            sortValue: (r) => r.routeLabel,
             cell: (row) => (
-              <span className="text-black/60">
-                {leadRouteLabel(row.type, row.payload)}
-              </span>
+              <span className="text-black/60">{row.routeLabel}</span>
+            ),
+          },
+          {
+            id: "source",
+            header: t.list.source,
+            sortValue: (r) => r.source,
+            cell: (row) => (
+              <DashStatusBadge kind="source" value={row.source} />
             ),
           },
           {
@@ -131,7 +218,7 @@ export function LeadsListClient({
             sortValue: (r) => r.type,
             cell: (row) => (
               <span className="text-xs font-medium text-black/55">
-                {leadTypeLabel(row.type, typeLabels)}
+                {inboxTypeLabel(row.type, typeLabels)}
                 <span className="text-black/35"> /{row.locale}</span>
               </span>
             ),
@@ -141,8 +228,19 @@ export function LeadsListClient({
             header: t.list.status,
             sortValue: (r) => r.status,
             cell: (row) => {
+              if (row.kind === "webapp_shipment") {
+                return (
+                  <InboxShipmentActions
+                    id={row.id}
+                    disabled={shipmentReadOnly}
+                    action={updateShipmentStatusAction}
+                  />
+                );
+              }
               const step =
-                row.status === "draft" ? leadDraftStep(row.payload) : null;
+                row.status === "draft"
+                  ? leadDraftStep(row.payload)
+                  : null;
               return (
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-wrap items-center gap-2">

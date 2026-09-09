@@ -20,9 +20,12 @@ import {
 import { toast } from "react-toastify";
 import { updateLeadBoardAction } from "@/app/dashboard/(app)/leads/actions";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
-import { LeadsKanbanCard, LeadsKanbanCardPreview } from "@/components/dashboard/LeadsKanbanCard";
-import type { LeadListRow } from "@/components/dashboard/LeadsListClient";
+import {
+  LeadsKanbanCard,
+  LeadsKanbanCardPreview,
+} from "@/components/dashboard/LeadsKanbanCard";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
+import type { InboxRow } from "@/lib/cms/inbox";
 import { cn } from "@/lib/cn";
 import { dashCard } from "@/styles/dashboard";
 
@@ -49,22 +52,22 @@ function parseColumnId(id: string | number): LeadKanbanStatus | null {
     : null;
 }
 
-function sortLeads(rows: LeadListRow[]) {
+function sortRows(rows: InboxRow[]) {
   return [...rows].sort((a, b) => {
     if (b.sort_order !== a.sort_order) return b.sort_order - a.sort_order;
     return b.created_at.localeCompare(a.created_at);
   });
 }
 
-function groupByStatus(rows: LeadListRow[]) {
-  const map: Record<LeadKanbanStatus, LeadListRow[]> = {
+function groupByStatus(rows: InboxRow[]) {
+  const map: Record<LeadKanbanStatus, InboxRow[]> = {
     draft: [],
     new: [],
     in_progress: [],
     done: [],
     spam: [],
   };
-  for (const row of sortLeads(rows)) {
+  for (const row of sortRows(rows)) {
     const status = (LEAD_KANBAN_STATUSES as readonly string[]).includes(
       row.status,
     )
@@ -76,7 +79,7 @@ function groupByStatus(rows: LeadListRow[]) {
 }
 
 function findStatusForId(
-  columns: Record<LeadKanbanStatus, LeadListRow[]>,
+  columns: Record<LeadKanbanStatus, InboxRow[]>,
   id: string,
 ): LeadKanbanStatus | null {
   for (const status of LEAD_KANBAN_STATUSES) {
@@ -85,16 +88,36 @@ function findStatusForId(
   return null;
 }
 
+function findRow(
+  columns: Record<LeadKanbanStatus, InboxRow[]>,
+  id: string,
+): InboxRow | null {
+  for (const status of LEAD_KANBAN_STATUSES) {
+    const found = columns[status].find((r) => r.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
+type TypeLabels = {
+  price: string;
+  business: string;
+  contact: string;
+  shipment: string;
+};
+
 function KanbanColumn({
   status,
   items,
-  readOnly,
+  leadReadOnly,
+  shipmentReadOnly,
   typeLabels,
 }: {
   status: LeadKanbanStatus;
-  items: LeadListRow[];
-  readOnly: boolean;
-  typeLabels: { price: string; business: string; contact: string };
+  items: InboxRow[];
+  leadReadOnly: boolean;
+  shipmentReadOnly: boolean;
+  typeLabels: TypeLabels;
 }) {
   const t = useDashT();
   const { setNodeRef, isOver } = useDroppable({
@@ -131,9 +154,11 @@ function KanbanColumn({
           ) : (
             items.map((row) => (
               <LeadsKanbanCard
-                key={row.id}
+                key={`${row.kind}:${row.id}`}
                 row={row}
-                readOnly={readOnly}
+                dragDisabled={
+                  row.kind === "lead" ? leadReadOnly : shipmentReadOnly
+                }
                 typeLabels={typeLabels}
               />
             ))
@@ -147,15 +172,20 @@ function KanbanColumn({
 export function LeadsKanbanBoard({
   rows,
   readOnly,
+  shipmentReadOnly = true,
+  updateShipmentStatusAction,
 }: {
-  rows: LeadListRow[];
+  rows: InboxRow[];
   readOnly: boolean;
+  shipmentReadOnly?: boolean;
+  updateShipmentStatusAction: (formData: FormData) => Promise<void>;
 }) {
   const t = useDashT();
-  const typeLabels = {
+  const typeLabels: TypeLabels = {
     price: t.leads.typePrice,
     business: t.leads.typeBusiness,
     contact: t.leads.typeContact,
+    shipment: t.leads.typeShipment,
   };
 
   const [columns, setColumns] = useState(() => groupByStatus(rows));
@@ -170,10 +200,10 @@ export function LeadsKanbanBoard({
 
   const setColumnsBoth = (
     next:
-      | Record<LeadKanbanStatus, LeadListRow[]>
+      | Record<LeadKanbanStatus, InboxRow[]>
       | ((
-          prev: Record<LeadKanbanStatus, LeadListRow[]>,
-        ) => Record<LeadKanbanStatus, LeadListRow[]>),
+          prev: Record<LeadKanbanStatus, InboxRow[]>,
+        ) => Record<LeadKanbanStatus, InboxRow[]>),
   ) => {
     setColumns((prev) => {
       const resolved = typeof next === "function" ? next(prev) : next;
@@ -190,24 +220,49 @@ export function LeadsKanbanBoard({
 
   const activeRow = useMemo(() => {
     if (!activeId) return null;
-    for (const status of LEAD_KANBAN_STATUSES) {
-      const found = columns[status].find((r) => r.id === activeId);
-      if (found) return found;
-    }
-    return null;
+    return findRow(columns, activeId);
   }, [activeId, columns]);
 
-  const persistColumn = async (
+  const persistLeadColumn = async (
     status: LeadKanbanStatus,
-    ordered: LeadListRow[],
-    snapshot: Record<LeadKanbanStatus, LeadListRow[]>,
+    ordered: InboxRow[],
+    snapshot: Record<LeadKanbanStatus, InboxRow[]>,
   ) => {
+    const leadIds = ordered
+      .filter((r) => r.kind === "lead")
+      .map((r) => r.id);
+    if (leadIds.length === 0) return;
     try {
       await updateLeadBoardAction({
         status,
-        orderedIds: ordered.map((r) => r.id),
+        orderedIds: leadIds,
       });
       toast.success(t.leads.moved);
+    } catch {
+      setColumnsBoth(snapshot);
+      toast.error(t.errors.saveFailed);
+    }
+  };
+
+  const persistShipmentOutcome = async (
+    id: string,
+    shipmentStatus: "confirmed" | "cancelled",
+    snapshot: Record<LeadKanbanStatus, InboxRow[]>,
+  ) => {
+    const fd = new FormData();
+    fd.set("id", id);
+    fd.set("status", shipmentStatus);
+    try {
+      await updateShipmentStatusAction(fd);
+      toast.success(t.leads.moved);
+      // Remove from board — no longer pending.
+      setColumnsBoth((prev) => {
+        const next = { ...prev };
+        for (const key of LEAD_KANBAN_STATUSES) {
+          next[key] = prev[key].filter((r) => r.id !== id);
+        }
+        return next;
+      });
     } catch {
       setColumnsBoth(snapshot);
       toast.error(t.errors.saveFailed);
@@ -277,19 +332,37 @@ export function LeadsKanbanBoard({
     const latest = columnsRef.current;
 
     const status = findStatusForId(latest, activeLeadId);
-    if (!status) {
+    const row = findRow(latest, activeLeadId);
+    if (!status || !row) {
       setColumnsBoth(snapshot);
       return;
     }
 
-    const ordered = latest[status].map((row, index) => ({
-      ...row,
+    if (row.kind === "webapp_shipment") {
+      if (status === "done") {
+        await persistShipmentOutcome(row.id, "confirmed", snapshot);
+        return;
+      }
+      if (status === "spam") {
+        await persistShipmentOutcome(row.id, "cancelled", snapshot);
+        return;
+      }
+      // in_progress / draft / reorder in new — revert (no shipment sort_order).
+      setColumnsBoth(snapshot);
+      if (status !== "new") {
+        toast.error(t.errors.saveFailed);
+      }
+      return;
+    }
+
+    const ordered = latest[status].map((item, index) => ({
+      ...item,
       status,
       sort_order: orderedSortBase() - index,
     }));
 
     setColumnsBoth((prev) => ({ ...prev, [status]: ordered }));
-    await persistColumn(status, ordered, snapshot);
+    await persistLeadColumn(status, ordered, snapshot);
   };
 
   const onDragCancel = () => {
@@ -297,20 +370,23 @@ export function LeadsKanbanBoard({
     setColumnsBoth(groupByStatus(rows));
   };
 
-  if (readOnly) {
-    return (
-      <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
-        {LEAD_KANBAN_STATUSES.map((status) => (
-          <KanbanColumn
-            key={status}
-            status={status}
-            items={columns[status]}
-            readOnly
-            typeLabels={typeLabels}
-          />
-        ))}
-      </div>
-    );
+  const board = (
+    <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
+      {LEAD_KANBAN_STATUSES.map((status) => (
+        <KanbanColumn
+          key={status}
+          status={status}
+          items={columns[status]}
+          leadReadOnly={readOnly}
+          shipmentReadOnly={shipmentReadOnly}
+          typeLabels={typeLabels}
+        />
+      ))}
+    </div>
+  );
+
+  if (readOnly && shipmentReadOnly) {
+    return board;
   }
 
   return (
@@ -322,24 +398,11 @@ export function LeadsKanbanBoard({
       onDragEnd={onDragEnd}
       onDragCancel={onDragCancel}
     >
-      <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
-        {LEAD_KANBAN_STATUSES.map((status) => (
-          <KanbanColumn
-            key={status}
-            status={status}
-            items={columns[status]}
-            readOnly={false}
-            typeLabels={typeLabels}
-          />
-        ))}
-      </div>
+      {board}
       <DragOverlay>
         {activeRow ? (
           <div className="w-[16.5rem]">
-            <LeadsKanbanCardPreview
-              row={activeRow}
-              typeLabels={typeLabels}
-            />
+            <LeadsKanbanCardPreview row={activeRow} typeLabels={typeLabels} />
           </div>
         ) : null}
       </DragOverlay>

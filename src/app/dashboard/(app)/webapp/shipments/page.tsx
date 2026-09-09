@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
@@ -29,10 +30,12 @@ export default async function WebappShipmentsPage() {
   }
 
   return (
-    <WebappShipmentsClient
-      rows={rows}
-      readOnly={readOnly}
-      updateAction={updateShipmentAction}
-    />
+    <Suspense fallback={null}>
+      <WebappShipmentsClient
+        rows={rows}
+        readOnly={readOnly}
+        updateAction={updateShipmentAction}
+      />
+    </Suspense>
   );
 }
