@@ -125,10 +125,15 @@ export function createCalculatorPage(locale: Locale) {
   return {
     generateMetadata: () => getLocalizedPageMetadata(locale, "calculator"),
     Page: async function CalculatorPage() {
+      const { getPublicPricingUi } = await import("@/lib/pricing/settings");
+      const initialPublicUi = await getPublicPricingUi();
       return (
         <SiteLayout locale={locale}>
           <Suspense fallback={suspenseFallback}>
-            <CalculatorPageView locale={locale} />
+            <CalculatorPageView
+              locale={locale}
+              initialPublicUi={initialPublicUi}
+            />
           </Suspense>
         </SiteLayout>
       );

@@ -562,27 +562,25 @@ export const uzCopy: SiteCopy = {
   },
   requestPrice: {
     title: "Biznes uchun tijorat taklifi",
-    lead: "Kompaniya maʼlumotlarini qoldiring — menejer hajmingiz va yoʻnalishlaringiz uchun shartlarni tayyorlaydi. Saytda ochiq tarif va oferta yoʻq.",
-    priceNote:
-      "Bu biznes uchun individual hisob arizasi. Yakuniy narx va muddatni menejer kelishuvdan keyin tasdiqlaydi. Bir martalik joʻnatma uchun kalkulyatordan foydalaning.",
+    lead: "Kompaniya maʼlumotlarini qoldiring — menejer hajmingiz va yoʻnalishlaringiz uchun shartlarni tayyorlaydi.",
     successTitle: "Ariza qabul qilindi",
     successText:
       "EPOS POCHTA menejeri siz bilan bogʻlanib, hajmingiz uchun tijorat taklifini tayyorlaydi.",
     steps: {
       contact: "Kontakt",
-      volume: "Hajm va yoʻnalishlar",
+      volume: "Hajm",
       needs: "Ehtiyojlar",
       confirm: "Tasdiqlash",
     },
+    stepHints: {
+      contact: "Kim bilan bogʻlanishimiz kerak — kompaniya va telefon.",
+      volume: "Oyiga taxminiy hajm va asosiy yoʻnalishlar.",
+      needs: "API, muntazam olib ketish, COD va izoh.",
+      confirm: "Tekshiring va yuboring — menejer bogʻlanadi.",
+    },
+    stepOf: "Qadam {step} / {total} · {label}",
     next: "Keyingi",
     back: "Orqaga",
-    draftSaved: "Qoralama saqlandi. Keyinroq shu havola orqali davom etishingiz mumkin.",
-    copyLink: "Havolani nusxalash",
-    linkCopied: "Havola nusxa qilindi",
-    resumeHint: "Saqlangan arizani davom ettiryapsiz",
-    resumeMissing: "Ariza topilmadi yoki muddati tugagan",
-    resumeComplete: "Bu ariza allaqachon yuborilgan",
-    stepOf: "Qadam {step} / {total}",
     reviewTitle: "Tekshirish",
     fields: {
       monthlyVolume: "Oyiga joʻnatmalar soni",
@@ -621,9 +619,13 @@ export const uzCopy: SiteCopy = {
     resultEtaLabel: "Muddat",
     billableLabel: "Hisobiy ogʻirlik",
     confirmCta: "Menejer bilan tasdiqlash",
+    leadSuccessTitle: "Soʻrov yuborildi",
+    leadSuccessText: "Menejer tez orada qoʻngʻiroq qiladi va narxni tasdiqlaydi.",
     errors: {
       fromCity: "Yuboruvchi shahrini tanlang",
       toCity: "Qabul qiluvchi shahrini tanlang",
+      phone: "Telefon raqamini kiriting",
+      consent: "Rozilikni belgilang",
     },
   },
   about: {

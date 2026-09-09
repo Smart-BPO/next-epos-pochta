@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { Button } from "@/components/atoms/Button";
 import { getWebAppCopy } from "@/data/webapp-copy";
 import { getSettlementById } from "@/data/settlements";
-import { estimateQuote, formatUzs } from "@/lib/pricing/estimate";
+import { fetchEstimate } from "@/lib/pricing/client";
+import { formatUzs, type QuoteEstimate } from "@/lib/pricing/estimate";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { useWebAppNav } from "@/components/webapp/WebAppNav";
 import { fieldControl, fieldLabel } from "@/styles/ui";
@@ -22,6 +23,8 @@ export function CalcTab() {
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [estimating, setEstimating] = useState(false);
+  const [estimate, setEstimate] = useState<QuoteEstimate | null>(null);
 
   const fromMeta = from ? getSettlementById(from) : null;
   const toMeta = to ? getSettlementById(to) : null;
@@ -30,9 +33,20 @@ export function CalcTab() {
   const widthN = Number(width);
   const heightN = Number(height);
 
-  const estimate = useMemo(() => {
-    if (!fromMeta || !toMeta || from === to) return null;
-    return estimateQuote({
+  const daysLabel =
+    estimate &&
+    (locale === "uz" ? `${estimate.etaDays} kun` : `${estimate.etaDays} дн.`);
+
+  const onCalculate = async () => {
+    setSubmitted(true);
+    setEstimate(null);
+    if (!from || !to || from === to || !fromMeta || !toMeta) {
+      webApp?.HapticFeedback?.notificationOccurred("error");
+      return;
+    }
+
+    setEstimating(true);
+    const next = await fetchEstimate({
       fromRegionId: fromMeta.regionId,
       fromCityId: fromMeta.id,
       toRegionId: toMeta.regionId,
@@ -48,18 +62,14 @@ export function CalcTab() {
       urgent: false,
       category: "parcel",
     });
-  }, [fromMeta, toMeta, from, to, weightN, lengthN, widthN, heightN]);
+    setEstimating(false);
 
-  const daysLabel =
-    estimate &&
-    (locale === "uz" ? `${estimate.etaDays} kun` : `${estimate.etaDays} дн.`);
-
-  const onCalculate = () => {
-    setSubmitted(true);
-    if (!from || !to || from === to) {
+    if (!next) {
       webApp?.HapticFeedback?.notificationOccurred("error");
       return;
     }
+
+    setEstimate(next);
     webApp?.HapticFeedback?.notificationOccurred("success");
   };
 
@@ -148,7 +158,13 @@ export function CalcTab() {
           <p className="m-0 text-sm text-primary">{copy.calcNeedRoute}</p>
         ) : null}
 
-        <Button type="button" variant="primary" width="full" onClick={onCalculate}>
+        <Button
+          type="button"
+          variant="primary"
+          width="full"
+          disabled={estimating}
+          onClick={() => void onCalculate()}
+        >
           {copy.calcCta}
         </Button>
       </div>

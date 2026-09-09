@@ -72,6 +72,7 @@ export const dashRu: DashCopy = {
     telegram: "Telegram",
     messaging: "Сообщения",
     messagingShort: "СМС",
+    pricing: "Калькулятор",
     users: "Сотрудники",
   },
 
@@ -338,6 +339,40 @@ export const dashRu: DashCopy = {
   settings: {
     title: "Настройки",
     lead: "Настройки сайта.",
+  },
+
+  pricing: {
+    title: "Калькулятор",
+    lead: "Ориентировочные ставки для сметы на сайте. Не оферта и не публичный тариф.",
+    disclaimer:
+      "Изменения сразу влияют на /calculator/ и мини-приложение. Финальную цену подтверждает менеджер.",
+    enabled: "Калькулятор включён",
+    formulaVersion: "Версия формулы",
+    zonesTitle: "Зоны",
+    zoneSameCity: "Тот же город",
+    zoneSameRegion: "Та же область",
+    zoneInterRegion: "Межобластной",
+    base: "База (UZS)",
+    perKg: "За кг (UZS)",
+    etaMin: "Срок min (дн.)",
+    etaMax: "Срок max (дн.)",
+    surchargesTitle: "Доплаты",
+    pickup: "Забор",
+    door: "До двери",
+    place: "Доп. место",
+    urgentMultiplier: "Срочность ×",
+    categoriesTitle: "Категории (коэф.)",
+    volumetricTitle: "Объёмный вес",
+    volumetricEnabled: "Учитывать объёмный вес",
+    volumetricDivisor: "Делитель",
+    limitsTitle: "Лимиты слайдеров",
+    quickCitiesTitle: "Быстрые города",
+    previewTitle: "Превью",
+    previewWeight: "Вес (кг)",
+    previewRun: "Посчитать",
+    previewResult: "Смета",
+    resetDefaults: "Сбросить к defaults",
+    saved: "Сохранено",
   },
 
   telegram: {

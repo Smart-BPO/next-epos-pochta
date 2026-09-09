@@ -204,7 +204,6 @@ export interface SiteCopy {
   requestPrice: {
     title: string;
     lead: string;
-    priceNote: string;
     successTitle: string;
     successText: string;
     steps: {
@@ -213,15 +212,15 @@ export interface SiteCopy {
       needs: string;
       confirm: string;
     };
+    stepHints: {
+      contact: string;
+      volume: string;
+      needs: string;
+      confirm: string;
+    };
+    stepOf: string;
     next: string;
     back: string;
-    draftSaved: string;
-    copyLink: string;
-    linkCopied: string;
-    resumeHint: string;
-    resumeMissing: string;
-    resumeComplete: string;
-    stepOf: string;
     reviewTitle: string;
     fields: {
       monthlyVolume: string;
@@ -258,9 +257,13 @@ export interface SiteCopy {
     resultEtaLabel: string;
     billableLabel: string;
     confirmCta: string;
+    leadSuccessTitle: string;
+    leadSuccessText: string;
     errors: {
       fromCity: string;
       toCity: string;
+      phone: string;
+      consent: string;
     };
   };
   about: {

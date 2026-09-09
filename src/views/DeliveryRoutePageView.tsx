@@ -16,6 +16,9 @@ import {
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getSettlementById } from "@/data/settlements";
+import { formatUzs } from "@/lib/pricing/estimate";
+import { runEstimate } from "@/lib/pricing/settings";
 import {
   getBreadcrumbSchema,
   getDeliveryRouteSchema,
@@ -45,7 +48,7 @@ function routeChipLabel(locale: Locale, route: DeliveryRoute) {
   return `${from} → ${to}`;
 }
 
-export function DeliveryRoutePageView({
+export async function DeliveryRoutePageView({
   locale,
   route,
 }: {
@@ -75,6 +78,33 @@ export function DeliveryRoutePageView({
   const inbound = routesTo(route.to.code).filter(
     (r) => r.from.code !== route.from.code,
   );
+
+  const fromSettlement = route.from.settlementId
+    ? getSettlementById(route.from.settlementId)
+    : null;
+  const toSettlement = route.to.settlementId
+    ? getSettlementById(route.to.settlementId)
+    : null;
+
+  let routeEstimate: Awaited<ReturnType<typeof runEstimate>> | null = null;
+  if (fromSettlement && toSettlement) {
+    routeEstimate = await runEstimate({
+      fromRegionId: fromSettlement.regionId,
+      fromCityId: fromSettlement.id,
+      toRegionId: toSettlement.regionId,
+      toCityId: toSettlement.id,
+      weightKg: 1,
+      lengthCm: 20,
+      widthCm: 15,
+      heightCm: 10,
+      unknownDims: false,
+      pickup: false,
+      doorDelivery: false,
+      places: 1,
+      urgent: false,
+      category: "parcel",
+    });
+  }
 
   return (
     <>
@@ -170,10 +200,30 @@ export function DeliveryRoutePageView({
             </div>
           </dl>
 
+          {routeEstimate?.ok ? (
+            <div className="mt-6 rounded-2xl border border-black/10 bg-white p-4 sm:p-5">
+              <p className="m-0 text-xs font-semibold uppercase tracking-wide text-black/40">
+                {locale === "uz" ? "Taxminiy smeta (1 kg)" : "Ориентировочная смета (1 кг)"}
+              </p>
+              <p className="m-0 mt-1 font-display text-2xl font-semibold text-black">
+                {formatUzs(routeEstimate.estimate.amount, locale)}{" "}
+                {routeEstimate.estimate.currency}
+              </p>
+              <p className="m-0 mt-1 text-sm text-black/55">
+                {locale === "uz"
+                  ? `Muddat orientiri: ~${routeEstimate.estimate.etaDays} kun`
+                  : `Ориентир по сроку: ~${routeEstimate.estimate.etaDays} дн.`}
+              </p>
+              <p className="m-0 mt-3 text-xs leading-relaxed text-black/45">
+                {copy.calculator.disclaimer}
+              </p>
+            </div>
+          ) : null}
+
           <p className="m-0 mt-5 text-sm text-black/55">
             {locale === "uz"
-              ? "Koʻrsatilgan muddat — orientir. Yakuniy narx va shartlar menejer tasdigʻidan keyin."
-              : "Указанный срок — ориентир. Финальная цена и условия — после подтверждения менеджера."}
+              ? "Saytda faqat orientir. Yakuniy narx va shartlar — menejer tasdigʻidan keyin."
+              : "На сайте только ориентир. Финальная цена и условия — после подтверждения менеджера."}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">

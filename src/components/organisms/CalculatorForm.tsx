@@ -1,9 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useEffect, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
-import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import {
   getSettlementById,
@@ -13,10 +11,25 @@ import { Button } from "@/components/atoms/Button";
 import { RangeSlider } from "@/components/atoms/RangeSlider";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { trackEvent } from "@/lib/analytics/events";
-import { estimateQuote, formatUzs } from "@/lib/pricing/estimate";
+import { submitLead } from "@/lib/form/submitLead";
+import {
+  createRequestId,
+  isValidUzPhone,
+  normalizePhone,
+} from "@/lib/form/utils";
+import { fetchEstimate } from "@/lib/pricing/client";
+import type { QuoteEstimate } from "@/lib/pricing/estimate";
+import { formatUzs } from "@/lib/pricing/estimate";
 import { matchCityQuery } from "@/lib/pricing/matchCity";
 import { CALC_LIMITS, CALC_QUICK_CITIES } from "@/lib/pricing/limits";
-import { fieldLabel } from "@/styles/ui";
+import type { PublicPricingUiConfig } from "@/lib/pricing/types";
+import { cn } from "@/lib/cn";
+import {
+  checkRow,
+  fieldControl,
+  fieldError,
+  fieldLabel,
+} from "@/styles/ui";
 
 function SwapIcon() {
   return (
@@ -53,6 +66,7 @@ function CityField({
   onChange,
   locale,
   content,
+  quickCityIds,
   error,
 }: {
   id: string;
@@ -61,6 +75,7 @@ function CityField({
   onChange: (cityId: string) => void;
   locale: Locale;
   content: SiteCopy;
+  quickCityIds: string[];
   error?: string;
 }) {
   const showHints = !value;
@@ -80,7 +95,7 @@ function CityField({
       />
       {showHints ? (
         <div className="flex flex-wrap gap-1.5 pt-0.5">
-          {CALC_QUICK_CITIES.map((cityId) => {
+          {quickCityIds.map((cityId) => {
             const settlement = getSettlementById(cityId);
             if (!settlement) return null;
             return (
@@ -107,12 +122,14 @@ export function CalculatorForm({
   initialFromQuery = "",
   initialToQuery = "",
   initialCategory = "",
+  publicUi,
 }: {
   locale: Locale;
   content: SiteCopy;
   initialFromQuery?: string;
   initialToQuery?: string;
   initialCategory?: string;
+  publicUi?: PublicPricingUiConfig | null;
 }) {
   const c = content.calculator;
   const fromSeed = matchCityQuery(initialFromQuery, locale);
@@ -124,21 +141,130 @@ export function CalculatorForm({
       ? initialCategory
       : "parcel";
 
+  const limits = publicUi?.limits ?? CALC_LIMITS;
+  const quickCityIds = publicUi?.quickCityIds?.length
+    ? publicUi.quickCityIds
+    : [...CALC_QUICK_CITIES];
+  const calculatorEnabled = publicUi?.enabled !== false;
+
   const [fromCity, setFromCity] = useState(fromSeed?.id ?? "");
   const [toCity, setToCity] = useState(toSeed?.id ?? "");
-  const [weight, setWeight] = useState<number>(CALC_LIMITS.weightKg.default);
-  const [length, setLength] = useState<number>(CALC_LIMITS.lengthCm.default);
-  const [width, setWidth] = useState<number>(CALC_LIMITS.widthCm.default);
-  const [height, setHeight] = useState<number>(CALC_LIMITS.heightCm.default);
+  const [weight, setWeight] = useState<number>(limits.weightKg.default);
+  const [length, setLength] = useState<number>(limits.lengthCm.default);
+  const [width, setWidth] = useState<number>(limits.widthCm.default);
+  const [height, setHeight] = useState<number>(limits.heightCm.default);
   const [submitted, setSubmitted] = useState(false);
-  const [showResult, setShowResult] = useState(false);
+  const [estimating, setEstimating] = useState(false);
+  const [estimate, setEstimate] = useState<QuoteEstimate | null>(null);
+  const [estimateError, setEstimateError] = useState<string | null>(null);
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [website, setWebsite] = useState("");
+  const [leadAttempted, setLeadAttempted] = useState(false);
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [leadId, setLeadId] = useState<string | null>(null);
+  const [requestId] = useState(() => createRequestId("calc"));
+
+  useEffect(() => {
+    setWeight(limits.weightKg.default);
+    setLength(limits.lengthCm.default);
+    setWidth(limits.widthCm.default);
+    setHeight(limits.heightCm.default);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when SSR limits arrive
+  }, [publicUi?.formulaVersion]);
 
   const fromMeta = getSettlementById(fromCity);
   const toMeta = getSettlementById(toCity);
+  const fc = content.formCommon;
 
-  const estimate = useMemo(() => {
-    if (!fromMeta || !toMeta) return null;
-    return estimateQuote({
+  const fromError =
+    submitted && !fromCity ? c.errors.fromCity : undefined;
+  const toError = submitted && !toCity ? c.errors.toCity : undefined;
+
+  const daysLabel =
+    estimate &&
+    (locale === "uz" ? `${estimate.etaDays} kun` : `${estimate.etaDays} дн.`);
+
+  const phoneError =
+    leadAttempted && !isValidUzPhone(phone) ? c.errors.phone : undefined;
+  const consentError =
+    leadAttempted && !consent ? c.errors.consent : undefined;
+
+  const reset = () => {
+    setFromCity("");
+    setToCity("");
+    setWeight(limits.weightKg.default);
+    setLength(limits.lengthCm.default);
+    setWidth(limits.widthCm.default);
+    setHeight(limits.heightCm.default);
+    setSubmitted(false);
+    setEstimating(false);
+    setEstimate(null);
+    setEstimateError(null);
+    setPhone("");
+    setName("");
+    setConsent(false);
+    setWebsite("");
+    setLeadAttempted(false);
+    setLeadSubmitting(false);
+    setLeadId(null);
+  };
+
+  const submitLeadRequest = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!estimate || !fromMeta || !toMeta || leadSubmitting) return;
+    setLeadAttempted(true);
+    if (!isValidUzPhone(phone) || !consent) return;
+
+    setLeadSubmitting(true);
+    const result = await submitLead({
+      type: "price",
+      locale,
+      requestId,
+      website,
+      data: {
+        name: name.trim(),
+        phone: normalizePhone(phone),
+        from: locale === "uz" ? fromMeta.uz : fromMeta.ru,
+        to: locale === "uz" ? toMeta.uz : toMeta.ru,
+        fromCityId: fromMeta.id,
+        toCityId: toMeta.id,
+        weightKg: weight,
+        lengthCm: length,
+        widthCm: width,
+        heightCm: height,
+        estimateAmount: estimate.amount,
+        estimateEtaDays: estimate.etaDays,
+        estimateCurrency: estimate.currency,
+        formulaVersion: estimate.formulaVersion,
+        rateSource: estimate.rateSource,
+        category,
+        source: "calculator",
+        clientType: "person",
+        consent: true,
+      },
+      successTitle: c.leadSuccessTitle,
+      successText: c.leadSuccessText,
+      eventPrefix: "calculator_lead",
+    });
+    setLeadSubmitting(false);
+    if (result) setLeadId(result.id);
+  };
+
+  const calculate = async () => {
+    setSubmitted(true);
+    setEstimateError(null);
+    setLeadId(null);
+    if (!fromCity || !toCity || !fromMeta || !toMeta) return;
+    if (!calculatorEnabled) {
+      setEstimate(null);
+      setEstimateError("calculator_disabled");
+      return;
+    }
+
+    setEstimating(true);
+    const next = await fetchEstimate({
       fromRegionId: fromMeta.regionId,
       fromCityId: fromMeta.id,
       toRegionId: toMeta.regionId,
@@ -154,53 +280,33 @@ export function CalculatorForm({
       urgent: false,
       category,
     });
-  }, [fromMeta, toMeta, weight, length, width, height, category]);
+    setEstimating(false);
 
-  const fromError =
-    submitted && !fromCity ? c.errors.fromCity : undefined;
-  const toError = submitted && !toCity ? c.errors.toCity : undefined;
-
-  const daysLabel =
-    estimate &&
-    (locale === "uz" ? `${estimate.etaDays} kun` : `${estimate.etaDays} дн.`);
-
-  const confirmHref = (() => {
-    const params = new URLSearchParams();
-    if (fromMeta) {
-      params.set("from", locale === "uz" ? fromMeta.uz : fromMeta.ru);
+    if (!next) {
+      setEstimate(null);
+      setEstimateError("estimate_failed");
+      return;
     }
-    if (toMeta) {
-      params.set("to", locale === "uz" ? toMeta.uz : toMeta.ru);
-    }
-    if (initialCategory) params.set("category", initialCategory);
-    const qs = params.toString();
-    return `${localePath(locale, "/request-price/")}${qs ? `?${qs}` : ""}`;
-  })();
 
-  const reset = () => {
-    setFromCity("");
-    setToCity("");
-    setWeight(CALC_LIMITS.weightKg.default);
-    setLength(CALC_LIMITS.lengthCm.default);
-    setWidth(CALC_LIMITS.widthCm.default);
-    setHeight(CALC_LIMITS.heightCm.default);
-    setSubmitted(false);
-    setShowResult(false);
-  };
-
-  const calculate = () => {
-    setSubmitted(true);
-    if (!fromCity || !toCity) return;
-    setShowResult(true);
+    setEstimate(next);
     trackEvent("price_estimate_shown", {
       source: "calculator",
-      zone: estimate?.zone ?? "",
-      formulaVersion: estimate?.formulaVersion ?? "",
+      zone: next.zone,
+      formulaVersion: next.formulaVersion,
+      rateSource: next.rateSource,
     });
   };
 
   return (
     <div className="grid gap-0 overflow-hidden rounded-3xl border border-black/10 bg-white">
+      {!calculatorEnabled ? (
+        <div className="border-b border-black/[0.06] bg-[#fafafa] px-4 py-3 text-sm text-black/55 sm:px-6">
+          {locale === "uz"
+            ? "Kalkulyator vaqtincha o‘chirilgan. Menejerga ariza qoldiring."
+            : "Калькулятор временно отключён. Оставьте заявку менеджеру."}
+        </div>
+      ) : null}
+
       <div className="grid gap-4 border-b border-black/[0.06] p-4 sm:gap-5 sm:p-6 lg:p-7">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start lg:gap-3">
           <CityField
@@ -210,6 +316,7 @@ export function CalculatorForm({
             onChange={setFromCity}
             locale={locale}
             content={content}
+            quickCityIds={quickCityIds}
             error={fromError}
           />
 
@@ -234,6 +341,7 @@ export function CalculatorForm({
             onChange={setToCity}
             locale={locale}
             content={content}
+            quickCityIds={quickCityIds}
             error={toError}
           />
         </div>
@@ -245,9 +353,9 @@ export function CalculatorForm({
             id="calc-weight"
             label={c.weightLabel}
             value={weight}
-            min={CALC_LIMITS.weightKg.min}
-            max={CALC_LIMITS.weightKg.max}
-            step={CALC_LIMITS.weightKg.step}
+            min={limits.weightKg.min}
+            max={limits.weightKg.max}
+            step={limits.weightKg.step}
             unit={c.unitKg}
             onChange={setWeight}
           />
@@ -255,9 +363,9 @@ export function CalculatorForm({
             id="calc-length"
             label={c.lengthLabel}
             value={length}
-            min={CALC_LIMITS.lengthCm.min}
-            max={CALC_LIMITS.lengthCm.max}
-            step={CALC_LIMITS.lengthCm.step}
+            min={limits.lengthCm.min}
+            max={limits.lengthCm.max}
+            step={limits.lengthCm.step}
             unit={c.unitCm}
             onChange={setLength}
           />
@@ -265,9 +373,9 @@ export function CalculatorForm({
             id="calc-width"
             label={c.widthLabel}
             value={width}
-            min={CALC_LIMITS.widthCm.min}
-            max={CALC_LIMITS.widthCm.max}
-            step={CALC_LIMITS.widthCm.step}
+            min={limits.widthCm.min}
+            max={limits.widthCm.max}
+            step={limits.widthCm.step}
             unit={c.unitCm}
             onChange={setWidth}
           />
@@ -275,9 +383,9 @@ export function CalculatorForm({
             id="calc-height"
             label={c.heightLabel}
             value={height}
-            min={CALC_LIMITS.heightCm.min}
-            max={CALC_LIMITS.heightCm.max}
-            step={CALC_LIMITS.heightCm.step}
+            min={limits.heightCm.min}
+            max={limits.heightCm.max}
+            step={limits.heightCm.step}
             unit={c.unitCm}
             onChange={setHeight}
           />
@@ -286,7 +394,12 @@ export function CalculatorForm({
       </div>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-black/[0.06] bg-white p-4 sm:p-6 lg:px-7 lg:py-5">
-        <Button type="button" variant="primary" onClick={calculate}>
+        <Button
+          type="button"
+          variant="primary"
+          onClick={() => void calculate()}
+          disabled={estimating || !calculatorEnabled}
+        >
           {c.calculateCta}
         </Button>
         <button
@@ -298,8 +411,20 @@ export function CalculatorForm({
         </button>
       </div>
 
-      {showResult && estimate ? (
-        <div className="grid gap-4 border-t border-black/[0.06] bg-white p-4 sm:p-6 lg:p-7">
+      {estimateError ? (
+        <div className="border-t border-black/[0.06] px-4 py-3 text-sm text-danger sm:px-6">
+          {estimateError === "calculator_disabled"
+            ? locale === "uz"
+              ? "Kalkulyator o‘chirilgan."
+              : "Калькулятор отключён."
+            : locale === "uz"
+              ? "Hisoblab bo‘lmadi. Qayta urinib ko‘ring."
+              : "Не удалось рассчитать. Попробуйте ещё раз."}
+        </div>
+      ) : null}
+
+      {estimate ? (
+        <div className="grid gap-4 border-t border-black/[0.06] bg-white p-4 sm:gap-5 sm:p-6 lg:p-7">
           <h2 className="m-0 font-display text-lg font-semibold uppercase tracking-wide text-black sm:text-xl">
             {c.resultTitle}
           </h2>
@@ -319,15 +444,97 @@ export function CalculatorForm({
               <p className="m-0 mt-1 text-lg font-medium text-black">{daysLabel}</p>
             </div>
           </div>
-          <Link
-            href={confirmHref}
-            className="w-fit font-medium text-primary underline-offset-2 hover:underline"
-            onClick={() =>
-              trackEvent("request_price_start", { source: "calculator" })
-            }
-          >
-            {c.confirmCta}
-          </Link>
+
+          {leadId ? (
+            <div
+              className="rounded-2xl border border-emerald-200/80 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-900"
+              role="status"
+            >
+              <strong>
+                {c.leadSuccessTitle}. ID: {leadId}
+              </strong>
+              <p className="mb-0 mt-1 opacity-90">{c.leadSuccessText}</p>
+            </div>
+          ) : (
+            <form
+              className="grid gap-3 border-t border-black/[0.06] pt-4"
+              onSubmit={(e) => void submitLeadRequest(e)}
+              noValidate
+            >
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-1.5">
+                  <label htmlFor="calc-phone" className={fieldLabel}>
+                    {fc.phone} *
+                  </label>
+                  <input
+                    id="calc-phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    inputMode="tel"
+                    placeholder="+998 XX XXX XX XX"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className={cn(fieldControl, "!min-h-10 !py-2 sm:!min-h-11")}
+                    aria-invalid={Boolean(phoneError)}
+                  />
+                  {phoneError ? (
+                    <p className={cn(fieldError, "m-0")}>{phoneError}</p>
+                  ) : null}
+                </div>
+                <div className="grid gap-1.5">
+                  <label htmlFor="calc-name" className={fieldLabel}>
+                    {fc.name}
+                  </label>
+                  <input
+                    id="calc-name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className={cn(fieldControl, "!min-h-10 !py-2 sm:!min-h-11")}
+                  />
+                </div>
+              </div>
+
+              <label className={cn(checkRow, "!mb-0 text-[0.85rem]")}>
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
+                />
+                <span>{fc.consent}</span>
+              </label>
+              {consentError ? (
+                <p className={cn(fieldError, "m-0")}>{consentError}</p>
+              ) : null}
+
+              <div className="absolute left-[-9999px] h-0 w-0 overflow-hidden" aria-hidden>
+                <label htmlFor="calc-website">{fc.honeypot}</label>
+                <input
+                  id="calc-website"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="sm"
+                  disabled={leadSubmitting}
+                >
+                  {c.confirmCta}
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       ) : null}
     </div>

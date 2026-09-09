@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { CalculatorForm } from "@/components/organisms/CalculatorForm";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { fetchPublicPricingUi } from "@/lib/pricing/client";
+import type { PublicPricingUiConfig } from "@/lib/pricing/types";
 import { getBreadcrumbSchema } from "@/utils/seo/json-ld";
 import {
   pageIntro,
@@ -16,7 +19,13 @@ import {
   sectionMuted,
 } from "@/styles/ui";
 
-export function CalculatorPageView({ locale }: { locale: Locale }) {
+export function CalculatorPageView({
+  locale,
+  initialPublicUi = null,
+}: {
+  locale: Locale;
+  initialPublicUi?: PublicPricingUiConfig | null;
+}) {
   const copy = getContent(locale);
   const params = useSearchParams();
   const fromQuery = params.get("from") || "";
@@ -24,6 +33,14 @@ export function CalculatorPageView({ locale }: { locale: Locale }) {
   const category = params.get("category") || "";
   const homePath = localePath(locale, "/");
   const calcPath = localePath(locale, "/calculator/");
+  const [publicUi, setPublicUi] = useState(initialPublicUi);
+
+  useEffect(() => {
+    if (initialPublicUi) return;
+    void fetchPublicPricingUi().then((ui) => {
+      if (ui) setPublicUi(ui);
+    });
+  }, [initialPublicUi]);
 
   return (
     <>
@@ -75,6 +92,7 @@ export function CalculatorPageView({ locale }: { locale: Locale }) {
             initialFromQuery={fromQuery}
             initialToQuery={toQuery}
             initialCategory={category}
+            publicUi={publicUi}
           />
         </PageContainer>
       </section>

@@ -70,6 +70,7 @@ export type DashCopy = {
     telegram: string;
     messaging: string;
     messagingShort: string;
+    pricing: string;
     users: string;
   };
 
@@ -330,6 +331,39 @@ export type DashCopy = {
   settings: {
     title: string;
     lead: string;
+  };
+
+  pricing: {
+    title: string;
+    lead: string;
+    disclaimer: string;
+    enabled: string;
+    formulaVersion: string;
+    zonesTitle: string;
+    zoneSameCity: string;
+    zoneSameRegion: string;
+    zoneInterRegion: string;
+    base: string;
+    perKg: string;
+    etaMin: string;
+    etaMax: string;
+    surchargesTitle: string;
+    pickup: string;
+    door: string;
+    place: string;
+    urgentMultiplier: string;
+    categoriesTitle: string;
+    volumetricTitle: string;
+    volumetricEnabled: string;
+    volumetricDivisor: string;
+    limitsTitle: string;
+    quickCitiesTitle: string;
+    previewTitle: string;
+    previewWeight: string;
+    previewRun: string;
+    previewResult: string;
+    resetDefaults: string;
+    saved: string;
   };
 
   telegram: {

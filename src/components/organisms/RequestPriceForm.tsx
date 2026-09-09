@@ -4,10 +4,8 @@ import { Form, Formik, type FormikHelpers } from "formik";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
 import type { Locale } from "@/i18n/config";
 import type { SiteCopy } from "@/data/types";
-import { Button } from "@/components/atoms/Button";
 import {
   ConsentField,
   FormActions,
@@ -35,7 +33,13 @@ import {
 } from "@/lib/form/submitLead";
 import { createRequestId, yesNoOptions } from "@/lib/form/utils";
 import { cn } from "@/lib/cn";
-import { alertInfo, alertSuccess, card } from "@/styles/ui";
+import {
+  alertSuccess,
+  quizProgressFill,
+  quizProgressLabel,
+  quizProgressTrack,
+  quizProgressWrap,
+} from "@/styles/ui";
 
 type FormValues = {
   company: string;
@@ -152,7 +156,7 @@ interface PriceFormProps {
   resumeUid?: string;
 }
 
-/** B2B commercial lead — multi-step draft in CRM, manager confirms terms. */
+/** B2B commercial lead — multi-step draft in CRM (quiet resume). */
 export function RequestPriceForm({
   locale,
   content,
@@ -172,13 +176,11 @@ export function RequestPriceForm({
   const [successId, setSuccessId] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const [uid, setUid] = useState<string>("");
-  const [leadId, setLeadId] = useState<string>("");
   const [requestId] = useState(() => {
     const local = readPriceDraftLocal();
     return local?.requestId || createRequestId("req");
   });
   const [hydrated, setHydrated] = useState(false);
-  const [resumeError, setResumeError] = useState<string | null>(null);
   const [initialValues, setInitialValues] = useState<FormValues | null>(null);
 
   const routeNote = useMemo(() => {
@@ -218,7 +220,6 @@ export function RequestPriceForm({
     (nextUid: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("uid", nextUid);
-      // Keep category/from/to if present
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     },
     [pathname, router, searchParams],
@@ -256,18 +257,9 @@ export function RequestPriceForm({
       const draft = await loadPriceDraft(token);
       if (cancelled) return;
 
-      if (!draft) {
+      if (!draft || draft.complete || draft.status !== "draft") {
         clearPriceDraftLocal();
-        setResumeError(rp.resumeMissing);
-        setInitialValues(defaults);
-        setHydrated(true);
-        return;
-      }
-
-      if (draft.complete || draft.status !== "draft") {
-        clearPriceDraftLocal();
-        setResumeError(rp.resumeComplete);
-        if (draft.status !== "draft" && draft.id) {
+        if (draft && draft.status !== "draft" && draft.id) {
           setSuccessId(draft.id);
         }
         setInitialValues(defaults);
@@ -276,7 +268,6 @@ export function RequestPriceForm({
       }
 
       setUid(draft.uid);
-      setLeadId(draft.id);
       setStep(Math.min(TOTAL_STEPS, Math.max(1, draft.step || 1)));
       setInitialValues(toFormValues(draft.data, defaults));
       persistLocal({
@@ -301,17 +292,6 @@ export function RequestPriceForm({
     rp.steps.needs,
     rp.steps.confirm,
   ];
-
-  const copyResumeLink = async () => {
-    if (!uid || typeof window === "undefined") return;
-    const url = `${window.location.origin}${pathname}?uid=${encodeURIComponent(uid)}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success(rp.linkCopied);
-    } catch {
-      toast.info(url);
-    }
-  };
 
   const onStepSubmit = async (
     values: FormValues,
@@ -339,11 +319,10 @@ export function RequestPriceForm({
       if (!saved?.uid || !saved.id) return;
 
       setUid(saved.uid);
-      setLeadId(saved.id);
       setStep(nextStep);
       persistLocal({ uid: saved.uid, leadId: saved.id, step: nextStep });
       syncUrlUid(saved.uid);
-      if (step === 1) toast.success(rp.draftSaved);
+      helpers.setTouched({});
       return;
     }
 
@@ -366,7 +345,7 @@ export function RequestPriceForm({
 
   if (!hydrated || !initialValues) {
     return (
-      <div className={cn(card, "grid min-h-[12rem] place-items-center text-sm text-black/45")}>
+      <div className="grid min-h-[8rem] place-items-center overflow-hidden rounded-3xl border border-black/10 bg-white text-sm text-black/40">
         …
       </div>
     );
@@ -374,70 +353,49 @@ export function RequestPriceForm({
 
   if (successId) {
     return (
-      <div className={alertSuccess} role="status">
-        <strong>
-          {rp.successTitle}. ID: {successId}
-        </strong>
-        <p className="mb-0">{rp.successText}</p>
+      <div
+        className="overflow-hidden rounded-3xl border border-black/10 bg-white p-4 sm:p-6"
+        role="status"
+      >
+        <div className={alertSuccess}>
+          <strong>
+            {rp.successTitle}. ID: {successId}
+          </strong>
+          <p className="mb-0">{rp.successText}</p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="grid gap-4">
-      {resumeError ? (
-        <div className={`${alertInfo} rounded-2xl`} role="status">
-          {resumeError}
-        </div>
-      ) : null}
-      {uid ? (
-        <div className={`${alertInfo} rounded-2xl`} role="status">
-          <p className="m-0 mb-2 text-sm">{rp.resumeHint}</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-lg bg-white/70 px-2 py-1 text-xs text-ink">
-              {leadId || "—"}
-            </code>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => void copyResumeLink()}
-            >
-              {rp.copyLink}
-            </Button>
-          </div>
-        </div>
-      ) : null}
+  const progressPct = (step / TOTAL_STEPS) * 100;
+  const stepHint =
+    step === 1
+      ? rp.stepHints.contact
+      : step === 2
+        ? rp.stepHints.volume
+        : step === 3
+          ? rp.stepHints.needs
+          : rp.stepHints.confirm;
 
-      <nav aria-label="steps" className="grid gap-2 sm:grid-cols-4">
-        {stepLabels.map((label, index) => {
-          const n = index + 1;
-          const active = n === step;
-          const done = n < step;
-          return (
+  return (
+    <div className="grid gap-0 overflow-hidden rounded-3xl border border-black/10 bg-white">
+      <div className="border-b border-black/[0.06] p-4 sm:p-6">
+        <div className={cn(quizProgressWrap, "!mb-0")}>
+          <p className={quizProgressLabel}>
+            {rp.stepOf
+              .replace("{step}", String(step))
+              .replace("{total}", String(TOTAL_STEPS))
+              .replace("{label}", stepLabels[step - 1] ?? "")}
+          </p>
+          <div className={quizProgressTrack}>
             <div
-              key={label}
-              className={cn(
-                "rounded-xl border px-3 py-2 text-left",
-                active
-                  ? "border-primary/30 bg-primary-soft text-primary"
-                  : done
-                    ? "border-black/10 bg-white text-ink"
-                    : "border-black/8 bg-white/60 text-black/40",
-              )}
-            >
-              <p className="m-0 text-[0.65rem] font-semibold uppercase tracking-wide opacity-70">
-                {rp.stepOf
-                  .replace("{step}", String(n))
-                  .replace("{total}", String(TOTAL_STEPS))}
-              </p>
-              <p className="m-0 mt-0.5 text-sm font-semibold leading-snug">
-                {label}
-              </p>
-            </div>
-          );
-        })}
-      </nav>
+              className={quizProgressFill}
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <p className="m-0 text-sm text-black/50">{stepHint}</p>
+        </div>
+      </div>
 
       <Formik
         initialValues={initialValues}
@@ -446,12 +404,14 @@ export function RequestPriceForm({
         onSubmit={onStepSubmit}
       >
         {({ values }) => (
-          <Form className={cn(card, "grid gap-4")} noValidate>
+          <Form className="grid gap-3.5 p-4 sm:gap-4 sm:p-6" noValidate>
             {step === 1 ? (
               <>
                 <FormInputField name="company" label={c.company} required />
-                <FormInputField name="inn" label={c.inn} />
-                <FormInputField name="name" label={c.name} required />
+                <FormRow>
+                  <FormInputField name="name" label={c.name} required />
+                  <FormInputField name="inn" label={c.inn} />
+                </FormRow>
                 <FormRow>
                   <FormInputField
                     name="phone"
@@ -465,7 +425,7 @@ export function RequestPriceForm({
             ) : null}
 
             {step === 2 ? (
-              <>
+              <div className="grid gap-3.5 rounded-2xl bg-[#fafafa] p-3 sm:p-4">
                 <FormInputField
                   name="monthlyVolume"
                   label={f.monthlyVolume}
@@ -473,7 +433,7 @@ export function RequestPriceForm({
                   min={1}
                 />
                 <FormAreaField name="routes" label={f.routes} />
-              </>
+              </div>
             ) : null}
 
             {step === 3 ? (
@@ -504,11 +464,11 @@ export function RequestPriceForm({
 
             {step === 4 ? (
               <>
-                <div className="rounded-2xl border border-black/8 bg-[#f7f8fa] p-4">
-                  <h3 className="m-0 text-sm font-semibold text-ink">
+                <div className="rounded-2xl border border-black/[0.06] bg-[#fafafa] px-3.5 py-3 sm:px-4">
+                  <p className="m-0 text-xs font-semibold uppercase tracking-wide text-black/40">
                     {rp.reviewTitle}
-                  </h3>
-                  <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+                  </p>
+                  <dl className="mt-2.5 grid gap-2 text-sm sm:grid-cols-2">
                     {(
                       [
                         [c.company, values.company],
@@ -529,10 +489,10 @@ export function RequestPriceForm({
                       .filter(([, v]) => Boolean(String(v || "").trim()))
                       .map(([label, value]) => (
                         <div key={label}>
-                          <dt className="text-[0.7rem] font-semibold uppercase tracking-wide text-black/35">
+                          <dt className="text-[0.65rem] font-medium text-black/40">
                             {label}
                           </dt>
-                          <dd className="m-0 mt-0.5 whitespace-pre-wrap text-ink">
+                          <dd className="m-0 mt-0.5 whitespace-pre-wrap text-[0.9rem] text-ink">
                             {value}
                           </dd>
                         </div>
@@ -544,14 +504,16 @@ export function RequestPriceForm({
               </>
             ) : null}
 
-            <FormActions
-              submitLabel={
-                step === TOTAL_STEPS ? content.ui.getQuote : rp.next
-              }
-              showBack={step > 1}
-              backLabel={rp.back}
-              onBack={() => setStep((s) => Math.max(1, s - 1))}
-            />
+            <div className="flex flex-wrap items-center gap-3 border-t border-black/[0.06] pt-4">
+              <FormActions
+                submitLabel={
+                  step === TOTAL_STEPS ? content.ui.getQuote : rp.next
+                }
+                showBack={step > 1}
+                backLabel={rp.back}
+                onBack={() => setStep((s) => Math.max(1, s - 1))}
+              />
+            </div>
           </Form>
         )}
       </Formik>

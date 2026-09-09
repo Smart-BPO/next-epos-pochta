@@ -72,6 +72,7 @@ export const dashUz: DashCopy = {
     telegram: "Telegram",
     messaging: "Xabarlar",
     messagingShort: "SMS",
+    pricing: "Kalkulyator",
     users: "Xodimlar",
   },
 
@@ -338,6 +339,40 @@ export const dashUz: DashCopy = {
   settings: {
     title: "Sozlamalar",
     lead: "Sayt sozlamalari.",
+  },
+
+  pricing: {
+    title: "Kalkulyator",
+    lead: "Saytdagi smeta uchun orientir stavkalar. Oferta va ochiq tarif emas.",
+    disclaimer:
+      "O‘zgarishlar darhol /calculator/ va mini-ilovaga ta’sir qiladi. Yakuniy narxni menejer tasdiqlaydi.",
+    enabled: "Kalkulyator yoqilgan",
+    formulaVersion: "Formula versiyasi",
+    zonesTitle: "Zonalar",
+    zoneSameCity: "Bir xil shahar",
+    zoneSameRegion: "Bir xil viloyat",
+    zoneInterRegion: "Viloyatlararo",
+    base: "Baza (UZS)",
+    perKg: "Kg uchun (UZS)",
+    etaMin: "Muddat min (kun)",
+    etaMax: "Muddat max (kun)",
+    surchargesTitle: "Qo‘shimcha to‘lovlar",
+    pickup: "Olib ketish",
+    door: "Eshikkacha",
+    place: "Qo‘shimcha joy",
+    urgentMultiplier: "Shoshilinch ×",
+    categoriesTitle: "Kategoriyalar (koef.)",
+    volumetricTitle: "Hajmiy og‘irlik",
+    volumetricEnabled: "Hajmiy og‘irlikni hisoblash",
+    volumetricDivisor: "Bo‘luvchi",
+    limitsTitle: "Slayder limitlari",
+    quickCitiesTitle: "Tezkor shaharlar",
+    previewTitle: "Ko‘rib chiqish",
+    previewWeight: "Og‘irlik (kg)",
+    previewRun: "Hisoblash",
+    previewResult: "Smeta",
+    resetDefaults: "Defaults ga qaytarish",
+    saved: "Saqlandi",
   },
 
   telegram: {

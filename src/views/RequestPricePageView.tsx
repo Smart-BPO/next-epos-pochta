@@ -6,7 +6,6 @@ import { getContent } from "@/i18n/get-content";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { RequestPriceForm } from "@/components/organisms/RequestPriceForm";
 import {
-  alertInfo,
   pageIntro,
   pageIntroTitle,
   sectionLead,
@@ -31,20 +30,15 @@ export function RequestPricePageView({ locale }: { locale: Locale }) {
       </section>
 
       <section className={sectionMuted}>
-        <PageContainer>
-          <div className="max-w-3xl">
-            <div className={`${alertInfo} mb-6 rounded-2xl`}>
-              {copy.requestPrice.priceNote}
-            </div>
-            <RequestPriceForm
-              locale={locale}
-              content={copy}
-              initialCategory={category}
-              initialFromQuery={fromQuery}
-              initialToQuery={toQuery}
-              resumeUid={resumeUid}
-            />
-          </div>
+        <PageContainer className="max-w-4xl">
+          <RequestPriceForm
+            locale={locale}
+            content={copy}
+            initialCategory={category}
+            initialFromQuery={fromQuery}
+            initialToQuery={toQuery}
+            resumeUid={resumeUid}
+          />
         </PageContainer>
       </section>
     </>
