@@ -18,6 +18,7 @@ import {
   dashBtnSecondary,
   dashCard,
   dashInput,
+  dashSelect,
 } from "@/components/dashboard/ui";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import { dashMobileActionBar } from "@/styles/dashboard";
@@ -250,7 +251,7 @@ export function NewsEditorForm({
             <select
               name="status"
               defaultValue={values.status}
-              className={dashInput}
+              className={dashSelect}
             >
               <option value="draft">draft</option>
               <option value="published">published</option>
@@ -261,7 +262,7 @@ export function NewsEditorForm({
             <select
               name="category"
               defaultValue={values.category}
-              className={dashInput}
+              className={dashSelect}
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>

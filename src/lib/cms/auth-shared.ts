@@ -5,6 +5,10 @@ export type AdminUser = {
   email: string;
   role: AdminRole;
   displayName: string;
+  phone: string | null;
+  phoneVerifiedAt: string | null;
+  bio: string;
+  emailVerifiedAt: string | null;
 };
 
 export type AdminPermissionArea =

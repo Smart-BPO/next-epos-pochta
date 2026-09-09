@@ -12,7 +12,6 @@ import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { DashBottomSheet } from "@/components/dashboard/mobile/DashBottomSheet";
 import { DashNavIcon } from "@/components/dashboard/mobile/DashNavIcon";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
-import { DashLocaleSwitcher } from "@/components/dashboard/DashLocaleSwitcher";
 import { IconLogout } from "@/components/dashboard/icons";
 import { logoutAction } from "@/app/dashboard/(auth)/logout/actions";
 import { cn } from "@/lib/cn";
@@ -57,9 +56,6 @@ export function DashMoreSheet({
       title={t.common.moreMenu}
     >
       <div className="space-y-5">
-        <div className="flex justify-end px-2">
-          <DashLocaleSwitcher />
-        </div>
         {NAV_GROUP_IDS.map((groupId) => {
           const groupItems = rest.filter((item) => item.group === groupId);
           if (groupItems.length === 0) return null;

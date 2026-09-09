@@ -1,6 +1,7 @@
 import type { LucideProps } from "lucide-react";
 import {
   Banknote,
+  Bell,
   CheckCircle2,
   ChevronRight,
   ClipboardList,
@@ -87,6 +88,10 @@ export function IconStaff(props: DashIconProps) {
 
 export function IconLogout(props: DashIconProps) {
   return <LogOut {...iconProps(props)} />;
+}
+
+export function IconBell(props: DashIconProps) {
+  return <Bell {...iconProps(props)} />;
 }
 
 export function IconMore(props: DashIconProps) {

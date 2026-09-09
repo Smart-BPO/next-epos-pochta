@@ -12,7 +12,7 @@ import { useField } from "formik";
 import { cn } from "@/lib/cn";
 import { normalizePhone } from "@/lib/form/utils";
 import { DashField, useDashFieldMeta } from "@/components/dashboard/ds/DashField";
-import { dashInput, dashInputError } from "@/styles/dashboard";
+import { dashInput, dashInputError, dashSelect } from "@/styles/dashboard";
 
 type FieldWrap = {
   name: string;
@@ -23,6 +23,14 @@ type FieldWrap = {
 
 function inputClass(invalid: boolean, extra?: string) {
   return cn(invalid ? dashInputError : dashInput, extra);
+}
+
+function selectClass(invalid: boolean, extra?: string) {
+  return cn(
+    dashSelect,
+    invalid && "border-primary/40 focus:border-primary",
+    extra,
+  );
 }
 
 export function DashTextInput({
@@ -83,7 +91,7 @@ export function DashSelect({
   const { field, invalid } = useDashFieldMeta(name);
   return (
     <DashField name={name} label={label} hint={hint} className={className}>
-      <select id={name} {...field} {...props} className={inputClass(invalid)}>
+      <select id={name} {...field} {...props} className={selectClass(invalid)}>
         {children}
       </select>
     </DashField>

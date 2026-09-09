@@ -18,7 +18,7 @@ import {
 import { dashFormat } from "@/i18n/dashboard";
 import { slugCodeSchema } from "@/lib/dashboard/schemas";
 import { toast } from "react-toastify";
-import { dashBtnPrimary, dashBtnSecondary } from "@/styles/dashboard";
+import { dashBtnPrimary, dashBtnRowSecondary, dashBtnSecondary } from "@/styles/dashboard";
 import type { NewsCategoryRow } from "@/lib/cms/news-categories";
 
 type CategoryValues = {
@@ -181,7 +181,7 @@ export function NewsCategoriesClient({
                   extra={
                     <button
                       type="button"
-                      className={dashBtnSecondary}
+                      className={dashBtnRowSecondary}
                       onClick={async () => {
                         try {
                           await saveAction(

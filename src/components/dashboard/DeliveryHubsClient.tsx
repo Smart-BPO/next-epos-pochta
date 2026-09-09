@@ -20,7 +20,7 @@ import { dashFormat } from "@/i18n/dashboard";
 import { slugCodeSchema } from "@/lib/dashboard/schemas";
 import type { DeliveryHubAdminRow } from "@/lib/cms/delivery-hubs";
 import { cn } from "@/lib/cn";
-import { dashBtnPrimary, dashBtnSecondary } from "@/styles/dashboard";
+import { dashBtnPrimary, dashBtnRowSecondary, dashBtnSecondary } from "@/styles/dashboard";
 
 type HubValues = {
   code: string;
@@ -306,7 +306,7 @@ export function DeliveryHubsClient({
                   extra={
                     <button
                       type="button"
-                      className={dashBtnSecondary}
+                      className={dashBtnRowSecondary}
                       onClick={async () => {
                         try {
                           await saveAction(

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyOtp } from "@/lib/messaging/otp";
+import { PUBLIC_OTP_PURPOSES, verifyOtp, type OtpPurpose } from "@/lib/messaging/otp";
 
 export const runtime = "nodejs";
 
@@ -8,12 +8,17 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       phone?: string;
       code?: string;
-      purpose?: "verify" | "login" | "webapp";
+      purpose?: OtpPurpose;
     };
+    const purpose = body.purpose ?? "verify";
+    if (!PUBLIC_OTP_PURPOSES.includes(purpose)) {
+      return NextResponse.json({ error: "invalid_purpose" }, { status: 400 });
+    }
     const result = await verifyOtp({
       phone: String(body.phone ?? ""),
+      channel: "sms",
       code: String(body.code ?? ""),
-      purpose: body.purpose,
+      purpose,
     });
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 });

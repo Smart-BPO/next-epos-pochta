@@ -9,7 +9,7 @@ import {
   MEDIA_FOLDERS,
   type MediaFolder,
 } from "@/lib/cms/media-folders";
-import { dashBtnSecondary, dashCard, dashInput } from "@/styles/dashboard";
+import { dashBtnSecondary, dashCard, dashSelect } from "@/styles/dashboard";
 
 type MediaUploaderProps = {
   onUploaded?: (result: { path: string; url: string; folder: MediaFolder }) => void;
@@ -81,7 +81,7 @@ export function MediaUploader({
           value={folder}
           disabled={busy}
           onChange={(e) => setFolder(e.target.value as MediaFolder)}
-          className={cn(dashInput, "font-normal normal-case")}
+          className={cn(dashSelect, "font-normal normal-case")}
         >
           {MEDIA_FOLDERS.map((id) => (
             <option key={id} value={id}>

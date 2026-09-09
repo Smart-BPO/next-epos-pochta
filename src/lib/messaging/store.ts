@@ -90,7 +90,8 @@ export type NotifyEvent =
   | "lead_created_staff"
   | "lead_created_customer"
   | "shipment_status"
-  | "otp_send";
+  | "otp_send"
+  | "otp_email";
 
 export type NotifyRule = {
   event: NotifyEvent;

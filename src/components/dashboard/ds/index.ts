@@ -1,5 +1,6 @@
 export { DashModal } from "./DashModal";
 export type { DashModalSize } from "./DashModal";
+export { DashPopover } from "./DashPopover";
 export { DashConfirmDialog } from "./DashConfirmDialog";
 export { DashForm } from "./DashForm";
 export type { DashFormProps } from "./DashForm";

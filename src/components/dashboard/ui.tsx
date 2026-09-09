@@ -8,6 +8,7 @@ import {
   dashInput,
   dashPageLead,
   dashPageTitle,
+  dashSelect,
 } from "@/styles/dashboard";
 
 export function DashPageHeader({
@@ -219,4 +220,4 @@ export function DashFormField({
   );
 }
 
-export { dashBtnPrimary, dashBtnSecondary, dashInput, dashBadgeBase, dashCard, dashCardPad };
+export { dashBtnPrimary, dashBtnSecondary, dashInput, dashSelect, dashBadgeBase, dashCard, dashCardPad };

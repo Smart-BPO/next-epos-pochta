@@ -4,7 +4,10 @@ import { useState, type ReactNode } from "react";
 import { toast } from "react-toastify";
 import { DashConfirmDialog } from "@/components/dashboard/ds/DashConfirmDialog";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
-import { dashBtnGhost, dashBtnSecondary } from "@/styles/dashboard";
+import {
+  dashBtnRowDanger,
+  dashBtnRowGhost,
+} from "@/styles/dashboard";
 
 export function DashRowActions({
   onEdit,
@@ -29,10 +32,10 @@ export function DashRowActions({
   const del = deleteLabel ?? t.common.delete;
 
   return (
-    <div className="inline-flex flex-wrap items-center justify-end gap-1">
+    <div className="inline-flex flex-nowrap items-center justify-end gap-1">
       {extra}
       {onEdit ? (
-        <button type="button" className={dashBtnGhost} onClick={onEdit}>
+        <button type="button" className={dashBtnRowGhost} onClick={onEdit}>
           {edit}
         </button>
       ) : null}
@@ -40,7 +43,7 @@ export function DashRowActions({
         <>
           <button
             type="button"
-            className={dashBtnSecondary}
+            className={dashBtnRowDanger}
             onClick={() => setConfirmOpen(true)}
           >
             {del}

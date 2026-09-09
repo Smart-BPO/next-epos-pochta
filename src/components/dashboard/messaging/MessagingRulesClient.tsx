@@ -9,6 +9,7 @@ import {
   dashBtnPrimary,
   dashCardPad,
   dashInput,
+  dashSelect,
 } from "@/styles/dashboard";
 import { DashPageHeader } from "@/components/dashboard/ui";
 
@@ -110,7 +111,7 @@ export function MessagingRulesClient({
                   name="audience"
                   defaultValue={rule.audience}
                   disabled={!canWrite}
-                  className={dashInput}
+                  className={dashSelect}
                 >
                   <option value="staff">{t.messaging.audienceStaff}</option>
                   <option value="customer">
@@ -125,7 +126,7 @@ export function MessagingRulesClient({
                   name="locale_mode"
                   defaultValue={rule.locale_mode}
                   disabled={!canWrite}
-                  className={dashInput}
+                  className={dashSelect}
                 >
                   <option value="customer">
                     {t.messaging.localeCustomer}
@@ -141,7 +142,7 @@ export function MessagingRulesClient({
                   name="sms_provider"
                   defaultValue={rule.sms_provider}
                   disabled={!canWrite}
-                  className={dashInput}
+                  className={dashSelect}
                 >
                   <option value="primary">primary</option>
                   <option value="playmobile">playmobile</option>
@@ -155,7 +156,7 @@ export function MessagingRulesClient({
                   name="customer_from"
                   defaultValue={rule.customer_from}
                   disabled={!canWrite}
-                  className={dashInput}
+                  className={dashSelect}
                 >
                   <option value="lead.phone">lead.phone</option>
                   <option value="shipment.contact">shipment.contact</option>

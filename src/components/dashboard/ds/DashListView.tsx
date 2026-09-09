@@ -21,6 +21,7 @@ import {
   dashBtnSecondary,
   dashCard,
   dashInput,
+  dashSelect,
 } from "@/styles/dashboard";
 
 export type DashListSortDir = "asc" | "desc";
@@ -266,7 +267,8 @@ export function DashListView<T>({
   const fieldLabel =
     "text-[0.65rem] font-semibold uppercase tracking-wide text-black/40 leading-none";
   /** Shared control height so search / select / view toggle share one baseline. */
-  const fieldControl = cn(dashInput, "h-10 py-0 leading-none");
+  const fieldControl = cn(dashInput, "h-10 py-0 leading-10");
+  const selectControl = cn(dashSelect, "h-10 py-0 leading-10");
 
   return (
     <div className={cn("space-y-3", className)}>
@@ -286,7 +288,7 @@ export function DashListView<T>({
             <label key={f.id} className="grid gap-1.5">
               <span className={fieldLabel}>{f.label}</span>
               <select
-                className={cn(fieldControl, "min-w-[8rem]")}
+                className={cn(selectControl, "min-w-[8rem]")}
                 value={filterState[f.id] ?? ""}
                 onChange={(e) => setFilterReset(f.id, e.target.value)}
               >
@@ -303,7 +305,7 @@ export function DashListView<T>({
           <label className="grid gap-1.5">
             <span className={fieldLabel}>{t.common.perPage}</span>
             <select
-              className={cn(fieldControl, "min-w-[5rem]")}
+              className={cn(selectControl, "min-w-[5rem]")}
               value={pageSize}
               onChange={(e) => setPageSizeReset(Number(e.target.value))}
             >
@@ -452,7 +454,7 @@ export function DashListView<T>({
                     ))}
                 </div>
                 {actionsNode ? (
-                  <div className="mt-auto flex flex-wrap justify-end gap-2 border-t border-black/[0.06] pt-3">
+                  <div className="mt-auto flex flex-nowrap justify-end gap-1 overflow-x-auto border-t border-black/[0.06] pt-3">
                     {actionsNode}
                   </div>
                 ) : null}

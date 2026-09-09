@@ -27,9 +27,14 @@ type AdminRow = {
   role: string;
   display_name?: string | null;
   is_active?: boolean;
+  phone?: string | null;
+  phone_verified_at?: string | null;
+  bio?: string | null;
+  email_verified_at?: string | null;
 };
 
-const ADMIN_SELECT = "user_id, email, role, display_name, is_active";
+const ADMIN_SELECT =
+  "user_id, email, role, display_name, is_active, phone, phone_verified_at, bio, email_verified_at";
 
 function mapAdmin(row: AdminRow): AdminUser | null {
   if (row.is_active === false) return null;
@@ -39,6 +44,10 @@ function mapAdmin(row: AdminRow): AdminUser | null {
     email: row.email,
     role: row.role,
     displayName: row.display_name ?? "",
+    phone: row.phone ?? null,
+    phoneVerifiedAt: row.phone_verified_at ?? null,
+    bio: row.bio ?? "",
+    emailVerifiedAt: row.email_verified_at ?? null,
   };
 }
 

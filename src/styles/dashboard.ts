@@ -5,6 +5,10 @@ export const dashShell =
 export const dashAside =
   "hidden h-dvh w-[15.5rem] shrink-0 flex-col border-r border-black/[0.06] bg-white lg:flex";
 
+/** Sticky app header (desktop + mobile) with profile / notifications / locale. */
+export const dashTopBar =
+  "sticky top-0 z-20 flex h-14 shrink-0 items-center gap-3 border-b border-black/[0.06] bg-white/95 px-4 backdrop-blur sm:px-5 lg:px-6";
+
 /** Scrollable main column next to the fixed sidebar. */
 export const dashMainColumn =
   "flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto";
@@ -42,8 +46,22 @@ export const dashBtnDanger =
 export const dashBtnGhost =
   "inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-black/55 transition hover:bg-black/[0.04] hover:text-ink disabled:cursor-not-allowed disabled:opacity-55";
 
+/** Compact controls for table / list row actions. */
+export const dashBtnRowGhost =
+  "inline-flex items-center justify-center rounded-lg px-2 py-1 text-xs font-semibold text-black/55 transition hover:bg-black/[0.04] hover:text-ink disabled:cursor-not-allowed disabled:opacity-55";
+
+export const dashBtnRowSecondary =
+  "inline-flex items-center justify-center rounded-lg border border-black/10 bg-white px-2 py-1 text-xs font-semibold text-ink transition hover:bg-black/[0.03] disabled:cursor-not-allowed disabled:opacity-55";
+
+export const dashBtnRowDanger =
+  "inline-flex items-center justify-center rounded-lg border border-[#fecaca] bg-white px-2 py-1 text-xs font-semibold text-[#b91c1c] transition hover:bg-[#fef2f2] disabled:cursor-not-allowed disabled:opacity-55";
+
 export const dashInput =
   "w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:bg-black/[0.03]";
+
+/** Native select with a centered custom chevron (avoids OS caret misalignment). */
+export const dashSelect =
+  "dash-select w-full appearance-none rounded-xl border border-black/10 bg-white py-2.5 pl-3 pr-9 text-sm leading-normal outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:bg-black/[0.03]";
 
 export const dashInputError =
   "w-full rounded-xl border border-primary/40 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15";

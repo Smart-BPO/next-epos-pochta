@@ -9,6 +9,49 @@ export type DashCopy = {
   you: string;
   lang: { uz: string; ru: string; label: string };
 
+  chrome: {
+    notifications: string;
+    noNotifications: string;
+    viewAllLeads: string;
+    viewAllLog: string;
+    profile: string;
+    newLead: string;
+    messageFailed: string;
+  };
+
+  profile: {
+    title: string;
+    lead: string;
+    sectionProfile: string;
+    sectionPassword: string;
+    sectionPhone: string;
+    sectionEmail: string;
+    displayName: string;
+    bio: string;
+    bioHint: string;
+    role: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+    saveProfile: string;
+    changePassword: string;
+    phone: string;
+    email: string;
+    currentPhone: string;
+    currentEmail: string;
+    verified: string;
+    unverified: string;
+    sendCode: string;
+    confirmCode: string;
+    otpCode: string;
+    phoneSaved: string;
+    emailSaved: string;
+    profileSaved: string;
+    passwordChanged: string;
+    none: string;
+    openProfile: string;
+  };
+
   nav: {
     groups: { ops: string; content: string; system: string };
     overview: string;
@@ -342,6 +385,7 @@ export type DashCopy = {
     event_lead_created_customer: string;
     event_shipment_status: string;
     event_otp_send: string;
+    event_otp_email: string;
     statusSent: string;
     statusFailed: string;
     statusSkipped: string;
@@ -359,6 +403,11 @@ export type DashCopy = {
     codeRequired: string;
     otpRequired: string;
     generic: string;
+    wrongPassword: string;
+    passwordMismatch: string;
+    emailTaken: string;
+    phoneTaken: string;
+    emailUnchanged: string;
   };
 
   form: {
