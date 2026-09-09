@@ -31,6 +31,7 @@ const NEWS: Record<string, Tone> = {
 const ROLE: Record<string, Tone> = {
   owner: { label: "Owner", className: "bg-primary-soft text-primary" },
   editor: { label: "Editor", className: "bg-[#dbeafe] text-[#1d4ed8]" },
+  crm: { label: "CRM", className: "bg-[#fef3c7] text-[#b45309]" },
   viewer: { label: "Viewer", className: "bg-black/[0.06] text-black/50" },
 };
 

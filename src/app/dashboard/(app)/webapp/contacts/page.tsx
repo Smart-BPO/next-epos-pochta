@@ -1,6 +1,8 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { requireAccess } from "@/lib/cms/auth";
 import { CopyButton } from "@/components/dashboard/CopyButton";
+import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import {
   DashEmptyState,
@@ -13,6 +15,13 @@ import {
 import { formatDashDate } from "@/lib/cms/lead-display";
 
 export default async function WebappContactsPage() {
+  const session = await requireAccess("webapp");
+  if (!session) {
+    return (
+      <DashAccessDenied title="WebApp контакты" lead="Нет доступа." />
+    );
+  }
+
   type Row = {
     session_id: string;
     phone: string;
@@ -52,7 +61,7 @@ export default async function WebappContactsPage() {
             lead="Пользователи мини-приложения появятся после первого входа."
           />
         ) : (
-          <DashTable minWidth="820px">
+          <DashTable>
             <thead>
               <tr>
                 <DashTh>Имя</DashTh>

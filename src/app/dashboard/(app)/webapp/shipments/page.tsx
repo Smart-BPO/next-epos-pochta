@@ -1,7 +1,8 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import { requireAdmin } from "@/lib/cms/auth";
+import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { ShipmentStatusForm } from "@/components/dashboard/ShipmentStatusForm";
+import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import {
   DashEmptyState,
@@ -29,8 +30,13 @@ export default async function WebappShipmentsPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
-  const admin = await requireAdmin();
-  const readOnly = admin.role === "viewer";
+  const admin = await requireAccess("webapp");
+  if (!admin) {
+    return (
+      <DashAccessDenied title="WebApp отправления" lead="Нет доступа." />
+    );
+  }
+  const readOnly = !canMutate(admin.role, "webapp");
   const params = await searchParams;
   const statusFilter =
     params.status && (STATUSES as readonly string[]).includes(params.status)
@@ -91,7 +97,7 @@ export default async function WebappShipmentsPage({
             lead="Заявки из мини-приложения появятся здесь."
           />
         ) : (
-          <DashTable minWidth="880px">
+          <DashTable>
             <thead>
               <tr>
                 <DashTh>ID</DashTh>

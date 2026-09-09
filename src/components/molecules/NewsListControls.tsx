@@ -231,7 +231,7 @@ export function NewsListControls({
               scroll={false}
               aria-current={category === item.id ? "page" : undefined}
             >
-              {copy.categories[item.id]}
+              {(copy.categories as Record<string, string>)[item.id] ?? item.id}
               <span className="ml-1.5 opacity-60">{item.count}</span>
             </Link>
           ))}

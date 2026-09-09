@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { requireAdmin, canAccess } from "@/lib/cms/auth";
+import { requireMutation } from "@/lib/cms/auth";
 import {
   defaultTelegramWebhookUrl,
   defaultTelegramWebAppUrl,
@@ -26,14 +26,10 @@ export type TelegramActionState = {
 };
 
 async function requireTelegramAdmin(opts?: { ownerOnly?: boolean }) {
-  const admin = await requireAdmin();
-  if (!canAccess(admin.role, "settings") || admin.role === "viewer") {
-    throw new Error("Forbidden");
+  if (opts?.ownerOnly) {
+    return requireMutation("telegram_webhook");
   }
-  if (opts?.ownerOnly && admin.role !== "owner") {
-    throw new Error("Forbidden");
-  }
-  return admin;
+  return requireMutation("settings");
 }
 
 async function resolveSiteOrigin(): Promise<string> {

@@ -7,9 +7,9 @@ import type {
   NewsListResult,
   NewsSort,
 } from "@/data/news/types";
-import { NEWS_CATEGORIES } from "@/data/news/types";
 import type { Locale } from "@/i18n/config";
 import { fetchNewsArticlesFromDb } from "@/lib/cms/news";
+import { listNewsCategories } from "@/lib/cms/news-categories";
 import { cache } from "react";
 
 /** Allowed page-size templates for the news index (`all` = 12+ / show everything). */
@@ -105,7 +105,9 @@ function matchesQuery(article: LocalizedNewsArticle, q: string) {
 }
 
 export function isNewsCategory(value: string): value is NewsCategory {
-  return (NEWS_CATEGORIES as readonly string[]).includes(value);
+  if (!value || value === "all") return false;
+  // CMS-managed slugs; seed list is only a fallback for empty DB.
+  return /^[a-z0-9][a-z0-9_-]{0,63}$/i.test(value);
 }
 
 export function isNewsSort(value: string): value is NewsSort {
@@ -196,10 +198,18 @@ export async function queryNews(
     localize(article, locale),
   );
 
-  const categories = NEWS_CATEGORIES.map((id) => ({
-    id,
-    count: localized.filter((article) => article.category === id).length,
-  })).filter((item) => item.count > 0);
+  const fromTaxonomy = await listNewsCategories();
+  const categoryIds = new Set<string>([
+    ...fromTaxonomy.map((c) => c.id),
+    ...localized.map((a) => a.category),
+  ]);
+  const categories = [...categoryIds]
+    .map((id) => ({
+      id: id as NewsCategory,
+      count: localized.filter((article) => article.category === id).length,
+    }))
+    .filter((item) => item.count > 0)
+    .sort((a, b) => a.id.localeCompare(b.id));
 
   const filtered = localized.filter((article) => {
     if (category !== "all" && article.category !== category) return false;

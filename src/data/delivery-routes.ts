@@ -1,7 +1,6 @@
 import type { Locale } from "@/i18n/config";
 import {
   DELIVERY_CITIES,
-  getDeliveryCityByCode,
   type DeliveryCity,
   cityDisplayName,
 } from "@/data/delivery-cities";
@@ -83,9 +82,10 @@ export function etaBandForDistance(km: number): EtaBand {
 export function getDeliveryRoute(
   fromCode: string,
   toCode: string,
+  cities: DeliveryCity[] = DELIVERY_CITIES,
 ): DeliveryRoute | undefined {
-  const from = getDeliveryCityByCode(fromCode);
-  const to = getDeliveryCityByCode(toCode);
+  const from = cities.find((c) => c.code === fromCode.toLowerCase());
+  const to = cities.find((c) => c.code === toCode.toLowerCase());
   if (!from || !to || from.code === to.code) return undefined;
   const distanceKm = getDistanceKm(from.code, to.code);
   return {
@@ -96,8 +96,10 @@ export function getDeliveryRoute(
   };
 }
 
-export function listDeliveryRouteParams(): Array<{ from: string; to: string }> {
-  const codes = DELIVERY_CITIES.map((c) => c.code);
+export function listDeliveryRouteParams(
+  cities: DeliveryCity[] = DELIVERY_CITIES,
+): Array<{ from: string; to: string }> {
+  const codes = cities.map((c) => c.code);
   const params: Array<{ from: string; to: string }> = [];
   for (const from of codes) {
     for (const to of codes) {
@@ -108,15 +110,23 @@ export function listDeliveryRouteParams(): Array<{ from: string; to: string }> {
   return params;
 }
 
-export function routesFrom(code: string): DeliveryRoute[] {
-  return DELIVERY_CITIES.filter((c) => c.code !== code.toLowerCase())
-    .map((to) => getDeliveryRoute(code, to.code))
+export function routesFrom(
+  code: string,
+  cities: DeliveryCity[] = DELIVERY_CITIES,
+): DeliveryRoute[] {
+  return cities
+    .filter((c) => c.code !== code.toLowerCase())
+    .map((to) => getDeliveryRoute(code, to.code, cities))
     .filter((r): r is DeliveryRoute => Boolean(r));
 }
 
-export function routesTo(code: string): DeliveryRoute[] {
-  return DELIVERY_CITIES.filter((c) => c.code !== code.toLowerCase())
-    .map((from) => getDeliveryRoute(from.code, code))
+export function routesTo(
+  code: string,
+  cities: DeliveryCity[] = DELIVERY_CITIES,
+): DeliveryRoute[] {
+  return cities
+    .filter((c) => c.code !== code.toLowerCase())
+    .map((from) => getDeliveryRoute(from.code, code, cities))
     .filter((r): r is DeliveryRoute => Boolean(r));
 }
 

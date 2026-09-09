@@ -1,14 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin, canAccess } from "@/lib/cms/auth";
+import { requireMutation } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export async function saveSettingsAction(formData: FormData) {
-  const admin = await requireAdmin();
-  if (!canAccess(admin.role, "settings") || admin.role === "viewer") {
-    throw new Error("Forbidden");
-  }
+  await requireMutation("settings");
 
   const client = createSupabaseAdminClient();
   const mapLat = Number(formData.get("map_lat"));

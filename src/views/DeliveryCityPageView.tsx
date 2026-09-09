@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
-import { DELIVERY_CITIES, cityDisplayName } from "@/data/delivery-cities";
+import { cityDisplayName } from "@/data/delivery-cities";
+import { loadDeliveryCities } from "@/lib/cms/delivery-hubs";
 import { routePath, routesFrom } from "@/data/delivery-routes";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -15,8 +16,9 @@ import {
   sectionTitle,
 } from "@/styles/ui";
 
-export function DeliveryIndexPageView({ locale }: { locale: Locale }) {
+export async function DeliveryIndexPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
+  const cities = await loadDeliveryCities();
   const title =
     locale === "uz"
       ? "Yetkazib berish yoʻnalishlari"
@@ -48,11 +50,15 @@ export function DeliveryIndexPageView({ locale }: { locale: Locale }) {
       </section>
       <section className={sectionMuted}>
         <PageContainer className="flex flex-col gap-10">
-          {DELIVERY_CITIES.map((city) => {
+          {cities.map((city) => {
             const name = cityDisplayName(city, locale);
-            const outbound = routesFrom(city.code);
+            const outbound = routesFrom(city.code, cities);
             return (
-              <div key={city.code} id={city.code} className="scroll-mt-[var(--header-height)]">
+              <div
+                key={city.code}
+                id={city.code}
+                className="scroll-mt-[var(--header-height)]"
+              >
                 <h2 className={sectionTitle}>
                   <span className="mr-2">{name}</span>
                   <span className="text-sm font-medium uppercase tracking-wide text-black/35">

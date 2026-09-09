@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/lib/cms/auth";
+import { requireAccess } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
@@ -11,11 +11,15 @@ import {
   dashCardPad,
   dashInput,
 } from "@/components/dashboard/ui";
-import { inviteStaffAction, setStaffActiveAction } from "./actions";
+import {
+  inviteStaffAction,
+  setStaffActiveAction,
+  setStaffRoleAction,
+} from "./actions";
 
 export default async function DashboardUsersPage() {
-  const me = await requireAdmin();
-  if (me.role !== "owner") {
+  const me = await requireAccess("users");
+  if (!me) {
     return (
       <DashAccessDenied
         title="Сотрудники"
@@ -47,7 +51,7 @@ export default async function DashboardUsersPage() {
     <div className="space-y-5">
       <DashPageHeader
         title="Сотрудники"
-        lead="Owner · editor · viewer. Viewer — только чтение заявок и WebApp."
+        lead="Owner · editor · CRM · viewer. CRM — заявки и WebApp; editor — контент; viewer — только чтение."
       />
 
       <form action={inviteStaffAction} className={`${dashCardPad} grid max-w-md gap-3`}>
@@ -75,9 +79,10 @@ export default async function DashboardUsersPage() {
           />
         </DashFormField>
         <DashFormField label="Роль">
-          <select name="role" defaultValue="editor" className={dashInput}>
-            <option value="editor">editor</option>
-            <option value="viewer">viewer</option>
+          <select name="role" defaultValue="crm" className={dashInput}>
+            <option value="crm">crm — заявки / WebApp</option>
+            <option value="editor">editor — контент</option>
+            <option value="viewer">viewer — только чтение</option>
             <option value="owner">owner</option>
           </select>
         </DashFormField>
@@ -106,21 +111,41 @@ export default async function DashboardUsersPage() {
               </div>
               <p className="m-0 mt-0.5 text-xs text-black/45">{row.email}</p>
             </div>
-            {row.user_id !== me.id ? (
-              <form action={setStaffActiveAction}>
-                <input type="hidden" name="user_id" value={row.user_id} />
-                <input
-                  type="hidden"
-                  name="is_active"
-                  value={row.is_active ? "false" : "true"}
-                />
-                <button type="submit" className={dashBtnSecondary}>
-                  {row.is_active ? "Деактивировать" : "Активировать"}
-                </button>
-              </form>
-            ) : (
-              <span className="text-xs font-semibold text-black/35">Вы</span>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {row.user_id !== me.id ? (
+                <>
+                  <form action={setStaffRoleAction} className="flex items-center gap-1.5">
+                    <input type="hidden" name="user_id" value={row.user_id} />
+                    <select
+                      name="role"
+                      defaultValue={row.role}
+                      className={`${dashInput} py-1.5 text-xs`}
+                    >
+                      <option value="crm">crm</option>
+                      <option value="editor">editor</option>
+                      <option value="viewer">viewer</option>
+                      <option value="owner">owner</option>
+                    </select>
+                    <button type="submit" className={`${dashBtnSecondary} py-1.5 text-xs`}>
+                      Роль
+                    </button>
+                  </form>
+                  <form action={setStaffActiveAction}>
+                    <input type="hidden" name="user_id" value={row.user_id} />
+                    <input
+                      type="hidden"
+                      name="is_active"
+                      value={row.is_active ? "false" : "true"}
+                    />
+                    <button type="submit" className={dashBtnSecondary}>
+                      {row.is_active ? "Деактивировать" : "Активировать"}
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <span className="text-xs font-semibold text-black/35">Вы</span>
+              )}
+            </div>
           </li>
         ))}
       </ul>

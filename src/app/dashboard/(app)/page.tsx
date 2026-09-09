@@ -21,6 +21,7 @@ import {
   dashPageTitle,
   dashSectionTitle,
 } from "@/styles/dashboard";
+import { DashTable, DashTd, DashTh } from "@/components/dashboard/ui";
 import { cn } from "@/lib/cn";
 
 type LeadRow = {
@@ -536,26 +537,23 @@ export default async function DashboardOverviewPage() {
           </Link>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="text-[0.7rem] uppercase tracking-wide text-black/35">
+          <DashTable>
+            <thead>
               <tr>
-                <th className="px-5 py-3 font-semibold">№</th>
-                <th className="px-3 py-3 font-semibold">Клиент</th>
-                <th className="px-3 py-3 font-semibold">Направление</th>
-                <th className="px-3 py-3 font-semibold">Статус</th>
-                <th className="px-3 py-3 font-semibold">Создано</th>
-                <th className="px-5 py-3 font-semibold">Действия</th>
+                <DashTh>№</DashTh>
+                <DashTh>Клиент</DashTh>
+                <DashTh className="hidden sm:table-cell">Направление</DashTh>
+                <DashTh>Статус</DashTh>
+                <DashTh className="hidden md:table-cell">Создано</DashTh>
+                <DashTh>Действия</DashTh>
               </tr>
             </thead>
             <tbody>
               {recent.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="px-5 py-10 text-center text-black/40"
-                  >
+                  <DashTd className="py-10 text-center text-black/40" colSpan={6}>
                     Пока нет заявок
-                  </td>
+                  </DashTd>
                 </tr>
               ) : (
                 recent.map((row) => {
@@ -563,23 +561,23 @@ export default async function DashboardOverviewPage() {
                   return (
                     <tr
                       key={row.id}
-                      className="border-t border-black/[0.05] hover:bg-black/[0.015]"
+                      className="hover:bg-black/[0.015]"
                     >
-                      <td className="px-5 py-3.5 font-mono text-xs text-black/70">
+                      <DashTd className="font-mono text-xs text-black/70">
                         <Link
                           href={`/dashboard/leads/${row.id}/`}
-                          className="font-semibold text-primary hover:underline"
+                          className="truncate font-semibold text-primary hover:underline"
                         >
                           {row.id}
                         </Link>
-                      </td>
-                      <td className="px-3 py-3.5 font-medium text-ink">
+                      </DashTd>
+                      <DashTd className="truncate font-medium text-ink">
                         {leadClient(row)}
-                      </td>
-                      <td className="px-3 py-3.5 text-black/60">
+                      </DashTd>
+                      <DashTd className="hidden truncate text-black/60 sm:table-cell">
                         {leadRoute(row)}
-                      </td>
-                      <td className="px-3 py-3.5">
+                      </DashTd>
+                      <DashTd>
                         <span
                           className={cn(
                             "inline-flex rounded-lg px-2 py-0.5 text-xs font-semibold",
@@ -588,24 +586,24 @@ export default async function DashboardOverviewPage() {
                         >
                           {st.label}
                         </span>
-                      </td>
-                      <td className="px-3 py-3.5 text-black/50">
+                      </DashTd>
+                      <DashTd className="hidden text-black/50 md:table-cell">
                         {formatShortDate(row.created_at)}
-                      </td>
-                      <td className="px-5 py-3.5">
+                      </DashTd>
+                      <DashTd>
                         <Link
                           href={`/dashboard/leads/${row.id}/`}
                           className="text-sm font-semibold text-primary hover:underline"
                         >
                           Открыть
                         </Link>
-                      </td>
+                      </DashTd>
                     </tr>
                   );
                 })
               )}
             </tbody>
-          </table>
+          </DashTable>
         </div>
       </section>
     </div>

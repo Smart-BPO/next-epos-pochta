@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { getSiteSettings } from "@/lib/cms/site-settings";
+import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import { saveSettingsAction } from "./actions";
 import {
   dashBtnPrimary,
@@ -10,7 +12,15 @@ import {
 } from "@/styles/dashboard";
 
 export default async function DashboardSettingsPage() {
+  const admin = await requireAccess("settings");
+  if (!admin) {
+    return (
+      <DashAccessDenied title="Настройки" lead="Нет доступа к разделу." />
+    );
+  }
+
   const s = await getSiteSettings();
+  const canWrite = canMutate(admin.role, "settings");
 
   return (
     <div className="space-y-6">
@@ -30,7 +40,10 @@ export default async function DashboardSettingsPage() {
         </Link>
       </p>
 
-      <form action={saveSettingsAction} className={`${dashCardPad} grid max-w-xl gap-3`}>
+      <form
+        action={saveSettingsAction}
+        className={`${dashCardPad} grid max-w-xl gap-3`}
+      >
         {(
           [
             ["phone", "Телефон (E.164)", s.phone],
@@ -54,13 +67,16 @@ export default async function DashboardSettingsPage() {
             <input
               name={name}
               defaultValue={value}
+              disabled={!canWrite}
               className={`${dashInput} font-normal normal-case`}
             />
           </label>
         ))}
-        <button type="submit" className={`${dashBtnPrimary} mt-1 w-fit`}>
-          Сохранить
-        </button>
+        {canWrite ? (
+          <button type="submit" className={`${dashBtnPrimary} mt-1 w-fit`}>
+            Сохранить
+          </button>
+        ) : null}
       </form>
     </div>
   );

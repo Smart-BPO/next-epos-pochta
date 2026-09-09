@@ -177,14 +177,20 @@ export function createDeliveryIndexPage(locale: Locale) {
 
 export function createDeliveryRoutePage(locale: Locale) {
   return {
-    generateStaticParams: () => listDeliveryRouteParams(),
+    generateStaticParams: async () => {
+      const { loadDeliveryCities } = await import("@/lib/cms/delivery-hubs");
+      const cities = await loadDeliveryCities();
+      return listDeliveryRouteParams(cities);
+    },
     generateMetadata: async ({
       params,
     }: {
       params: Promise<{ from: string; to: string }>;
     }) => {
       const { from, to } = await params;
-      const route = getDeliveryRoute(from, to);
+      const { loadDeliveryCities } = await import("@/lib/cms/delivery-hubs");
+      const cities = await loadDeliveryCities();
+      const route = getDeliveryRoute(from, to, cities);
       if (!route) return getLocalizedPageMetadata(locale, "services");
       const path = localePath(locale, routePath(route.from.code, route.to.code));
       const alternates = getLocalizedAlternates(
@@ -212,7 +218,9 @@ export function createDeliveryRoutePage(locale: Locale) {
       params: Promise<{ from: string; to: string }>;
     }) {
       const { from, to } = await params;
-      const route = getDeliveryRoute(from, to);
+      const { loadDeliveryCities } = await import("@/lib/cms/delivery-hubs");
+      const cities = await loadDeliveryCities();
+      const route = getDeliveryRoute(from, to, cities);
       if (!route) notFound();
       const { DeliveryRoutePageView } = await import(
         "@/views/DeliveryRoutePageView"

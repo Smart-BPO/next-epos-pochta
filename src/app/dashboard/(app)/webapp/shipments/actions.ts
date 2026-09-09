@@ -1,16 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin, canAccess } from "@/lib/cms/auth";
+import { requireMutation } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 const STATUSES = ["draft", "pending_manager", "confirmed", "cancelled"] as const;
 
 export async function updateShipmentAction(formData: FormData) {
-  const admin = await requireAdmin();
-  if (!canAccess(admin.role, "webapp") || admin.role === "viewer") {
-    throw new Error("Forbidden");
-  }
+  await requireMutation("webapp");
 
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "");

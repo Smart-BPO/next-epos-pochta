@@ -2,12 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { NEWS_CATEGORIES, type NewsCategory, type NewsStatus } from "@/data/news/types";
-import { requireAdmin, canAccess } from "@/lib/cms/auth";
-import {
-  deleteNewsArticle,
-  upsertNewsArticle,
-} from "@/lib/cms/news";
+import type { NewsCategory, NewsStatus } from "@/data/news/types";
+import { requireMutation } from "@/lib/cms/auth";
+import { listNewsCategoryIds } from "@/lib/cms/news-categories";
+import { deleteNewsArticle, upsertNewsArticle } from "@/lib/cms/news";
 
 function parseBody(raw: string): string[] {
   return raw
@@ -17,10 +15,7 @@ function parseBody(raw: string): string[] {
 }
 
 export async function saveNewsAction(formData: FormData) {
-  const admin = await requireAdmin();
-  if (!canAccess(admin.role, "news") || admin.role === "viewer") {
-    throw new Error("Forbidden");
-  }
+  await requireMutation("news");
 
   const id = String(formData.get("id") ?? "").trim() || undefined;
   const slug = String(formData.get("slug") ?? "").trim();
@@ -30,7 +25,8 @@ export async function saveNewsAction(formData: FormData) {
   const publishedAt = String(formData.get("published_at") ?? "").trim();
 
   if (!slug) throw new Error("Slug required");
-  if (!(NEWS_CATEGORIES as readonly string[]).includes(category)) {
+  const allowed = await listNewsCategoryIds();
+  if (!allowed.includes(category)) {
     throw new Error("Invalid category");
   }
 
@@ -62,10 +58,7 @@ export async function saveNewsAction(formData: FormData) {
 }
 
 export async function deleteNewsAction(formData: FormData) {
-  const admin = await requireAdmin();
-  if (!canAccess(admin.role, "news") || admin.role === "viewer") {
-    throw new Error("Forbidden");
-  }
+  await requireMutation("news");
   const id = String(formData.get("id") ?? "");
   if (!id) throw new Error("Missing id");
   await deleteNewsArticle(id);

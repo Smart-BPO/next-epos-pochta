@@ -1,16 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin, canAccess } from "@/lib/cms/auth";
+import { requireMutation } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 const LEAD_STATUSES = ["new", "in_progress", "done", "spam"] as const;
 
 export async function updateLeadStatusAction(formData: FormData) {
-  const admin = await requireAdmin();
-  if (!canAccess(admin.role, "leads") || admin.role === "viewer") {
-    throw new Error("Forbidden");
-  }
+  await requireMutation("leads");
 
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "");

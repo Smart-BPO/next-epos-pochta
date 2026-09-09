@@ -15,7 +15,9 @@ export function NewsCard({
 }) {
   const copy = getContent(locale);
   const href = localePath(locale, `/news/${article.slug}/`);
-  const categoryLabel = copy.news.categories[article.category];
+  const categoryLabel =
+    (copy.news.categories as Record<string, string>)[article.category] ??
+    article.category;
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/15 bg-white sm:rounded-3xl sm:border-black/20">

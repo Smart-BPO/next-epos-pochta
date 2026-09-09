@@ -85,21 +85,8 @@ export function DashTableShell({
   );
 }
 
-export function DashTable({
-  children,
-  minWidth = "720px",
-}: {
-  children: React.ReactNode;
-  minWidth?: string;
-}) {
-  return (
-    <table
-      className="w-full text-left text-sm"
-      style={{ minWidth }}
-    >
-      {children}
-    </table>
-  );
+export function DashTable({ children }: { children: React.ReactNode }) {
+  return <table className="w-full text-left text-sm">{children}</table>;
 }
 
 export function DashTh({
@@ -112,7 +99,7 @@ export function DashTh({
   return (
     <th
       className={cn(
-        "px-3 py-3 text-[0.7rem] font-semibold uppercase tracking-wide text-black/35 first:pl-5 last:pr-5",
+        "min-w-0 px-3 py-3 text-[0.7rem] font-semibold uppercase tracking-wide text-black/35 first:pl-5 last:pr-5",
         className,
       )}
     >
@@ -124,14 +111,17 @@ export function DashTh({
 export function DashTd({
   children,
   className,
+  colSpan,
 }: {
   children: React.ReactNode;
   className?: string;
+  colSpan?: number;
 }) {
   return (
     <td
+      colSpan={colSpan}
       className={cn(
-        "border-t border-black/[0.05] px-3 py-3.5 first:pl-5 last:pr-5",
+        "min-w-0 border-t border-black/[0.05] px-3 py-3.5 first:pl-5 last:pr-5",
         className,
       )}
     >

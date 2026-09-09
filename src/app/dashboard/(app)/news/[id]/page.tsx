@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
+import { requireAccess } from "@/lib/cms/auth";
+import { listNewsCategories } from "@/lib/cms/news-categories";
+import { getNewsAdminById } from "@/lib/cms/news";
 import { NewsEditorForm } from "@/components/dashboard/NewsEditorForm";
+import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import {
   DashAlert,
   DashBreadcrumbs,
   DashPageHeader,
 } from "@/components/dashboard/ui";
-import { getNewsAdminById } from "@/lib/cms/news";
 
 export default async function EditNewsPage({
   params,
@@ -14,10 +17,17 @@ export default async function EditNewsPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ saved?: string }>;
 }) {
+  const admin = await requireAccess("news");
+  if (!admin) {
+    return <DashAccessDenied title="Новости" lead="Нет доступа." />;
+  }
+
   const { id } = await params;
   const { saved } = await searchParams;
   const article = await getNewsAdminById(id);
   if (!article) notFound();
+
+  const cats = await listNewsCategories({ includeInactive: true });
 
   return (
     <div className="space-y-4">
@@ -27,12 +37,13 @@ export default async function EditNewsPage({
           { label: article.slug },
         ]}
       />
-      <DashPageHeader
-        title="Редактирование"
-        lead={article.slug}
-      />
+      <DashPageHeader title="Редактирование" lead={article.slug} />
       {saved ? <DashAlert tone="success">Статья сохранена</DashAlert> : null}
       <NewsEditorForm
+        categories={cats.map((c) => ({
+          id: c.id,
+          label: `${c.labelRu} (${c.id})`,
+        }))}
         values={{
           id: article.id,
           slug: article.slug,

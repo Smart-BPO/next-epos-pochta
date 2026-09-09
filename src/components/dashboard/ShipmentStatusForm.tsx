@@ -40,7 +40,7 @@ export function ShipmentStatusForm({
           toast.error("Не удалось сохранить");
         }
       }}
-      className="flex min-w-[12rem] flex-col gap-2"
+      className="flex w-full min-w-0 flex-col gap-2"
     >
       <input type="hidden" name="id" value={id} />
       <select

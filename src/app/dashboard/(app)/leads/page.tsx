@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import { requireAdmin } from "@/lib/cms/auth";
+import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { LeadStatusSelect } from "@/components/dashboard/LeadStatusSelect";
+import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import {
   DashEmptyState,
@@ -44,8 +45,16 @@ export default async function DashboardLeadsPage({
 }: {
   searchParams: Promise<{ status?: string; type?: string; offset?: string }>;
 }) {
-  const admin = await requireAdmin();
-  const readOnly = admin.role === "viewer";
+  const admin = await requireAccess("leads");
+  if (!admin) {
+    return (
+      <DashAccessDenied
+        title="Заявки"
+        lead="Раздел для ролей CRM / owner / viewer."
+      />
+    );
+  }
+  const readOnly = !canMutate(admin.role, "leads");
   const params = await searchParams;
   const statusFilter =
     params.status && (STATUSES as readonly string[]).includes(params.status)

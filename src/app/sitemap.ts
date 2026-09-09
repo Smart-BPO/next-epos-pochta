@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { pagePaths } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import { listPublishedSlugs } from "@/lib/news/repository";
+import { loadDeliveryCities } from "@/lib/cms/delivery-hubs";
 import { listDeliveryRouteParams, routePath } from "@/data/delivery-routes";
 import { getCanonicalSiteUrl, isIndexableDeployment } from "@/utils/seo/indexing";
 
@@ -59,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  for (const { from, to } of listDeliveryRouteParams()) {
+  for (const { from, to } of listDeliveryRouteParams(await loadDeliveryCities())) {
     const path = routePath(from, to);
     for (const locale of ["uz", "ru"] as const) {
       entries.push({

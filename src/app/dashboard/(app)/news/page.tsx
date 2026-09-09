@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { listNewsAdminRows } from "@/lib/cms/news";
+import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import {
   DashEmptyState,
@@ -9,11 +11,18 @@ import {
   DashTd,
   DashTh,
   dashBtnPrimary,
+  dashBtnSecondary,
 } from "@/components/dashboard/ui";
 import { formatDashDate } from "@/lib/cms/lead-display";
 
 export default async function DashboardNewsPage() {
+  const admin = await requireAccess("news");
+  if (!admin) {
+    return <DashAccessDenied title="Новости" lead="Нет доступа к разделу." />;
+  }
+
   const rows = await listNewsAdminRows();
+  const canWrite = canMutate(admin.role, "news");
 
   return (
     <div className="space-y-5">
@@ -21,9 +30,16 @@ export default async function DashboardNewsPage() {
         title="Новости"
         lead="Пустые CMS → публичный сайт использует TS seed"
         actions={
-          <Link href="/dashboard/news/new/" className={dashBtnPrimary}>
-            Новая статья
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/dashboard/news/categories/" className={dashBtnSecondary}>
+              Категории
+            </Link>
+            {canWrite ? (
+              <Link href="/dashboard/news/new/" className={dashBtnPrimary}>
+                Новая статья
+              </Link>
+            ) : null}
+          </div>
         }
       />
       <DashTableShell title="Статьи">
@@ -32,20 +48,22 @@ export default async function DashboardNewsPage() {
             title="В CMS пока пусто"
             lead="Сайт читает seed из кода, пока вы не создадите статьи здесь."
             action={
-              <Link href="/dashboard/news/new/" className={dashBtnPrimary}>
-                Создать первую
-              </Link>
+              canWrite ? (
+                <Link href="/dashboard/news/new/" className={dashBtnPrimary}>
+                  Создать первую
+                </Link>
+              ) : null
             }
           />
         ) : (
-          <DashTable minWidth="640px">
+          <DashTable>
             <thead>
               <tr>
                 <DashTh>Обложка</DashTh>
                 <DashTh>Slug</DashTh>
                 <DashTh>Статус</DashTh>
-                <DashTh>Категория</DashTh>
-                <DashTh>Обновлено</DashTh>
+                <DashTh className="hidden sm:table-cell">Категория</DashTh>
+                <DashTh className="hidden md:table-cell">Обновлено</DashTh>
               </tr>
             </thead>
             <tbody>
@@ -76,8 +94,10 @@ export default async function DashboardNewsPage() {
                   <DashTd>
                     <DashStatusBadge kind="news" value={row.status} />
                   </DashTd>
-                  <DashTd className="text-black/55">{row.category}</DashTd>
-                  <DashTd className="text-xs text-black/45">
+                  <DashTd className="hidden text-black/55 sm:table-cell">
+                    {row.category}
+                  </DashTd>
+                  <DashTd className="hidden text-xs text-black/45 md:table-cell">
                     {row.updated_at ? formatDashDate(row.updated_at) : "—"}
                   </DashTd>
                 </tr>

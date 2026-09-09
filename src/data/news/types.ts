@@ -1,6 +1,6 @@
 export type NewsStatus = "published" | "draft";
 
-/** Curated filters for the news index — keep tags free-form for CMS later. */
+/** Seed fallback when CMS categories table is empty. */
 export const NEWS_CATEGORIES = [
   "company",
   "product",
@@ -8,7 +8,8 @@ export const NEWS_CATEGORIES = [
   "geography",
 ] as const;
 
-export type NewsCategory = (typeof NEWS_CATEGORIES)[number];
+/** Category id — CMS-managed; seed list is fallback only. */
+export type NewsCategory = string;
 
 export type NewsSort = "newest" | "oldest" | "title-asc" | "title-desc";
 

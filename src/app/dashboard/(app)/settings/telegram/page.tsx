@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { requireAdmin, canAccess } from "@/lib/cms/auth";
+import { requireAdmin, canAccess, canMutate } from "@/lib/cms/auth";
 import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import { DashBreadcrumbs } from "@/components/dashboard/ui";
 import {
@@ -210,7 +210,7 @@ export default async function DashboardTelegramSettingsPage() {
         </dl>
       </section>
 
-      {tokenOk && admin.role !== "viewer" ? (
+      {tokenOk && canMutate(admin.role, "settings") ? (
         <TelegramWebhookForms
           defaultWebhookUrl={suggestedUrl}
           defaultWebAppUrl={suggestedWebAppUrl}

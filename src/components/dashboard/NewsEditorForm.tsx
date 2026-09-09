@@ -3,6 +3,7 @@ import {
   deleteNewsAction,
   saveNewsAction,
 } from "@/app/dashboard/(app)/news/actions";
+import { MediaUploader } from "@/components/dashboard/MediaUploader";
 import {
   DashFormField,
   dashBtnPrimary,
@@ -26,7 +27,13 @@ type NewsFormValues = {
   bodyRu: string;
 };
 
-export function NewsEditorForm({ values }: { values: NewsFormValues }) {
+export function NewsEditorForm({
+  values,
+  categories = NEWS_CATEGORIES.map((id) => ({ id, label: id })),
+}: {
+  values: NewsFormValues;
+  categories?: Array<{ id: string; label: string }>;
+}) {
   return (
     <>
       <form action={saveNewsAction} className="relative grid max-w-3xl gap-4 pb-24">
@@ -58,9 +65,9 @@ export function NewsEditorForm({ values }: { values: NewsFormValues }) {
               defaultValue={values.category}
               className={dashInput}
             >
-              {NEWS_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
                 </option>
               ))}
             </select>
@@ -74,20 +81,8 @@ export function NewsEditorForm({ values }: { values: NewsFormValues }) {
           </DashFormField>
         </div>
 
-        <DashFormField label="Cover URL">
-          <input
-            name="cover_image"
-            defaultValue={values.coverImage}
-            className={dashInput}
-            placeholder="/media/covers/… или https://…"
-          />
-          <p className="m-0 mt-1.5 text-xs font-normal normal-case text-black/40">
-            Загрузите файл в{" "}
-            <a href="/dashboard/media/" className="font-semibold text-primary hover:underline">
-              Медиа
-            </a>{" "}
-            и вставьте URL.
-          </p>
+        <DashFormField label="Cover">
+          <MediaUploader name="cover_image" defaultUrl={values.coverImage} />
         </DashFormField>
 
         <fieldset className={`${dashCard} grid gap-3 p-4`}>
