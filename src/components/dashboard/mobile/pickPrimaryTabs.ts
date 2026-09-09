@@ -1,4 +1,4 @@
-import type { AdminRole } from "@/lib/cms/auth";
+import type { AdminRole } from "@/lib/cms/auth-shared";
 import type { DashboardNavItem } from "@/components/dashboard/nav";
 
 function byHref(items: DashboardNavItem[], href: string) {

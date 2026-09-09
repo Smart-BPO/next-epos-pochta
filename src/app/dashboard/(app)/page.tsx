@@ -2,7 +2,8 @@ import Link from "next/link";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { requireAdmin } from "@/lib/cms/auth";
-import { getDashT, dashIntlLocale } from "@/i18n/dashboard";
+import { dashIntlLocale } from "@/i18n/dashboard";
+import { getDashT } from "@/i18n/dashboard/server";
 import {
   IconCheck,
   IconChevron,

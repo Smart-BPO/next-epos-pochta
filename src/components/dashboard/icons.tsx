@@ -16,6 +16,7 @@ import {
   Plus,
   Send,
   Settings,
+  MessageSquare,
   UserCog,
   Users,
 } from "lucide-react";
@@ -70,6 +71,10 @@ export function IconSettings(props: DashIconProps) {
 
 export function IconTelegram(props: DashIconProps) {
   return <Send {...iconProps(props)} />;
+}
+
+export function IconMessaging(props: DashIconProps) {
+  return <MessageSquare {...iconProps(props)} />;
 }
 
 export function IconMedia(props: DashIconProps) {

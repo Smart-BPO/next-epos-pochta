@@ -1,7 +1,7 @@
 "use client";
 
-import type { AdminUser } from "@/lib/cms/auth";
-import { canAccess } from "@/lib/cms/auth";
+import type { AdminUser } from "@/lib/cms/auth-shared";
+import { canAccess } from "@/lib/cms/auth-shared";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { DashboardToaster } from "@/components/dashboard/DashboardToaster";

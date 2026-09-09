@@ -23,6 +23,7 @@ export type DashCopy = {
     media: string;
     settings: string;
     telegram: string;
+    messaging: string;
     users: string;
   };
 
@@ -285,6 +286,65 @@ export type DashCopy = {
   telegram: {
     title: string;
     lead: string;
+  };
+
+  messaging: {
+    title: string;
+    lead: string;
+    navProviders: string;
+    navTemplates: string;
+    navRules: string;
+    navLog: string;
+    providersTitle: string;
+    providersLead: string;
+    templatesTitle: string;
+    templatesLead: string;
+    rulesTitle: string;
+    rulesLead: string;
+    logTitle: string;
+    logLead: string;
+    emptyLog: string;
+    saved: string;
+    testSent: string;
+    testFailed: string;
+    masterKeyMissing: string;
+    enabled: string;
+    primarySms: string;
+    secrets: string;
+    secretsHint: string;
+    leaveBlank: string;
+    testPhone: string;
+    testEmail: string;
+    sendTest: string;
+    playmobile: string;
+    eskiz: string;
+    resend: string;
+    channelSms: string;
+    channelEmail: string;
+    channelTelegram: string;
+    preview: string;
+    variables: string;
+    bodyText: string;
+    bodyHtml: string;
+    subject: string;
+    segments: string;
+    ruleEnabled: string;
+    audience: string;
+    audienceStaff: string;
+    audienceCustomer: string;
+    staffEmails: string;
+    staffPhones: string;
+    localeMode: string;
+    localeCustomer: string;
+    localeBoth: string;
+    smsProvider: string;
+    event_lead_created_staff: string;
+    event_lead_created_customer: string;
+    event_shipment_status: string;
+    event_otp_send: string;
+    statusSent: string;
+    statusFailed: string;
+    statusSkipped: string;
   };
 
   errors: {

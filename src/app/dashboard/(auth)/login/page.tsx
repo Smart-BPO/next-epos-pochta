@@ -1,6 +1,6 @@
 import { DashboardLoginForm } from "@/components/dashboard/DashboardLoginForm";
 import { countAdmins } from "@/lib/cms/auth";
-import { getDashT } from "@/i18n/dashboard";
+import { getDashT } from "@/i18n/dashboard/server";
 import {
   hasSupabaseAdminConfig,
   hasSupabaseSessionConfig,

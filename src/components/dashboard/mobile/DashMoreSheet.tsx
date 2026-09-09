@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { AdminUser } from "@/lib/cms/auth";
+import type { AdminUser } from "@/lib/cms/auth-shared";
 import {
   NAV_GROUP_IDS,
   type DashboardNavItem,

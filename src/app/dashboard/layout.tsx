@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getDashLocale } from "@/i18n/dashboard";
+import { getDashLocale } from "@/i18n/dashboard/server";
 import { DashLocaleProvider } from "@/components/dashboard/DashLocaleProvider";
 
 export const metadata: Metadata = {

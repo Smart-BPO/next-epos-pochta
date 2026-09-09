@@ -3,15 +3,23 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import {
+  canAccess,
+  canMutate,
+  isAdminRole,
+  type AdminMutation,
+  type AdminPermissionArea,
+  type AdminRole,
+  type AdminUser,
+} from "@/lib/cms/auth-shared";
 
-export type AdminRole = "owner" | "editor" | "crm" | "viewer";
-
-export type AdminUser = {
-  id: string;
-  email: string;
-  role: AdminRole;
-  displayName: string;
-};
+export type {
+  AdminRole,
+  AdminUser,
+  AdminPermissionArea,
+  AdminMutation,
+} from "@/lib/cms/auth-shared";
+export { canAccess, canMutate, isAdminRole } from "@/lib/cms/auth-shared";
 
 type AdminRow = {
   user_id: string;
@@ -22,72 +30,6 @@ type AdminRow = {
 };
 
 const ADMIN_SELECT = "user_id, email, role, display_name, is_active";
-
-export type AdminPermissionArea =
-  | "overview"
-  | "leads"
-  | "webapp"
-  | "news"
-  | "settings"
-  | "media"
-  | "delivery"
-  | "users";
-
-export type AdminMutation =
-  | "leads"
-  | "webapp"
-  | "news"
-  | "delivery"
-  | "media"
-  | "settings"
-  | "telegram_webhook"
-  | "users";
-
-const CONTENT_AREAS: AdminPermissionArea[] = [
-  "news",
-  "delivery",
-  "media",
-  "settings",
-];
-
-const OPS_AREAS: AdminPermissionArea[] = ["overview", "leads", "webapp"];
-
-/**
- * Roles:
- * - owner — всё + сотрудники + Telegram webhook
- * - editor — контент (новости, хабы, медиа, настройки сайта)
- * - crm — заявки и WebApp (операции)
- * - viewer — только чтение overview / заявки / WebApp
- */
-export function canAccess(role: AdminRole, area: AdminPermissionArea): boolean {
-  if (role === "owner") return true;
-  if (role === "viewer") return OPS_AREAS.includes(area);
-  if (role === "crm") return OPS_AREAS.includes(area);
-  // editor
-  return area === "overview" || CONTENT_AREAS.includes(area);
-}
-
-export function canMutate(role: AdminRole, action: AdminMutation): boolean {
-  if (role === "viewer") return false;
-  if (role === "owner") return true;
-  if (role === "crm") return action === "leads" || action === "webapp";
-  // editor — content only
-  return (
-    action === "news" ||
-    action === "delivery" ||
-    action === "media" ||
-    action === "settings"
-  );
-}
-
-export function isAdminRole(value: string): value is AdminRole {
-  return (
-    value === "owner" ||
-    value === "editor" ||
-    value === "crm" ||
-    value === "viewer"
-  );
-}
 
 function mapAdmin(row: AdminRow): AdminUser | null {
   if (row.is_active === false) return null;

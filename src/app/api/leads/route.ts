@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import {
-  getTelegramChatId,
-  hasTelegramBotToken,
-  leadStatusInlineKeyboard,
-  sendMessage,
-} from "@/lib/telegram/bot";
+import { dispatchNotification } from "@/lib/messaging/dispatch";
+import { leadClientLabel } from "@/lib/cms/lead-display";
 
 type LeadType = "price" | "business" | "contact";
 
@@ -60,51 +55,20 @@ function pruneMaps() {
   }
 }
 
-function formatLeadText(record: Record<string, unknown>) {
-  return JSON.stringify(record, null, 2);
+function pickPhone(data: Record<string, unknown>): string {
+  const phone =
+    (typeof data.phone === "string" && data.phone) ||
+    (typeof data.tel === "string" && data.tel) ||
+    "";
+  return phone;
 }
 
-async function notifyResend(record: {
-  id: string;
-  type: LeadType;
-  [key: string]: unknown;
-}) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const notifyTo =
-    process.env.RESEND_NOTIFY_TO || process.env.NEXT_PUBLIC_CONTACT_EMAIL;
-  const from =
-    process.env.RESEND_FROM || "EPOS POCHTA <onboarding@resend.dev>";
-  if (!apiKey || !notifyTo) return false;
-
-  const resend = new Resend(apiKey);
-  await resend.emails.send({
-    from,
-    to: notifyTo,
-    subject: `[EPOS] ${record.type.toUpperCase()} ${record.id}`,
-    text: formatLeadText(record),
-  });
-  return true;
+function pickEmail(data: Record<string, unknown>): string {
+  return typeof data.email === "string" ? data.email : "";
 }
 
-async function notifyTelegram(record: {
-  id: string;
-  type: LeadType;
-  [key: string]: unknown;
-}) {
-  if (!hasTelegramBotToken()) return false;
-  const chatId = getTelegramChatId();
-  if (!chatId) return false;
-
-  const text = `EPOS lead ${record.type.toUpperCase()} ${record.id}\n\n${formatLeadText(record)}`;
-  const result = await sendMessage({
-    chatId,
-    text,
-    replyMarkup: leadStatusInlineKeyboard(record.id),
-  });
-  if (!result.ok) {
-    throw new Error(result.description);
-  }
-  return true;
+function pickName(data: Record<string, unknown>): string {
+  return leadClientLabel({ data });
 }
 
 export async function POST(request: Request) {
@@ -146,7 +110,7 @@ export async function POST(request: Request) {
         });
       }
     } catch {
-      // fall through to memory map
+      // fall through
     }
   }
 
@@ -160,18 +124,12 @@ export async function POST(request: Request) {
     idempotencyMap.set(body.requestId, { id, createdAt: Date.now() });
   }
 
-  const record = {
-    id,
-    type: body.type,
-    locale: body.locale ?? "uz",
-    pageUrl: body.pageUrl ?? "",
-    utm: body.utm ?? {},
-    createdAt: new Date().toISOString(),
-    data: body.data,
-  };
-
-  let notifiedEmail = false;
-  let notifiedTelegram = false;
+  const locale = body.locale === "ru" ? "ru" : "uz";
+  const name = pickName(body.data);
+  const phone = pickPhone(body.data);
+  const email = pickEmail(body.data);
+  const details = JSON.stringify(body.data, null, 2);
+  const name_part = name && name !== "—" ? `, ${name.split(/\s+/)[0]}` : "";
 
   if (hasSupabaseAdminConfig()) {
     try {
@@ -179,7 +137,7 @@ export async function POST(request: Request) {
       const { error } = await admin.from("epos_leads").insert({
         id,
         type: body.type,
-        locale: body.locale === "ru" ? "ru" : "uz",
+        locale,
         status: "new",
         source: "website",
         payload: {
@@ -191,33 +149,56 @@ export async function POST(request: Request) {
         notified_email: false,
         notified_telegram: false,
       });
-      if (error) {
-        console.error("[lead:db]", error.message);
-      }
+      if (error) console.error("[lead:db]", error.message);
     } catch (err) {
       console.error("[lead:db]", err);
     }
   } else {
-    console.info("[lead]", JSON.stringify(record));
+    console.info("[lead]", id, body.type);
   }
 
-  const notifyResults = await Promise.allSettled([
-    notifyResend(record),
-    notifyTelegram(record),
-  ]);
+  const data = {
+    id,
+    type: body.type,
+    name,
+    name_part,
+    phone,
+    email,
+    details,
+    locale,
+  };
 
-  notifyResults.forEach((result, index) => {
-    if (result.status === "fulfilled" && result.value) {
-      if (index === 0) notifiedEmail = true;
-      else notifiedTelegram = true;
-    }
-    if (result.status === "rejected") {
-      console.error(
-        index === 0 ? "[lead:email]" : "[lead:telegram]",
-        result.reason,
-      );
-    }
-  });
+  let notifiedEmail = false;
+  let notifiedTelegram = false;
+
+  try {
+    const staff = await dispatchNotification({
+      event: "lead_created_staff",
+      locale,
+      data,
+      entityType: "lead",
+      entityId: id,
+      idempotencyKey: `lead-staff-${id}`,
+      leadIdForTelegram: id,
+    });
+    notifiedEmail = staff.sent.some((s) => s.channel === "email" && s.ok);
+    notifiedTelegram = staff.sent.some((s) => s.channel === "telegram" && s.ok);
+  } catch (err) {
+    console.error("[lead:notify-staff]", err);
+  }
+
+  try {
+    await dispatchNotification({
+      event: "lead_created_customer",
+      locale,
+      data,
+      entityType: "lead",
+      entityId: id,
+      idempotencyKey: `lead-customer-${id}`,
+    });
+  } catch (err) {
+    console.error("[lead:notify-customer]", err);
+  }
 
   if (hasSupabaseAdminConfig() && (notifiedEmail || notifiedTelegram)) {
     try {

@@ -1,4 +1,4 @@
-/** SMS providers — server-only. Default: Play Mobile (UZ). */
+/** SMS providers — server-only. */
 export {
   createSmsMessageId,
   getPlaymobileBaseUrl,
@@ -10,3 +10,5 @@ export {
   type PlaymobileSmsMessage,
   type PlaymobileSmsResult,
 } from "./playmobile";
+export { sendEskizSms } from "./eskiz";
+export { sendRoutedSms, type SmsSendResult } from "./router";

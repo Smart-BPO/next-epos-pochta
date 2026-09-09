@@ -18,6 +18,7 @@ export type DashboardNavLabelKey =
   | "media"
   | "settings"
   | "telegram"
+  | "messaging"
   | "users";
 
 export type DashboardNavItem = {
@@ -86,6 +87,12 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
   {
     href: "/dashboard/settings/telegram/",
     labelKey: "telegram",
+    area: "settings",
+    group: "system",
+  },
+  {
+    href: "/dashboard/messaging/",
+    labelKey: "messaging",
     area: "settings",
     group: "system",
   },

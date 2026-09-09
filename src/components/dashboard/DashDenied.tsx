@@ -1,4 +1,4 @@
-import { getDashT } from "@/i18n/dashboard";
+import { getDashT } from "@/i18n/dashboard/server";
 import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 
 type Section =

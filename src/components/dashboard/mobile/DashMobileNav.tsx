@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import type { AdminUser } from "@/lib/cms/auth";
+import type { AdminUser } from "@/lib/cms/auth-shared";
 import type { DashboardNavItem } from "@/components/dashboard/nav";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import { DashLocaleSwitcher } from "@/components/dashboard/DashLocaleSwitcher";
