@@ -27,6 +27,7 @@ type DashBottomSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title?: string;
+  doneLabel?: string;
   children: ReactNode;
   className?: string;
 };
@@ -35,6 +36,7 @@ export function DashBottomSheet({
   open,
   onOpenChange,
   title = "Меню",
+  doneLabel = "Готово",
   children,
   className,
 }: DashBottomSheetProps) {
@@ -178,7 +180,7 @@ export function DashBottomSheet({
               onClick={close}
               className="rounded-lg px-2 py-1 text-sm font-semibold text-black/45 hover:bg-black/[0.04] hover:text-black"
             >
-              Готово
+              {doneLabel}
             </button>
           </div>
         </div>

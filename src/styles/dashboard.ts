@@ -1,6 +1,6 @@
 /** Shared dashboard chrome / surface tokens (EPOS CMS mock style). */
 export const dashShell =
-  "h-dvh overflow-hidden bg-[#f5f6f8] text-ink [--dash-tabbar-h:4.25rem]";
+  "h-dvh overflow-hidden bg-[#f5f6f8] text-ink [--dash-tabbar-h:4.75rem]";
 
 export const dashAside =
   "hidden h-dvh w-[15.5rem] shrink-0 flex-col border-r border-black/[0.06] bg-white lg:flex";
@@ -13,13 +13,13 @@ export const dashTopBar =
 export const dashMainColumn =
   "flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto";
 
-/** Main content bottom clearance for fixed mobile tab bar. */
+/** Main content bottom clearance for floating mobile tab bar. */
 export const dashMainMobilePad =
-  "pb-[calc(var(--dash-tabbar-h)+env(safe-area-inset-bottom,0px)+1rem)] lg:pb-6";
+  "pb-[calc(var(--dash-tabbar-h)+max(0.75rem,env(safe-area-inset-bottom,0px))+1.25rem)] lg:pb-6";
 
 /** Sticky form actions above mobile tab bar (portal, mobile only). */
 export const dashMobileActionBar =
-  "fixed inset-x-3 z-[45] flex flex-wrap gap-3 rounded-2xl border border-black/[0.08] bg-white/95 p-3 shadow-[0_8px_24px_rgb(15_18_24/0.12)] backdrop-blur bottom-[calc(var(--dash-tabbar-h)+env(safe-area-inset-bottom,0px)+0.75rem)]";
+  "fixed inset-x-3 z-[45] flex flex-wrap gap-3 rounded-2xl border border-black/[0.08] bg-white/95 p-3 shadow-[0_8px_24px_rgb(15_18_24/0.12)] backdrop-blur bottom-[calc(var(--dash-tabbar-h)+max(0.75rem,env(safe-area-inset-bottom,0px))+0.75rem)]";
 
 export const dashCard =
   "rounded-2xl border border-black/[0.06] bg-white shadow-[0_1px_2px_rgb(15_18_24/0.04),0_8px_24px_rgb(15_18_24/0.04)]";

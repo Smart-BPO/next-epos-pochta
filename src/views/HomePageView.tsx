@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
@@ -8,7 +10,6 @@ import { BusinessLogisticsScene } from "@/components/molecules/BusinessLogistics
 import { DeliveryChain } from "@/components/molecules/DeliveryChain";
 import { HomeActionBar } from "@/components/molecules/HomeActionBar";
 import { NewsCard } from "@/components/molecules/NewsCard";
-import { GeoSection } from "@/components/organisms/GeoSection";
 import { getLatestNews } from "@/lib/news/repository";
 import {
   homeHero,
@@ -27,6 +28,20 @@ import {
   section,
   sectionMuted,
 } from "@/styles/ui";
+
+const GeoSection = dynamic(
+  () =>
+    import("@/components/organisms/GeoSection").then((m) => m.GeoSection),
+  {
+    loading: () => (
+      <section className={section} aria-hidden>
+        <PageContainer>
+          <div className="min-h-[22rem] animate-pulse rounded-3xl bg-black/[0.04] motion-reduce:animate-none" />
+        </PageContainer>
+      </section>
+    ),
+  },
+);
 
 const NEED_IMAGES: Record<string, string> = {
   documents: "/images/home/needs/documents.png",
@@ -55,9 +70,44 @@ const BENEFIT_ICONS = [
   "/images/home/benefits/terms.svg",
 ] as const;
 
+async function HomeNewsSection({
+  locale,
+  copy,
+}: {
+  locale: Locale;
+  copy: ReturnType<typeof getContent>;
+}) {
+  const latestNews = await getLatestNews(locale, 3);
+  if (latestNews.length === 0) return null;
+
+  return (
+    <section className={sectionMuted}>
+      <PageContainer className="flex flex-col gap-6 md:gap-9">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex max-w-xl flex-col gap-2">
+            <h2 className={homeSectionTitle}>{copy.home.newsTitle}</h2>
+            <p className={homeSectionLead}>{copy.home.newsLead}</p>
+          </div>
+          <Button
+            href={localePath(locale, "/news/")}
+            variant="secondary"
+            className="shrink-0 self-start sm:self-auto"
+          >
+            {copy.home.newsAll}
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
+          {latestNews.map((article) => (
+            <NewsCard key={article.id} locale={locale} article={article} />
+          ))}
+        </div>
+      </PageContainer>
+    </section>
+  );
+}
+
 export async function HomePageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
-  const latestNews = await getLatestNews(locale, 3);
 
   return (
     <>
@@ -76,7 +126,6 @@ export async function HomePageView({ locale }: { locale: Locale }) {
               width={1000}
               height={652}
               className={homeHeroMap}
-              priority
               unoptimized
             />
           </div>
@@ -105,6 +154,7 @@ export async function HomePageView({ locale }: { locale: Locale }) {
                       fill
                       className="object-contain object-center"
                       sizes="(max-width: 640px) 45vw, (max-width: 1024px) 50vw, 25vw"
+                      loading="lazy"
                     />
                   </div>
                   <p className="m-0 hidden flex-1 text-sm text-black/60 sm:block sm:text-base">
@@ -141,6 +191,7 @@ export async function HomePageView({ locale }: { locale: Locale }) {
                     height={48}
                     className="size-full"
                     unoptimized
+                    loading="lazy"
                   />
                 </div>
                 <p className="m-0 text-sm leading-snug text-black/60 sm:text-lg md:text-xl">
@@ -181,6 +232,7 @@ export async function HomePageView({ locale }: { locale: Locale }) {
                       height={32}
                       className="size-6 rotate-90 sm:size-8 lg:rotate-0"
                       unoptimized
+                      loading="lazy"
                     />
                   </div>
                 ) : null}
@@ -217,6 +269,7 @@ export async function HomePageView({ locale }: { locale: Locale }) {
                       height={36}
                       className="size-8 sm:size-9"
                       unoptimized
+                      loading="lazy"
                     />
                     <span className="text-sm font-medium leading-snug text-black sm:text-[0.95rem]">
                       {item}
@@ -250,30 +303,9 @@ export async function HomePageView({ locale }: { locale: Locale }) {
 
       <GeoSection locale={locale} copy={copy} />
 
-      {latestNews.length > 0 ? (
-        <section className={sectionMuted}>
-          <PageContainer className="flex flex-col gap-6 md:gap-9">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div className="flex max-w-xl flex-col gap-2">
-                <h2 className={homeSectionTitle}>{copy.home.newsTitle}</h2>
-                <p className={homeSectionLead}>{copy.home.newsLead}</p>
-              </div>
-              <Button
-                href={localePath(locale, "/news/")}
-                variant="secondary"
-                className="shrink-0 self-start sm:self-auto"
-              >
-                {copy.home.newsAll}
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
-              {latestNews.map((article) => (
-                <NewsCard key={article.id} locale={locale} article={article} />
-              ))}
-            </div>
-          </PageContainer>
-        </section>
-      ) : null}
+      <Suspense fallback={null}>
+        <HomeNewsSection locale={locale} copy={copy} />
+      </Suspense>
 
       <section className="pb-[var(--section-y)]">
         <PageContainer>
@@ -298,6 +330,7 @@ export async function HomePageView({ locale }: { locale: Locale }) {
               height={230}
               className="pointer-events-none relative mx-auto mt-6 block h-auto w-full max-w-xs select-none object-contain object-bottom sm:mt-8 sm:max-w-md md:absolute md:-bottom-1 md:right-0 md:mx-0 md:mt-0 md:h-[min(100%,18.5rem)] md:w-[min(52%,28rem)] md:max-w-none md:object-cover md:object-top"
               sizes="(max-width: 768px) 100vw, 28rem"
+              loading="lazy"
             />
           </div>
         </PageContainer>

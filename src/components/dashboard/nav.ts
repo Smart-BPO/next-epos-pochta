@@ -25,7 +25,13 @@ export type DashboardNavItem = {
   href: string;
   labelKey: DashboardNavLabelKey;
   /** Compact label key for mobile tab bar (optional override). */
-  shortLabelKey?: "contactsShort" | "shipmentsShort" | "deliveryShort";
+  shortLabelKey?:
+    | "overviewShort"
+    | "contactsShort"
+    | "shipmentsShort"
+    | "newsShort"
+    | "deliveryShort"
+    | "messagingShort";
   area: DashboardNavArea;
   group: "ops" | "content" | "system";
 };
@@ -36,6 +42,7 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
   {
     href: "/dashboard/",
     labelKey: "overview",
+    shortLabelKey: "overviewShort",
     area: "overview",
     group: "ops",
   },
@@ -62,6 +69,7 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
   {
     href: "/dashboard/news/",
     labelKey: "news",
+    shortLabelKey: "newsShort",
     area: "news",
     group: "content",
   },
@@ -93,6 +101,7 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
   {
     href: "/dashboard/messaging/",
     labelKey: "messaging",
+    shortLabelKey: "messagingShort",
     area: "settings",
     group: "system",
   },

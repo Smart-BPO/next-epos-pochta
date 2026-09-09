@@ -67,6 +67,7 @@ const nextConfig = {
   experimental: {
     cpus: 2,
     webpackMemoryOptimizations: true,
+    optimizePackageImports: ["lucide-react", "uzbgeo"],
     serverActions: {
       bodySizeLimit: "1mb",
       allowedOrigins: [
@@ -260,6 +261,10 @@ const nextConfig = {
     ];
   },
   async headers() {
+    const longCache = {
+      key: "Cache-Control",
+      value: "public, max-age=31536000, immutable",
+    };
     return [
       {
         source: "/api/:path*",
@@ -272,6 +277,26 @@ const nextConfig = {
             value: "private, no-store, max-age=0, must-revalidate",
           },
         ],
+      },
+      {
+        source: "/images/:path*",
+        headers: [...securityHeaders, publicFramingHeader, longCache],
+      },
+      {
+        source: "/favicon.svg",
+        headers: [...securityHeaders, publicFramingHeader, longCache],
+      },
+      {
+        source: "/favicon-16x16.png",
+        headers: [...securityHeaders, publicFramingHeader, longCache],
+      },
+      {
+        source: "/favicon-32x32.png",
+        headers: [...securityHeaders, publicFramingHeader, longCache],
+      },
+      {
+        source: "/apple-touch-icon.png",
+        headers: [...securityHeaders, publicFramingHeader, longCache],
       },
       {
         source: "/:path*",

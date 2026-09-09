@@ -55,18 +55,21 @@ export type DashCopy = {
   nav: {
     groups: { ops: string; content: string; system: string };
     overview: string;
+    overviewShort: string;
     leads: string;
     contacts: string;
     contactsShort: string;
     shipments: string;
     shipmentsShort: string;
     news: string;
+    newsShort: string;
     delivery: string;
     deliveryShort: string;
     media: string;
     settings: string;
     telegram: string;
     messaging: string;
+    messagingShort: string;
     users: string;
   };
 
