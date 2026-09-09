@@ -108,6 +108,7 @@ export function NewsListControls({
           </label>
           <input
             id="news-search"
+            name="q"
             type="text"
             inputMode="search"
             enterKeyHint="search"

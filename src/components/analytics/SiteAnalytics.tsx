@@ -85,7 +85,8 @@ export function SiteAnalytics() {
 })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=${ym}', 'ym');
 ym(${ym}, 'init', {
   ssr: true,
-  webvisor: true,
+  // Webvisor uses eval/new Function — blocked under strict CSP (Hostinger / browser Issues).
+  webvisor: false,
   clickmap: true,
   ecommerce: "dataLayer",
   accurateTrackBounce: true,

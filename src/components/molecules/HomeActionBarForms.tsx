@@ -82,6 +82,7 @@ export function HomeTrackForm({
       </label>
       <input
         id="home-action-track"
+        name="track_number"
         value={trackNumber}
         onChange={(e) => setTrackNumber(e.target.value)}
         placeholder={copy.home.trackPlaceholder}
@@ -136,6 +137,7 @@ export function HomeQuoteForm({
         </label>
         <select
           id="home-action-from"
+          name="from"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
           className={cn(homeActionSelect, "min-w-0 flex-1")}
@@ -163,6 +165,7 @@ export function HomeQuoteForm({
         </label>
         <select
           id="home-action-to"
+          name="to"
           value={to}
           onChange={(e) => setTo(e.target.value)}
           className={cn(homeActionSelect, "min-w-0 flex-1")}

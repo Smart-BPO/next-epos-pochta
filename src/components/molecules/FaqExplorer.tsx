@@ -46,6 +46,7 @@ export function FaqExplorer({ faq }: { faq: FaqCopy }) {
           </label>
           <input
             id="faq-search"
+            name="faq_search"
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}

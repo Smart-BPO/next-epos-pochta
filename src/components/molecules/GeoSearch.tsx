@@ -39,6 +39,8 @@ export function GeoSearch({
           }}
         >
           <input
+            id="geo-search-home"
+            name="geo_search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={copy.home.geoSearchPlaceholder}
@@ -74,6 +76,8 @@ export function GeoSearch({
           {copy.home.geoSearchPlaceholder}
         </span>
         <input
+          id="geo-search"
+          name="geo_search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={copy.home.geoSearchPlaceholder}

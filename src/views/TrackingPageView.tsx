@@ -142,6 +142,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
               <div className={trackFormRow}>
                 <input
                   id="track-number"
+                  name="track_number"
                   value={number}
                   onChange={(e) => {
                     setNumber(e.target.value);

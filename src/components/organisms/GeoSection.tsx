@@ -173,6 +173,8 @@ export function GeoSection({
                   <span className="sr-only">{copy.home.geoSearchPlaceholder}</span>
                   <div className="flex flex-col gap-2.5 sm:flex-row sm:items-stretch">
                     <input
+                      id="geo-search"
+                      name="geo_search"
                       value={query}
                       onChange={(e) => {
                         const next = e.target.value;
