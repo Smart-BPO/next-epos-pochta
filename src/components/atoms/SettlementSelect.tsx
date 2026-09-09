@@ -127,16 +127,16 @@ const compactClassNames: ClassNamesConfig<
   ...defaultClassNames,
   control: ({ isFocused }) =>
     cn(
-      "min-h-10 rounded-xl border bg-white px-0.5 text-xs text-ink shadow-none! sm:min-h-12 sm:text-base",
+      "h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] rounded-xl border bg-white px-0.5 text-sm leading-none text-ink shadow-none!",
       isFocused
         ? "border-primary ring-2 ring-primary/15"
         : "border-black/15",
     ),
-  valueContainer: () => "gap-0.5 px-2 py-1 sm:px-3 sm:py-1.5",
-  singleValue: () => "truncate text-ink",
-  placeholder: () => "truncate text-black/40",
-  dropdownIndicator: () => "text-black/40 px-1 sm:px-2",
-  clearIndicator: () => "text-black/35 hover:text-black/60 px-0.5 sm:px-1",
+  valueContainer: () => "gap-0.5 px-2.5 py-0",
+  singleValue: () => "truncate text-ink leading-none",
+  placeholder: () => "truncate text-black/40 leading-none",
+  dropdownIndicator: () => "text-black/40 px-1.5",
+  clearIndicator: () => "text-black/35 hover:text-black/60 px-0.5",
 };
 
 export function SettlementSelect({
@@ -219,7 +219,7 @@ export function SettlementSelect({
 
   const shellClass =
     variant === "compact"
-      ? "flex min-h-10 items-center rounded-xl border border-black/15 bg-white px-2.5 text-xs text-black/40 sm:min-h-12 sm:px-3.5 sm:text-base"
+      ? "flex h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] items-center rounded-xl border border-black/15 bg-white px-2.5 text-sm leading-none text-black/40"
       : "flex min-h-11 items-center rounded-xl border border-black/15 bg-white px-3.5 text-sm text-black/40 sm:min-h-[var(--tap-min)] sm:px-4 sm:text-base";
 
   if (!mounted) {

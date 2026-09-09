@@ -13,6 +13,7 @@ import { trackEvent } from "@/lib/analytics/events";
 import {
   homeActionBar,
   homeActionBridge,
+  homeActionButton,
   homeActionControls,
   homeActionDivider,
   homeActionField,
@@ -32,7 +33,6 @@ function SwapIcon() {
       fill="none"
       aria-hidden
       xmlns="http://www.w3.org/2000/svg"
-      className="sm:h-5 sm:w-5"
     >
       <path
         d="M5 8h11.5M14 5.5 16.5 8 14 10.5"
@@ -111,7 +111,13 @@ export function HomeActionBar({
                   className={homeActionField}
                   autoComplete="off"
                 />
-                <Button type="submit" variant="secondary" size="sm" width="mobile">
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  size="sm"
+                  width="mobile"
+                  className={homeActionButton}
+                >
                   {copy.ui.track}
                 </Button>
               </form>
@@ -167,7 +173,13 @@ export function HomeActionBar({
                     className="min-w-0 flex-1"
                   />
                 </div>
-                <Button type="submit" variant="primary" size="sm" width="mobile">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="sm"
+                  width="mobile"
+                  className={homeActionButton}
+                >
                   {copy.home.quoteCta}
                 </Button>
               </form>

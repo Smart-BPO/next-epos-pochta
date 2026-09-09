@@ -67,6 +67,8 @@
   --btn-shadow-current-hover: var(--btn-shadow-hover);
   /* Shared header track / lang / icon targets */
   --control-height: var(--btn-height-xs);
+  /* Home track/quote island — one height for input, select, CTA */
+  --home-action-control-h: 2.5rem;
 
   /*
    * Button variants — change these to restyle tones sitewide.

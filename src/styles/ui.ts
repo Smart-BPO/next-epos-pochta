@@ -58,19 +58,23 @@ export const homeActionPane =
   "flex min-w-0 flex-1 flex-col justify-center gap-2 sm:gap-2.5 lg:flex-row lg:items-center lg:gap-3 lg:px-4 xl:gap-4 xl:px-5 first:lg:pl-0 last:lg:pr-0";
 
 export const homeActionLabel =
-  "m-0 shrink-0 font-display text-[0.9375rem] font-semibold uppercase leading-tight tracking-[-0.02em] text-black sm:text-lg lg:max-w-[8.5rem] lg:text-[0.95rem] xl:max-w-[10.5rem] xl:text-[1.05rem]";
+  "m-0 shrink-0 font-display text-[0.9375rem] font-semibold uppercase leading-snug tracking-[-0.02em] text-black sm:text-base lg:max-w-[9.5rem] lg:text-[0.875rem] xl:max-w-[12rem] xl:text-[0.9375rem]";
 
 export const homeActionRow =
-  "flex min-w-0 flex-1 flex-row items-center gap-1.5 sm:gap-3";
+  "flex min-w-0 flex-1 flex-row items-center gap-1.5 sm:gap-2.5";
 
 export const homeActionField =
-  "min-h-10 min-w-0 w-full flex-1 rounded-xl border border-black/15 bg-white px-2.5 py-2 text-sm text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/15 sm:min-h-12 sm:px-3.5 sm:py-3 sm:text-base";
+  "box-border h-[var(--home-action-control-h)] min-h-[var(--home-action-control-h)] min-w-0 w-full flex-1 rounded-xl border border-black/15 bg-white px-3 text-sm leading-none text-ink outline-none placeholder:text-black/40 focus:border-primary focus:ring-2 focus:ring-primary/15";
 
 export const homeActionControls =
-  "flex min-w-0 w-full flex-1 flex-col gap-2 sm:gap-3 lg:flex-row lg:items-center lg:gap-3";
+  "flex min-w-0 w-full flex-1 flex-col gap-2 sm:gap-3 lg:flex-row lg:items-center lg:gap-2.5";
+
+/** Force Button (any size) to match island control height. */
+export const homeActionButton =
+  "!h-[var(--home-action-control-h)] !min-h-[var(--home-action-control-h)] !px-4 !py-0 !text-sm";
 
 export const homeActionSwap =
-  "inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-surface-muted text-black/65 transition-colors hover:border-black/20 hover:bg-white hover:text-black sm:size-9";
+  "inline-flex size-[var(--home-action-control-h)] shrink-0 items-center justify-center rounded-full border border-black/10 bg-surface-muted text-black/65 transition-colors hover:border-black/20 hover:bg-white hover:text-black";
 
 export const homeActionDivider =
   "h-px w-full shrink-0 bg-black/10 lg:mx-0 lg:h-auto lg:w-px lg:self-stretch";
