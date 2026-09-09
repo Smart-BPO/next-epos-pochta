@@ -54,7 +54,8 @@ function localize(
 
 const loadArticles = cache(async (): Promise<NewsArticle[]> => {
   const fromDb = await fetchNewsArticlesFromDb();
-  if (fromDb && fromDb.length > 0) return fromDb;
+  // Supabase configured → CMS is source of truth (seed auto-imported once).
+  if (fromDb !== null) return fromDb;
   return newsArticles;
 });
 

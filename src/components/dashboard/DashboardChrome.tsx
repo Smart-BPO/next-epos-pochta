@@ -31,7 +31,7 @@ export function DashboardChrome({
   return (
     <div className={dashShell}>
       <DashboardToaster />
-      <div className="mx-auto flex min-h-dvh w-full max-w-[90rem]">
+      <div className="flex min-h-dvh w-full">
         <aside className={dashAside}>
           <div className="px-5 pt-5 pb-3">
             <p className="m-0 font-display text-[0.95rem] font-bold tracking-[-0.02em] text-primary">
@@ -95,7 +95,7 @@ export function DashboardChrome({
               <DashboardNav items={items} variant="mobile" />
             </div>
           </header>
-          <main className="p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className="p-4 sm:p-5 lg:p-6">{children}</main>
         </div>
       </div>
     </div>

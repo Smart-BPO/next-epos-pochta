@@ -28,7 +28,7 @@ export default async function DashboardNewsPage() {
     <div className="space-y-5">
       <DashPageHeader
         title="Новости"
-        lead="Пустые CMS → публичный сайт использует TS seed"
+        lead="Статьи из Supabase — публичный сайт читает тот же бэкенд"
         actions={
           <div className="flex flex-wrap gap-2">
             <Link href="/dashboard/news/categories/" className={dashBtnSecondary}>
@@ -42,11 +42,11 @@ export default async function DashboardNewsPage() {
           </div>
         }
       />
-      <DashTableShell title="Статьи">
+      <DashTableShell title={`Статьи · ${rows.length}`}>
         {rows.length === 0 ? (
           <DashEmptyState
-            title="В CMS пока пусто"
-            lead="Сайт читает seed из кода, пока вы не создадите статьи здесь."
+            title="Пока нет статей"
+            lead="Создайте первую новость — она сразу появится на сайте."
             action={
               canWrite ? (
                 <Link href="/dashboard/news/new/" className={dashBtnPrimary}>
@@ -60,7 +60,7 @@ export default async function DashboardNewsPage() {
             <thead>
               <tr>
                 <DashTh>Обложка</DashTh>
-                <DashTh>Slug</DashTh>
+                <DashTh>Заголовок</DashTh>
                 <DashTh>Статус</DashTh>
                 <DashTh className="hidden sm:table-cell">Категория</DashTh>
                 <DashTh className="hidden md:table-cell">Обновлено</DashTh>
@@ -88,8 +88,9 @@ export default async function DashboardNewsPage() {
                       href={`/dashboard/news/${row.id}/`}
                       className="font-medium text-primary hover:underline"
                     >
-                      {row.slug}
+                      {row.title}
                     </Link>
+                    <p className="m-0 mt-0.5 text-xs text-black/40">{row.slug}</p>
                   </DashTd>
                   <DashTd>
                     <DashStatusBadge kind="news" value={row.status} />

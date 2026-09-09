@@ -1,7 +1,8 @@
 import type { NewsArticle } from "@/data/news/types";
 
 /**
- * Static news seed — TODO(cms): replace with CMS / Supabase.
+ * Static news seed — imported into CMS (`ensureSiteNewsInCms`) when DB is empty.
+ * Public site + dashboard read Supabase when admin env is configured.
  * Body lines starting with "## " render as section headings.
  * No public tariffs or prices in copy.
  */

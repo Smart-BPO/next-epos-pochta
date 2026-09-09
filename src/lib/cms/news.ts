@@ -1,7 +1,8 @@
 import type { NewsArticle, NewsCategory, NewsStatus } from "@/data/news/types";
-import { NEWS_CATEGORIES } from "@/data/news/types";
+import { newsArticles as siteNewsSeed } from "@/data/news/articles";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { cache } from "react";
 
 type ArticleRow = {
   id: string;
@@ -41,7 +42,7 @@ function serializeBody(body: string[]): string {
 }
 
 function isCategory(value: string): value is NewsCategory {
-  return (NEWS_CATEGORIES as readonly string[]).includes(value);
+  return /^[a-z0-9][a-z0-9_-]{0,63}$/i.test(value);
 }
 
 function mapRows(
@@ -81,16 +82,52 @@ function mapRows(
   return mapped;
 }
 
-/** Returns CMS articles or null if DB empty / unavailable (caller uses seed). */
+/**
+ * One-shot (per request via cache): copy public site seed articles into CMS
+ * when their slug is missing. Existing CMS rows are never overwritten.
+ */
+export const ensureSiteNewsInCms = cache(async (): Promise<number> => {
+  if (!hasSupabaseAdminConfig()) return 0;
+  const admin = createSupabaseAdminClient();
+  const { data: existing, error } = await admin
+    .from("epos_news_articles")
+    .select("slug");
+  if (error) {
+    console.error("[cms:news:ensure]", error.message);
+    return 0;
+  }
+  const have = new Set((existing ?? []).map((row) => row.slug as string));
+  let inserted = 0;
+  for (const article of siteNewsSeed) {
+    if (have.has(article.slug)) continue;
+    await upsertNewsArticle({
+      slug: article.slug,
+      status: article.status,
+      category: article.category,
+      coverImage: article.coverImage,
+      publishedAt: article.publishedAt,
+      locales: article.locales,
+    });
+    inserted += 1;
+  }
+  return inserted;
+});
+
+/** CMS articles when Supabase is configured; null only if admin env missing. */
 export async function fetchNewsArticlesFromDb(): Promise<NewsArticle[] | null> {
   if (!hasSupabaseAdminConfig()) return null;
   try {
+    await ensureSiteNewsInCms();
     const admin = createSupabaseAdminClient();
     const { data: articles, error } = await admin
       .from("epos_news_articles")
       .select("id, slug, status, category, cover_image, published_at")
       .order("published_at", { ascending: false });
-    if (error || !articles?.length) return null;
+    if (error) {
+      console.error("[cms:news:fetch]", error.message);
+      return [];
+    }
+    if (!articles?.length) return [];
 
     const ids = articles.map((a) => a.id);
     const { data: translations } = await admin
@@ -98,13 +135,13 @@ export async function fetchNewsArticlesFromDb(): Promise<NewsArticle[] | null> {
       .select("article_id, locale, title, excerpt, body")
       .in("article_id", ids);
 
-    const mapped = mapRows(
+    return mapRows(
       articles as ArticleRow[],
       (translations ?? []) as TranslationRow[],
     );
-    return mapped.length > 0 ? mapped : null;
-  } catch {
-    return null;
+  } catch (err) {
+    console.error("[cms:news:fetch]", err);
+    return [];
   }
 }
 
@@ -164,14 +201,49 @@ export async function deleteNewsArticle(id: string) {
   if (error) throw new Error(error.message);
 }
 
-export async function listNewsAdminRows() {
+export type NewsAdminRow = {
+  id: string;
+  slug: string;
+  status: string;
+  category: string;
+  cover_image: string | null;
+  published_at: string | null;
+  updated_at: string | null;
+  title: string;
+};
+
+export async function listNewsAdminRows(): Promise<NewsAdminRow[]> {
   if (!hasSupabaseAdminConfig()) return [];
+  await ensureSiteNewsInCms();
   const admin = createSupabaseAdminClient();
   const { data } = await admin
     .from("epos_news_articles")
     .select("id, slug, status, category, cover_image, published_at, updated_at")
     .order("updated_at", { ascending: false });
-  return data ?? [];
+  const rows = data ?? [];
+  if (!rows.length) return [];
+
+  const ids = rows.map((r) => r.id);
+  const { data: translations } = await admin
+    .from("epos_news_translations")
+    .select("article_id, locale, title")
+    .in("article_id", ids)
+    .eq("locale", "uz");
+
+  const titleById = new Map(
+    (translations ?? []).map((t) => [t.article_id as string, t.title as string]),
+  );
+
+  return rows.map((row) => ({
+    id: row.id as string,
+    slug: row.slug as string,
+    status: row.status as string,
+    category: row.category as string,
+    cover_image: (row.cover_image as string | null) ?? null,
+    published_at: (row.published_at as string | null) ?? null,
+    updated_at: (row.updated_at as string | null) ?? null,
+    title: titleById.get(row.id as string) || (row.slug as string),
+  }));
 }
 
 export async function getNewsAdminById(id: string): Promise<NewsArticle | null> {
