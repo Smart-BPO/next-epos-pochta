@@ -116,6 +116,7 @@ export const dashRu: DashCopy = {
 
   badge: {
     lead: {
+      draft: "Черновик",
       new: "Новая",
       in_progress: "В работе",
       done: "Готово",
@@ -204,6 +205,8 @@ export const dashRu: DashCopy = {
     typePrice: "Запрос цены",
     typeBusiness: "Бизнес",
     typeContact: "Контакт",
+    draftStep: "Шаг {step}",
+    resumeLink: "Ссылка для продолжения",
   },
 
   contacts: {

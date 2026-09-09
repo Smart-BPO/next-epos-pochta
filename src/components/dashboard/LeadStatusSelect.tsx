@@ -5,7 +5,7 @@ import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { dashSelect } from "@/styles/dashboard";
 import { toast } from "react-toastify";
 
-const STATUSES = ["new", "in_progress", "done", "spam"] as const;
+const STATUSES = ["draft", "new", "in_progress", "done", "spam"] as const;
 
 export function LeadStatusSelect({
   id,

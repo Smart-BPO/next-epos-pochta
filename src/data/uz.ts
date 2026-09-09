@@ -568,6 +568,22 @@ export const uzCopy: SiteCopy = {
     successTitle: "Ariza qabul qilindi",
     successText:
       "EPOS POCHTA menejeri siz bilan bogʻlanib, hajmingiz uchun tijorat taklifini tayyorlaydi.",
+    steps: {
+      contact: "Kontakt",
+      volume: "Hajm va yoʻnalishlar",
+      needs: "Ehtiyojlar",
+      confirm: "Tasdiqlash",
+    },
+    next: "Keyingi",
+    back: "Orqaga",
+    draftSaved: "Qoralama saqlandi. Keyinroq shu havola orqali davom etishingiz mumkin.",
+    copyLink: "Havolani nusxalash",
+    linkCopied: "Havola nusxa qilindi",
+    resumeHint: "Saqlangan arizani davom ettiryapsiz",
+    resumeMissing: "Ariza topilmadi yoki muddati tugagan",
+    resumeComplete: "Bu ariza allaqachon yuborilgan",
+    stepOf: "Qadam {step} / {total}",
+    reviewTitle: "Tekshirish",
     fields: {
       monthlyVolume: "Oyiga joʻnatmalar soni",
       needApi: "API kerakligi",

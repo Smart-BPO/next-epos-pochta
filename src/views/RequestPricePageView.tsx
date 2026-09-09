@@ -16,10 +16,10 @@ import {
 export function RequestPricePageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   const params = useSearchParams();
-  const category =
-    params.get("category") || params.get("service") || "";
+  const category = params.get("category") || params.get("service") || "";
   const fromQuery = params.get("from") || "";
   const toQuery = params.get("to") || "";
+  const resumeUid = params.get("uid") || "";
 
   return (
     <>
@@ -42,6 +42,7 @@ export function RequestPricePageView({ locale }: { locale: Locale }) {
               initialCategory={category}
               initialFromQuery={fromQuery}
               initialToQuery={toQuery}
+              resumeUid={resumeUid}
             />
           </div>
         </PageContainer>

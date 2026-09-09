@@ -124,6 +124,12 @@ const LEAD_STATUS: Record<
   string,
   { label: string; className: string; bar: string; dot: string }
 > = {
+  draft: {
+    label: "Черновик",
+    className: "bg-black/[0.06] text-black/50",
+    bar: "bg-black/30",
+    dot: "bg-black/30",
+  },
   new: {
     label: "Новая",
     className: "bg-[#fee2e2] text-[#b91c1c]",

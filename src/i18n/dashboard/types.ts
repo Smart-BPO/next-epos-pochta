@@ -114,6 +114,7 @@ export type DashCopy = {
 
   badge: {
     lead: {
+      draft: string;
       new: string;
       in_progress: string;
       done: string;
@@ -196,6 +197,8 @@ export type DashCopy = {
     typePrice: string;
     typeBusiness: string;
     typeContact: string;
+    draftStep: string;
+    resumeLink: string;
   };
 
   contacts: {

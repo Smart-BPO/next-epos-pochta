@@ -586,6 +586,23 @@ export const ruCopy: SiteCopy = {
     successTitle: "Заявка принята",
     successText:
       "Менеджер EPOS POCHTA свяжется с вами и подготовит коммерческое предложение под ваш объём.",
+    steps: {
+      contact: "Контакты",
+      volume: "Объём и маршруты",
+      needs: "Потребности",
+      confirm: "Подтверждение",
+    },
+    next: "Далее",
+    back: "Назад",
+    draftSaved:
+      "Черновик сохранён. Вы можете продолжить по этой ссылке позже.",
+    copyLink: "Скопировать ссылку",
+    linkCopied: "Ссылка скопирована",
+    resumeHint: "Продолжаете сохранённую заявку",
+    resumeMissing: "Заявка не найдена или срок истёк",
+    resumeComplete: "Эта заявка уже отправлена",
+    stepOf: "Шаг {step} / {total}",
+    reviewTitle: "Проверьте данные",
     fields: {
       monthlyVolume: "Количество отправлений в месяц",
       needApi: "Необходимость API",

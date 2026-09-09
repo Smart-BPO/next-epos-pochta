@@ -207,6 +207,22 @@ export interface SiteCopy {
     priceNote: string;
     successTitle: string;
     successText: string;
+    steps: {
+      contact: string;
+      volume: string;
+      needs: string;
+      confirm: string;
+    };
+    next: string;
+    back: string;
+    draftSaved: string;
+    copyLink: string;
+    linkCopied: string;
+    resumeHint: string;
+    resumeMissing: string;
+    resumeComplete: string;
+    stepOf: string;
+    reviewTitle: string;
     fields: {
       monthlyVolume: string;
       needApi: string;

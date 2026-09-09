@@ -29,9 +29,21 @@ export function leadRouteLabel(type: string, payload: unknown): string {
     (typeof data.toCity === "string" && data.toCity) ||
     "";
   if (from && to) return `${from} → ${to}`;
+  const routes = typeof data.routes === "string" ? data.routes.trim() : "";
+  if (routes) {
+    return routes.length > 48 ? `${routes.slice(0, 48)}…` : routes;
+  }
   if (type === "business") return "Бизнес";
   if (type === "contact") return "Контакт";
+  if (type === "price") return "B2B / цена";
   return "Расчёт";
+}
+
+export function leadDraftStep(payload: unknown): number | null {
+  if (!payload || typeof payload !== "object") return null;
+  const meta = (payload as { meta?: { step?: unknown } }).meta;
+  const step = Number(meta?.step);
+  return Number.isFinite(step) && step > 0 ? step : null;
 }
 
 export function leadTypeLabel(

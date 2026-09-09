@@ -27,7 +27,7 @@ import { upsertWebAppContact } from "@/lib/webapp/contact";
 
 export const runtime = "nodejs";
 
-const LEAD_STATUSES = ["new", "in_progress", "done", "spam"] as const;
+const LEAD_STATUSES = ["draft", "new", "in_progress", "done", "spam"] as const;
 
 type TelegramUpdate = {
   update_id?: number;

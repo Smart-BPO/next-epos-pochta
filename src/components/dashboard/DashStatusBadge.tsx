@@ -11,6 +11,7 @@ type Tone = {
 };
 
 const LEAD_CLASS: Record<string, string> = {
+  draft: "bg-black/[0.06] text-black/50",
   new: "bg-[#fee2e2] text-[#b91c1c]",
   in_progress: "bg-[#fef3c7] text-[#b45309]",
   done: "bg-[#dcfce7] text-[#15803d]",

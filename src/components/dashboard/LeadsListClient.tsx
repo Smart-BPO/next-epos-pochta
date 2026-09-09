@@ -12,6 +12,7 @@ import { dashIntlLocale } from "@/i18n/dashboard";
 import {
   formatDashDate,
   leadClientLabel,
+  leadDraftStep,
   leadRouteLabel,
   leadTypeLabel,
 } from "@/lib/cms/lead-display";
@@ -21,7 +22,11 @@ export type LeadListRow = {
   type: string;
   locale: string;
   status: string;
-  payload: { pageUrl?: string; data?: Record<string, unknown> };
+  payload: {
+    pageUrl?: string;
+    data?: Record<string, unknown>;
+    meta?: { step?: number; complete?: boolean };
+  };
   created_at: string;
 };
 
@@ -59,6 +64,7 @@ export function LeadsListClient({
             id: "status",
             label: t.leads.filterStatus,
             options: [
+              { value: "draft", label: t.badge.lead.draft },
               { value: "new", label: t.badge.lead.new },
               { value: "in_progress", label: t.badge.lead.in_progress },
               { value: "done", label: t.badge.lead.done },
@@ -129,17 +135,28 @@ export function LeadsListClient({
             id: "status",
             header: t.list.status,
             sortValue: (r) => r.status,
-            cell: (row) => (
-              <div className="flex flex-col gap-2">
-                <DashStatusBadge kind="lead" value={row.status} />
-                <LeadStatusSelect
-                  id={row.id}
-                  status={row.status}
-                  action={updateStatusAction}
-                  disabled={readOnly}
-                />
-              </div>
-            ),
+            cell: (row) => {
+              const step =
+                row.status === "draft" ? leadDraftStep(row.payload) : null;
+              return (
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <DashStatusBadge kind="lead" value={row.status} />
+                    {step ? (
+                      <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-black/40">
+                        {t.leads.draftStep.replace("{step}", String(step))}
+                      </span>
+                    ) : null}
+                  </div>
+                  <LeadStatusSelect
+                    id={row.id}
+                    status={row.status}
+                    action={updateStatusAction}
+                    disabled={readOnly}
+                  />
+                </div>
+              );
+            },
           },
           {
             id: "created",

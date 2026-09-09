@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireMutation } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-const LEAD_STATUSES = ["new", "in_progress", "done", "spam"] as const;
+const LEAD_STATUSES = ["draft", "new", "in_progress", "done", "spam"] as const;
 
 export async function updateLeadStatusAction(formData: FormData) {
   await requireMutation("leads");

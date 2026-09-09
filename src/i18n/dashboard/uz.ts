@@ -116,6 +116,7 @@ export const dashUz: DashCopy = {
 
   badge: {
     lead: {
+      draft: "Qoralama",
       new: "Yangi",
       in_progress: "Ishda",
       done: "Tayyor",
@@ -204,6 +205,8 @@ export const dashUz: DashCopy = {
     typePrice: "Narx soʻrovi",
     typeBusiness: "Biznes",
     typeContact: "Aloqa",
+    draftStep: "Qadam {step}",
+    resumeLink: "Davom ettirish havolasi",
   },
 
   contacts: {
