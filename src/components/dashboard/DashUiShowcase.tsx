@@ -28,10 +28,26 @@ import {
 } from "@/lib/dashboard/schemas";
 import { toast } from "react-toastify";
 import {
+  DashAuthSkeleton,
+  DashDetailSkeleton,
+  DashEditorSkeleton,
+  DashFormSkeleton,
+  DashListSkeleton,
+  DashMessagingHubSkeleton,
+  DashOverviewSkeleton,
+} from "@/components/skeleton/dashboard";
+import {
+  PublicArticleSkeleton,
+  PublicCardGridSkeleton,
+  PublicContactsSkeleton,
+  PublicFormPageSkeleton,
+} from "@/components/skeleton/public";
+import {
   dashBtnDanger,
   dashBtnGhost,
   dashBtnPrimary,
   dashBtnSecondary,
+  dashCard,
   dashSectionTitle,
 } from "@/styles/dashboard";
 
@@ -161,6 +177,84 @@ export function DashUiShowcase() {
               </div>
             )}
           </DashForm>
+        </DashCrudCard>
+
+        <DashCrudCard
+          title="Skeleton loaders"
+          actions={
+            <span className="text-xs text-black/40">
+              375 / 768 / 1280 — responsive QA
+            </span>
+          }
+        >
+          <div className="grid gap-6">
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-black/40">
+                Dashboard
+              </p>
+              <div className="grid gap-4 xl:grid-cols-2">
+                {(
+                  [
+                    ["Overview", <DashOverviewSkeleton key="o" />],
+                    ["List", <DashListSkeleton key="l" />],
+                    [
+                      "Form",
+                      <DashFormSkeleton key="f" columns={2} sections={1} />,
+                    ],
+                    ["Detail", <DashDetailSkeleton key="d" />],
+                    ["Editor", <DashEditorSkeleton key="e" />],
+                    [
+                      "Messaging",
+                      <DashMessagingHubSkeleton key="m" />,
+                    ],
+                  ] as const
+                ).map(([label, skeleton]) => (
+                  <div key={label} className={`${dashCard} overflow-hidden p-0`}>
+                    <p className="border-b border-black/[0.06] px-4 py-2 text-xs font-semibold text-black/50">
+                      {label}
+                    </p>
+                    <div className="max-h-[28rem] overflow-auto p-4">
+                      {skeleton}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-black/40">
+                Public
+              </p>
+              <div className="grid gap-4 xl:grid-cols-2">
+                {(
+                  [
+                    ["Form page", <PublicFormPageSkeleton key="pf" />],
+                    ["Card grid", <PublicCardGridSkeleton key="pg" />],
+                    ["Article", <PublicArticleSkeleton key="pa" />],
+                    ["Contacts", <PublicContactsSkeleton key="pc" />],
+                  ] as const
+                ).map(([label, skeleton]) => (
+                  <div key={label} className={`${dashCard} overflow-hidden p-0`}>
+                    <p className="border-b border-black/[0.06] px-4 py-2 text-xs font-semibold text-black/50">
+                      {label}
+                    </p>
+                    <div className="max-h-[28rem] overflow-auto">
+                      {skeleton}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-black/40">
+                Auth (full viewport)
+              </p>
+              <div className={`${dashCard} overflow-hidden p-0`}>
+                <div className="max-h-[24rem] overflow-auto">
+                  <DashAuthSkeleton />
+                </div>
+              </div>
+            </div>
+          </div>
         </DashCrudCard>
 
         <div>

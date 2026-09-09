@@ -31,11 +31,9 @@ import {
   routeMetaTitle,
   routePath,
 } from "@/data/delivery-routes";
-import { pageContainer, section } from "@/styles/ui";
+import { PublicFormPageSkeleton } from "@/components/skeleton/public";
 
-const suspenseFallback = (
-  <div className={`${section} ${pageContainer}`}>…</div>
-);
+const suspenseFallback = <PublicFormPageSkeleton />;
 
 export function createHomePage(locale: Locale) {
   return {
