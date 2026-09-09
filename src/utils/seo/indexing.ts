@@ -6,6 +6,8 @@ export const CANONICAL_SITE_URL = "https://epospochta.uz";
 export const PRODUCTION_HOSTS = new Set([
   "epospochta.uz",
   "www.epospochta.uz",
+  "epos-pochta.uz",
+  "www.epos-pochta.uz",
 ]);
 
 const STAGING_HOSTS = new Set(["localhost", "127.0.0.1"]);

@@ -4,11 +4,15 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 
 ## Scope (current)
 
-- Public corporate site + CMS at `/dashboard` (Supabase project **epos** / `khlororwqcpiccylqdze`)
+- Public corporate site + CMS at `/dashboard` (Supabase project **epos** / `iituklcscawinftbyzxc`, Central EU Frankfurt)
 - Content: static TS seed (`src/data`, `src/i18n`) with CMS overlays (news, site settings, delivery hub copy)
 - Locales: `uz` (default, unprefixed) and `ru` (`/ru/`)
 - Tracking page stays a stub until tracking API — `TODO(tracking-api)`; dashboard can set shipment `track_number` manually
-- Env: server-only `SUPABASE_URL` + `SUPABASE_ANON_KEY` + `SUPABASE_SERVICE_ROLE_KEY` (+ `CMS_BOOTSTRAP_SECRET` for first owner). Never `NEXT_PUBLIC_SUPABASE_*`.
+- Env:
+  - Public defaults: `.env.development` (local) / `.env.production` (epos-pochta.uz)
+  - Secrets: `.env.local` or Hostinger panel — see `.env.example` / `.env.production.example`
+  - Server-only: `SUPABASE_URL` + `SUPABASE_ANON_KEY` (or `SUPABASE_PUBLISHABLE_KEY`) + `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_SECRET_KEY` / `SUPABASE_API_KEY` (+ `CMS_BOOTSTRAP_SECRET` only for first owner). Never `NEXT_PUBLIC_SUPABASE_*`.
+  - Remotes: `origin` (diasbek) = dev; `production` (Smart-BPO) = prod for epos-pochta.uz / epospochta.uz
 
 ## Product rules
 

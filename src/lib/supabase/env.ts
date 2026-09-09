@@ -31,7 +31,11 @@ export function getSupabasePublishableKey(): string {
 
 export function getSupabaseSecretKey(): string {
   assertNoPublicSupabaseEnv();
-  const secret = getEnv("SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY");
+  const secret = getEnv(
+    "SUPABASE_SECRET_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_API_KEY",
+  );
   const publishable = getSupabasePublishableKey();
   if (secret && publishable && secret === publishable) {
     throw new Error("Invalid env: secret key must not match anon key.");
@@ -51,7 +55,11 @@ export function requireSupabasePublishableKey(): string {
 
 export function requireSupabaseSecretKey(): string {
   assertNoPublicSupabaseEnv();
-  return requireEnv("SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY");
+  return requireEnv(
+    "SUPABASE_SECRET_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_API_KEY",
+  );
 }
 
 /** URL + anon key present (cookie session / SSR auth). */

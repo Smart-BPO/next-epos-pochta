@@ -1,5 +1,9 @@
--- Local snapshot of applied remote migrations (project khlororwqcpiccylqdze).
--- Applied via Supabase MCP; kept for repo history / future CLI link.
+-- Applied on project iituklcscawinftbyzxc (Central EU / Frankfurt).
+-- Source: prior MCP migrations from khlororwqcpiccylqdze (Tokyo).
 
--- See also: epos_wave1_tables, epos_wave1_rls, epos_storage_media_bucket,
--- epos_leads_text_id, fix_set_updated_at_search_path
+-- Order:
+--   202609090001_epos_wave1_tables.sql
+--   202609090002_epos_wave1_rls.sql
+--   202609090003_epos_storage_media_bucket.sql
+--   202609090004_epos_leads_text_id.sql
+--   202609090005_fix_set_updated_at_search_path.sql
