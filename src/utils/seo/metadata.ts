@@ -13,6 +13,29 @@ export function canonicalPageUrl(path: string): string {
   return `${base}${normalized.endsWith("/") ? normalized : `${normalized}/`}`;
 }
 
+/** One brand suffix — avoids "… | EPOS POCHTA — EPOS POCHTA" from root title template. */
+export function absolutePageTitle(title: string): string {
+  const brand = SITE_CONFIG.name;
+  const brandSegment = new RegExp(
+    `(?:\\s*[|—–-]\\s*)?${escapeRegExp(brand)}(?:\\s+(?:kuryeri|курьер(?:а|ской)?))?`,
+    "gi",
+  );
+  const stripped = title
+    .replace(brandSegment, "")
+    .replace(/[\s|—–-]+$/g, "")
+    .replace(/^[\s|—–-]+/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  if (!stripped || stripped.toLowerCase() === brand.toLowerCase()) {
+    return brand;
+  }
+  return `${stripped} — ${brand}`;
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function createPageMetadata(
   title: string,
   description: string,
@@ -28,6 +51,7 @@ export function createPageMetadata(
   },
 ): Metadata {
   const url = canonicalPageUrl(path);
+  const pageTitle = absolutePageTitle(title);
   const robots =
     options?.robots ??
     (options?.noIndex
@@ -35,7 +59,7 @@ export function createPageMetadata(
       : robotsForDeployment());
 
   return {
-    title,
+    title: { absolute: pageTitle },
     description,
     metadataBase: new URL(getCanonicalSiteUrl()),
     alternates: {
@@ -43,7 +67,7 @@ export function createPageMetadata(
       languages: options?.alternates,
     },
     openGraph: {
-      title,
+      title: pageTitle,
       description,
       url,
       siteName: SITE_CONFIG.name,
@@ -62,7 +86,7 @@ export function createPageMetadata(
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: pageTitle,
       description,
       images: [options?.image ?? "/images/og/default.png"],
     },

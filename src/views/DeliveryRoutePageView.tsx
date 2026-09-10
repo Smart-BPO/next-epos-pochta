@@ -281,7 +281,9 @@ export async function DeliveryRoutePageView({
       <section className={section}>
         <PageContainer className="max-w-3xl">
           <h2 className={sectionTitle}>
-            {locale === "uz" ? "Savol-javoblar" : "Вопросы и ответы"}
+            {locale === "uz"
+              ? `${fromName} — ${toName}: savol-javoblar`
+              : `${fromName} — ${toName}: вопросы и ответы`}
           </h2>
           {faq.map((item) => (
             <details key={item.question} className={faqDetails}>

@@ -1,7 +1,20 @@
 import type { NextRequest } from "next/server";
 import { CANONICAL_SITE_URL, PRODUCTION_HOSTS } from "./indexing";
 
+const CANONICAL_ORIGIN = CANONICAL_SITE_URL.replace(/\/$/, "");
 const CANONICAL_HOST = new URL(CANONICAL_SITE_URL).host;
+
+/**
+ * Build a public https apex URL without leaking the Node listen port (:3000).
+ * Hostinger proxies to localhost:3000; cloning nextUrl keeps that port in Location.
+ */
+export function toCanonicalPublicUrl(
+  pathname: string,
+  search = "",
+): URL {
+  const path = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  return new URL(`${path}${search}`, `${CANONICAL_ORIGIN}/`);
+}
 
 /**
  * One-hop 308 to canonical https apex + trailing slash.
@@ -22,15 +35,12 @@ export function getCanonicalRedirectFromHeaders(
     (nextUrl.protocol === "https:" ? "https" : "http");
 
   let needsRedirect = false;
-  const target = new URL(nextUrl.href);
 
   if (proto !== "https" && PRODUCTION_HOSTS.has(hostname)) {
-    target.protocol = "https:";
     needsRedirect = true;
   }
 
   if (hostname.startsWith("www.") && PRODUCTION_HOSTS.has(hostname.slice(4))) {
-    target.hostname = hostname.slice(4);
     needsRedirect = true;
   }
 
@@ -38,17 +48,15 @@ export function getCanonicalRedirectFromHeaders(
     needsRedirect = true;
   }
 
-  const pathname = nextUrl.pathname;
+  let pathname = nextUrl.pathname;
   if (pathname !== "/" && !pathname.endsWith("/") && !pathname.includes(".")) {
-    target.pathname = `${pathname}/`;
+    pathname = `${pathname}/`;
     needsRedirect = true;
   }
 
-  if (needsRedirect) {
-    target.protocol = "https:";
-    target.host = CANONICAL_HOST;
-    return target;
+  if (!needsRedirect) {
+    return null;
   }
 
-  return null;
+  return toCanonicalPublicUrl(pathname, nextUrl.search);
 }

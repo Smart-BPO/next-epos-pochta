@@ -1,6 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { getCanonicalRedirectFromHeaders } from "@/utils/seo/canonical-request";
+import {
+  getCanonicalRedirectFromHeaders,
+  toCanonicalPublicUrl,
+} from "@/utils/seo/canonical-request";
 import {
   getSupabasePublishableKey,
   getSupabaseUrl,
@@ -36,10 +39,14 @@ export async function proxy(request: NextRequest) {
     hostname === "epos.nocode.uz" ||
     hostname === "www.epos.nocode.uz"
   ) {
-    const target = new URL(request.nextUrl.href);
-    target.protocol = "https:";
-    target.host = "epos-pochta.uz";
-    return NextResponse.redirect(target, 301);
+    let path = pathname;
+    if (path !== "/" && !path.endsWith("/") && !path.includes(".")) {
+      path = `${path}/`;
+    }
+    return NextResponse.redirect(
+      toCanonicalPublicUrl(path, request.nextUrl.search),
+      301,
+    );
   }
 
   if (
@@ -47,15 +54,17 @@ export async function proxy(request: NextRequest) {
     pathname === "/uz/" ||
     pathname.startsWith("/uz/")
   ) {
-    const url = request.nextUrl.clone();
-    url.pathname =
+    let path =
       pathname === "/uz" || pathname === "/uz/"
         ? "/"
         : pathname.replace(/^\/uz/, "") || "/";
-    if (!url.pathname.endsWith("/") && !url.pathname.includes(".")) {
-      url.pathname = `${url.pathname}/`;
+    if (path !== "/" && !path.endsWith("/") && !path.includes(".")) {
+      path = `${path}/`;
     }
-    return NextResponse.redirect(url, 308);
+    return NextResponse.redirect(
+      toCanonicalPublicUrl(path, request.nextUrl.search),
+      308,
+    );
   }
 
   if (!pathname.startsWith("/_next")) {

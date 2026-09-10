@@ -198,10 +198,10 @@ export function routeMetaTitle(locale: Locale, route: DeliveryRoute): string {
   const to = cityDisplayName(route.to, locale);
   if (locale === "uz") {
     const from = cityDisplayName(route.from, locale);
-    return `${from} — ${to} yetkazib berish | EPOS POCHTA`;
+    return `${from} — ${to} yetkazib berish`;
   }
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
-  return `Доставка из ${fromGen} в ${to} — EPOS POCHTA`;
+  return `Доставка из ${fromGen} в ${to}`;
 }
 
 export function routeMetaDescription(

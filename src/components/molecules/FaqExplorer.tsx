@@ -168,7 +168,7 @@ export function FaqExplorer({ faq }: { faq: FaqCopy }) {
                             ? "/images/home/faq-close.svg"
                             : "/images/home/faq-open.svg"
                         }
-                        alt=""
+                        alt={isOpen ? "Collapse" : "Expand"}
                         width={22}
                         height={22}
                         unoptimized

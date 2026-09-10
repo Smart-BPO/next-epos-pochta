@@ -74,7 +74,7 @@ ym(${ym}, 'init', {
               <img
                 src={`https://mc.yandex.ru/watch/${ym}`}
                 style={{ position: "absolute", left: "-9999px" }}
-                alt=""
+                alt="Yandex Metrika"
               />
             </div>
           </noscript>
