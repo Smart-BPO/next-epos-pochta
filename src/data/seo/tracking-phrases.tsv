@@ -1,0 +1,64 @@
+phrase	locale	cluster	target_path	wordstat_freq
+EPOS POCHTA	ru	brand	/	0
+епос почта	ru	brand	/	0
+epos pochta	uz	brand	/	0
+рассчитать стоимость доставки	ru	calc	/calculator/	74513
+калькулятор доставки	ru	calc	/calculator/	45351
+стоимость доставки посылок	ru	calc	/calculator/	5801
+yetkazib berish narxi	uz	calc	/calculator/	43
+pochta narxi	uz	calc	/calculator/	3
+yetkazib berish narxini hisoblash	uz	calc	/calculator/	0
+доставка до двери	ru	door	/services/door/	7433
+курьер на дом ташкент	ru	door	/services/door/	0
+eshikgacha yetkazib berish	uz	door	/services/door/	0
+eshikdan eshikka yetkazib berish	uz	door	/services/door/	0
+доставка для интернет-магазинов	ru	ecommerce	/services/ecommerce/	4441
+internet-doʻkon yetkazib berish	uz	ecommerce	/services/ecommerce/	0
+доставка документов курьером	ru	documents	/services/documents/	3256
+доставка документов ташкент	ru	documents	/services/documents/	1
+hujjat yetkazib berish	uz	documents	/services/documents/	0
+наложенный платеж доставка	ru	cod	/services/cod/	2228
+yetkazib berishda toʻlov	uz	cod	/services/cod/	0
+вызвать курьера ташкент	ru	courier	/services/courier/	0
+вызов курьера ташкент	ru	courier	/services/courier/	0
+kuryer chaqirish	uz	courier	/services/courier/	0
+kuryer chaqirish toshkent	uz	courier	/services/courier/	0
+доставка для бизнеса	ru	business	/business/	6637
+корпоративная доставка	ru	business	/business/	2236
+biznes uchun yetkazib berish	uz	business	/business/	0
+korporativ yetkazib berish	uz	business	/business/	0
+доставка посылок узбекистан	ru	head	/	82
+доставка по узбекистану	ru	head	/	87
+курьерская доставка узбекистан	ru	head	/	19
+yetkazib berish	uz	head	/	109
+pochta yetkazib berish	uz	head	/	4
+yetkazib berish o'zbekiston	uz	head	/	3
+курьер ташкент	ru	tashkent	/delivery/tashkent/	21
+почта доставка ташкент	ru	tashkent	/delivery/tashkent/	2
+курьерская доставка ташкент	ru	tashkent	/delivery/tashkent/	1
+toshkent pochta	uz	tashkent	/delivery/tashkent/	12
+kuryer toshkent	uz	tashkent	/delivery/tashkent/	1
+toshkentga yetkazib berish	uz	tashkent	/delivery/tashkent/	0
+доставка в самарканд	ru	city	/delivery/samarkand/	124
+samarqandga yetkazib berish	uz	city	/delivery/samarkand/	0
+доставка в бухару	ru	city	/delivery/bukhara/	78
+buxoroga yetkazib berish	uz	city	/delivery/bukhara/	0
+доставка в фергану	ru	city	/delivery/fergana/	43
+fargʻonaga yetkazib berish	uz	city	/delivery/fergana/	0
+доставка в андижан	ru	city	/delivery/andijan/	18
+andijonga yetkazib berish	uz	city	/delivery/andijan/	0
+доставка в наманган	ru	city	/delivery/namangan/	14
+namanganga yetkazib berish	uz	city	/delivery/namangan/	0
+доставка в ургенч	ru	city	/delivery/urgench/	9
+доставка в нукус	ru	city	/delivery/nukus/	4
+доставка в карши	ru	city	/delivery/karshi/	3
+доставка из ташкента в самарканд	ru	route	/delivery/tas/skd/	0
+toshkentdan samarqandga yetkazib berish	uz	route	/delivery/tas/skd/	0
+доставка из ташкента в бухару	ru	route	/delivery/tas/bhk/	0
+toshkentdan buxoroga yetkazib berish	uz	route	/delivery/tas/bhk/	0
+доставка из ташкента в фергану	ru	route	/delivery/tas/feg/	0
+toshkentdan fargʻonaga yetkazib berish	uz	route	/delivery/tas/feg/	0
+доставка из ташкента в андижан	ru	route	/delivery/tas/azn/	0
+toshkentdan andijonga yetkazib berish	uz	route	/delivery/tas/azn/	0
+доставка из ташкента в наманган	ru	route	/delivery/tas/nma/	0
+toshkentdan namanganga yetkazib berish	uz	route	/delivery/tas/nma/	0
