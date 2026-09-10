@@ -3,7 +3,6 @@ import { getContent } from "@/i18n/get-content";
 import { Header } from "@/components/organisms/Header";
 import { SiteFooter } from "@/components/organisms/SiteFooter";
 import { HashScroll } from "@/components/organisms/HashScroll";
-import { CookieConsentBanner } from "@/components/consent/CookieConsentBanner";
 
 interface SiteLayoutProps {
   locale: Locale;
@@ -21,11 +20,6 @@ export function SiteLayout({ locale, children }: SiteLayoutProps) {
         <main id="main-content">{children}</main>
       </div>
       <SiteFooter locale={locale} content={content} />
-      <CookieConsentBanner
-        text={content.ui.cookieText}
-        acceptLabel={content.ui.cookieAccept}
-        declineLabel={content.ui.cookieDecline}
-      />
     </>
   );
 }

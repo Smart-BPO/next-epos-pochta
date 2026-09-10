@@ -1,32 +1,9 @@
 "use client";
 
 import Script from "next/script";
-import { Suspense, useEffect, useRef, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import {
-  COOKIE_CONSENT_EVENT,
-  COOKIE_CONSENT_STORAGE_KEY,
-} from "@/lib/analytics/consent";
 import { SITE_CONFIG } from "@/utils/consts";
-
-function subscribe(onStoreChange: () => void) {
-  window.addEventListener("storage", onStoreChange);
-  window.addEventListener(COOKIE_CONSENT_EVENT, onStoreChange);
-  return () => {
-    window.removeEventListener("storage", onStoreChange);
-    window.removeEventListener(COOKIE_CONSENT_EVENT, onStoreChange);
-  };
-}
-
-function getConsentSnapshot() {
-  return (
-    window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY) === "accepted"
-  );
-}
-
-function getServerSnapshot() {
-  return false;
-}
 
 function MetrikaRouteHits({ counterId }: { counterId: string }) {
   const pathname = usePathname();
@@ -50,16 +27,12 @@ function MetrikaRouteHits({ counterId }: { counterId: string }) {
   return null;
 }
 
+/** Analytics load by default (no cookie-banner gate). */
 export function SiteAnalytics() {
-  const allowed = useSyncExternalStore(
-    subscribe,
-    getConsentSnapshot,
-    getServerSnapshot,
-  );
   const ga = SITE_CONFIG.analytics.googleAnalyticsId;
   const ym = SITE_CONFIG.analytics.yandexMetrikaId;
 
-  if (!allowed) return null;
+  if (!ga && !ym) return null;
 
   return (
     <>
