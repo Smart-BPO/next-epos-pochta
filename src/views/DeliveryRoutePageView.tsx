@@ -5,6 +5,7 @@ import { localePath } from "@/i18n/paths";
 import { cityDisplayName, cityPath } from "@/data/delivery-cities";
 import {
   etaLabel,
+  routeBody,
   routeFaq,
   routeLead,
   routePath,
@@ -60,6 +61,7 @@ export async function DeliveryRoutePageView({
   const toName = cityDisplayName(route.to, locale);
   const title = routeTitle(locale, route);
   const lead = routeLead(locale, route);
+  const body = routeBody(locale, route);
   const faq = routeFaq(locale, route);
   const eta = etaLabel(locale, route.etaBand);
   const homePath = localePath(locale, "/");
@@ -229,6 +231,16 @@ export async function DeliveryRoutePageView({
               ? "Saytda faqat orientir. Yakuniy narx va shartlar — menejer tasdigʻidan keyin."
               : "На сайте только ориентир. Финальная цена и условия — после подтверждения менеджера."}
           </p>
+
+          {body.length > 0 ? (
+            <div className="mt-6 space-y-3 text-sm leading-relaxed text-black/65">
+              {body.map((paragraph, index) => (
+                <p key={index} className="m-0">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          ) : null}
 
           {(fromBody || toBody) && (
             <div className="mt-6 space-y-3 text-sm leading-relaxed text-black/65">

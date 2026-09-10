@@ -194,13 +194,27 @@ export function routeTitle(locale: Locale, route: DeliveryRoute): string {
   return `Доставка из ${fromGen} в ${to}`;
 }
 
+/** TAS ↔ top regional hubs (Wordstat phase-1 corridors). */
+export function isPriorityTasCorridor(route: DeliveryRoute): boolean {
+  const hubs = new Set(["skd", "bhk", "feg", "azn", "nma"]);
+  const a = route.from.code;
+  const b = route.to.code;
+  return (a === "tas" && hubs.has(b)) || (b === "tas" && hubs.has(a));
+}
+
 export function routeMetaTitle(locale: Locale, route: DeliveryRoute): string {
   const to = cityDisplayName(route.to, locale);
   if (locale === "uz") {
     const from = cityDisplayName(route.from, locale);
+    if (isPriorityTasCorridor(route)) {
+      return `${from} — ${to} pochta va kuryer yetkazib berish`;
+    }
     return `${from} — ${to} yetkazib berish`;
   }
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
+  if (isPriorityTasCorridor(route)) {
+    return `Доставка посылок из ${fromGen} в ${to} — курьер`;
+  }
   return `Доставка из ${fromGen} в ${to}`;
 }
 
@@ -212,20 +226,56 @@ export function routeMetaDescription(
   const eta = etaLabel(locale, route.etaBand);
   if (locale === "uz") {
     const from = cityDisplayName(route.from, locale);
-    return `${from}dan ${to}ga kuryerlik yetkazib berish (~${route.distanceKm} km). ${eta}. Kalkulyatorda orientir, yakuniy narx — menejer tasdigʻi.`;
+    return `${from}dan ${to}ga pochta va kuryer (~${route.distanceKm} km). ${eta}. Kalkulyatorda orientir, yakuniy narx — menejer. Oferta emas.`;
   }
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
-  return `Курьерская доставка из ${fromGen} в ${to} (~${route.distanceKm} км). ${eta}. Ориентир в калькуляторе, финальную цену подтверждает менеджер.`;
+  return `Посылки и курьер из ${fromGen} в ${to} (~${route.distanceKm} км). ${eta}. Ориентир в калькуляторе, финал у менеджера. Не оферта.`;
 }
 
 export function routeLead(locale: Locale, route: DeliveryRoute): string {
   const to = cityDisplayName(route.to, locale);
   if (locale === "uz") {
     const from = cityDisplayName(route.from, locale);
-    return `${from}dan ${to}ga hujjat, pochta va biznes joʻnatmalarini EPOS POCHTA orqali yuboring. Masofa taxminan ${route.distanceKm} km. Narx va muddat — kalkulyatorda orientir; bu oferta emas, menejer tasdiqlaydi.`;
+    return `${from}dan ${to}ga hujjat, pochta va biznes joʻnatmalarini EPOS POCHTA kuryeri orqali yuboring. Masofa ~${route.distanceKm} km. Narx va muddat — kalkulyatorda orientir; bu oferta emas, menejer tasdiqlaydi.`;
   }
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
-  return `Отправьте документы, посылки и B2B-отправления из ${fromGen} в ${to} с EPOS POCHTA. Расстояние около ${route.distanceKm} км. Срок и стоимость — ориентир в калькуляторе; это не оферта, итог подтверждает менеджер.`;
+  return `Отправьте документы, посылки и B2B-отправления из ${fromGen} в ${to} курьером EPOS POCHTA. Расстояние ~${route.distanceKm} км. Срок и стоимость — ориентир в калькуляторе; это не оферта, итог подтверждает менеджер.`;
+}
+
+/** Extra body paragraphs for route pages (priority corridors get longer copy). */
+export function routeBody(
+  locale: Locale,
+  route: DeliveryRoute,
+): string[] {
+  const from = cityDisplayName(route.from, locale);
+  const to = cityDisplayName(route.to, locale);
+  const eta = etaLabel(locale, route.etaBand);
+  const priority = isPriorityTasCorridor(route);
+
+  if (locale === "uz") {
+    const base = [
+      `${from} — ${to} yoʻnalishi boʻylab hujjat va pochta qabul qilinadi. Masofa taxminan ${route.distanceKm} km; muddat orientiri: ${eta}.`,
+      `Narxni kalkulyatorda hisoblang yoki «narx soʻrash» arizasini qoldiring. Koʻrsatilgan summa — orientir, oferta yoki ochiq tarif emas.`,
+    ];
+    if (!priority) return base;
+    return [
+      ...base,
+      `${from} va ${to} shahar sahifalarida mahalliy kuryer, eshikgacha rejim va biznes shartlari haqida batafsil. Qaytarish yoʻnalishi uchun sahifadagi «orqaga» havoladan foydalaning.`,
+      `Internet-doʻkonlar uchun muntazam olib ketish va statuslar — biznes arizasi orqali, individual kelishuv bilan.`,
+    ];
+  }
+
+  const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
+  const base = [
+    `По маршруту из ${fromGen} в ${to} принимаем документы и посылки. Расстояние около ${route.distanceKm} км; ориентир по сроку: ${eta}.`,
+    `Рассчитайте стоимость в калькуляторе или оставьте заявку «запросить стоимость». Показанная сумма — ориентир, не оферта и не публичный тариф.`,
+  ];
+  if (!priority) return base;
+  return [
+    ...base,
+    `На страницах городов ${from} и ${to} — детали по местному курьеру, режиму «до двери» и B2B. Обратное направление — ссылка «обратно» на этой странице.`,
+    `Для интернет-магазинов регулярный забор и статусы оформляются через бизнес-заявку на индивидуальных условиях.`,
+  ];
 }
 
 export function routeFaq(
@@ -290,10 +340,39 @@ export function routeFaq(
           },
         ];
 
+  const corridorExtras: Array<{ question: string; answer: string }> =
+    isPriorityTasCorridor(route)
+      ? locale === "uz"
+        ? [
+            {
+              question: `${to}da eshikgacha yetkazish bormi?`,
+              answer:
+                "Ha, manzil kelishilganda. Shahar sahifasi va hisobda aniqlang — bu alohida xizmat intentidan farq qiladi.",
+            },
+            {
+              question: `${from}dan kuryer chaqirish mumkinmi?`,
+              answer:
+                "Ha, olib ketish uchun kuryer chaqirish mumkin. Muntazam oqimlar uchun biznes arizasini qoldiring.",
+            },
+          ]
+        : [
+            {
+              question: `Есть доставка до двери в ${to}?`,
+              answer:
+                "Да, при согласовании адреса. Уточните на странице города и в расчёте — это не замена отдельной услуги «до двери».",
+            },
+            {
+              question: `Можно вызвать курьера в ${from}?`,
+              answer:
+                "Да, доступен забор курьером. Для регулярных потоков оставьте бизнес-заявку.",
+            },
+          ]
+      : [];
+
   const extras: Array<{ question: string; answer: string }> = [];
   if (fromCityFaq) extras.push(fromCityFaq);
   if (toCityFaq && toCityFaq.question !== fromCityFaq?.question) {
     extras.push(toCityFaq);
   }
-  return [...base, ...extras];
+  return [...base, ...corridorExtras, ...extras];
 }

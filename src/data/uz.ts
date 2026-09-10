@@ -2,23 +2,23 @@ import type { SiteCopy } from "@/data/types";
 
 export const uzCopy: SiteCopy = {
   meta: {
-    homeTitle: "Oʻzbekiston boʻylab kuryerlik yetkazib berish — EPOS POCHTA",
+    homeTitle: "Yetkazib berish Oʻzbekiston boʻylab — pochta va kuryer",
     homeDescription:
-      "Kuryerlik yetkazib berish Oʻzbekiston boʻylab: hujjatlar, pochta, eshikgacha. Kalkulyatorda orientir, yakuniy narx — menejer. Ochiq tarifsiz.",
+      "Yetkazib berish Oʻzbekiston boʻylab: pochta, hujjatlar, eshikgacha. Yetkazib berish narxini kalkulyatorda hisoblang — yakuniy narxni menejer tasdiqlaydi.",
     servicesTitle: "Kuryerlik yetkazib berish xizmatlari — hujjat, pochta, e-com",
     servicesDescription:
       "Hujjatlar, pochta, eshikgacha yetkazish, kuryer chaqirish, internet-doʻkon va korporativ logistika — soʻrov boʻyicha hisob.",
-    businessTitle: "Biznes va internet-doʻkonlar uchun yetkazib berish",
+    businessTitle: "Biznes uchun yetkazib berish — korporativ logistika",
     businessDescription:
-      "Muntazam olib ketish, ommaviy joʻnatmalar, COD, qaytarishlar, API va hisobotlar — Oʻzbekistondagi e-commerce uchun.",
+      "Biznes va kompaniyalar uchun yetkazib berish: muntazam olib ketish, statuslar, COD, API. Individual hisob, ochiq praysiz.",
     trackingTitle: "Joʻnatmani kuzatish",
     trackingDescription: "EPOS POCHTA trek-raqami boʻyicha statusni tekshiring.",
     requestPriceTitle: "Biznes uchun tijorat taklifi",
     requestPriceDescription:
       "Internet-doʻkonlar va kompaniyalar uchun individual hisob arizasi: hajm, API, olib ketish va aloqa. Shartlarni menejer tasdiqlaydi.",
-    calculatorTitle: "Yetkazib berish narxini hisoblash — kalkulyator",
+    calculatorTitle: "Yetkazib berish narxi — kalkulyator",
     calculatorDescription:
-      "Yetkazib berish narxini hisoblang: shaharlar, ogʻirlik va oʻlchamlar. Oferta emas — yakuniy narxni menejer tasdiqlaydi.",
+      "Yetkazib berish narxi: shaharlar, ogʻirlik va oʻlchamlar. Kalkulyator orientir beradi, oferta emas — yakuniy narxni menejer tasdiqlaydi.",
     faqTitle: "EPOS POCHTA yetkazib berish boʻyicha savol-javoblar",
     faqDescription:
       "Narxni qanday hisoblash, muddat, kuryer chaqirish va trek — EPOS POCHTA javoblari.",
@@ -89,9 +89,9 @@ export const uzCopy: SiteCopy = {
     geography: "Shaharlar boʻylab yetkazib berish",
   },
   home: {
-    heroTitle: "Oʻzbekiston boʻylab kuryerlik yetkazib berish",
+    heroTitle: "Yetkazib berish Oʻzbekiston boʻylab — pochta va kuryer",
     heroLead:
-      "Hujjatlar, pochta va biznes joʻnatmalari — Toshkent va viloyatlar. Kalkulyatorda orientir, yakuniy narxni menejer tasdiqlaydi.",
+      "Pochta, hujjatlar va biznes joʻnatmalari — Toshkent va viloyatlar. Yetkazib berish narxini kalkulyatorda hisoblang; yakuniy narxni menejer tasdiqlaydi.",
     heroNote: "Jismoniy shaxslar, internet-doʻkonlar va kompaniyalar uchun",
     trackTitle: "Pochta qayerda?",
     trackPlaceholder: "Trek-raqamni kiriting",
@@ -360,15 +360,26 @@ export const uzCopy: SiteCopy = {
         id: "documents",
         title: "Hujjatlarni yetkazish",
         audience: "Hujjat aylanishiga ega jismoniy shaxslar va kompaniyalar",
-        howItWorks: "Hujjatlarni punktga yoki kuryerga topshirasiz — qabul qiluvchiga yetkazamiz.",
+        howItWorks:
+          "Hujjatlarni punktga yoki kuryerga topshirasiz — qabul qiluvchiga yetkazamiz. Narx orientiri — kalkulyatorda yoki narx soʻrovida.",
         includes: ["Hujjatlarni qabul qilish", "Yoʻnalish statuslari", "Topshirish tasdiqi"],
         accepted: "Shikastlanishni oldini oluvchi qadoqdagi hujjatlar.",
         neededForQuote: "Yoʻnalish, shoshilinchlik, olib ketish va yetkazish usuli.",
         limitations: "Xizmat shartlaridagi taqiqlangan qoʻshimchalar.",
         faqs: [
           {
+            question: "Hujjatni kuryer orqali yuborish mumkinmi?",
+            answer:
+              "Ha. Hujjat yetkazish — asosiy xizmatlardan biri. Kalkulyator yoki «Narx soʻrash» orqali orientir oling.",
+          },
+          {
             question: "Shoshilinch mumkinmi?",
             answer: "Formada shoshilinch yetkazishni belgilang — menejer imkoniyatni tasdiqlaydi.",
+          },
+          {
+            question: "Toshkent ichida hujjat yetkazasizmi?",
+            answer:
+              "Ha. Toshkent va viloyatlararo yoʻnalishlar. Manzilni hisobda yoki menejer bilan aniqlang.",
           },
         ],
       },
@@ -392,15 +403,26 @@ export const uzCopy: SiteCopy = {
         id: "door",
         title: "Eshikgacha yetkazish",
         audience: "Punktga bormasdan yetkazishni xohlovchilar",
-        howItWorks: "Kuryer joʻnatmani qabul qiluvchi manziliga yetkazadi.",
+        howItWorks:
+          "Kuryer joʻnatmani qabul qiluvchi manziliga yetkazadi — eshikdan eshikka. Orientir — kalkulyatorda, yakuniy shart — menejer.",
         includes: ["Manzilli yetkazish", "Topshirish urinishlari", "Statuslar"],
         accepted: "Xizmat qoidalariga mos hujjatlar va pochtalar.",
         neededForQuote: "Yetkazish manzili, yoʻnalish, joʻnatma parametrlari.",
         limitations: "Mavjudlik aholi punktiga bogʻliq.",
         faqs: [
           {
+            question: "Eshikgacha yetkazish nima?",
+            answer:
+              "Qabul qiluvchi punktga bormaydi — kuryer manzilga keladi. Bu «eshikdan eshikka» / «kuryer uyga» rejimi.",
+          },
+          {
             question: "Necha marta uriniladi?",
             answer: "Uchtagacha bepul urinish — tasdiqlangan xizmat shartlariga koʻra.",
+          },
+          {
+            question: "Narxni qayerdan bilaman?",
+            answer:
+              "Kalkulyatorda yoʻnalish va parametrlarni kiriting yoki «Narx soʻrash» arizasini qoldiring.",
           },
         ],
       },
@@ -408,15 +430,26 @@ export const uzCopy: SiteCopy = {
         id: "courier",
         title: "Kuryer chaqirish",
         audience: "Punktga bormasdan topshirishni xohlovchilar",
-        howItWorks: "Kuryer kelishilgan vaqtda manzildan joʻnatmani oladi.",
+        howItWorks:
+          "Kuryer chaqirasiz — kelishilgan vaqtda manzildan joʻnatmani oladi. Toshkent va boshqa shaharlar — soʻrov boʻyicha.",
         includes: ["Olib ketish", "Rasmiylashtirish", "Yoʻnalishga topshirish"],
         accepted: "Xizmat qoidalariga mos hujjatlar va pochtalar.",
         neededForQuote: "Olib ketish manzili, sana, joʻnatma parametrlari.",
         limitations: "Olib ketish vaqtlari menejer tomonidan aniqlanadi.",
         faqs: [
           {
+            question: "Kuryerni qanday chaqirish mumkin?",
+            answer:
+              "Kalkulyatorda olib ketishni belgilang yoki ariza qoldiring — menejer vaqt oynasini tasdiqlaydi.",
+          },
+          {
             question: "Kuryer qachon keladi?",
             answer: "Formada sanani koʻrsatish mumkin; aniq oynani menejer tasdiqlaydi.",
+          },
+          {
+            question: "Faqat Toshkentdami?",
+            answer:
+              "Toshkent asosiy hub. Boshqa shaharlarda olib ketish mavjudligini menejer aniqlaydi.",
           },
         ],
       },
@@ -424,15 +457,26 @@ export const uzCopy: SiteCopy = {
         id: "ecommerce",
         title: "Internet-doʻkonlar uchun yetkazish",
         audience: "Internet-doʻkonlar va ijtimoiy tarmoq sotuvchilari",
-        howItWorks: "Buyurtmalarni olib, xaridorlarga yetkazamiz va status beramiz.",
+        howItWorks:
+          "Buyurtmalarni olib, xaridorlarga yetkazamiz va status beramiz. Biznes sahifasi orqali ulanish mumkin.",
         includes: ["Muntazam olib ketish", "Eshikgacha yetkazish", "Qaytarishlar", "Hisobot"],
         accepted: "Tashishga ruxsat etilgan tovarlar.",
         neededForQuote: "Oylik hajm, shaharlar, toʻlov va API kerakligi.",
         limitations: "Ulanish shartlari individual kelishiladi.",
         faqs: [
           {
+            question: "Internet-doʻkon uchun qanday boshlash?",
+            answer:
+              "«Biznes uchun» yoki ushbu sahifadagi ariza orqali hajm va shaharlarni yuboring — taklif tayyorlaymiz.",
+          },
+          {
             question: "Ommaviy qayta ishlash bormi?",
             answer: "Ha, korporativ taklif bosqichida muhokama qilinadi.",
+          },
+          {
+            question: "COD mumkinmi?",
+            answer:
+              "Ha, kelishilgan holda. Yetkazib berishda toʻlov sahifasiga qarang yoki arizada COD ni belgilang.",
           },
         ],
       },
@@ -456,15 +500,26 @@ export const uzCopy: SiteCopy = {
         id: "cod",
         title: "Yetkazib berishda toʻlov",
         audience: "Topshirishda toʻlov olishni xohlovchi sotuvchilar",
-        howItWorks: "Buyurtmani yetkazamiz va kelishilgan qoidalar boʻyicha toʻlov qabul qilamiz.",
+        howItWorks:
+          "Buyurtmani yetkazamiz va kelishilgan qoidalar boʻyicha toʻlov qabul qilamiz (COD). Bu alohida biznes sharti.",
         includes: ["Topshirish", "Toʻlov qabul qilish", "Status hisobotlari"],
         accepted: "Yetkazib berishda toʻlov qoidalariga mos tovarlar.",
         neededForQuote: "Eʼlon qilingan qiymat, yoʻnalish, hajm.",
         limitations: "Aniq qoidalar alohida kelishiladi.",
         faqs: [
           {
+            question: "Yetkazib berishda toʻlov nima?",
+            answer:
+              "Qabul qiluvchi tovarni olganda toʻlaydi; summa kelishuv boʻyicha yuboruvchiga oʻtkaziladi.",
+          },
+          {
             question: "Pul qachon keladi?",
             answer: "Oʻtkazma muddati xizmat ulanishida tasdiqlanadi.",
+          },
+          {
+            question: "Qanday ulanish?",
+            answer:
+              "Biznes arizasida COD ni belgilang yoki «Biznes uchun» sahifasidan yozing.",
           },
         ],
       },
@@ -488,9 +543,9 @@ export const uzCopy: SiteCopy = {
     ],
   },
   business: {
-    heroTitle: "Internet-doʻkonlar va kompaniyalar uchun yetkazib berish",
+    heroTitle: "Biznes uchun yetkazib berish — korporativ va e-commerce",
     heroLead:
-      "Oʻz kuryer xizmatisiz muntazam olib ketish, statuslar, qaytarishlar va API. Individual hisob — ochiq praysiz.",
+      "Kompaniyalar va internet-doʻkonlar uchun muntazam olib ketish, statuslar, qaytarishlar va API. Individual hisob — ochiq praysiz. E-com xizmati sahifasiga ham qarang.",
     segmentsTitle: "Kimlar uchun",
     segments: [
       {
@@ -596,12 +651,12 @@ export const uzCopy: SiteCopy = {
     },
   },
   calculator: {
-    title: "Narx kalkulyatori",
-    lead: "Shaharlar, ogʻirlik va oʻlchamlarni kiriting — smeta va muddat hisoblanadi.",
+    title: "Yetkazib berish narxi",
+    lead: "Shaharlar, ogʻirlik va oʻlchamlarni kiriting — yetkazib berish narxi va muddat orientirini olasiz. Bu kalkulyator oferta emas.",
     breadcrumbHome: "Bosh sahifa",
     breadcrumbCurrent: "Kalkulyator",
     disclaimer:
-      "Hisob taxminiydir va oferta emas. Yakuniy narx va muddatni menejer tasdiqlaydi.",
+      "Koʻrsatilgan summa — orientir, oferta emas. Yakuniy narx yoʻnalish, ogʻirlik, oʻlcham va qoʻshimcha xizmatlarga bogʻliq; menejer tasdiqlaydi.",
     fromLabel: "Qayerdan",
     toLabel: "Qayerga",
     cityPlaceholder: "Shahar, tuman yoki viloyat",

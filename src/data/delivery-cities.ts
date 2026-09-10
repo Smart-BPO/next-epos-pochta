@@ -37,24 +37,24 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     etaHintRu: "По городу ориентир чаще всего в пределах 1–2 рабочих дней после забора.",
     etaHintUz: "Shahar ichida odatda olib ketishdan keyin 1–2 ish kuni ichida yetkaziladi.",
     leadRu:
-      "Курьерская доставка по Ташкенту и в другие регионы Узбекистана: документы, посылки и заказы для бизнеса. Ориентировочный расчёт — в калькуляторе, финальную цену подтверждает менеджер.",
+      "Курьер в Ташкенте и доставка из столицы по Узбекистану: документы, посылки, забор курьером. Ориентир в калькуляторе — итог подтверждает менеджер.",
     leadUz:
-      "Toshkent boʻylab va Oʻzbekistonning boshqa hududlariga kuryerlik yetkazib berish: hujjatlar, pochta va biznes buyurtmalari. Taxminiy hisob — kalkulyatorda, yakuniy narxni menejer tasdiqlaydi.",
+      "Toshkentda kuryer va poytaxtdan Oʻzbekiston boʻylab yetkazib berish: hujjatlar, pochta, kuryer chaqirish. Kalkulyatorda orientir — yakuniy narxni menejer tasdiqlaydi.",
     bodyRu: [
-      "Ташкент — основной хаб сети EPOS POCHTA. Здесь удобно организовать забор курьером, сдачу в согласованной точке и доставку до двери получателя.",
-      "Для частных клиентов подойдут разовые отправления документов и посылок. Для интернет-магазинов и компаний доступны регулярный забор, статусы и индивидуальные условия без публичного прайса.",
-      "Перед отправкой укажите город назначения в калькуляторе — получите ориентир по стоимости и сроку. Это не оферта: менеджер уточнит параметры и подтвердит итог.",
+      "Ташкент — основной хаб сети EPOS POCHTA. Здесь удобно вызвать курьера, сдать отправление в согласованной точке или заказать доставку до двери.",
+      "Для частных клиентов — разовые документы и посылки. Для интернет-магазинов и компаний — регулярный забор, статусы и индивидуальные условия без публичного прайса.",
+      "Рассчитайте ориентир в калькуляторе (Ташкент как пункт отправления или назначения) или откройте маршруты вроде Ташкент — Самарканд. Это не оферта: менеджер подтвердит итог.",
     ],
     bodyUz: [
-      "Toshkent — EPOS POCHTA tarmogʻining asosiy markazi. Bu yerda kuryer orqali olib ketish, kelishilgan nuqtada topshirish va eshikgacha yetkazishni qulay tashkil etish mumkin.",
-      "Jismoniy shaxslar uchun hujjat va pochtalarning bir martalik joʻnatmalari mos. Internet-doʻkonlar va kompaniyalar uchun muntazam olib ketish, statuslar va ochiq praysiz individual shartlar mavjud.",
-      "Yuborishdan oldin kalkulyatorda manzil shahrini kiriting — narx va muddat boʻyicha orientir olasiz. Bu oferta emas: menejer parametrlarni aniqlab, yakuniy natijani tasdiqlaydi.",
+      "Toshkent — EPOS POCHTA tarmogʻining asosiy markazi. Bu yerda kuryer chaqirish, kelishilgan nuqtada topshirish yoki eshikgacha yetkazish qulay.",
+      "Jismoniy shaxslar uchun bir martalik hujjat va pochta. Internet-doʻkonlar va kompaniyalar uchun muntazam olib ketish, statuslar va ochiq praysiz individual shartlar.",
+      "Kalkulyatorda Toshkentni tanlab orientir oling yoki Toshkent — Samarqand kabi yoʻnalish sahifalariga oʻting. Bu oferta emas: menejer yakuniy natijani tasdiqlaydi.",
     ],
     faqRu: [
       {
-        question: "Доставляете ли по всему Ташкенту?",
+        question: "Есть курьер по Ташкенту?",
         answer:
-          "Работаем по городу в согласованных районах. Конкретный адрес уточните при расчёте или у менеджера.",
+          "Да. Доступны вызов курьера и доставка по городу в согласованных районах. Адрес уточните при расчёте.",
       },
       {
         question: "Можно ли забрать отправление из офиса в Ташкенте?",
@@ -62,16 +62,21 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Да, доступен вызов курьера. Для регулярных заборов оставьте бизнес-заявку.",
       },
       {
-        question: "Как быстро узнать ориентир по цене?",
+        question: "Как узнать ориентир по цене?",
         answer:
-          "Откройте калькулятор, укажите Ташкент как пункт отправления или назначения, вес и габариты.",
+          "Откройте калькулятор, укажите Ташкент как пункт отправления или назначения, вес и габариты. Или перейдите на страницу нужного маршрута.",
+      },
+      {
+        question: "Доставляете из Ташкента в регионы?",
+        answer:
+          "Да. Выберите направление (например, в Самарканд, Бухару, Фергану) на сайте или в калькуляторе.",
       },
     ],
     faqUz: [
       {
-        question: "Butun Toshkent boʻylab yetkazasizmi?",
+        question: "Toshkentda kuryer bormi?",
         answer:
-          "Kelishilgan tumanlarda ishlaymiz. Aniq manzilni hisobda yoki menejer bilan aniqlang.",
+          "Ha. Kuryer chaqirish va shahar ichida kelishilgan tumanlarda yetkazish mumkin. Manzilni hisobda aniqlang.",
       },
       {
         question: "Toshkentdagi ofisdan joʻnatmani olib ketish mumkinmi?",
@@ -79,17 +84,22 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Ha, kuryer chaqirish mumkin. Muntazam olib ketish uchun biznes arizasini qoldiring.",
       },
       {
-        question: "Narx orientirini qanday tez bilaman?",
+        question: "Narx orientirini qanday bilaman?",
         answer:
-          "Kalkulyatorni oching, Toshkentni joʻnatish yoki qabul punkti sifatida, ogʻirlik va oʻlchamlarni kiriting.",
+          "Kalkulyatorda Toshkentni joʻnatish yoki qabul punkti sifatida tanlang. Yoki kerakli yoʻnalish sahifasiga oʻting.",
+      },
+      {
+        question: "Toshkentdan viloyatlarga yetkazasizmi?",
+        answer:
+          "Ha. Samarqand, Buxoro, Fargʻona kabi yoʻnalishlarni saytda yoki kalkulyatorda tanlang.",
       },
     ],
-    metaTitleRu: "Доставка в Ташкент — курьер EPOS POCHTA",
-    metaTitleUz: "Toshkentga yetkazib berish — EPOS POCHTA kuryeri",
+    metaTitleRu: "Курьер Ташкент — доставка посылок и документов",
+    metaTitleUz: "Toshkent pochta — kuryer va yetkazib berish",
     metaDescriptionRu:
-      "Курьерская доставка по Ташкенту и из столицы по Узбекистану. Калькулятор ориентира, забор курьером, статусы. Без публичных тарифов.",
+      "Курьер в Ташкенте и доставка из столицы по Узбекистану. Калькулятор ориентира, забор курьером, статусы. Без публичных тарифов.",
     metaDescriptionUz:
-      "Toshkent boʻylab va poytaxtdan Oʻzbekiston boʻylab kuryerlik yetkazib berish. Kalkulyator, kuryer, statuslar. Ochiq tarifsiz.",
+      "Toshkentda kuryer va poytaxtdan Oʻzbekiston boʻylab yetkazib berish. Kalkulyator, kuryer chaqirish, statuslar. Ochiq tarifsiz.",
   },
   {
     slug: "samarkand",
@@ -101,18 +111,18 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     etaHintRu: "Межрегиональные отправления в Самарканд обычно занимают несколько рабочих дней — точный срок подтвердит менеджер.",
     etaHintUz: "Samarqandga viloyatlararo joʻnatmalar odatda bir necha ish kunini oladi — aniq muddatni menejer tasdiqlaydi.",
     leadRu:
-      "Доставка в Самарканд и из Самарканда по Узбекистану с EPOS POCHTA. Документы, посылки и B2B-потоки — с ориентиром в калькуляторе и подтверждением менеджера.",
+      "Доставка в Самарканд: посылки, документы и курьер из Ташкента и других городов. Ориентир в калькуляторе — итог подтверждает менеджер.",
     leadUz:
-      "EPOS POCHTA bilan Samarqandga va Samarqanddan Oʻzbekiston boʻylab yetkazib berish. Hujjatlar, pochta va B2B oqimlar — kalkulyatorda orientir va menejer tasdigʻi bilan.",
+      "Samarqandga yetkazib berish: pochta, hujjatlar va Toshkentdan kuryer. Kalkulyatorda orientir — yakuniy narxni menejer tasdiqlaydi.",
     bodyRu: [
-      "Самарканд — один из ключевых направлений межрегиональной сети. Мы помогаем отправить документы и посылки в город и забрать груз для доставки в другие регионы.",
-      "Интернет-магазины могут согласовать регулярные отправки покупателям в Самарканде. Публичных тарифов нет: стоимость зависит от маршрута, веса, габаритов и режима доставки.",
-      "Используйте калькулятор с городом «Самарканд», затем при необходимости оставьте заявку менеджеру для финального расчёта.",
+      "Самарканд — ключевое направление сети. Отправьте посылку или документы в город либо заберите груз для других регионов.",
+      "Из Ташкента удобен коридор Ташкент — Самарканд (~280 км): отдельная страница маршрута и тот же калькулятор. Для магазинов — регулярные отправки без публичного прайса.",
+      "Укажите «Самарканд» в калькуляторе или откройте /delivery/tas/skd/ — это ориентир, не оферта. Финал — после менеджера.",
     ],
     bodyUz: [
-      "Samarqand — viloyatlararo tarmoqning asosiy yoʻnalishlaridan biri. Shaharga hujjat va pochta yuborishga, shuningdek boshqa hududlarga yetkazish uchun yukni olib ketishga yordam beramiz.",
-      "Internet-doʻkonlar Samarqanddagi xaridorlarga muntazam joʻnatmalarni kelishishi mumkin. Ochiq tarif yoʻq: narx yoʻnalish, ogʻirlik, oʻlcham va yetkazish rejimiga bogʻliq.",
-      "«Samarqand» shahri bilan kalkulyatordan foydalaning, soʻng zarurat boʻlsa yakuniy hisob uchun menejerga ariza qoldiring.",
+      "Samarqand — tarmoqning asosiy yoʻnalishlaridan. Shaharga pochta yoki hujjat yuboring yoki boshqa hududlarga yukni olib keting.",
+      "Toshkentdan Toshkent — Samarqand (~280 km) yoʻlagi qulay: alohida yoʻnalish sahifasi va kalkulyator. Doʻkonlar uchun — ochiq praysiz muntazam joʻnatmalar.",
+      "Kalkulyatorda «Samarqand»ni tanlang yoki /delivery/tas/skd/ ni oching — bu orientir, oferta emas. Yakun — menejerdan keyin.",
     ],
     faqRu: [
       {
@@ -121,14 +131,19 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Да, режим до двери доступен при согласовании адреса. Уточните при расчёте.",
       },
       {
-        question: "Есть ли пункт приёма в Самарканде?",
+        question: "Как отправить из Ташкента в Самарканд?",
         answer:
-          "Схема сдачи и выдачи согласуется менеджером по направлению. Оставьте заявку с маршрутом.",
+          "Откройте страницу маршрута Ташкент — Самарканд или калькулятор с этими пунктами. Ориентир не является офертой.",
       },
       {
         question: "Как рассчитать отправку в Самарканд?",
         answer:
           "В калькуляторе укажите Самарканд как город получения, вес и габариты — увидите ориентир.",
+      },
+      {
+        question: "Есть ли пункт приёма в Самарканде?",
+        answer:
+          "Схема сдачи и выдачи согласуется менеджером по направлению. Оставьте заявку с маршрутом.",
       },
     ],
     faqUz: [
@@ -138,22 +153,27 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Ha, manzil kelishilganda eshikgacha rejim mavjud. Hisobda aniqlang.",
       },
       {
-        question: "Samarqandda qabul punkti bormi?",
+        question: "Toshkentdan Samarqandga qanday yuboraman?",
         answer:
-          "Topshirish va berish sxemasi yoʻnalish boʻyicha menejer bilan kelishiladi. Yoʻnalish bilan ariza qoldiring.",
+          "Toshkent — Samarqand yoʻnalish sahifasini yoki shu punktlar bilan kalkulyatorni oching. Orientir oferta emas.",
       },
       {
         question: "Samarqandga joʻnatmani qanday hisoblayman?",
         answer:
           "Kalkulyatorda Samarqandni qabul shahri, ogʻirlik va oʻlchamlarni kiriting — orientir chiqadi.",
       },
+      {
+        question: "Samarqandda qabul punkti bormi?",
+        answer:
+          "Topshirish va berish sxemasi yoʻnalish boʻyicha menejer bilan kelishiladi. Yoʻnalish bilan ariza qoldiring.",
+      },
     ],
-    metaTitleRu: "Доставка в Самарканд — EPOS POCHTA",
-    metaTitleUz: "Samarqandga yetkazib berish — EPOS POCHTA",
+    metaTitleRu: "Доставка в Самарканд — посылки и курьер",
+    metaTitleUz: "Samarqandga yetkazib berish — pochta va kuryer",
     metaDescriptionRu:
-      "Курьерская доставка в Самарканд и из города по Узбекистану. Ориентир в калькуляторе, статусы, без публичных тарифов.",
+      "Доставка в Самарканд: посылки, документы, курьер из Ташкента. Калькулятор ориентира и маршрут tas/skd. Без публичных тарифов.",
     metaDescriptionUz:
-      "Samarqandga va shahardan Oʻzbekiston boʻylab kuryerlik yetkazib berish. Kalkulyator orientiri, statuslar, ochiq tarifsiz.",
+      "Samarqandga yetkazib berish: pochta, hujjatlar, Toshkentdan kuryer. Kalkulyator va tas/skd yoʻnalishi. Ochiq tarifsiz.",
   },
   {
     slug: "bukhara",
@@ -165,24 +185,29 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     etaHintRu: "Срок до Бухары зависит от пункта отправления — ориентир в калькуляторе, подтверждение у менеджера.",
     etaHintUz: "Buxorogacha muddat joʻnatish punktiga bogʻliq — orientir kalkulyatorda, tasdiq menejerda.",
     leadRu:
-      "Доставка в Бухару с EPOS POCHTA: документы, посылки и корпоративные отправления. Рассчитайте ориентир онлайн и подтвердите условия с менеджером.",
+      "Доставка в Бухару: посылки, документы и курьер из Ташкента. Ориентир онлайн — финал после менеджера.",
     leadUz:
-      "EPOS POCHTA bilan Buxoroga yetkazib berish: hujjatlar, pochta va korporativ joʻnatmalar. Onlayn orientir hisoblang va shartlarni menejer bilan tasdiqlang.",
+      "Buxoroga yetkazib berish: pochta, hujjatlar va Toshkentdan kuryer. Onlayn orientir — yakun menejerdan keyin.",
     bodyRu: [
-      "Бухара входит в географию межрегиональных маршрутов EPOS POCHTA. Мы сопровождаем отправления статусами и помогаем согласовать забор или выдачу.",
-      "Для бизнеса доступны обсуждение объёма, регулярности и API. На сайте нет оферты и таблицы тарифов — только ориентировочный калькулятор и заявка.",
-      "Укажите Бухару в калькуляторе как город «куда» или «откуда», чтобы получить диапазон стоимости и срока.",
+      "Бухара — межрегиональное направление EPOS POCHTA. Сопровождаем статусами, согласуем забор и выдачу.",
+      "Коридор Ташкент — Бухара (~560 км) на отдельной странице /delivery/tas/bhk/. Для бизнеса — объём, регулярность и API без таблицы тарифов.",
+      "Укажите Бухару в калькуляторе «куда» или «откуда». Показанная сумма — ориентир, не оферта.",
     ],
     bodyUz: [
-      "Buxoro EPOS POCHTA viloyatlararo yoʻnalishlar geografiyasiga kiradi. Joʻnatmalarni statuslar bilan kuzatamiz, olib ketish yoki berishni kelishishga yordam beramiz.",
-      "Biznes uchun hajm, muntazamlilik va API muhokamasi mavjud. Saytda oferta va tarif jadvali yoʻq — faqat taxminiy kalkulyator va ariza.",
-      "Narx va muddat diapazonini olish uchun kalkulyatorda Buxoroni «qayerga» yoki «qayerdan» shahri sifatida kiriting.",
+      "Buxoro — EPOS POCHTA viloyatlararo yoʻnalishi. Statuslar, olib ketish va berishni kelishamiz.",
+      "Toshkent — Buxoro (~560 km) yoʻlagi /delivery/tas/bhk/ sahifasida. Biznes uchun — tarifsiz hajm, muntazamlilik va API.",
+      "Kalkulyatorda Buxoroni «qayerga» yoki «qayerdan» deb kiriting. Koʻrsatilgan summa — orientir, oferta emas.",
     ],
     faqRu: [
       {
         question: "Можно ли отправить документы в Бухару?",
         answer:
           "Да, документы принимаем в рамках ограничений сервиса. Уточните упаковку при оформлении.",
+      },
+      {
+        question: "Как отправить из Ташкента в Бухару?",
+        answer:
+          "Откройте маршрут Ташкент — Бухара или калькулятор с этими пунктами. Ориентир не оферта.",
       },
       {
         question: "Есть ли наложенный платёж в Бухару?",
@@ -192,7 +217,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
       {
         question: "Как подтвердить финальную цену?",
         answer:
-          "После ориентира в калькуляторе нажмите «Подтвердить с менеджером» или оставьте B2B-заявку.",
+          "После ориентира в калькуляторе запросите стоимость у менеджера или оставьте B2B-заявку.",
       },
     ],
     faqUz: [
@@ -202,6 +227,11 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Ha, xizmat cheklovlari doirasida hujjatlar qabul qilinadi. Rasmiylashtirishda qadoqlashni aniqlang.",
       },
       {
+        question: "Toshkentdan Buxoroga qanday yuboraman?",
+        answer:
+          "Toshkent — Buxoro yoʻnalishini yoki shu punktlar bilan kalkulyatorni oching. Orientir oferta emas.",
+      },
+      {
         question: "Buxoroga yetkazib berishda toʻlov bormi?",
         answer:
           "COD biznes uchun kelishuvdan keyin mavjud. Tijorat arizasini qoldiring.",
@@ -209,15 +239,15 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
       {
         question: "Yakuniy narxni qanday tasdiqlayman?",
         answer:
-          "Kalkulyator orientiridan keyin «Menejer bilan tasdiqlash» ni bosing yoki B2B ariza qoldiring.",
+          "Kalkulyator orientiridan keyin menejerdan narx soʻrang yoki B2B ariza qoldiring.",
       },
     ],
-    metaTitleRu: "Доставка в Бухару — курьер EPOS POCHTA",
-    metaTitleUz: "Buxoroga yetkazib berish — EPOS POCHTA",
+    metaTitleRu: "Доставка в Бухару — посылки и курьер",
+    metaTitleUz: "Buxoroga yetkazib berish — pochta va kuryer",
     metaDescriptionRu:
-      "Доставка документов и посылок в Бухару. Калькулятор ориентира, статусы, коммерческие условия для бизнеса.",
+      "Доставка в Бухару: посылки, документы, курьер из Ташкента. Калькулятор и маршрут tas/bhk. Без публичных тарифов.",
     metaDescriptionUz:
-      "Buxoroga hujjat va pochta yetkazib berish. Kalkulyator, statuslar, biznes uchun tijorat shartlari.",
+      "Buxoroga yetkazib berish: pochta, hujjatlar, Toshkentdan kuryer. Kalkulyator va tas/bhk. Ochiq tarifsiz.",
   },
   {
     slug: "namangan",
@@ -229,18 +259,18 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     etaHintRu: "Доставка в Наманган — межрегиональный маршрут; срок уточняется при расчёте.",
     etaHintUz: "Namanganga yetkazib berish — viloyatlararo yoʻnalish; muddat hisobda aniqlanadi.",
     leadRu:
-      "Курьерская доставка в Наманган и из Намангана по Узбекистану. Ориентир стоимости в калькуляторе EPOS POCHTA.",
+      "Доставка в Наманган: посылки и документы по Ферганской долине. Ориентир в калькуляторе EPOS POCHTA.",
     leadUz:
-      "Namanganga va Namangandan Oʻzbekiston boʻylab kuryerlik yetkazib berish. EPOS POCHTA kalkulyatorida narx orientiri.",
+      "Namanganga yetkazib berish: Fargʻona vodiysida pochta va hujjatlar. EPOS POCHTA kalkulyatorida orientir.",
     bodyRu: [
-      "Наманган связан с сетью EPOS POCHTA межрегиональными направлениями. Подходят документы, посылки и согласованные товарные отправления.",
-      "Магазины Ферганской долины могут запросить регулярный забор и доставку покупателям. Условия — индивидуально, без публичного прайса.",
-      "Для разовой отправки откройте калькулятор; для объёма — страницу коммерческого предложения для бизнеса.",
+      "Наманган связан межрегиональными направлениями. Подходят документы, посылки и согласованные товарные отправления.",
+      "Из Ташкента — коридор /delivery/tas/nma/ (~300 км). Магазины долины могут запросить регулярный забор без публичного прайса.",
+      "Разовая отправка — калькулятор; объём — бизнес-заявка. Ориентир на сайте не оферта.",
     ],
     bodyUz: [
-      "Namangan EPOS POCHTA tarmogʻiga viloyatlararo yoʻnalishlar orqali bogʻlangan. Hujjatlar, pochta va kelishilgan tovar joʻnatmalari mos.",
-      "Fargʻona vodiysi doʻkonlari muntazam olib ketish va xaridorlarga yetkazishni soʻrashi mumkin. Shartlar — individual, ochiq praysiz.",
-      "Bir martalik joʻnatma uchun kalkulyatorni oching; hajm uchun — biznes tijorat taklifi sahifasini.",
+      "Namangan viloyatlararo yoʻnalishlar bilan bogʻlangan. Hujjatlar, pochta va kelishilgan tovar joʻnatmalari mos.",
+      "Toshkentdan — /delivery/tas/nma/ (~300 km). Vodiy doʻkonlari ochiq praysiz muntazam olib ketishni soʻrashi mumkin.",
+      "Bir martalik — kalkulyator; hajm — biznes ariza. Saytdagi orientir oferta emas.",
     ],
     faqRu: [
       {
@@ -249,14 +279,19 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Возможность по конкретному населённому пункту уточняет менеджер при заявке.",
       },
       {
-        question: "Нужна ли жёсткая упаковка?",
+        question: "Как отправить из Ташкента в Наманган?",
         answer:
-          "Да, упаковка должна защищать вложение. Требования зависят от типа груза.",
+          "Откройте маршрут Ташкент — Наманган или калькулятор с этими пунктами.",
       },
       {
         question: "Можно ли отследить посылку в Наманган?",
         answer:
           "После оформления вы получите трек-номер для страницы отслеживания.",
+      },
+      {
+        question: "Нужна ли жёсткая упаковка?",
+        answer:
+          "Да, упаковка должна защищать вложение. Требования зависят от типа груза.",
       },
     ],
     faqUz: [
@@ -266,22 +301,27 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Aniq aholi punkti boʻyicha imkoniyatni menejer arizada aniqlaydi.",
       },
       {
-        question: "Qattiq qadoqlash kerakmi?",
+        question: "Toshkentdan Namanganga qanday yuboraman?",
         answer:
-          "Ha, qadoq ichidagini himoya qilishi kerak. Talablar yuk turiga bogʻliq.",
+          "Toshkent — Namangan yoʻnalishini yoki shu punktlar bilan kalkulyatorni oching.",
       },
       {
         question: "Namanganga pochtani kuzatish mumkinmi?",
         answer:
           "Rasmiylashtirishdan keyin kuzatuv sahifasi uchun trek-raqam beriladi.",
       },
+      {
+        question: "Qattiq qadoqlash kerakmi?",
+        answer:
+          "Ha, qadoq ichidagini himoya qilishi kerak. Talablar yuk turiga bogʻliq.",
+      },
     ],
-    metaTitleRu: "Доставка в Наманган — EPOS POCHTA",
-    metaTitleUz: "Namanganga yetkazib berish — EPOS POCHTA",
+    metaTitleRu: "Доставка в Наманган — посылки и курьер",
+    metaTitleUz: "Namanganga yetkazib berish — pochta va kuryer",
     metaDescriptionRu:
-      "Доставка в Наманган: документы, посылки, B2B. Калькулятор ориентира и подтверждение менеджера.",
+      "Доставка в Наманган: посылки, документы, курьер из Ташкента. Калькулятор и маршрут tas/nma.",
     metaDescriptionUz:
-      "Namanganga yetkazib berish: hujjatlar, pochta, B2B. Kalkulyator orientiri va menejer tasdigʻi.",
+      "Namanganga yetkazib berish: pochta, hujjatlar, Toshkentdan kuryer. Kalkulyator va tas/nma.",
   },
   {
     slug: "andijan",
@@ -293,24 +333,29 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     etaHintRu: "Андижан — направление Ферганской долины; ориентировочный срок смотрите в калькуляторе.",
     etaHintUz: "Andijon — Fargʻona vodiysi yoʻnalishi; taxminiy muddatni kalkulyatorda koʻring.",
     leadRu:
-      "Доставка в Андижан с EPOS POCHTA. Рассчитайте ориентир по весу и маршруту, подтвердите цену с менеджером.",
+      "Доставка в Андижан: посылки, документы и курьер по долине. Ориентир по весу — в калькуляторе.",
     leadUz:
-      "EPOS POCHTA bilan Andijonga yetkazib berish. Ogʻirlik va yoʻnalish boʻyicha orientir hisoblang, narxni menejer bilan tasdiqlang.",
+      "Andijonga yetkazib berish: vodiyda pochta, hujjatlar va kuryer. Ogʻirlik boʻyicha orientir — kalkulyatorda.",
     bodyRu: [
-      "Андижан входит в ключевые города покрытия. Мы доставляем документы и посылки, поддерживаем статусы на маршруте.",
-      "Для e-commerce доступны обсуждение COD, возвратов и регулярного забора через коммерческую заявку.",
-      "Выберите Андижан в калькуляторе — получите диапазон стоимости без обязательства оферты.",
+      "Андижан — ключевой город покрытия. Доставляем документы и посылки, поддерживаем статусы на маршруте.",
+      "Из Ташкента — /delivery/tas/azn/ (~350 км). Для e-commerce: COD, возвраты и регулярный забор через коммерческую заявку.",
+      "Выберите Андижан в калькуляторе — диапазон стоимости без оферты. Финал подтверждает менеджер.",
     ],
     bodyUz: [
-      "Andijon qamrovning asosiy shaharlari qatoriga kiradi. Hujjat va pochtani yetkazamiz, yoʻnalishda statuslarni qoʻllab-quvvatlaymiz.",
-      "E-commerce uchun COD, qaytarishlar va muntazam olib ketishni tijorat arizasi orqali muhokama qilish mumkin.",
-      "Kalkulyatorda Andijonni tanlang — oferta majburiyatisiz narx diapazonini oling.",
+      "Andijon — qamrovning asosiy shahri. Hujjat va pochtani yetkazamiz, yoʻnalishda statuslarni qoʻllab-quvvatlaymiz.",
+      "Toshkentdan — /delivery/tas/azn/ (~350 km). E-commerce uchun: COD, qaytarishlar va muntazam olib ketish — tijorat arizasi orqali.",
+      "Kalkulyatorda Andijonni tanlang — ofertasiz narx diapazoni. Yakunni menejer tasdiqlaydi.",
     ],
     faqRu: [
       {
         question: "Есть ли экспресс в Андижан?",
         answer:
           "Срочность обсуждается индивидуально. Базовый ориентир — в калькуляторе.",
+      },
+      {
+        question: "Как отправить из Ташкента в Андижан?",
+        answer:
+          "Откройте маршрут Ташкент — Андижан или калькулятор с этими пунктами.",
       },
       {
         question: "Можно ли отправить товар покупателю в Андижан?",
@@ -330,6 +375,11 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Shoshilinchlik individual muhokama qilinadi. Asosiy orientir — kalkulyatorda.",
       },
       {
+        question: "Toshkentdan Andijonga qanday yuboraman?",
+        answer:
+          "Toshkent — Andijon yoʻnalishini yoki shu punktlar bilan kalkulyatorni oching.",
+      },
+      {
         question: "Andijondagi xaridorga tovar yuborish mumkinmi?",
         answer:
           "Ha, ichidagi narsa cheklovlariga rioya qilinganda. Doʻkonlar uchun — biznes shartlari.",
@@ -340,12 +390,12 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Telefon va Telegram qoʻllab-quvvatlash kontaktlarda; B2B uchun — tijorat taklifi formasi.",
       },
     ],
-    metaTitleRu: "Доставка в Андижан — EPOS POCHTA",
-    metaTitleUz: "Andijonga yetkazib berish — EPOS POCHTA",
+    metaTitleRu: "Доставка в Андижан — посылки и курьер",
+    metaTitleUz: "Andijonga yetkazib berish — pochta va kuryer",
     metaDescriptionRu:
-      "Курьерская доставка в Андижан. Калькулятор, статусы, условия для интернет-магазинов.",
+      "Доставка в Андижан: посылки, документы, курьер из Ташкента. Калькулятор и маршрут tas/azn.",
     metaDescriptionUz:
-      "Andijonga kuryerlik yetkazib berish. Kalkulyator, statuslar, internet-doʻkonlar uchun shartlar.",
+      "Andijonga yetkazib berish: pochta, hujjatlar, Toshkentdan kuryer. Kalkulyator va tas/azn.",
   },
   {
     slug: "fergana",
@@ -357,24 +407,29 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     etaHintRu: "Фергана связана межрегиональными рейсами; точный ETA подтверждает менеджер.",
     etaHintUz: "Fargʻona viloyatlararo reyslar bilan bogʻlangan; aniq ETA ni menejer tasdiqlaydi.",
     leadRu:
-      "Доставка в Фергану и из Ферганы по стране. EPOS POCHTA — ориентир в калькуляторе и работа с бизнесом.",
+      "Доставка в Фергану: посылки, документы и курьер по долине. Ориентир в калькуляторе — без оферты.",
     leadUz:
-      "Fargʻonaga va Fargʻonadan mamlakat boʻylab yetkazib berish. EPOS POCHTA — kalkulyator orientiri va biznes bilan ishlash.",
+      "Fargʻonaga yetkazib berish: vodiyda pochta, hujjatlar va kuryer. Kalkulyatorda orientir — ofertasiz.",
     bodyRu: [
-      "Фергана — важное направление долины. Мы закрываем частные и корпоративные сценарии доставки без публикации тарифов.",
-      "Согласуйте забор, режим «до двери» и отчётность через менеджера. Для разовых отправок достаточно калькулятора и заявки.",
-      "Город доступен в быстром выборе калькулятора вместе с Ташкентом, Самаркандом и Андижаном.",
+      "Фергана — важное направление долины. Частные и корпоративные сценарии без публикации тарифов.",
+      "Из Ташкента — /delivery/tas/feg/ (~320 км). Согласуйте забор, «до двери» и отчётность через менеджера.",
+      "Город в быстром выборе калькулятора вместе с Ташкентом, Самаркандом и Андижаном. Ориентир не оферта.",
     ],
     bodyUz: [
-      "Fargʻona — vodiy uchun muhim yoʻnalish. Tariflarni eʼlon qilmasdan shaxsiy va korporativ yetkazib berish ssenariylarini yopamiz.",
-      "Olib ketish, «eshikgacha» rejim va hisobotni menejer orqali kelishing. Bir martalik joʻnatmalar uchun kalkulyator va ariza yetarli.",
-      "Shahar kalkulyatorning tez tanlovida Toshkent, Samarqand va Andijon bilan birga mavjud.",
+      "Fargʻona — vodiy uchun muhim yoʻnalish. Tariflarni eʼlon qilmasdan shaxsiy va korporativ ssenariylar.",
+      "Toshkentdan — /delivery/tas/feg/ (~320 km). Olib ketish, «eshikgacha» va hisobotni menejer orqali kelishing.",
+      "Shahar kalkulyator tez tanlovida Toshkent, Samarqand va Andijon bilan. Orientir oferta emas.",
     ],
     faqRu: [
       {
         question: "Доставляете ли в Маргилан / Коканд?",
         answer:
           "Населённые пункты рядом уточняются при заявке. Укажите точный город в калькуляторе или форме.",
+      },
+      {
+        question: "Как отправить из Ташкента в Фергану?",
+        answer:
+          "Откройте маршрут Ташкент — Фергана или калькулятор с этими пунктами.",
       },
       {
         question: "Работаете ли с возвратами из Ферганы?",
@@ -394,6 +449,11 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Yaqin aholi punktlari arizada aniqlanadi. Aniq shaharni kalkulyator yoki formada kiriting.",
       },
       {
+        question: "Toshkentdan Fargʻonaga qanday yuboraman?",
+        answer:
+          "Toshkent — Fargʻona yoʻnalishini yoki shu punktlar bilan kalkulyatorni oching.",
+      },
+      {
         question: "Fargʻonadan qaytarishlar bilan ishlaysizmi?",
         answer:
           "Qaytarishlar ulanishdan keyin biznes shartlari doirasida mavjud.",
@@ -404,12 +464,12 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
           "Yetkazib berish narxi kalkulyatori sahifasida.",
       },
     ],
-    metaTitleRu: "Доставка в Фергану — EPOS POCHTA",
-    metaTitleUz: "Fargʻonaga yetkazib berish — EPOS POCHTA",
+    metaTitleRu: "Доставка в Фергану — посылки и курьер",
+    metaTitleUz: "Fargʻonaga yetkazib berish — pochta va kuryer",
     metaDescriptionRu:
-      "Доставка в Фергану: посылки, документы, e-commerce. Калькулятор ориентира без оферты.",
+      "Доставка в Фергану: посылки, документы, курьер из Ташкента. Калькулятор и маршрут tas/feg.",
     metaDescriptionUz:
-      "Fargʻonaga yetkazib berish: pochta, hujjatlar, e-commerce. Ofertasiz kalkulyator orientiri.",
+      "Fargʻonaga yetkazib berish: pochta, hujjatlar, Toshkentdan kuryer. Kalkulyator va tas/feg.",
   },
   {
     slug: "nukus",

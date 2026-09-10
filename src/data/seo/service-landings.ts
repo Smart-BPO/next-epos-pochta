@@ -18,12 +18,12 @@ const SERVICE_SEO: Record<
   { titleUz: string; titleRu: string; descUz: string; descRu: string }
 > = {
   documents: {
-    titleUz: "Hujjatlarni yetkazish Oʻzbekiston boʻylab",
-    titleRu: "Доставка документов по Узбекистану",
+    titleUz: "Hujjatlarni kuryer orqali yetkazish",
+    titleRu: "Доставка документов курьером",
     descUz:
-      "Shartnomalar va muhim qogʻozlarni kuryer orqali yetkazish. Kalkulyator orientiri, yakuniy narx — menejer tasdigʻi.",
+      "Hujjat yetkazish Oʻzbekiston boʻylab: shartnomalar va muhim qogʻozlar. Kalkulyator orientiri, yakuniy narx — menejer.",
     descRu:
-      "Курьерская доставка документов и деловой корреспонденции по Узбекистану. Ориентир в калькуляторе, итог подтверждает менеджер.",
+      "Доставка документов курьером по Узбекистану: договоры и деловая корреспонденция. Ориентир в калькуляторе, итог — менеджер.",
   },
   parcels: {
     titleUz: "Pochta va joʻnatmalar yetkazib berish",
@@ -34,28 +34,28 @@ const SERVICE_SEO: Record<
       "Междугородняя доставка посылок по Узбекистану. Ориентир по весу и маршруту — в калькуляторе.",
   },
   door: {
-    titleUz: "Eshikdan eshikka yetkazib berish",
-    titleRu: "Доставка до двери / курьер на дом",
+    titleUz: "Eshikdan eshikka yetkazib berish — eshikgacha",
+    titleRu: "Доставка до двери — курьер на дом",
     descUz:
-      "Punktga bormasdan eshikgacha yetkazish. Toshkent va boshqa shaharlar — soʻrov boʻyicha.",
+      "Eshikgacha yetkazish: punktga bormasdan. Toshkent va boshqa shaharlar — kalkulyator + menejer tasdigʻi.",
     descRu:
-      "Доставка до двери без визита в пункт. Ташкент и другие города — расчёт по запросу.",
+      "Доставка до двери без визита в пункт. Ташкент и регионы Узбекистана — ориентир в калькуляторе, итог подтверждает менеджер.",
   },
   courier: {
-    titleUz: "Kuryer chaqirish — olib ketish",
-    titleRu: "Вызов курьера — забор отправления",
+    titleUz: "Kuryer chaqirish Toshkent va viloyatlarda",
+    titleRu: "Вызов курьера в Ташкенте и регионах",
     descUz:
-      "Kuryer manzilingizga kelib joʻnatmani oladi. Kalkulyatorda pickup bilan orientir.",
+      "Kuryer chaqirish: manzildan olib ketish. Kalkulyatorda pickup bilan orientir, muddatni menejer tasdiqlaydi.",
     descRu:
-      "Курьер заберёт отправление с вашего адреса. Ориентир с опцией забора — в калькуляторе.",
+      "Вызов курьера: забор отправления с адреса. Ориентир с опцией забора в калькуляторе — слот подтверждает менеджер.",
   },
   ecommerce: {
     titleUz: "Internet-doʻkonlar uchun yetkazib berish",
     titleRu: "Доставка для интернет-магазинов",
     descUz:
-      "E-commerce logistika: ommaviy joʻnatmalar, statuslar, individual shartlar — ochiq tarifsiz.",
+      "Internet-doʻkon yetkazib berish: ommaviy joʻnatmalar, statuslar, COD imkoniyati. Individual shartlar — ochiq tarifsiz.",
     descRu:
-      "Логистика для e-commerce: массовые отправления, статусы, индивидуальные условия — без публичного прайса.",
+      "Доставка для интернет-магазинов: массовые отправления, статусы, COD. Индивидуальные условия — без публичного прайса.",
   },
   corporate: {
     titleUz: "Korporativ yetkazib berish",
@@ -66,12 +66,12 @@ const SERVICE_SEO: Record<
       "Регулярный забор и отчётность для компаний. Коммерческое предложение — по заявке.",
   },
   cod: {
-    titleUz: "Yetkazib berishda toʻlov (COD)",
-    titleRu: "Доставка с оплатой при получении (COD)",
+    titleUz: "Yetkazib berishda toʻlov (COD / naqd)",
+    titleRu: "Наложенный платёж при доставке (COD)",
     descUz:
-      "Qabul qiluvchidan toʻlov yigʻish bilan yetkazib berish — biznes shartlari boʻyicha.",
+      "Yetkazib berishda toʻlov: qabul qiluvchidan toʻlov yigʻish. Shartlar biznes arizasida kelishiladi.",
     descRu:
-      "Доставка с приёмом оплаты у получателя — на согласованных бизнес-условиях.",
+      "Наложенный платёж при доставке: приём оплаты у получателя. Условия согласуются в бизнес-заявке.",
   },
   returns: {
     titleUz: "Qaytarish joʻnatmalari",
