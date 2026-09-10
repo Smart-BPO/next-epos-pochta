@@ -76,10 +76,12 @@ function ConnectSteps({
   step,
   setStep,
   content,
+  locale,
 }: {
   step: number;
   setStep: (updater: (s: number) => number) => void;
   content: SiteCopy;
+  locale: Locale;
 }) {
   useFormikContext<ConnectValues>();
   const c = content.formCommon;
@@ -137,7 +139,7 @@ function ConnectSteps({
       {step === 2 ? (
         <>
           <FormAreaField name="comment" label={f.comment} />
-          <ConsentField label={`${c.consent}`} />
+          <ConsentField locale={locale} />
           <HoneypotField label={c.honeypot} />
         </>
       ) : null}
@@ -244,7 +246,12 @@ export function BusinessConnectForm({
         }}
       >
         <Form noValidate>
-          <ConnectSteps step={step} setStep={setStep} content={content} />
+          <ConnectSteps
+            step={step}
+            setStep={setStep}
+            content={content}
+            locale={locale}
+          />
         </Form>
       </Formik>
     </div>

@@ -7,6 +7,7 @@ import {
   getSettlementById,
   settlementLabel,
 } from "@/data/settlements";
+import { ConsentLabel } from "@/components/atoms/form/ConsentField";
 import { Button } from "@/components/atoms/Button";
 import { RangeSlider } from "@/components/atoms/RangeSlider";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
@@ -505,7 +506,7 @@ export function CalculatorForm({
                   onChange={(e) => setConsent(e.target.checked)}
                   className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
                 />
-                <span>{fc.consent}</span>
+                <ConsentLabel locale={locale} />
               </label>
               {consentError ? (
                 <p className={cn(fieldError, "m-0")}>{consentError}</p>

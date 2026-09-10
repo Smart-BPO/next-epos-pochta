@@ -317,13 +317,9 @@ export interface SiteCopy {
   };
   privacy: {
     title: string;
-    body: string[];
   };
   terms: {
     title: string;
-    body: string[];
-    prohibitedTitle: string;
-    prohibitedNote: string;
   };
   notFound: {
     title: string;
@@ -342,7 +338,6 @@ export interface SiteCopy {
     message: string;
     topic: string;
     trackNumber: string;
-    consent: string;
     clientTypePerson: string;
     clientTypeCompany: string;
     preferCall: string;

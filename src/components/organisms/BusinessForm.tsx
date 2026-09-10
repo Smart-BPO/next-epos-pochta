@@ -124,7 +124,7 @@ export function BusinessForm({
           />
         </FormRow>
         <FormAreaField name="comment" label={f.comment} />
-        <ConsentField label={c.consent} />
+        <ConsentField locale={locale} />
         <HoneypotField label={c.honeypot} />
         <FormActions submitLabel={content.ui.getOffer} />
       </Form>

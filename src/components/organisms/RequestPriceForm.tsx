@@ -499,7 +499,7 @@ export function RequestPriceForm({
                       ))}
                   </dl>
                 </div>
-                <ConsentField label={c.consent} />
+                <ConsentField locale={locale} />
                 <HoneypotField label={c.honeypot} />
               </>
             ) : null}

@@ -35,9 +35,11 @@ export const uzCopy: SiteCopy = {
     contactsDescription:
       "Telefon, ofis manzili, ish vaqti va Toshkentdagi xarita. Yandex / 2GIS NAP.",
     privacyTitle: "Maxfiylik siyosati",
-    privacyDescription: "EPOS POCHTA shaxsiy maʼlumotlarni qanday qayta ishlaydi.",
+    privacyDescription:
+      "EPOS POCHTA shaxsga doir maʼlumotlarni qanday yigʻadi, saqlaydi va himoya qiladi.",
     termsTitle: "Xizmat koʻrsatish shartlari",
-    termsDescription: "Yetkazib berish shartlari va cheklovlar.",
+    termsDescription:
+      "Saytdan foydalanish va kuryerlik xizmatlarini koʻrsatish shartlari.",
     notFoundTitle: "Sahifa topilmadi",
   },
   ui: {
@@ -60,8 +62,8 @@ export const uzCopy: SiteCopy = {
     menu: "Menyu",
     close: "Yopish",
     cookieText:
-      "Roziligingizdan soʻng tahlil uchun cookie ishlatamiz. Forma shaxsiy maʼlumotlari tahlilga yuborilmaydi.",
-    cookieAccept: "Qabul qilish",
+      "EPOS POCHTA sayt ishlashi, tilni tanlash, xavfsizlik va texnik sozlamalarni saqlash uchun zarur cookieʼlardan foydalanadi. Tahliliy cookieʼlar faqat foydalanuvchi roziligidan keyin yoqiladi. Ariza shakli va undagi shaxsga doir maʼlumotlar tegishli huquqiy asossiz xatti-harakatlarni tahlil qilish uchun tahliliy tizimlarga yuborilmaydi.",
+    cookieAccept: "Tahlilga roziman",
     cookieDecline: "Rad etish",
     required: "majburiy",
     placeholderEmail: "Email kelishuvdan keyin eʼlon qilinadi",
@@ -80,7 +82,7 @@ export const uzCopy: SiteCopy = {
       "Jismoniy shaxslar, internet-doʻkonlar va kompaniyalar uchun Oʻzbekiston boʻylab kuryerlik yetkazib berish.",
     legal: "«EPOS POCHTA» MCHJ · STIR 312949361",
     privacy: "Maxfiylik siyosati",
-    terms: "Xizmat koʻrsatish shartlari",
+    terms: "Foydalanish shartlari",
     contacts: "Aloqa",
     support: "Qoʻllab-quvvatlash",
     faqLink: "Savol-javoblar",
@@ -679,26 +681,10 @@ export const uzCopy: SiteCopy = {
     openInMaps: "Xaritada ochish",
   },
   privacy: {
-    title: "Maxfiylik siyosati",
-    body: [
-      "Bu matn ishchi asos boʻlib, yuridik hujjat sifatida EPOS POCHTA bilan kelishilishi kerak.",
-      "Biz faqat murojaatni qayta ishlash uchun kerakli maʼlumotlarni yigʻamiz: aloqa, joʻnatma parametrlari va ariza texnik maʼlumotlari (sana, til, URL, UTM).",
-      "Maʼlumotlar HTTPS orqali uzatiladi va mijoz bilan bogʻlanish, narx hisoblash va yetkazish shartnomasini bajarish uchun ishlatiladi.",
-      "Ochiq kuzatuv F.I.Sh., telefon, toʻliq manzil yoki joʻnatma narxini koʻrsatmaydi.",
-      "Arizalarni saqlash muddati va oʻchirish tartibi buyurtmachi bilan kelishilgandan keyin aks ettiriladi.",
-    ],
+    title: "Maxfiylik siyosati va shaxsga doir maʼlumotlarni qayta ishlash",
   },
   terms: {
-    title: "Xizmat koʻrsatish shartlari",
-    body: [
-      "Bu boʻlim shartlarning ishchi asosi boʻlib, EPOS POCHTA kelishilgan tahriri bilan almashtiriladi.",
-      "Yetkazib berish narxi soʻrov boʻyicha individual hisoblanadi va saytda tarif jadvali sifatida eʼlon qilinmaydi.",
-      "Yuboruvchi maʼlumotlarning toʻgʻriligi va tarkibning ruxsat etilganligi uchun javobgardir.",
-      "Muddatlar yoʻnalishga bogʻliq va hisobda tasdiqlanadi.",
-    ],
-    prohibitedTitle: "Taqiqlangan joʻnatmalar",
-    prohibitedNote:
-      "Taqiqlangan toifalarning toʻliq roʻyxati buyurtmachi roʻyxatini taqdim etgach eʼlon qilinadi. Shu paytgacha menejer arizani koʻrib chiqishda cheklovlarni aniqlaydi.",
+    title: "Xizmatlardan foydalanish va kuryerlik xizmatlarini koʻrsatish shartlari",
   },
   notFound: {
     title: "Sahifa topilmadi",
@@ -717,7 +703,6 @@ export const uzCopy: SiteCopy = {
     message: "Xabar",
     topic: "Mavzu",
     trackNumber: "Trek-raqam (agar bor)",
-    consent: "Shaxsiy maʼlumotlarni qayta ishlashga roziman",
     clientTypePerson: "Jismoniy shaxs",
     clientTypeCompany: "Kompaniya",
     preferCall: "Qoʻngʻiroq",

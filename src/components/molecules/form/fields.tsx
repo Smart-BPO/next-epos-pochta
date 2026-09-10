@@ -8,11 +8,11 @@ import {
   FormSelect,
   FormTextarea,
 } from "@/components/atoms/form/FormControls";
-import { ConsentField } from "@/components/atoms/form/ConsentField";
+import { ConsentField, ConsentLabel } from "@/components/atoms/form/ConsentField";
 import { HoneypotField } from "@/components/atoms/form/HoneypotField";
 import { FormActions } from "@/components/atoms/form/FormActions";
 
-export { FormField, FormRow, ConsentField, HoneypotField, FormActions };
+export { FormField, FormRow, ConsentField, ConsentLabel, HoneypotField, FormActions };
 
 type Option = { value: string; label: string };
 
