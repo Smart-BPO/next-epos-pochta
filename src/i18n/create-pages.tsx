@@ -31,6 +31,14 @@ import {
   routeMetaTitle,
   routePath,
 } from "@/data/delivery-routes";
+import { cityPath } from "@/data/delivery-cities";
+import {
+  isServiceSlug,
+  SERVICE_SLUGS,
+  serviceMetaDescription,
+  serviceMetaTitle,
+  servicePath,
+} from "@/data/seo/service-landings";
 import { PublicFormPageSkeleton } from "@/components/skeleton/public";
 
 const suspenseFallback = <PublicFormPageSkeleton />;
@@ -55,6 +63,61 @@ export function createServicesPage(locale: Locale) {
       return (
         <SiteLayout locale={locale}>
           <ServicesPageView locale={locale} />
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createServiceDetailPage(locale: Locale) {
+  return {
+    generateStaticParams: async () =>
+      SERVICE_SLUGS.map((slug) => ({ slug })),
+    generateMetadata: async ({
+      params,
+    }: {
+      params: Promise<{ slug: string }>;
+    }) => {
+      const { slug } = await params;
+      if (!isServiceSlug(slug)) {
+        return getLocalizedPageMetadata(locale, "services");
+      }
+      const path = localePath(locale, servicePath(slug));
+      const alternates = getLocalizedAlternates(servicePath(slug));
+      return createPageMetadata(
+        serviceMetaTitle(locale, slug),
+        serviceMetaDescription(locale, slug),
+        path,
+        {
+          locale,
+          ogLocale: ogLocale[locale],
+          alternates: Object.fromEntries(
+            Object.entries(alternates).map(([lang, href]) => [
+              lang,
+              canonicalPageUrl(href),
+            ]),
+          ),
+        },
+      );
+    },
+    Page: async function ServiceDetailPage({
+      params,
+    }: {
+      params: Promise<{ slug: string }>;
+    }) {
+      const { slug } = await params;
+      if (!isServiceSlug(slug)) notFound();
+      const { getContent } = await import("@/i18n/get-content");
+      const service = getContent(locale).services.items.find(
+        (item) => item.id === slug,
+      );
+      if (!service) notFound();
+      const { ServiceDetailPageView } = await import(
+        "@/views/ServiceDetailPageView"
+      );
+      return (
+        <SiteLayout locale={locale}>
+          <ServiceDetailPageView locale={locale} service={service} />
         </SiteLayout>
       );
     },
@@ -146,8 +209,8 @@ export function createDeliveryIndexPage(locale: Locale) {
     generateMetadata: async () => {
       const title =
         locale === "uz"
-          ? "Yetkazib berish shaharlari"
-          : "Доставка по городам Узбекистана";
+          ? "Yetkazib berish shaharlari — Oʻzbekiston boʻylab kuryer"
+          : "Доставка по городам Узбекистана — курьерская служба";
       const description =
         locale === "uz"
           ? "EPOS POCHTA — Toshkent, Samarqand, Buxoro va boshqa shaharlarga kuryerlik yetkazib berish. Kalkulyator va menejer tasdigʻi."
@@ -172,6 +235,64 @@ export function createDeliveryIndexPage(locale: Locale) {
       return (
         <SiteLayout locale={locale}>
           <DeliveryIndexPageView locale={locale} />
+        </SiteLayout>
+      );
+    },
+  };
+}
+
+export function createDeliveryCityPage(locale: Locale) {
+  return {
+    generateStaticParams: async () => {
+      const { loadDeliveryCities } = await import("@/lib/cms/delivery-hubs");
+      const cities = await loadDeliveryCities();
+      return cities.map((city) => ({ city: city.slug }));
+    },
+    generateMetadata: async ({
+      params,
+    }: {
+      params: Promise<{ city: string }>;
+    }) => {
+      const { city: slug } = await params;
+      const { getDeliveryCityBySlugAsync } = await import(
+        "@/lib/cms/delivery-hubs"
+      );
+      const city = await getDeliveryCityBySlugAsync(slug);
+      if (!city) return getLocalizedPageMetadata(locale, "services");
+      const title =
+        locale === "uz" ? city.metaTitleUz : city.metaTitleRu;
+      const description =
+        locale === "uz" ? city.metaDescriptionUz : city.metaDescriptionRu;
+      const path = localePath(locale, cityPath(city.slug));
+      const alternates = getLocalizedAlternates(cityPath(city.slug));
+      return createPageMetadata(title, description, path, {
+        locale,
+        ogLocale: ogLocale[locale],
+        alternates: Object.fromEntries(
+          Object.entries(alternates).map(([lang, href]) => [
+            lang,
+            canonicalPageUrl(href),
+          ]),
+        ),
+      });
+    },
+    Page: async function DeliveryCityPage({
+      params,
+    }: {
+      params: Promise<{ city: string }>;
+    }) {
+      const { city: slug } = await params;
+      const { getDeliveryCityBySlugAsync } = await import(
+        "@/lib/cms/delivery-hubs"
+      );
+      const city = await getDeliveryCityBySlugAsync(slug);
+      if (!city) notFound();
+      const { DeliveryCityLandingPageView } = await import(
+        "@/views/DeliveryCityLandingPageView"
+      );
+      return (
+        <SiteLayout locale={locale}>
+          <DeliveryCityLandingPageView locale={locale} city={city} />
         </SiteLayout>
       );
     },

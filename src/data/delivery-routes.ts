@@ -213,56 +213,65 @@ export function routeFaq(
   const from = cityDisplayName(route.from, locale);
   const to = cityDisplayName(route.to, locale);
   const eta = etaLabel(locale, route.etaBand);
+  const fromCityFaq =
+    locale === "uz" ? route.from.faqUz[0] : route.from.faqRu[0];
+  const toCityFaq = locale === "uz" ? route.to.faqUz[0] : route.to.faqRu[0];
 
-  if (locale === "uz") {
-    return [
-      {
-        question: `${from}dan ${to}ga qancha vaqt ketadi?`,
-        answer: `${eta}. Aniq muddat ogʻirlik, manzil va yuk turiga bogʻliq — menejer tasdiqlaydi.`,
-      },
-      {
-        question: `${from} — ${to} masofasi qancha?`,
-        answer: `Yoʻl boʻylab taxminan ${route.distanceKm} km. Bu faktual orientir, narx formulasi emas.`,
-      },
-      {
-        question: "Narxni qayerdan bilaman?",
-        answer:
-          "Kalkulyatorda joʻnatish va qabul punktlarini, ogʻirlik va oʻlchamlarni kiriting. Koʻrsatilgan summa — orientir, oferta emas.",
-      },
-      {
-        question: "Hujjat va pochta qabul qilinadimi?",
-        answer:
-          "Ha. Shaxsiy va biznes joʻnatmalar uchun. Muntazam oqimlar uchun biznes arizasini qoldiring.",
-      },
-      {
-        question: `Qaytarish yoʻnalishi ${to} — ${from} bormi?`,
-        answer: `Ha, alohida sahifa mavjud. Sahifadagi «orqaga» havoladan foydalaning yoki kalkulyatorda punktlarni almashtiring.`,
-      },
-    ];
+  const base =
+    locale === "uz"
+      ? [
+          {
+            question: `${from}dan ${to}ga qancha vaqt ketadi?`,
+            answer: `${eta}. Aniq muddat ogʻirlik, manzil va yuk turiga bogʻliq — menejer tasdiqlaydi.`,
+          },
+          {
+            question: `${from} — ${to} masofasi qancha?`,
+            answer: `Yoʻl boʻylab taxminan ${route.distanceKm} km. Bu faktual orientir, narx formulasi emas.`,
+          },
+          {
+            question: "Narxni qayerdan bilaman?",
+            answer:
+              "Kalkulyatorda joʻnatish va qabul punktlarini, ogʻirlik va oʻlchamlarni kiriting. Koʻrsatilgan summa — orientir, oferta emas.",
+          },
+          {
+            question: "Hujjat va pochta qabul qilinadimi?",
+            answer:
+              "Ha. Shaxsiy va biznes joʻnatmalar uchun. Muntazam oqimlar uchun biznes arizasini qoldiring.",
+          },
+          {
+            question: `Qaytarish yoʻnalishi ${to} — ${from} bormi?`,
+            answer: `Ha, alohida sahifa mavjud. Sahifadagi «orqaga» havoladan foydalaning yoki kalkulyatorda punktlarni almashtiring.`,
+          },
+        ]
+      : [
+          {
+            question: `Сколько занимает доставка из ${from} в ${to}?`,
+            answer: `${eta}. Точный срок зависит от веса, адреса и типа груза — подтверждает менеджер.`,
+          },
+          {
+            question: `Какое расстояние между ${from} и ${to}?`,
+            answer: `По дороге примерно ${route.distanceKm} км. Это фактологический ориентир, не формула цены.`,
+          },
+          {
+            question: "Где узнать стоимость?",
+            answer:
+              "В калькуляторе укажите пункты отправления и назначения, вес и габариты. Показанная сумма — ориентир, не оферта.",
+          },
+          {
+            question: "Принимаете документы и посылки?",
+            answer:
+              "Да. Для частных и бизнес-отправлений. Для регулярных потоков оставьте бизнес-заявку.",
+          },
+          {
+            question: `Есть направление обратно ${to} — ${from}?`,
+            answer: `Да, отдельная страница маршрута. Воспользуйтесь ссылкой «обратно» на этой странице или поменяйте пункты в калькуляторе.`,
+          },
+        ];
+
+  const extras: Array<{ question: string; answer: string }> = [];
+  if (fromCityFaq) extras.push(fromCityFaq);
+  if (toCityFaq && toCityFaq.question !== fromCityFaq?.question) {
+    extras.push(toCityFaq);
   }
-
-  return [
-    {
-      question: `Сколько занимает доставка из ${from} в ${to}?`,
-      answer: `${eta}. Точный срок зависит от веса, адреса и типа груза — подтверждает менеджер.`,
-    },
-    {
-      question: `Какое расстояние между ${from} и ${to}?`,
-      answer: `По дороге примерно ${route.distanceKm} км. Это фактологический ориентир, не формула цены.`,
-    },
-    {
-      question: "Где узнать стоимость?",
-      answer:
-        "В калькуляторе укажите пункты отправления и назначения, вес и габариты. Показанная сумма — ориентир, не оферта.",
-    },
-    {
-      question: "Принимаете документы и посылки?",
-      answer:
-        "Да. Для частных и бизнес-отправлений. Для регулярных потоков оставьте бизнес-заявку.",
-    },
-    {
-      question: `Есть направление обратно ${to} — ${from}?`,
-      answer: `Да, отдельная страница маршрута. Воспользуйтесь ссылкой «обратно» на этой странице или поменяйте пункты в калькуляторе.`,
-    },
-  ];
+  return [...base, ...extras];
 }

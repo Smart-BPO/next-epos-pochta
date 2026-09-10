@@ -85,8 +85,10 @@ export function SiteAnalytics() {
 })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=${ym}', 'ym');
 ym(${ym}, 'init', {
   ssr: true,
-  // Webvisor uses eval/new Function — blocked under strict CSP (Hostinger / browser Issues).
-  webvisor: false,
+  // Needs «Вебвизор» enabled in Metrika counter settings (Настройки → Вебвизор).
+  // App CSP is only frame-ancestors; if Hostinger adds script-src without unsafe-eval,
+  // recordings break — check browser console for CSP violations.
+  webvisor: true,
   clickmap: true,
   ecommerce: "dataLayer",
   accurateTrackBounce: true,

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
-import { cityDisplayName } from "@/data/delivery-cities";
+import { cityDisplayName, cityPath } from "@/data/delivery-cities";
 import {
   etaLabel,
   routeFaq,
@@ -64,13 +64,17 @@ export async function DeliveryRoutePageView({
   const eta = etaLabel(locale, route.etaBand);
   const homePath = localePath(locale, "/");
   const listPath = localePath(locale, "/delivery/");
-  const fromHubPath = `${listPath}#${route.from.code}`;
-  const toHubPath = `${listPath}#${route.to.code}`;
+  const fromHubPath = localePath(locale, cityPath(route.from.slug));
+  const toHubPath = localePath(locale, cityPath(route.to.slug));
   const thisPath = localePath(locale, routePath(route.from.code, route.to.code));
   const reversePath = localePath(
     locale,
     routePath(route.to.code, route.from.code),
   );
+  const fromBody =
+    (locale === "uz" ? route.from.bodyUz[0] : route.from.bodyRu[0]) ?? "";
+  const toBody =
+    (locale === "uz" ? route.to.bodyUz[0] : route.to.bodyRu[0]) ?? "";
 
   const outbound = routesFrom(route.from.code).filter(
     (r) => r.to.code !== route.to.code,
@@ -225,6 +229,35 @@ export async function DeliveryRoutePageView({
               ? "Saytda faqat orientir. Yakuniy narx va shartlar — menejer tasdigʻidan keyin."
               : "На сайте только ориентир. Финальная цена и условия — после подтверждения менеджера."}
           </p>
+
+          {(fromBody || toBody) && (
+            <div className="mt-6 space-y-3 text-sm leading-relaxed text-black/65">
+              {fromBody ? (
+                <p className="m-0">
+                  <Link
+                    href={fromHubPath}
+                    className="font-semibold text-primary underline-offset-2 hover:underline"
+                  >
+                    {fromName}
+                  </Link>
+                  {" — "}
+                  {fromBody}
+                </p>
+              ) : null}
+              {toBody ? (
+                <p className="m-0">
+                  <Link
+                    href={toHubPath}
+                    className="font-semibold text-primary underline-offset-2 hover:underline"
+                  >
+                    {toName}
+                  </Link>
+                  {" — "}
+                  {toBody}
+                </p>
+              ) : null}
+            </div>
+          )}
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Button href={calcHref(locale, route)} variant="primary">

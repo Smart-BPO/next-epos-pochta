@@ -96,7 +96,7 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
               return (
                 <a
                   key={service.id}
-                  href={`#${service.id}`}
+                  href={localePath(locale, `/services/${service.id}/`)}
                   className="flex h-full flex-col gap-2.5 rounded-2xl border border-black/20 bg-white p-3 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:rounded-3xl sm:p-[var(--card-pad)]"
                 >
                   <h3 className="m-0 min-h-[2.5em] font-display text-[0.8125rem] font-semibold uppercase leading-tight text-black sm:text-xl md:text-2xl">
@@ -145,7 +145,14 @@ export function ServicesPageView({ locale }: { locale: Locale }) {
                 </div>
 
                 <div className="min-w-0">
-                  <h2 className={sectionTitle}>{service.title}</h2>
+                  <h2 className={sectionTitle}>
+                    <a
+                      href={localePath(locale, `/services/${service.id}/`)}
+                      className="text-inherit underline-offset-2 hover:text-primary hover:underline"
+                    >
+                      {service.title}
+                    </a>
+                  </h2>
                   <div className="grid grid-cols-2 gap-3 text-sm text-black/70 sm:gap-4 sm:text-base">
                     <p className="m-0">
                       <strong className="font-semibold text-black">

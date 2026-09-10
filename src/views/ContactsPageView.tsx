@@ -3,7 +3,9 @@ import { getContent } from "@/i18n/get-content";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { PageCta } from "@/components/organisms/PageCta";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getRuntimeSiteConfig } from "@/lib/cms/site-settings";
+import { getCourierServiceSchema } from "@/utils/seo/json-ld";
 import {
   homeSectionTitle,
   pageIntro,
@@ -31,6 +33,7 @@ export async function ContactsPageView({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <JsonLd data={getCourierServiceSchema()} />
       <section className={pageIntro}>
         <PageContainer>
           <h1 className={pageIntroTitle}>{copy.contacts.title}</h1>

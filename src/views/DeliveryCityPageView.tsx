@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
-import { cityDisplayName } from "@/data/delivery-cities";
+import { cityDisplayName, cityPath } from "@/data/delivery-cities";
 import { loadDeliveryCities } from "@/lib/cms/delivery-hubs";
 import { routePath, routesFrom } from "@/data/delivery-routes";
 import { PageContainer } from "@/components/atoms/PageContainer";
@@ -43,8 +43,8 @@ export async function DeliveryIndexPageView({ locale }: { locale: Locale }) {
           <h1 className={pageIntroTitle}>{title}</h1>
           <p className={sectionLead}>
             {locale === "uz"
-              ? "Asosiy shaharlar orasidagi yoʻnalishlar (masalan, Toshkent → Samarqand). Kalkulyatorda orientir, yakuniy narx — menejer tasdigʻi."
-              : "Направления между ключевыми городами (например Ташкент → Самарканд). Ориентир в калькуляторе, финальную цену подтверждает менеджер."}
+              ? "Asosiy shaharlar orasidagi yoʻnalishlar (masalan, Toshkent → Samarqand). Shahar sahifasi, kalkulyatorda orientir, yakuniy narx — menejer tasdigʻi."
+              : "Направления между ключевыми городами (например Ташкент → Самарканд). Страница города, ориентир в калькуляторе, финальную цену подтверждает менеджер."}
           </p>
         </PageContainer>
       </section>
@@ -53,6 +53,7 @@ export async function DeliveryIndexPageView({ locale }: { locale: Locale }) {
           {cities.map((city) => {
             const name = cityDisplayName(city, locale);
             const outbound = routesFrom(city.code, cities);
+            const landing = localePath(locale, cityPath(city.slug));
             return (
               <div
                 key={city.code}
@@ -60,13 +61,28 @@ export async function DeliveryIndexPageView({ locale }: { locale: Locale }) {
                 className="scroll-mt-[var(--header-height)]"
               >
                 <h2 className={sectionTitle}>
-                  <span className="mr-2">{name}</span>
+                  <Link
+                    href={landing}
+                    className="mr-2 text-inherit underline-offset-2 hover:text-primary hover:underline"
+                  >
+                    {name}
+                  </Link>
                   <span className="text-sm font-medium uppercase tracking-wide text-black/35">
                     {city.code}
                   </span>
                 </h2>
-                <p className="m-0 mb-3 max-w-2xl text-sm text-black/55">
+                <p className="m-0 mb-2 max-w-2xl text-sm text-black/55">
                   {locale === "uz" ? city.etaHintUz : city.etaHintRu}
+                </p>
+                <p className="m-0 mb-3 text-sm">
+                  <Link
+                    href={landing}
+                    className="font-medium text-primary underline-offset-2 hover:underline"
+                  >
+                    {locale === "uz"
+                      ? `${name}ga yetkazib berish →`
+                      : `Доставка в ${name} →`}
+                  </Link>
                 </p>
                 <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
                   {outbound.map((r) => (

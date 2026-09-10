@@ -817,3 +817,8 @@ export function listDeliveryCityCodes(): string[] {
 export function cityDisplayName(city: DeliveryCity, locale: "uz" | "ru"): string {
   return locale === "uz" ? city.nameUz : city.nameRu;
 }
+
+/** Public city landing path (slug, not route code). */
+export function cityPath(slug: string) {
+  return `/delivery/${slug}/`;
+}

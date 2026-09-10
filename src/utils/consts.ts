@@ -4,9 +4,9 @@ import { getCanonicalSiteUrl } from "./seo/indexing";
 export const SITE_CONFIG = {
   name: "EPOS POCHTA",
   legalName: "ООО «EPOS POCHTA»",
-  title: "EPOS POCHTA — Oʻzbekiston boʻylab yetkazib berish",
+  title: "EPOS POCHTA — kuryerlik yetkazib berish Oʻzbekiston boʻylab",
   description:
-    "EPOS POCHTA — Oʻzbekiston boʻylab kuryerlik yetkazib berish. Joʻnatmani olib ketamiz, yetkazamiz va har bosqichda statusni xabar qilamiz.",
+    "EPOS POCHTA — Oʻzbekiston va Toshkent boʻylab kuryerlik yetkazib berish: hujjatlar, pochta, eshikgacha. Kalkulyator orientiri, yakuniy narx — menejer.",
   url: getCanonicalSiteUrl(),
   phone: getPublicEnv("NEXT_PUBLIC_CONTACT_PHONE", "+998887092299"),
   phoneDisplay: "+998 88 709 22 99",

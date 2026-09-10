@@ -337,6 +337,84 @@ const newsArticlesSeed: SeedArticle[] = [
       },
     },
   },
+  {
+    id: "choose-courier",
+    slug: "how-to-choose-courier-uzbekistan",
+    status: "published",
+    category: "product",
+    publishedAt: "2026-09-08T09:00:00.000Z",
+    coverImage: "/images/services/04-courier-call.webp",
+    tags: ["guides", "courier", "seo"],
+    locales: {
+      uz: {
+        title: "Oʻzbekistonda kuryerlik xizmatini qanday tanlash",
+        excerpt:
+          "Muddat, kuzatuv, shaharlar qamrovi va shaffof hisob — kuryerni tanlashda muhim mezonlar. Ochiq prays majburiy emas.",
+        body: [
+          "Kuryerlik xizmatini tanlashda faqat «eng arzon» soʻzlariga emas, balki qamrov, muddat, statuslar va shartlarning tushunarlililigiga eʼtibor bering.",
+          "## Qamrov va yoʻnalishlar",
+          "Kerakli shaharlar va eshikgacha yetkazish imkoniyatini tekshiring. EPOS POCHTA da shahar sahifalari va yoʻnalishlar katalogi mavjud.",
+          "## Narx qanday kelishiladi",
+          "Ochiq tarif jadvali boʻlmasa ham, kalkulyator orientir beradi, yakuniy narxni menejer tasdiqlaydi — bu oferta emas.",
+          "## Biznes uchun",
+          "Internet-doʻkonlar uchun muntazam olib ketish, COD va qaytarishlar alohida kelishiladi. «Biznes uchun» arizasini qoldiring.",
+        ],
+      },
+      ru: {
+        title: "Как выбрать курьерскую службу в Узбекистане",
+        excerpt:
+          "Сроки, трекинг, покрытие городов и понятный расчёт — критерии выбора курьера. Публичный прайс не обязателен.",
+        body: [
+          "При выборе курьерской службы смотрите не только на слово «дешево», но и на покрытие, сроки, статусы и прозрачность условий.",
+          "## Покрытие и маршруты",
+          "Проверьте нужные города и доставку до двери. У EPOS POCHTA есть городские страницы и каталог направлений.",
+          "## Как согласуется цена",
+          "Даже без открытого тарифного прайса калькулятор даёт ориентир, а финальную цену подтверждает менеджер — это не оферта.",
+          "## Для бизнеса",
+          "Для интернет-магазинов отдельно согласуются регулярный забор, COD и возвраты. Оставьте заявку на странице «Для бизнеса».",
+        ],
+      },
+    },
+  },
+  {
+    id: "ecommerce-cod",
+    slug: "ecommerce-delivery-cod-returns",
+    status: "published",
+    category: "business",
+    publishedAt: "2026-09-09T09:00:00.000Z",
+    coverImage: "/images/services/05-ecommerce-delivery.webp",
+    tags: ["business", "ecommerce", "cod", "returns"],
+    locales: {
+      uz: {
+        title: "Internet-doʻkonlar: yetkazib berish, COD va qaytarishlar",
+        excerpt:
+          "E-commerce logistika: ommaviy joʻnatmalar, qabul qilishda toʻlov va qaytarish oqimlari — individual shartlar bilan.",
+        body: [
+          "Internet-doʻkon uchun logistika — bu faqat «A dan B ga» emas: ommaviy oqim, statuslar, COD va qaytarishlar birgalikda ishlashi kerak.",
+          "## Nima kelishiladi",
+          "Oylik hajm, shaharlar, olib ketish jadvali, COD va qaytarish sxemasi. EPOS POCHTA ochiq prays eʼlon qilmaydi — tijorat taklifi ariza orqali.",
+          "## Qayerdan boshlash",
+          "Xizmatlar sahifasidagi e-commerce / COD / qaytarish bloklarini oching yoki «Narx soʻrash» formasini toʻldiring.",
+          "## Kuzatuv",
+          "Trek-raqam va statuslar mijoz ishonchini oshiradi. Tracking API ulanishi rejalashtirilgan.",
+        ],
+      },
+      ru: {
+        title: "Доставка для интернет-магазинов: COD и возвраты",
+        excerpt:
+          "E-commerce логистика: массовые отправления, оплата при получении и возвратные потоки — на индивидуальных условиях.",
+        body: [
+          "Логистика для интернет-магазина — это не только «из A в B»: нужны массовый поток, статусы, COD и возвраты в одной схеме.",
+          "## Что согласуется",
+          "Месячный объём, города, график забора, COD и схема возвратов. EPOS POCHTA не публикует открытый прайс — коммерческое предложение по заявке.",
+          "## С чего начать",
+          "Откройте блоки e-commerce / COD / возвраты в каталоге услуг или заполните форму «Запросить стоимость».",
+          "## Отслеживание",
+          "Трек-номер и статусы повышают доверие покупателя. Подключение tracking API запланировано.",
+        ],
+      },
+    },
+  },
 ];
 
 function normalizeSeed(article: SeedArticle): NewsArticle {

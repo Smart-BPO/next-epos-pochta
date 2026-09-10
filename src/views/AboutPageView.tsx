@@ -6,7 +6,9 @@ import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { GeoSearch } from "@/components/molecules/GeoSearch";
 import { PageCta } from "@/components/organisms/PageCta";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { SITE_CONFIG } from "@/utils/consts";
+import { getCourierServiceSchema } from "@/utils/seo/json-ld";
 import {
   homeSectionLead,
   homeSectionTitle,
@@ -22,6 +24,7 @@ export function AboutPageView({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <JsonLd data={getCourierServiceSchema()} />
       <section className={pageIntro}>
         <PageContainer>
           <h1 className={pageIntroTitle}>{copy.about.title}</h1>

@@ -4,10 +4,10 @@ export const uzCopy: SiteCopy = {
   meta: {
     homeTitle: "Oʻzbekiston boʻylab kuryerlik yetkazib berish — EPOS POCHTA",
     homeDescription:
-      "Hujjat va pochta yetkazib berish: kalkulyator orientiri, statuslar, kuryer va biznes yechimlari. Ochiq tarifsiz.",
-    servicesTitle: "Kuryerlik yetkazib berish xizmatlari",
+      "Kuryerlik yetkazib berish Oʻzbekiston boʻylab: hujjatlar, pochta, eshikgacha. Kalkulyatorda orientir, yakuniy narx — menejer. Ochiq tarifsiz.",
+    servicesTitle: "Kuryerlik yetkazib berish xizmatlari — hujjat, pochta, e-com",
     servicesDescription:
-      "Hujjatlar, pochta, eshikgacha yetkazish, kuryer, e-commerce va korporativ logistika — soʻrov boʻyicha hisob.",
+      "Hujjatlar, pochta, eshikgacha yetkazish, kuryer chaqirish, internet-doʻkon va korporativ logistika — soʻrov boʻyicha hisob.",
     businessTitle: "Biznes va internet-doʻkonlar uchun yetkazib berish",
     businessDescription:
       "Muntazam olib ketish, ommaviy joʻnatmalar, COD, qaytarishlar, API va hisobotlar — Oʻzbekistondagi e-commerce uchun.",
@@ -16,24 +16,24 @@ export const uzCopy: SiteCopy = {
     requestPriceTitle: "Biznes uchun tijorat taklifi",
     requestPriceDescription:
       "Internet-doʻkonlar va kompaniyalar uchun individual hisob arizasi: hajm, API, olib ketish va aloqa. Shartlarni menejer tasdiqlaydi.",
-    calculatorTitle: "Yetkazib berish narxi kalkulyatori",
+    calculatorTitle: "Yetkazib berish narxini hisoblash — kalkulyator",
     calculatorDescription:
-      "Shaharlar, ogʻirlik va oʻlchamlar boʻyicha taxminiy narx. Oferta emas — yakuniy narxni menejer tasdiqlaydi.",
+      "Yetkazib berish narxini hisoblang: shaharlar, ogʻirlik va oʻlchamlar. Oferta emas — yakuniy narxni menejer tasdiqlaydi.",
     faqTitle: "EPOS POCHTA yetkazib berish boʻyicha savol-javoblar",
     faqDescription:
       "Narxni qanday hisoblash, muddat, kuryer chaqirish va trek — EPOS POCHTA javoblari.",
     businessConnectTitle: "Biznes uchun ulanish",
     businessConnectDescription:
       "Muntazam yetkazib berish, API va korporativ shartlarni ulash uchun bosqichma-bosqich ariza.",
-    aboutTitle: "EPOS POCHTA kompaniyasi haqida",
+    aboutTitle: "EPOS POCHTA kompaniyasi haqida — kuryerlik xizmati",
     aboutDescription:
-      "EPOS POCHTA — Oʻzbekiston Respublikasi hududida yetkazib berish xizmatlarini taqdim etuvchi kuryerlik kompaniyasi.",
+      "EPOS POCHTA — Oʻzbekiston Respublikasi hududida kuryerlik yetkazib berish. Yuridik maʼlumotlar, missiya va geografiya.",
     newsTitle: "EPOS POCHTA yetkazib berish yangiliklari",
     newsDescription:
       "EPOS POCHTA yangiliklari: xizmat ishga tushishi, geografiya va biznes yechimlari.",
-    contactsTitle: "EPOS POCHTA aloqasi — Toshkent",
+    contactsTitle: "EPOS POCHTA aloqasi — Toshkent ofisi",
     contactsDescription:
-      "Telefon, ofis manzili, ish vaqti va Toshkentdagi xarita.",
+      "Telefon, ofis manzili, ish vaqti va Toshkentdagi xarita. Yandex / 2GIS NAP.",
     privacyTitle: "Maxfiylik siyosati",
     privacyDescription: "EPOS POCHTA shaxsiy maʼlumotlarni qanday qayta ishlaydi.",
     termsTitle: "Xizmat koʻrsatish shartlari",
@@ -87,9 +87,9 @@ export const uzCopy: SiteCopy = {
     geography: "Shaharlar boʻylab yetkazib berish",
   },
   home: {
-    heroTitle: "Oʻzbekiston boʻylab pochtalarni yetkazamiz",
+    heroTitle: "Oʻzbekiston boʻylab kuryerlik yetkazib berish",
     heroLead:
-      "Joʻnatmani sizdan olamiz, qabul qiluvchiga yetkazamiz va har bosqichda statusni xabar qilamiz",
+      "Hujjatlar, pochta va biznes joʻnatmalari — Toshkent va viloyatlar. Kalkulyatorda orientir, yakuniy narxni menejer tasdiqlaydi.",
     heroNote: "Jismoniy shaxslar, internet-doʻkonlar va kompaniyalar uchun",
     trackTitle: "Pochta qayerda?",
     trackPlaceholder: "Trek-raqamni kiriting",
@@ -488,7 +488,7 @@ export const uzCopy: SiteCopy = {
   business: {
     heroTitle: "Internet-doʻkonlar va kompaniyalar uchun yetkazib berish",
     heroLead:
-      "Oʻz kuryer xizmatisiz muntazam olib ketish, statuslar, qaytarishlar va API.",
+      "Oʻz kuryer xizmatisiz muntazam olib ketish, statuslar, qaytarishlar va API. Individual hisob — ochiq praysiz.",
     segmentsTitle: "Kimlar uchun",
     segments: [
       {

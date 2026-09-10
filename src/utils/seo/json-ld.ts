@@ -141,9 +141,61 @@ export function getServiceCatalogSchema(
           "@type": "Country",
           name: "Uzbekistan",
         },
-        url: `${siteUrl}${path}#${service.id}`,
+        url: `${siteUrl}${localePath(locale, `/services/${service.id}/`)}`,
       },
     })),
+  };
+}
+
+export function getServiceDetailSchema(
+  locale: Locale,
+  service: { id: string; title: string; audience: string; howItWorks: string },
+) {
+  const siteUrl = siteOrigin();
+  const path = localePath(locale, `/services/${service.id}/`);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.title,
+    description: `${service.audience}. ${service.howItWorks}`,
+    url: `${siteUrl}${path}`,
+    provider: { "@id": `${siteUrl}/#organization` },
+    serviceType: "Courier delivery",
+    areaServed: {
+      "@type": "Country",
+      name: "Uzbekistan",
+    },
+  };
+}
+
+export function getDeliveryCitySchema(
+  locale: Locale,
+  city: (typeof DELIVERY_CITIES)[number],
+) {
+  const siteUrl = siteOrigin();
+  const path = localePath(locale, `/delivery/${city.slug}/`);
+  const name = locale === "uz" ? city.nameUz : city.nameRu;
+  const description =
+    locale === "uz"
+      ? city.metaDescriptionUz || city.leadUz
+      : city.metaDescriptionRu || city.leadRu;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name:
+      locale === "uz"
+        ? `${name}ga kuryerlik yetkazib berish`
+        : `Курьерская доставка в ${name}`,
+    description,
+    url: `${siteUrl}${path}`,
+    provider: { "@id": `${siteUrl}/#organization` },
+    serviceType: "Courier delivery",
+    areaServed: {
+      "@type": "City",
+      name: city.nameEn,
+      containedInPlace: { "@type": "Country", name: "Uzbekistan" },
+    },
   };
 }
 
