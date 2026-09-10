@@ -9,6 +9,9 @@ export const PRODUCTION_HOSTS = new Set([
   // Legacy aliases — still HTTPS / redirect targets
   "epospochta.uz",
   "www.epospochta.uz",
+  // Old marketing host — permanent redirect to canonical
+  "epos.nocode.uz",
+  "www.epos.nocode.uz",
 ]);
 
 const STAGING_HOSTS = new Set(["localhost", "127.0.0.1"]);

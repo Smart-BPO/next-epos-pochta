@@ -26,7 +26,7 @@ import {
 } from "@/lib/news/repository";
 import {
   getDeliveryRoute,
-  listDeliveryRouteParams,
+  listPriorityDeliveryRouteParams,
   routeMetaDescription,
   routeMetaTitle,
   routePath,
@@ -39,6 +39,7 @@ import {
   serviceMetaTitle,
   servicePath,
 } from "@/data/seo/service-landings";
+import { SEO_PRIORITY_HUB_CODES } from "@/data/seo/goals";
 import { PublicFormPageSkeleton } from "@/components/skeleton/public";
 
 const suspenseFallback = <PublicFormPageSkeleton />;
@@ -246,18 +247,20 @@ export function createDeliveryCityPage(locale: Locale) {
     generateStaticParams: async () => {
       const { loadDeliveryCities } = await import("@/lib/cms/delivery-hubs");
       const cities = await loadDeliveryCities();
-      return cities.map((city) => ({ city: city.slug }));
+      // Param must be `from` — same name as nested /delivery/[from]/[to]/
+      return cities.map((city) => ({ from: city.slug }));
     },
     generateMetadata: async ({
       params,
     }: {
-      params: Promise<{ city: string }>;
+      params: Promise<{ from: string }>;
     }) => {
-      const { city: slug } = await params;
-      const { getDeliveryCityBySlugAsync } = await import(
-        "@/lib/cms/delivery-hubs"
-      );
-      const city = await getDeliveryCityBySlugAsync(slug);
+      const { from: key } = await params;
+      const { getDeliveryCityBySlugAsync, getDeliveryCityByCodeAsync } =
+        await import("@/lib/cms/delivery-hubs");
+      const city =
+        (await getDeliveryCityBySlugAsync(key)) ??
+        (await getDeliveryCityByCodeAsync(key));
       if (!city) return getLocalizedPageMetadata(locale, "services");
       const title =
         locale === "uz" ? city.metaTitleUz : city.metaTitleRu;
@@ -279,22 +282,30 @@ export function createDeliveryCityPage(locale: Locale) {
     Page: async function DeliveryCityPage({
       params,
     }: {
-      params: Promise<{ city: string }>;
+      params: Promise<{ from: string }>;
     }) {
-      const { city: slug } = await params;
-      const { getDeliveryCityBySlugAsync } = await import(
-        "@/lib/cms/delivery-hubs"
-      );
-      const city = await getDeliveryCityBySlugAsync(slug);
-      if (!city) notFound();
-      const { DeliveryCityLandingPageView } = await import(
-        "@/views/DeliveryCityLandingPageView"
-      );
-      return (
-        <SiteLayout locale={locale}>
-          <DeliveryCityLandingPageView locale={locale} city={city} />
-        </SiteLayout>
-      );
+      const { from: key } = await params;
+      const {
+        getDeliveryCityBySlugAsync,
+        getDeliveryCityByCodeAsync,
+      } = await import("@/lib/cms/delivery-hubs");
+      const bySlug = await getDeliveryCityBySlugAsync(key);
+      if (bySlug) {
+        const { DeliveryCityLandingPageView } = await import(
+          "@/views/DeliveryCityLandingPageView"
+        );
+        return (
+          <SiteLayout locale={locale}>
+            <DeliveryCityLandingPageView locale={locale} city={bySlug} />
+          </SiteLayout>
+        );
+      }
+      const byCode = await getDeliveryCityByCodeAsync(key);
+      if (byCode) {
+        const { redirect } = await import("next/navigation");
+        redirect(localePath(locale, cityPath(byCode.slug)));
+      }
+      notFound();
     },
   };
 }
@@ -304,7 +315,7 @@ export function createDeliveryRoutePage(locale: Locale) {
     generateStaticParams: async () => {
       const { loadDeliveryCities } = await import("@/lib/cms/delivery-hubs");
       const cities = await loadDeliveryCities();
-      return listDeliveryRouteParams(cities);
+      return listPriorityDeliveryRouteParams(cities, SEO_PRIORITY_HUB_CODES);
     },
     generateMetadata: async ({
       params,

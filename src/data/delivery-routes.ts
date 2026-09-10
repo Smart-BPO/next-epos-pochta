@@ -110,6 +110,28 @@ export function listDeliveryRouteParams(
   return params;
 }
 
+/** Fewer SSG pages for Hostinger memory — priority corridors only; rest on-demand. */
+export function listPriorityDeliveryRouteParams(
+  cities: DeliveryCity[] = DELIVERY_CITIES,
+  priorityCodes: readonly string[] = [
+    "tas",
+    "skd",
+    "bhk",
+    "azn",
+    "nma",
+    "feg",
+  ],
+): Array<{ from: string; to: string }> {
+  const allowed = new Set(
+    priorityCodes.map((c) => c.toLowerCase()).filter((c) =>
+      cities.some((city) => city.code === c),
+    ),
+  );
+  return listDeliveryRouteParams(cities).filter(
+    ({ from, to }) => allowed.has(from) && allowed.has(to),
+  );
+}
+
 export function routesFrom(
   code: string,
   cities: DeliveryCity[] = DELIVERY_CITIES,

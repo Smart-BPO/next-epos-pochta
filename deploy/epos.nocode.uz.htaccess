@@ -1,0 +1,12 @@
+# Static host redirect for the legacy marketing domain.
+# Place this file as `public_html/.htaccess` on the Hostinger site that serves
+# epos.nocode.uz (different IP from epos-pochta.uz), OR paste the rules into
+# that site's existing .htaccess BEFORE any Next/Node proxy rules.
+#
+# Effect: https://epos.nocode.uz/* → https://epos-pochta.uz/* (301)
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^(www\.)?epos\.nocode\.uz$ [NC]
+  RewriteRule ^(.*)$ https://epos-pochta.uz/$1 [R=301,L,QSA]
+</IfModule>

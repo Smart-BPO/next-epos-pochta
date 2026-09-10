@@ -27,6 +27,20 @@ function isDashboardPath(pathname: string) {
  */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const hostHeader =
+    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const hostname = (hostHeader ?? "").split(":")[0].toLowerCase();
+
+  // Static-style permanent redirect for legacy nocode host (any path).
+  if (
+    hostname === "epos.nocode.uz" ||
+    hostname === "www.epos.nocode.uz"
+  ) {
+    const target = new URL(request.nextUrl.href);
+    target.protocol = "https:";
+    target.host = "epos-pochta.uz";
+    return NextResponse.redirect(target, 301);
+  }
 
   if (
     pathname === "/uz" ||
