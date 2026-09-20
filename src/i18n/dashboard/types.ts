@@ -593,7 +593,12 @@ export type DashCopy = {
     pricingFrom: string;
     pricingTo: string;
     pricingKg: string;
+    pricingDims: string;
+    pricingSection: string;
     pricingRun: string;
+    pricingRunBoth: string;
+    pricingRunWeight: string;
+    pricingRunDims: string;
     trackLabel: string;
     trackRun: string;
     orderId: string;

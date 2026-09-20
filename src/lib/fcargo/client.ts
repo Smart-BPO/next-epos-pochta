@@ -219,7 +219,8 @@ export function fcargoListStatuses() {
 export function fcargoCalculatePrice(input: {
   from_region_id: number;
   to_region_id: number;
-  weight: number;
+  /** Omit when quoting by dimensions only (OpenAPI: weight XOR L×W×H). */
+  weight?: number;
   length?: number;
   width?: number;
   height?: number;

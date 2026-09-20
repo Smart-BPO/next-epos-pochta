@@ -6,94 +6,17 @@ import { hasMessagingSecretsKey } from "@/lib/crypto/secrets";
 import {
   clearFcargoApiKey,
   markFcargoTest,
-  resolveFcargoConfig,
   saveFcargoSettings,
   type FcargoMode,
 } from "@/lib/fcargo/settings";
-import {
-  fcargoCalculatePrice,
-  fcargoGetOrder,
-  fcargoHealth,
-  fcargoListOrders,
-  fcargoListPackages,
-  fcargoListRegions,
-  fcargoListStatuses,
-  fcargoResolveSoato,
-  fcargoTrackPackage,
-} from "@/lib/fcargo/client";
 import { syncOpenFcargoOrders } from "@/lib/fcargo/sync-status";
+import { runFcargoDebugProbe } from "@/lib/fcargo/probe";
+
+export type { FcargoDebugProbeResult } from "@/lib/fcargo/probe";
 
 function revalidate() {
   revalidatePath("/dashboard/settings/fcargo/");
   revalidatePath("/dashboard/settings/");
-}
-
-export type FcargoDebugProbeResult = {
-  ok: boolean;
-  probe: string;
-  elapsedMs: number;
-  status?: number;
-  code?: string;
-  message?: string;
-  requestId?: string;
-  /** Sanitized JSON — never includes API key */
-  data: unknown;
-  meta: {
-    tenantDomain: string;
-    baseUrl: string;
-    mode: string;
-    source: string;
-  } | null;
-};
-
-async function withProbe(
-  probe: string,
-  run: () => Promise<
-    | { ok: true; data: unknown; requestId?: string }
-    | {
-        ok: false;
-        code: string;
-        message: string;
-        status: number;
-        details?: unknown;
-      }
-  >,
-): Promise<FcargoDebugProbeResult> {
-  const started = Date.now();
-  const cfg = await resolveFcargoConfig();
-  const meta = cfg
-    ? {
-        tenantDomain: cfg.tenantDomain,
-        baseUrl: cfg.baseUrl,
-        mode: cfg.mode,
-        source: cfg.source,
-      }
-    : null;
-
-  const result = await run();
-  const elapsedMs = Date.now() - started;
-
-  if (result.ok) {
-    return {
-      ok: true,
-      probe,
-      elapsedMs,
-      requestId: result.requestId,
-      data: result.data,
-      meta,
-    };
-  }
-
-  return {
-    ok: false,
-    probe,
-    elapsedMs,
-    status: result.status,
-    code: result.code,
-    message: result.message,
-    data: result.details ?? null,
-    meta,
-  };
 }
 
 export type FcargoSaveState = {
@@ -102,6 +25,12 @@ export type FcargoSaveState = {
   message?: string;
   warning?: string;
 } | null;
+
+async function withRegionsProbe() {
+  const fd = new FormData();
+  fd.set("probe", "regions");
+  return runFcargoDebugProbe(fd);
+}
 
 export async function saveFcargoSettingsAction(
   _prev: FcargoSaveState,
@@ -155,9 +84,7 @@ export async function saveFcargoSettingsAction(
     // Prefer locations list — same auth path as pricing/orders.
     let warning: string | undefined;
     if (enabled) {
-      const probe = await withProbe("GET /locations/regions", () =>
-        fcargoListRegions(),
-      );
+      const probe = await withRegionsProbe();
       if (probe.ok) {
         await markFcargoTest(true);
       } else {
@@ -193,9 +120,7 @@ export async function testFcargoAction() {
   await requireMutation("fcargo_secrets");
   const { clearFcargoTenantCircuit } = await import("@/lib/fcargo/runtime");
   clearFcargoTenantCircuit();
-  const result = await withProbe("GET /locations/regions", () =>
-    fcargoListRegions(),
-  );
+  const result = await withRegionsProbe();
   if (!result.ok) {
     await markFcargoTest(false, result.message);
     revalidate();
@@ -206,118 +131,10 @@ export async function testFcargoAction() {
   return result;
 }
 
-export async function debugFcargoProbeAction(
-  formData: FormData,
-): Promise<FcargoDebugProbeResult> {
+/** @deprecated Prefer POST /api/dashboard/fcargo/probe/ (avoids Hostinger page POST 404). */
+export async function debugFcargoProbeAction(formData: FormData) {
   await requireMutation("fcargo_secrets");
-  const { clearFcargoTenantCircuit } = await import("@/lib/fcargo/runtime");
-  // Explicit CMS probes always hit the API (and write request_log).
-  clearFcargoTenantCircuit();
-  const probe = String(formData.get("probe") ?? "").trim();
-
-  switch (probe) {
-    case "health":
-      return withProbe("GET /health", () => fcargoHealth());
-    case "statuses":
-      return withProbe("GET /statuses", () => fcargoListStatuses());
-    case "regions":
-      return withProbe("GET /locations/regions", () => fcargoListRegions());
-    case "orders":
-      return withProbe("GET /orders", () => fcargoListOrders());
-    case "packages":
-      return withProbe("GET /packages", () => fcargoListPackages());
-    case "pricing": {
-      const from = Number(formData.get("from_region_id"));
-      const to = Number(formData.get("to_region_id"));
-      const weight = Number(formData.get("weight") || 2.5);
-      const length = Number(formData.get("length") || 0);
-      const width = Number(formData.get("width") || 0);
-      const height = Number(formData.get("height") || 0);
-      if (!Number.isFinite(from) || !Number.isFinite(to)) {
-        return {
-          ok: false,
-          probe: "POST /pricing/calculate",
-          elapsedMs: 0,
-          message: "from_region_id / to_region_id required",
-          data: null,
-          meta: null,
-        };
-      }
-      const body: {
-        from_region_id: number;
-        to_region_id: number;
-        weight: number;
-        length?: number;
-        width?: number;
-        height?: number;
-      } = {
-        from_region_id: from,
-        to_region_id: to,
-        weight: Number.isFinite(weight) && weight > 0 ? weight : 2.5,
-      };
-      if (Number.isFinite(length) && length > 0) body.length = length;
-      if (Number.isFinite(width) && width > 0) body.width = width;
-      if (Number.isFinite(height) && height > 0) body.height = height;
-      return withProbe("POST /pricing/calculate", () =>
-        fcargoCalculatePrice(body),
-      );
-    }
-    case "track": {
-      const tracking = String(formData.get("tracking") ?? "").trim();
-      if (!tracking) {
-        return {
-          ok: false,
-          probe: "GET /packages/{tracking}/track",
-          elapsedMs: 0,
-          message: "tracking required",
-          data: null,
-          meta: null,
-        };
-      }
-      return withProbe(`GET /packages/${tracking}/track`, () =>
-        fcargoTrackPackage(tracking),
-      );
-    }
-    case "order": {
-      const orderId = String(formData.get("order_id") ?? "").trim();
-      if (!orderId) {
-        return {
-          ok: false,
-          probe: "GET /orders/{id}",
-          elapsedMs: 0,
-          message: "order_id required",
-          data: null,
-          meta: null,
-        };
-      }
-      return withProbe(`GET /orders/${orderId}`, () => fcargoGetOrder(orderId));
-    }
-    case "resolve": {
-      const soato = String(formData.get("soato") ?? "").trim();
-      if (!soato) {
-        return {
-          ok: false,
-          probe: "GET /locations/resolve/{soato}",
-          elapsedMs: 0,
-          message: "soato required",
-          data: null,
-          meta: null,
-        };
-      }
-      return withProbe(`GET /locations/resolve/${soato}`, () =>
-        fcargoResolveSoato(soato),
-      );
-    }
-    default:
-      return {
-        ok: false,
-        probe: probe || "unknown",
-        elapsedMs: 0,
-        message: "unknown probe",
-        data: null,
-        meta: null,
-      };
-  }
+  return runFcargoDebugProbe(formData);
 }
 
 export async function syncFcargoOrdersAction(): Promise<{
