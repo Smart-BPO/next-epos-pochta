@@ -4,10 +4,7 @@ import {
   timingSafeEqualString,
 } from "@/lib/fcargo/settings";
 import { logFcargoRequest } from "@/lib/fcargo/log";
-import {
-  applyFcargoStatusUpdate,
-  parseFcargoWebhookPayload,
-} from "@/lib/fcargo/sync-status";
+import { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -74,7 +71,7 @@ export async function POST(request: Request) {
   }
 
   const body = await readBody(request);
-  const parsed = parseFcargoWebhookPayload(body);
+  const result = await ingestFcargoWebhook(body);
 
   logFcargoRequest({
     direction: "in",
@@ -82,21 +79,27 @@ export async function POST(request: Request) {
     path: "/api/fcargo/webhook",
     httpStatus: 200,
     ok: true,
-    leadId: parsed.externalOrderId,
-    orderId: parsed.orderId != null ? String(parsed.orderId) : undefined,
-    trackingNumber: parsed.tracking,
+    leadId: result.leadId,
+    orderId: result.package?.fcargo_order_id ?? undefined,
+    trackingNumber: result.package?.tracking_number ?? undefined,
     requestBody: body,
+    responseBody: {
+      leadApplied: result.leadApplied,
+      eventType: result.eventType,
+      packageId: result.package?.id,
+    },
   });
-
-  const result = await applyFcargoStatusUpdate(parsed);
 
   return NextResponse.json({
     ok: true,
-    applied: result.ok,
+    applied: result.leadApplied,
     leadId: result.leadId ?? null,
     fcargoStatus: result.fcargoStatus ?? null,
     crmStatus: result.crmStatus ?? null,
     message: result.message ?? null,
+    eventType: result.eventType ?? null,
+    packageId: result.package?.id ?? null,
+    cataloged: Boolean(result.package),
   });
 }
 

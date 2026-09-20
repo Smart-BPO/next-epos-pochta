@@ -4,11 +4,13 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import {
   findFcargoOrder,
-  isTerminalFcargoStatus,
   listOpenFcargoOrders,
   upsertFcargoOrderLink,
 } from "@/lib/fcargo/orders-store";
 import { fcargoGetOrder, fcargoTrackPackage } from "@/lib/fcargo/client";
+import { listOpenCatalogPackages } from "@/lib/fcargo/packages-store";
+import { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
+import { syncShipmentMirrorFromPackage } from "@/lib/fcargo/link-contact";
 
 export type LeadCrmStatus = "draft" | "new" | "in_progress" | "done" | "spam";
 
@@ -287,11 +289,15 @@ export async function applyFcargoStatusUpdate(
 export async function syncOpenFcargoOrders(opts?: {
   limit?: number;
 }): Promise<{ checked: number; updated: number; errors: number }> {
-  const open = await listOpenFcargoOrders(opts?.limit ?? 40);
+  const limit = opts?.limit ?? 40;
+  const open = await listOpenFcargoOrders(Math.ceil(limit / 2));
+  const catalog = await listOpenCatalogPackages(Math.ceil(limit / 2));
   let updated = 0;
   let errors = 0;
+  let checked = 0;
 
   for (const row of open) {
+    checked += 1;
     try {
       let status: unknown = null;
       let tracking = row.tracking_number;
@@ -328,17 +334,48 @@ export async function syncOpenFcargoOrders(opts?: {
         status: label,
         raw,
       });
-      if (result.ok && (label !== before || isTerminalFcargoStatus(label))) {
+      if (result.ok) updated += 1;
+    } catch {
+      errors += 1;
+    }
+  }
+
+  // Catalog packages (any channel) — ingest refresh + mirror
+  const seenTracking = new Set(
+    open.map((r) => r.tracking_number).filter(Boolean) as string[],
+  );
+  for (const row of catalog) {
+    if (row.tracking_number && seenTracking.has(row.tracking_number)) continue;
+    checked += 1;
+    try {
+      if (!row.tracking_number) {
+        errors += 1;
+        continue;
+      }
+      const trackRes = await fcargoTrackPackage(row.tracking_number);
+      if (!trackRes.ok) {
+        errors += 1;
+        continue;
+      }
+      const ingested = await ingestFcargoWebhook({
+        event: "package.status_changed",
+        data: trackRes.data,
+        tracking_number: row.tracking_number,
+        order_id: row.fcargo_order_id,
+        external_order_id: row.external_order_id ?? row.lead_id,
+      });
+      if (ingested.package) {
         updated += 1;
-      } else if (result.ok) {
-        updated += 1;
+        if (ingested.package.contact_session_id) {
+          await syncShipmentMirrorFromPackage(ingested.package);
+        }
       }
     } catch {
       errors += 1;
     }
   }
 
-  return { checked: open.length, updated, errors };
+  return { checked, updated, errors };
 }
 
 /** Parse inbound webhook body (JSON object or form fields). */

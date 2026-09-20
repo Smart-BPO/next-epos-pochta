@@ -32,3 +32,6 @@ export {
 } from "@/lib/fcargo/sync-status";
 export { logFcargoRequest, listFcargoRequestLog } from "@/lib/fcargo/log";
 export { upsertFcargoOrderLink } from "@/lib/fcargo/orders-store";
+export { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
+export { linkFcargoPackagesToContact } from "@/lib/fcargo/link-contact";
+export { upsertFcargoPackage } from "@/lib/fcargo/packages-store";

@@ -107,6 +107,18 @@ async function persistBotContact(params: {
     initDataOk: false,
     preserveExistingLocale: params.preserveExistingLocale,
   });
+  try {
+    const { linkFcargoPackagesToContact } = await import(
+      "@/lib/fcargo/link-contact"
+    );
+    await linkFcargoPackagesToContact({
+      sessionId: result.sessionId,
+      phone: params.phone,
+      telegramUserId: params.telegramUserId,
+    });
+  } catch (e) {
+    console.warn("[telegram:contact:fcargo-link]", e);
+  }
   return result.sessionId;
 }
 

@@ -37,6 +37,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, found: false });
   }
 
+  try {
+    const { linkFcargoPackagesToContact } = await import(
+      "@/lib/fcargo/link-contact"
+    );
+    await linkFcargoPackagesToContact({
+      sessionId: data.session_id,
+      phone: data.phone,
+      telegramUserId: data.telegram_user_id ?? auth.userId,
+    });
+  } catch (e) {
+    console.warn("[webapp:session:fcargo-link]", e);
+  }
+
   return NextResponse.json({
     ok: true,
     found: true,
