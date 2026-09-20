@@ -4,7 +4,6 @@ import { resolveFcargoConfig } from "@/lib/fcargo/settings";
 import {
   fcargoCalculatePrice,
   fcargoGetOrder,
-  fcargoHealth,
   fcargoListOrders,
   fcargoListPackages,
   fcargoListRegions,
@@ -106,7 +105,11 @@ export async function runFcargoDebugProbe(
 
   switch (probe) {
     case "health":
-      return withProbe("GET /health", () => fcargoHealth());
+      // GET /health rejects company-scoped keys (FORBIDDEN_COMPANY_KEY).
+      // Client keys: use regions as connectivity check.
+      return withProbe("GET /locations/regions (connectivity)", () =>
+        fcargoListRegions(),
+      );
     case "statuses":
       return withProbe("GET /statuses", () => fcargoListStatuses());
     case "regions":
