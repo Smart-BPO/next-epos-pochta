@@ -96,13 +96,17 @@ const TERMINAL = new Set([
   "cancelled",
   "canceled",
   "returned",
+  "returned_to_sender",
   "lost",
   "done",
   "completed",
   "доставлен",
+  "yetkazildi",
   "отменен",
   "отменён",
   "возврат",
+  "qaytarildi",
+  "bekor qilindi",
 ]);
 
 export function isTerminalFcargoStatus(status: string | null | undefined): boolean {

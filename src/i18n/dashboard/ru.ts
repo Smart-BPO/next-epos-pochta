@@ -584,12 +584,13 @@ export const dashRu: DashCopy = {
     requestFailed: "Ошибка запроса",
     sectionWebhook: "Статусы из службы доставки",
     webhookLead:
-      "Служебная ссылка для обновления статусов. Секрет передаётся в заголовке запроса.",
+      "URL для вебхуков FCargo. Секрет — signing secret из кабинета FCargo (HMAC), не придуманный вручную.",
     webhookUrl: "Адрес для уведомлений",
-    webhookSecret: "Секрет служебной ссылки",
+    webhookSecret: "Секрет подписи вебхука",
     webhookSecretPlaceholderKeep: "Пусто = не менять ({hint})",
-    webhookSecretPlaceholderNew: "Придумайте секрет",
-    webhookHeaderHint: "Заголовок: X-Fcargo-Webhook-Secret",
+    webhookSecretPlaceholderNew: "Секрет из FCargo (показывается один раз)",
+    webhookHeaderHint:
+      "Секрет подписи из FCargo (HMAC X-FCargo-Signature). События: package.status.changed, package.delivered, package.info.changed, *",
     syncTitle: "Обновить статусы",
     syncLead: "Подтянуть актуальные статусы открытых заказов из службы доставки.",
     syncRun: "Обновить сейчас",

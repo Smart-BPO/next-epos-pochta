@@ -584,12 +584,13 @@ export const dashUz: DashCopy = {
     requestFailed: "So‘rov xatosi",
     sectionWebhook: "Yetkazib berish statuslari",
     webhookLead:
-      "Status yangilanishlari uchun xizmat havolasi. Maxfiy kod so‘rov sarlavhasida yuboriladi.",
+      "FCargo webhook URL. Sir — FCargo kabinetidagi imzo sirri (HMAC), qo‘lda o‘ylab topilgan emas.",
     webhookUrl: "Bildirishnoma manzili",
-    webhookSecret: "Xizmat havolasi maxfiy kodi",
+    webhookSecret: "Webhook imzo sirri",
     webhookSecretPlaceholderKeep: "Bo‘sh = o‘zgartirmaslik ({hint})",
-    webhookSecretPlaceholderNew: "Maxfiy kod yarating",
-    webhookHeaderHint: "Sarlavha: X-Fcargo-Webhook-Secret",
+    webhookSecretPlaceholderNew: "FCargo sirri (bir marta ko‘rsatiladi)",
+    webhookHeaderHint:
+      "FCargo imzo sirri (HMAC X-FCargo-Signature). Voqealar: package.status.changed, package.delivered, package.info.changed, *",
     syncTitle: "Statuslarni yangilash",
     syncLead: "Ochiq buyurtmalar statusini yetkazib berish xizmatidan tortib olish.",
     syncRun: "Hozir yangilash",

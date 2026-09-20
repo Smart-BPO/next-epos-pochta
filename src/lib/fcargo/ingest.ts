@@ -27,6 +27,15 @@ function pickString(...values: unknown[]): string | null {
   return null;
 }
 
+function phoneFromChange(value: unknown): string | null {
+  if (typeof value === "string") return value;
+  const o = asRecord(value);
+  if (!o) return null;
+  if (typeof o.new === "string") return o.new;
+  if (typeof o.old === "string") return o.old;
+  return null;
+}
+
 function collectPhones(root: Record<string, unknown>): string[] {
   const out = new Set<string>();
   const add = (raw: unknown) => {
@@ -54,6 +63,14 @@ function collectPhones(root: Record<string, unknown>): string[] {
       const pr = asRecord(pkg.receiver);
       if (ps) add(ps.phone);
       if (pr) add(pr.phone);
+    }
+    // Official payload: data.changes.{receiver_phone,sender_phone}.{old,new}
+    const changes = asRecord(obj.changes);
+    if (changes) {
+      add(phoneFromChange(changes.receiver_phone));
+      add(phoneFromChange(changes.sender_phone));
+      add(phoneFromChange(changes.phone));
+      add(phoneFromChange(changes.customer_phone));
     }
     const data = asRecord(obj.data);
     if (data && data !== obj) walk(data);
@@ -142,7 +159,11 @@ export async function ingestFcargoWebhook(
   const barcode = pickString(pkg?.barcode, data.barcode, payload.barcode);
   const status =
     normalizeFcargoStatusLabel(
-      pkg?.status ?? data.status ?? order.status ?? payload.status,
+      data.current_status ??
+        pkg?.status ??
+        data.status ??
+        order.status ??
+        payload.status,
     ) ?? null;
   const externalOrderId = pickString(
     order.external_order_id,

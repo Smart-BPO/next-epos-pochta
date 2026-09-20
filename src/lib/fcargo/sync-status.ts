@@ -54,9 +54,13 @@ export function normalizeFcargoStatusLabel(status: unknown): string | null {
   if (typeof status === "string") return status.trim() || null;
   if (typeof status === "object") {
     const o = status as Record<string, unknown>;
-    const code = typeof o.code === "string" ? o.code : null;
-    const name = typeof o.name === "string" ? o.name : null;
+    const code =
+      typeof o.code === "string" && o.code.trim() ? o.code.trim() : null;
+    const name =
+      typeof o.name === "string" && o.name.trim() ? o.name.trim() : null;
     const id = o.id != null ? String(o.id) : null;
+    // Prefer stable API code over localized name (UNDEFINED → fall back to name).
+    if (code && code.toUpperCase() !== "UNDEFINED") return code;
     return name || code || id;
   }
   return String(status);
