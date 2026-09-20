@@ -4,24 +4,20 @@ import {
   getFcargoSettingsView,
   maybeImportFcargoFromEnv,
 } from "@/lib/fcargo/settings";
-import { FcargoConfigClient } from "./FcargoConfigClient";
-import { fcargoWebhookUrl, resolveFcargoSiteOrigin } from "./origin";
+import { FcargoTestClient } from "../FcargoTestClient";
 
-export default async function DashboardFcargoSettingsPage() {
+export default async function DashboardFcargoTestPage() {
   const admin = await requireAccess("settings");
   if (!admin) return <DashDenied section="settings" />;
 
   await maybeImportFcargoFromEnv().catch(() => undefined);
   const settings = await getFcargoSettingsView();
   const canEdit = canMutate(admin.role, "fcargo_secrets");
-  const origin = await resolveFcargoSiteOrigin();
-  const webhookUrl = fcargoWebhookUrl(origin);
 
   return (
-    <FcargoConfigClient
-      settings={settings}
+    <FcargoTestClient
       canEdit={canEdit}
-      webhookUrl={webhookUrl}
+      configured={settings.runtimeSource !== "none"}
     />
   );
 }

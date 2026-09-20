@@ -284,7 +284,18 @@ export async function syncFcargoOrdersAction(): Promise<{
   checked: number;
   updated: number;
   errors: number;
+  inbox?: { claimed: number; done: number; failed: number; retried: number };
 }> {
   await requireMutation("fcargo_secrets");
-  return syncOpenFcargoOrders({ limit: 40 });
+  const { processFcargoWebhookInbox } = await import(
+    "@/lib/fcargo/webhook-inbox"
+  );
+  const inbox = await processFcargoWebhookInbox({ limit: 20 }).catch(() => ({
+    claimed: 0,
+    done: 0,
+    failed: 0,
+    retried: 0,
+  }));
+  const result = await syncOpenFcargoOrders({ limit: 40 });
+  return { ...result, inbox };
 }

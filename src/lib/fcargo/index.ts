@@ -35,3 +35,7 @@ export { upsertFcargoOrderLink } from "@/lib/fcargo/orders-store";
 export { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
 export { linkFcargoPackagesToContact } from "@/lib/fcargo/link-contact";
 export { upsertFcargoPackage } from "@/lib/fcargo/packages-store";
+export {
+  enqueueFcargoWebhook,
+  processFcargoWebhookInbox,
+} from "@/lib/fcargo/webhook-inbox";

@@ -43,9 +43,11 @@ type Row = {
 };
 
 let cache: { at: number; value: FcargoRuntimeConfig | null } | null = null;
+let webhookSecretCache: { at: number; value: string | null } | null = null;
 
 export function invalidateFcargoConfigCache() {
   cache = null;
+  webhookSecretCache = null;
 }
 
 export function defaultFcargoBaseUrl() {
@@ -272,6 +274,15 @@ export async function saveFcargoSettings(params: {
 
 /** Webhook / cron shared secret from CMS (or FCARGO_WEBHOOK_SECRET / FCARGO_SYNC_SECRET env). */
 export async function resolveFcargoWebhookSecret(): Promise<string | null> {
+  if (
+    webhookSecretCache &&
+    Date.now() - webhookSecretCache.at < CACHE_TTL_MS
+  ) {
+    return webhookSecretCache.value;
+  }
+
+  let value: string | null = null;
+
   if (hasSupabaseAdminConfig() && hasMessagingSecretsKey()) {
     try {
       const client = createSupabaseAdminClient();
@@ -283,16 +294,22 @@ export async function resolveFcargoWebhookSecret(): Promise<string | null> {
       if (data?.secrets_cipher) {
         const secrets = decryptJson<Record<string, string>>(data.secrets_cipher);
         const fromCms = (secrets.webhook_secret ?? "").trim();
-        if (fromCms) return fromCms;
+        if (fromCms) value = fromCms;
       }
     } catch {
       // fall through to env
     }
   }
-  const fromEnv =
-    (process.env.FCARGO_WEBHOOK_SECRET ?? "").trim() ||
-    (process.env.FCARGO_SYNC_SECRET ?? "").trim();
-  return fromEnv || null;
+
+  if (!value) {
+    value =
+      (process.env.FCARGO_WEBHOOK_SECRET ?? "").trim() ||
+      (process.env.FCARGO_SYNC_SECRET ?? "").trim() ||
+      null;
+  }
+
+  webhookSecretCache = { at: Date.now(), value };
+  return value;
 }
 
 export function timingSafeEqualString(a: string, b: string): boolean {

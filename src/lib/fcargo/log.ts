@@ -21,6 +21,23 @@ export type FcargoLogEntry = {
   errorMessage?: string | null;
 };
 
+export type FcargoLogRow = {
+  id: string;
+  direction: string;
+  method: string;
+  path: string;
+  http_status: number | null;
+  duration_ms: number | null;
+  ok: boolean | null;
+  lead_id: string | null;
+  order_id: string | null;
+  tracking_number: string | null;
+  error_message: string | null;
+  created_at: string;
+  request_body?: unknown;
+  response_body?: unknown;
+};
+
 function sanitizeBody(value: unknown): unknown {
   if (value == null) return value;
   if (typeof value !== "object") return value;
@@ -61,43 +78,38 @@ export function logFcargoRequest(entry: FcargoLogEntry): void {
   })();
 }
 
-export async function listFcargoRequestLog(limit = 40): Promise<
-  Array<{
-    id: string;
-    direction: string;
-    method: string;
-    path: string;
-    http_status: number | null;
-    duration_ms: number | null;
-    ok: boolean | null;
-    lead_id: string | null;
-    order_id: string | null;
-    tracking_number: string | null;
-    error_message: string | null;
-    created_at: string;
-  }>
-> {
+export async function listFcargoRequestLog(
+  opts: {
+    limit?: number;
+    direction?: FcargoLogDirection;
+    includeBodies?: boolean;
+  } = {},
+): Promise<FcargoLogRow[]> {
   if (!hasSupabaseAdminConfig()) return [];
+  const limit = Math.max(1, Math.min(opts.limit ?? 40, 100));
   const client = createSupabaseAdminClient();
-  const { data } = await client
+
+  if (opts.includeBodies) {
+    let q = client
+      .from("epos_fcargo_request_log")
+      .select(
+        "id, direction, method, path, http_status, duration_ms, ok, lead_id, order_id, tracking_number, error_message, created_at, request_body, response_body",
+      )
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (opts.direction) q = q.eq("direction", opts.direction);
+    const { data } = await q;
+    return (data ?? []) as unknown as FcargoLogRow[];
+  }
+
+  let q = client
     .from("epos_fcargo_request_log")
     .select(
       "id, direction, method, path, http_status, duration_ms, ok, lead_id, order_id, tracking_number, error_message, created_at",
     )
     .order("created_at", { ascending: false })
     .limit(limit);
-  return (data ?? []) as Array<{
-    id: string;
-    direction: string;
-    method: string;
-    path: string;
-    http_status: number | null;
-    duration_ms: number | null;
-    ok: boolean | null;
-    lead_id: string | null;
-    order_id: string | null;
-    tracking_number: string | null;
-    error_message: string | null;
-    created_at: string;
-  }>;
+  if (opts.direction) q = q.eq("direction", opts.direction);
+  const { data } = await q;
+  return (data ?? []) as unknown as FcargoLogRow[];
 }

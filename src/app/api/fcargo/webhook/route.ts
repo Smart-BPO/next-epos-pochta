@@ -1,14 +1,21 @@
+import { after } from "next/server";
 import { NextResponse } from "next/server";
 import {
   resolveFcargoWebhookSecret,
   timingSafeEqualString,
 } from "@/lib/fcargo/settings";
 import { verifyFcargoWebhookSignature } from "@/lib/fcargo/webhook-verify";
+import {
+  enqueueFcargoWebhook,
+  processFcargoWebhookInbox,
+  resolveFcargoEventId,
+} from "@/lib/fcargo/webhook-inbox";
 import { logFcargoRequest } from "@/lib/fcargo/log";
-import { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const MAX_BODY_BYTES = 256 * 1024;
 
 /** Legacy shared-secret header (our pull sync / older docs). */
 function extractLegacySecret(request: Request): string {
@@ -40,13 +47,28 @@ export async function POST(request: Request) {
   const expected = await resolveFcargoWebhookSecret();
   if (!expected) {
     return NextResponse.json(
-      { ok: false, error: "webhook_secret_not_configured" },
+      { received: false, error: "webhook_secret_not_configured" },
       { status: 503 },
+    );
+  }
+
+  const contentLength = Number(request.headers.get("content-length") || 0);
+  if (contentLength > MAX_BODY_BYTES) {
+    return NextResponse.json(
+      { received: false, error: "payload_too_large" },
+      { status: 413 },
     );
   }
 
   // Signature must be checked against raw bytes (do not re-serialize).
   const rawBody = await request.text().catch(() => "");
+  if (rawBody.length > MAX_BODY_BYTES) {
+    return NextResponse.json(
+      { received: false, error: "payload_too_large" },
+      { status: 413 },
+    );
+  }
+
   const signatureHeader =
     request.headers.get("x-fcargo-signature") ||
     request.headers.get("X-FCargo-Signature") ||
@@ -74,7 +96,10 @@ export async function POST(request: Request) {
         ? "invalid_webhook_signature"
         : "missing_or_invalid_webhook_auth",
     });
-    return NextResponse.json({ received: false, error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { received: false, error: "unauthorized" },
+      { status: 401 },
+    );
   }
 
   let body: unknown = null;
@@ -105,7 +130,55 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   }
 
-  const result = await ingestFcargoWebhook(body);
+  const deliveryId =
+    request.headers.get("x-fcargo-delivery-id") ||
+    request.headers.get("X-FCargo-Delivery-Id") ||
+    null;
+  const headerEventId =
+    request.headers.get("x-fcargo-event-id") ||
+    request.headers.get("X-FCargo-Event-Id") ||
+    null;
+
+  const eventId = resolveFcargoEventId({
+    headerEventId,
+    deliveryId,
+    payload: body,
+    rawBody,
+  });
+
+  const queued = await enqueueFcargoWebhook({
+    eventId,
+    deliveryId,
+    eventType,
+    payload: body,
+  });
+
+  if (!queued) {
+    logFcargoRequest({
+      direction: "in",
+      method: "POST",
+      path: "/api/fcargo/webhook",
+      httpStatus: 503,
+      ok: false,
+      errorCode: "ENQUEUE_FAILED",
+      errorMessage: "inbox_unavailable",
+      requestBody: body,
+    });
+    // Non-2xx so FCargo retries (durable path failed).
+    return NextResponse.json(
+      { received: false, error: "enqueue_failed" },
+      { status: 503 },
+    );
+  }
+
+  after(() =>
+    processFcargoWebhookInbox({ limit: 5 }).catch((e) => {
+      console.warn(
+        "[fcargo:webhook:after]",
+        e instanceof Error ? e.message : "drain_failed",
+      );
+    }),
+  );
 
   logFcargoRequest({
     direction: "in",
@@ -113,36 +186,39 @@ export async function POST(request: Request) {
     path: "/api/fcargo/webhook",
     httpStatus: 200,
     ok: true,
-    leadId: result.leadId,
-    orderId: result.package?.fcargo_order_id ?? undefined,
-    trackingNumber: result.package?.tracking_number ?? undefined,
+    trackingNumber:
+      body && typeof body === "object"
+        ? (() => {
+            const o = body as Record<string, unknown>;
+            const data =
+              o.data && typeof o.data === "object"
+                ? (o.data as Record<string, unknown>)
+                : null;
+            const pkg =
+              data?.package && typeof data.package === "object"
+                ? (data.package as Record<string, unknown>)
+                : null;
+            const tn = pkg?.tracking_number ?? data?.tracking_number;
+            return typeof tn === "string" ? tn : undefined;
+          })()
+        : undefined,
     requestBody: body,
     responseBody: {
       received: true,
-      leadApplied: result.leadApplied,
-      eventType: result.eventType ?? eventType,
-      packageId: result.package?.id,
+      queued: true,
+      inserted: queued.inserted,
+      eventId: queued.eventId,
+      eventType: eventType ?? null,
     },
   });
 
-  return NextResponse.json({
-    received: true,
-    ok: true,
-    applied: result.leadApplied,
-    leadId: result.leadId ?? null,
-    fcargoStatus: result.fcargoStatus ?? null,
-    crmStatus: result.crmStatus ?? null,
-    message: result.message ?? null,
-    eventType: result.eventType ?? eventType ?? null,
-    packageId: result.package?.id ?? null,
-    cataloged: Boolean(result.package),
-  });
+  return NextResponse.json({ received: true });
 }
 
 export async function GET() {
   return NextResponse.json({
     ok: true,
     service: "fcargo-webhook",
-    hint: "POST events; auth via X-FCargo-Signature (HMAC) or legacy X-Fcargo-Webhook-Secret",
+    hint: "POST events; verify → enqueue → 200; process via after()/POST /api/fcargo/drain/",
   });
 }
