@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
-import type { FcargoLogRow } from "@/lib/fcargo/log";
+import type { FcargoLogRow, FcargoLogSource } from "@/lib/fcargo/log";
 import { dashCardPad, dashSectionTitle } from "@/styles/dashboard";
 
 function pickEventType(row: FcargoLogRow): string | null {
@@ -27,6 +27,19 @@ function pickEventType(row: FcargoLogRow): string | null {
     }
   }
   return null;
+}
+
+function sourceLabel(
+  source: string | null | undefined,
+  labels: Record<FcargoLogSource, string>,
+  fallbackIn: string,
+  fallbackOut: string,
+  direction: string,
+): string {
+  if (source && source in labels) {
+    return labels[source as FcargoLogSource];
+  }
+  return direction === "in" ? fallbackIn : fallbackOut;
 }
 
 function JsonBlock({
@@ -56,20 +69,66 @@ export function FcargoLogList({
   variant,
   title,
   lead,
+  sourceFilter,
+  filterHrefBase,
 }: {
   rows: FcargoLogRow[];
   variant: "api" | "webhook";
   title: string;
   lead: string;
+  sourceFilter?: string | null;
+  filterHrefBase?: string;
 }) {
   const t = useDashT();
   const f = t.fcargo;
   const [openId, setOpenId] = useState<string | null>(null);
 
+  const sourceLabels: Record<FcargoLogSource, string> = {
+    out_api: f.sourceOutApi,
+    in_webhook: f.sourceInWebhook,
+    in_sync: f.sourceInSync,
+    in_drain: f.sourceInDrain,
+    inbox_worker: f.sourceInboxWorker,
+  };
+
+  const apiFilters: { value: string; label: string }[] = [
+    { value: "out_api", label: f.sourceOutApi },
+    { value: "in_sync", label: f.sourceInSync },
+    { value: "in_drain", label: f.sourceInDrain },
+  ];
+  const webhookFilters: { value: string; label: string }[] = [
+    { value: "in_webhook", label: f.sourceInWebhook },
+    { value: "inbox_worker", label: f.sourceInboxWorker },
+  ];
+  const filters = variant === "api" ? apiFilters : webhookFilters;
+
   return (
     <section className={`${dashCardPad} grid max-w-3xl gap-3`}>
       <h2 className={dashSectionTitle}>{title}</h2>
       {lead ? <p className="m-0 text-sm text-black/55">{lead}</p> : null}
+
+      {filterHrefBase ? (
+        <div className="flex flex-wrap gap-1.5">
+          {filters.map((opt) => {
+            const active =
+              (sourceFilter ?? filters[0]!.value) === opt.value;
+            const href = `${filterHrefBase}?source=${encodeURIComponent(opt.value)}`;
+            return (
+              <a
+                key={opt.value}
+                href={href}
+                className={`rounded-md px-2 py-1 text-[11px] font-semibold no-underline ${
+                  active
+                    ? "bg-ink text-white"
+                    : "bg-black/[0.04] text-black/60 hover:bg-black/[0.08]"
+                }`}
+              >
+                {opt.label}
+              </a>
+            );
+          })}
+        </div>
+      ) : null}
 
       {rows.length === 0 ? (
         <p className="m-0 text-sm text-black/45">{f.logEmpty}</p>
@@ -84,7 +143,15 @@ export function FcargoLogList({
               row.response_headers != null ||
               row.request_body != null ||
               row.response_body != null ||
-              Boolean(row.url);
+              Boolean(row.url) ||
+              Boolean(row.correlation_id);
+            const badge = sourceLabel(
+              row.source,
+              sourceLabels,
+              f.logIn,
+              f.logOut,
+              row.direction,
+            );
 
             return (
               <li
@@ -92,8 +159,8 @@ export function FcargoLogList({
                 className="rounded-lg border border-black/[0.06] px-3 py-2"
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-semibold text-ink">
-                    {variant === "webhook" ? f.logIn : f.logOut}
+                  <span className="rounded bg-black/[0.06] px-1.5 py-0.5 font-semibold text-ink">
+                    {badge}
                   </span>
                   {eventType ? (
                     <span className="rounded bg-black/[0.04] px-1.5 py-0.5 font-medium text-ink">
@@ -114,6 +181,9 @@ export function FcargoLogList({
                 </div>
                 <div className="mt-0.5 text-[11px] text-black/40">
                   {new Date(row.created_at).toLocaleString()}
+                  {row.correlation_id
+                    ? ` · ${f.logCorrelation}: ${row.correlation_id}`
+                    : ""}
                   {row.tracking_number ? ` · ${row.tracking_number}` : ""}
                   {row.lead_id ? ` · ${row.lead_id}` : ""}
                   {row.order_id ? ` · #${row.order_id}` : ""}
@@ -130,6 +200,12 @@ export function FcargoLogList({
                 ) : null}
                 {expanded ? (
                   <div className="grid gap-1">
+                    {row.correlation_id ? (
+                      <JsonBlock
+                        label={f.logCorrelation}
+                        value={row.correlation_id}
+                      />
+                    ) : null}
                     {row.url ? (
                       <JsonBlock label={f.logUrl} value={row.url} />
                     ) : null}

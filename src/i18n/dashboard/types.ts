@@ -543,10 +543,16 @@ export type DashCopy = {
     logExpand: string;
     logCollapse: string;
     logUrl: string;
+    logCorrelation: string;
     logRequestHeaders: string;
     logRequestBody: string;
     logResponseHeaders: string;
     logResponseBody: string;
+    sourceOutApi: string;
+    sourceInWebhook: string;
+    sourceInSync: string;
+    sourceInDrain: string;
+    sourceInboxWorker: string;
     eventType: string;
     status: string;
     statusOff: string;

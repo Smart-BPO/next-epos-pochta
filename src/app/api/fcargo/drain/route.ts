@@ -4,7 +4,8 @@ import {
   timingSafeEqualString,
 } from "@/lib/fcargo/settings";
 import { processFcargoWebhookInbox } from "@/lib/fcargo/webhook-inbox";
-import { logFcargoRequest } from "@/lib/fcargo/log";
+import { logFcargoHttpExchange } from "@/lib/fcargo/log-http";
+import { pruneFcargoRequestLog } from "@/lib/fcargo/log";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,27 +24,50 @@ function extractSecret(request: Request): string {
 
 /**
  * Safety-net worker for the webhook inbox (Hostinger cron every 1–5 min).
+ * Also prunes epos_fcargo_request_log older than 30 days.
  * Auth: same shared secret as /api/fcargo/sync/.
  */
 export async function POST(request: Request) {
+  const started = Date.now();
   const expected = await resolveFcargoWebhookSecret();
   if (!expected) {
-    return NextResponse.json(
-      { ok: false, error: "drain_secret_not_configured" },
-      { status: 503 },
-    );
+    const resBody = { ok: false, error: "drain_secret_not_configured" };
+    logFcargoHttpExchange({
+      source: "in_drain",
+      request,
+      responseStatus: 503,
+      responseBody: resBody,
+      responseHeaders: { "content-type": "application/json" },
+      durationMs: Date.now() - started,
+      ok: false,
+      error: "drain_secret_not_configured",
+    });
+    return NextResponse.json(resBody, { status: 503 });
   }
 
   const provided = extractSecret(request);
   if (!provided || !timingSafeEqualString(provided, expected)) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    const resBody = { ok: false, error: "unauthorized" };
+    logFcargoHttpExchange({
+      source: "in_drain",
+      request,
+      responseStatus: 401,
+      responseBody: resBody,
+      responseHeaders: { "content-type": "application/json" },
+      durationMs: Date.now() - started,
+      ok: false,
+      error: "unauthorized",
+    });
+    return NextResponse.json(resBody, { status: 401 });
   }
 
   let limit = 20;
+  let rawBody: string | null = null;
   try {
-    const json = (await request.json().catch(() => null)) as {
-      limit?: number;
-    } | null;
+    rawBody = await request.text();
+    const json = rawBody
+      ? (JSON.parse(rawBody) as { limit?: number } | null)
+      : null;
     if (json?.limit && Number.isFinite(json.limit)) {
       limit = Math.max(1, Math.min(50, Number(json.limit)));
     }
@@ -51,19 +75,21 @@ export async function POST(request: Request) {
     // ignore
   }
 
-  const started = Date.now();
   const result = await processFcargoWebhookInbox({ limit });
-  logFcargoRequest({
-    direction: "in",
-    method: "POST",
-    path: "/api/fcargo/drain",
-    httpStatus: 200,
+  const pruned = await pruneFcargoRequestLog(30, 5000);
+  const resBody = { ok: true, ...result, pruned };
+  logFcargoHttpExchange({
+    source: "in_drain",
+    request,
+    rawBody,
+    responseStatus: 200,
+    responseBody: resBody,
+    responseHeaders: { "content-type": "application/json" },
     durationMs: Date.now() - started,
     ok: true,
-    responseBody: result,
   });
 
-  return NextResponse.json({ ok: true, ...result });
+  return NextResponse.json(resBody);
 }
 
 export async function GET() {

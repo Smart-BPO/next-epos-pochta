@@ -5,8 +5,17 @@ import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 
 export type FcargoLogDirection = "out" | "in";
 
+export type FcargoLogSource =
+  | "out_api"
+  | "in_webhook"
+  | "in_sync"
+  | "in_drain"
+  | "inbox_worker";
+
 export type FcargoLogEntry = {
   direction: FcargoLogDirection;
+  source: FcargoLogSource;
+  correlationId?: string | null;
   method?: string;
   path?: string;
   url?: string | null;
@@ -27,6 +36,8 @@ export type FcargoLogEntry = {
 export type FcargoLogRow = {
   id: string;
   direction: string;
+  source?: string | null;
+  correlation_id?: string | null;
   method: string;
   path: string;
   url?: string | null;
@@ -147,6 +158,8 @@ export function logFcargoRequest(entry: FcargoLogEntry): void {
       const client = createSupabaseAdminClient();
       await client.from("epos_fcargo_request_log").insert({
         direction: entry.direction,
+        source: entry.source,
+        correlation_id: entry.correlationId ?? null,
         method: entry.method ?? "",
         path: entry.path ?? "",
         url: entry.url ?? null,
@@ -176,6 +189,7 @@ export async function listFcargoRequestLog(
   opts: {
     limit?: number;
     direction?: FcargoLogDirection;
+    source?: FcargoLogSource | FcargoLogSource[];
     includeBodies?: boolean;
   } = {},
 ): Promise<FcargoLogRow[]> {
@@ -184,9 +198,9 @@ export async function listFcargoRequestLog(
   const client = createSupabaseAdminClient();
 
   const detailCols =
-    "id, direction, method, path, url, http_status, duration_ms, ok, lead_id, order_id, tracking_number, error_message, created_at, request_headers, response_headers, request_body, response_body";
+    "id, direction, source, correlation_id, method, path, url, http_status, duration_ms, ok, lead_id, order_id, tracking_number, error_message, created_at, request_headers, response_headers, request_body, response_body";
   const basicCols =
-    "id, direction, method, path, url, http_status, duration_ms, ok, lead_id, order_id, tracking_number, error_message, created_at";
+    "id, direction, source, correlation_id, method, path, url, http_status, duration_ms, ok, lead_id, order_id, tracking_number, error_message, created_at";
 
   let q = client
     .from("epos_fcargo_request_log")
@@ -194,6 +208,53 @@ export async function listFcargoRequestLog(
     .order("created_at", { ascending: false })
     .limit(limit);
   if (opts.direction) q = q.eq("direction", opts.direction);
+  if (opts.source) {
+    if (Array.isArray(opts.source)) {
+      q = q.in("source", opts.source);
+    } else {
+      q = q.eq("source", opts.source);
+    }
+  }
   const { data } = await q;
   return (data ?? []) as unknown as FcargoLogRow[];
+}
+
+/** Delete oldest request-log rows past retention. Returns deleted count. */
+export async function pruneFcargoRequestLog(
+  olderThanDays = 30,
+  limit = 5000,
+): Promise<number> {
+  if (!hasSupabaseAdminConfig()) return 0;
+  const days = Math.max(1, Math.min(olderThanDays, 365));
+  const max = Math.max(1, Math.min(limit, 10000));
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  try {
+    const client = createSupabaseAdminClient();
+    const { data: ids } = await client
+      .from("epos_fcargo_request_log")
+      .select("id")
+      .lt("created_at", cutoff)
+      .order("created_at", { ascending: true })
+      .limit(max);
+    const list = (ids ?? []) as { id: string }[];
+    if (!list.length) return 0;
+    const { error } = await client
+      .from("epos_fcargo_request_log")
+      .delete()
+      .in(
+        "id",
+        list.map((r) => r.id),
+      );
+    if (error) {
+      console.warn("[fcargo:log] prune_failed", error.message);
+      return 0;
+    }
+    return list.length;
+  } catch (e) {
+    console.warn(
+      "[fcargo:log] prune_failed",
+      e instanceof Error ? e.message : "prune_failed",
+    );
+    return 0;
+  }
 }

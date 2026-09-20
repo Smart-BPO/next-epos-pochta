@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
+import { logFcargoRequest } from "@/lib/fcargo/log";
 
 export type FcargoInboxRow = {
   id: string;
@@ -192,21 +193,98 @@ export async function processFcargoWebhookInbox(
   result.claimed = rows.length;
 
   for (const row of rows) {
+    const started = Date.now();
+    const requestSummary = summarizeInboxPayload(row);
     try {
-      await ingestFcargoWebhook(row.payload);
+      const ingest = await ingestFcargoWebhook(row.payload);
       await markDone(row.id);
       result.done += 1;
+      logFcargoRequest({
+        direction: "in",
+        source: "inbox_worker",
+        correlationId: row.event_id,
+        method: "WORKER",
+        path: "/fcargo/inbox",
+        durationMs: Date.now() - started,
+        ok: true,
+        leadId: ingest.leadId ?? null,
+        trackingNumber:
+          ingest.package?.tracking_number ??
+          (typeof requestSummary.tracking === "string"
+            ? requestSummary.tracking
+            : null),
+        requestBody: requestSummary,
+        responseBody: {
+          leadApplied: ingest.leadApplied,
+          packageId: ingest.package?.id ?? null,
+          fcargoStatus: ingest.fcargoStatus ?? null,
+          crmStatus: ingest.crmStatus ?? null,
+          eventType: ingest.eventType ?? row.event_type,
+          message: ingest.message ?? null,
+        },
+      });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "ingest_failed";
       console.warn("[fcargo:inbox:process]", row.event_id, msg);
       const before = row.attempts;
       await markRetryOrFail(row, msg);
-      if (before >= MAX_ATTEMPTS) result.failed += 1;
+      const terminal = before >= MAX_ATTEMPTS;
+      if (terminal) result.failed += 1;
       else result.retried += 1;
+      logFcargoRequest({
+        direction: "in",
+        source: "inbox_worker",
+        correlationId: row.event_id,
+        method: "WORKER",
+        path: "/fcargo/inbox",
+        durationMs: Date.now() - started,
+        ok: false,
+        requestBody: requestSummary,
+        responseBody: {
+          terminal,
+          attempts: before,
+          eventType: row.event_type,
+        },
+        errorCode: terminal ? "INGEST_FAILED" : "INGEST_RETRY",
+        errorMessage: msg,
+      });
     }
   }
 
   return result;
+}
+
+function summarizeInboxPayload(row: FcargoInboxRow): Record<string, unknown> {
+  const payload =
+    row.payload && typeof row.payload === "object"
+      ? (row.payload as Record<string, unknown>)
+      : {};
+  const data =
+    payload.data && typeof payload.data === "object"
+      ? (payload.data as Record<string, unknown>)
+      : payload;
+  const pkg =
+    data.package && typeof data.package === "object"
+      ? (data.package as Record<string, unknown>)
+      : null;
+  const tracking =
+    (typeof pkg?.tracking_number === "string" && pkg.tracking_number) ||
+    (typeof data.tracking_number === "string" && data.tracking_number) ||
+    null;
+  const status =
+    (typeof data.status === "string" && data.status) ||
+    (typeof pkg?.status === "string" && pkg.status) ||
+    null;
+  return {
+    event_id: row.event_id,
+    event_type: row.event_type,
+    type:
+      (typeof payload.type === "string" && payload.type) ||
+      (typeof payload.event === "string" && payload.event) ||
+      row.event_type,
+    tracking,
+    status,
+  };
 }
 
 export async function countFcargoWebhookInboxPending(): Promise<number> {

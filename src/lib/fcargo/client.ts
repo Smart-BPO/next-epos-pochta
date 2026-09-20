@@ -55,6 +55,20 @@ async function fcargoFetch<T>(
 
   const cfg = await resolveFcargoConfig();
   if (!cfg) {
+    logFcargoRequest({
+      direction: "out",
+      source: "out_api",
+      method: opts.method ?? "GET",
+      path,
+      ok: false,
+      httpStatus: 0,
+      errorCode: "NOT_CONFIGURED",
+      errorMessage: "FCargo not configured in CMS (or legacy FCARGO_* env)",
+      requestBody: opts.body ?? null,
+      leadId: opts.leadId,
+      orderId: opts.orderId != null ? String(opts.orderId) : undefined,
+      trackingNumber: opts.trackingNumber,
+    });
     return {
       ok: false,
       code: "NOT_CONFIGURED",
@@ -83,6 +97,7 @@ async function fcargoFetch<T>(
 
   const logCommon = {
     direction: "out" as const,
+    source: "out_api" as const,
     method,
     path,
     url,
@@ -131,6 +146,13 @@ async function fcargoFetch<T>(
       }
       logFcargoRequest({
         ...logCommon,
+        correlationId:
+          json &&
+          typeof json === "object" &&
+          "request_id" in json &&
+          typeof (json as { request_id?: unknown }).request_id === "string"
+            ? (json as { request_id: string }).request_id
+            : null,
         httpStatus: res.status,
         durationMs,
         ok: false,
@@ -142,13 +164,15 @@ async function fcargoFetch<T>(
       return result;
     }
 
+    const requestId = (json as FcargoEnvelope<T>).request_id;
     const okResult: FcargoResult<T> = {
       ok: true,
       data: (json as FcargoEnvelope<T>).data as T,
-      requestId: (json as FcargoEnvelope<T>).request_id,
+      requestId,
     };
     logFcargoRequest({
       ...logCommon,
+      correlationId: typeof requestId === "string" ? requestId : null,
       httpStatus: res.status,
       durationMs,
       ok: true,
