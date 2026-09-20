@@ -12,6 +12,10 @@ import {
   resolveFcargoConfig,
 } from "@/lib/fcargo/settings";
 import { logFcargoRequest } from "@/lib/fcargo/log";
+import {
+  isDynamicServerBailError,
+  isFcargoLiveFetchAllowed,
+} from "@/lib/fcargo/runtime";
 import type {
   FcargoCreateOrderRequest,
   FcargoCreateOrderResult,
@@ -37,6 +41,15 @@ async function fcargoFetch<T>(
   path: string,
   opts: RequestOpts = {},
 ): Promise<FcargoResult<T>> {
+  if (!isFcargoLiveFetchAllowed()) {
+    return {
+      ok: false,
+      code: "SKIPPED_BUILD",
+      message: "FCargo live fetch skipped during static generation",
+      status: 0,
+    };
+  }
+
   const cfg = await resolveFcargoConfig();
   if (!cfg) {
     return {
@@ -131,6 +144,15 @@ async function fcargoFetch<T>(
     return okResult;
   } catch (e) {
     const message = e instanceof Error ? e.message : "network_error";
+    // SSG bail — do not flood request_log
+    if (isDynamicServerBailError(e)) {
+      return {
+        ok: false,
+        code: "SKIPPED_SSG",
+        message: "FCargo fetch not allowed during static render",
+        status: 0,
+      };
+    }
     logFcargoRequest({
       direction: "out",
       method,
