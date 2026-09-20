@@ -1,22 +1,33 @@
 /**
  * Live FCargo HTTP must not run during `next build` SSG — `cache: "no-store"`
  * throws DynamicServerError and used to flood epos_fcargo_request_log.
- * Also trip a short circuit when FCargo returns "Tenant not found".
+ *
+ * Tenant circuit only blocks *public* estimate path (calculator / delivery hubs),
+ * never CMS probes on /dashboard/settings/fcargo/test/.
  */
 
 let tenantCircuitOpenUntil = 0;
 
-export function isFcargoLiveFetchAllowed(): boolean {
+/** True during next build / export — no live HTTP at all. */
+export function isFcargoBuildPhase(): boolean {
   const phase = process.env.NEXT_PHASE ?? "";
-  if (phase === "phase-production-build" || phase === "phase-export") {
-    return false;
-  }
-  if (Date.now() < tenantCircuitOpenUntil) return false;
-  return true;
+  return phase === "phase-production-build" || phase === "phase-export";
+}
+
+/**
+ * @deprecated Prefer isFcargoBuildPhase + isFcargoTenantCircuitOpen.
+ * Kept for callers that meant "may call outbound HTTP" (build-only).
+ */
+export function isFcargoLiveFetchAllowed(): boolean {
+  return !isFcargoBuildPhase();
+}
+
+export function isFcargoTenantCircuitOpen(): boolean {
+  return Date.now() < tenantCircuitOpenUntil;
 }
 
 export function noteFcargoTenantFailure(): void {
-  // 10 min — stop calculator/log spam until CMS domain is fixed
+  // 10 min — stop public calculator spam until CMS domain is fixed
   tenantCircuitOpenUntil = Date.now() + 10 * 60 * 1000;
 }
 

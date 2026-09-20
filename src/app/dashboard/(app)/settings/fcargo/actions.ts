@@ -203,6 +203,9 @@ export async function debugFcargoProbeAction(
   formData: FormData,
 ): Promise<FcargoDebugProbeResult> {
   await requireMutation("fcargo_secrets");
+  const { clearFcargoTenantCircuit } = await import("@/lib/fcargo/runtime");
+  // Explicit CMS probes always hit the API (and write request_log).
+  clearFcargoTenantCircuit();
   const probe = String(formData.get("probe") ?? "").trim();
 
   switch (probe) {

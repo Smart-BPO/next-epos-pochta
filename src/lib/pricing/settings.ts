@@ -141,11 +141,14 @@ export async function runEstimate(
   }
 
   // Prefer live FCargo Client API when configured; CMS matrix remains fallback.
-  // Skip during `next build` SSG — live fetch forces dynamic and floods logs.
+  // Skip during `next build` SSG and while tenant circuit is open (wrong domain).
   if (!opts?.draft) {
     try {
-      const { isFcargoLiveFetchAllowed } = await import("@/lib/fcargo/runtime");
-      if (isFcargoLiveFetchAllowed()) {
+      const {
+        isFcargoBuildPhase,
+        isFcargoTenantCircuitOpen,
+      } = await import("@/lib/fcargo/runtime");
+      if (!isFcargoBuildPhase() && !isFcargoTenantCircuitOpen()) {
         const { estimateViaFcargo } = await import("@/lib/fcargo/estimate");
         const remote = await estimateViaFcargo(input);
         if (remote) return { ok: true, estimate: remote };

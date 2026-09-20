@@ -14,7 +14,7 @@ import {
 import { logFcargoRequest } from "@/lib/fcargo/log";
 import {
   isDynamicServerBailError,
-  isFcargoLiveFetchAllowed,
+  isFcargoBuildPhase,
   isFcargoTenantNotFoundMessage,
   noteFcargoTenantFailure,
 } from "@/lib/fcargo/runtime";
@@ -43,7 +43,8 @@ async function fcargoFetch<T>(
   path: string,
   opts: RequestOpts = {},
 ): Promise<FcargoResult<T>> {
-  if (!isFcargoLiveFetchAllowed()) {
+  // Build/SSG only — CMS probes and runtime always hit the network (and log).
+  if (isFcargoBuildPhase()) {
     return {
       ok: false,
       code: "SKIPPED_BUILD",
