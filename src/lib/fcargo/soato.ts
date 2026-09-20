@@ -1,7 +1,14 @@
 /**
  * uzbgeo region slug → Uzbekistan SOATO (region-level).
- * District codes are optional; region SOATO is enough for FCargo branch resolution.
- * @see https://api.fcargo.uz/api/client/v1/openapi.json (Locations)
+ *
+ * FCargo Client API:
+ * - Orders use `region_soato` strings (e.g. "1726").
+ * - Pricing `from_region_id` / `to_region_id` take the same codes as **integers**
+ *   (1726, not list index 1..N). OpenAPI example `1`/`2` is a placeholder —
+ *   on real tenants those hit `tariff_source: "default"`; SOATO ints resolve to
+ *   `branch_route` like Create Order.
+ *
+ * @see https://api.fcargo.uz/api/client/v1/openapi.json (Locations + Pricing)
  */
 export const REGION_SOATO_BY_SLUG: Record<string, string> = {
   andijan: "1703",
@@ -28,7 +35,7 @@ const TASHKENT_CITY_IDS = new Set([
 
 export type SoatoRef = {
   regionSoato: string;
-  /** Numeric form used by POST /pricing/calculate as from_region_id / to_region_id. */
+  /** SOATO as integer for POST /pricing/calculate from_region_id / to_region_id. */
   regionIdNum: number;
 };
 

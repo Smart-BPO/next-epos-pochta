@@ -140,24 +140,30 @@ export async function runEstimate(
     return { ok: false, error: "calculator_disabled" };
   }
 
-  // Prefer live FCargo Client API when configured; CMS matrix remains fallback.
-  // Skip during `next build` SSG and while tenant circuit is open (wrong domain).
+  // When FCargo is configured, public estimates must use Client API (no silent
+  // CMS-matrix substitute). Build/SSG and draft preview still use local matrix.
   if (!opts?.draft) {
-    try {
-      const {
-        isFcargoBuildPhase,
-        isFcargoTenantCircuitOpen,
-      } = await import("@/lib/fcargo/runtime");
-      if (!isFcargoBuildPhase() && !isFcargoTenantCircuitOpen()) {
+    const { isFcargoBuildPhase, isFcargoTenantCircuitOpen } = await import(
+      "@/lib/fcargo/runtime"
+    );
+    const { hasFcargoConfig } = await import("@/lib/fcargo/client");
+
+    if (!isFcargoBuildPhase() && (await hasFcargoConfig())) {
+      if (isFcargoTenantCircuitOpen()) {
+        return { ok: false, error: "fcargo_unavailable" };
+      }
+      try {
         const { estimateViaFcargo } = await import("@/lib/fcargo/estimate");
         const remote = await estimateViaFcargo(input);
         if (remote) return { ok: true, estimate: remote };
+        return { ok: false, error: "fcargo_estimate_failed" };
+      } catch (e) {
+        console.warn(
+          "[pricing:fcargo]",
+          e instanceof Error ? e.message : "estimate_failed",
+        );
+        return { ok: false, error: "fcargo_estimate_failed" };
       }
-    } catch (e) {
-      console.warn(
-        "[pricing:fcargo]",
-        e instanceof Error ? e.message : "estimate_failed",
-      );
     }
   }
 

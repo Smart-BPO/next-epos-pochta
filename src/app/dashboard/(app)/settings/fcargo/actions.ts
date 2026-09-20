@@ -151,15 +151,18 @@ export async function saveFcargoSettingsAction(
       },
     });
 
-    // Probe health so wrong X-Tenant-Domain is visible immediately.
+    // Connectivity: /health often rejects company-scoped keys (FORBIDDEN_COMPANY_KEY).
+    // Prefer locations list — same auth path as pricing/orders.
     let warning: string | undefined;
     if (enabled) {
-      const health = await withProbe("GET /health", () => fcargoHealth());
-      if (health.ok) {
+      const probe = await withProbe("GET /locations/regions", () =>
+        fcargoListRegions(),
+      );
+      if (probe.ok) {
         await markFcargoTest(true);
       } else {
-        await markFcargoTest(false, health.message);
-        warning = health.message || "health_failed";
+        await markFcargoTest(false, probe.message);
+        warning = probe.message || "regions_failed";
       }
     }
 
@@ -188,11 +191,15 @@ export async function clearFcargoApiKeyAction() {
 
 export async function testFcargoAction() {
   await requireMutation("fcargo_secrets");
-  const result = await withProbe("GET /health", () => fcargoHealth());
+  const { clearFcargoTenantCircuit } = await import("@/lib/fcargo/runtime");
+  clearFcargoTenantCircuit();
+  const result = await withProbe("GET /locations/regions", () =>
+    fcargoListRegions(),
+  );
   if (!result.ok) {
     await markFcargoTest(false, result.message);
     revalidate();
-    throw new Error(result.message || "health_failed");
+    throw new Error(result.message || "regions_failed");
   }
   await markFcargoTest(true);
   revalidate();
@@ -222,7 +229,10 @@ export async function debugFcargoProbeAction(
     case "pricing": {
       const from = Number(formData.get("from_region_id"));
       const to = Number(formData.get("to_region_id"));
-      const weight = Number(formData.get("weight") || 1);
+      const weight = Number(formData.get("weight") || 2.5);
+      const length = Number(formData.get("length") || 0);
+      const width = Number(formData.get("width") || 0);
+      const height = Number(formData.get("height") || 0);
       if (!Number.isFinite(from) || !Number.isFinite(to)) {
         return {
           ok: false,
@@ -233,12 +243,23 @@ export async function debugFcargoProbeAction(
           meta: null,
         };
       }
+      const body: {
+        from_region_id: number;
+        to_region_id: number;
+        weight: number;
+        length?: number;
+        width?: number;
+        height?: number;
+      } = {
+        from_region_id: from,
+        to_region_id: to,
+        weight: Number.isFinite(weight) && weight > 0 ? weight : 2.5,
+      };
+      if (Number.isFinite(length) && length > 0) body.length = length;
+      if (Number.isFinite(width) && width > 0) body.width = width;
+      if (Number.isFinite(height) && height > 0) body.height = height;
       return withProbe("POST /pricing/calculate", () =>
-        fcargoCalculatePrice({
-          from_region_id: from,
-          to_region_id: to,
-          weight: Number.isFinite(weight) && weight > 0 ? weight : 1,
-        }),
+        fcargoCalculatePrice(body),
       );
     }
     case "track": {

@@ -103,37 +103,62 @@ export function FcargoTestClient({
             e.preventDefault();
             submitProbe(e.currentTarget);
           }}
-          className="grid gap-2 rounded-xl border border-black/[0.06] p-3 sm:grid-cols-[1fr_1fr_6rem_auto]"
+          className="grid gap-2 rounded-xl border border-black/[0.06] p-3 sm:grid-cols-2"
         >
           <input type="hidden" name="probe" value="pricing" />
           <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
             {f.pricingFrom}
             <input
               name="from_region_id"
-              defaultValue="1726"
+              defaultValue="1703"
               className={dashInput}
               disabled={busy}
+              title="Region SOATO as integer (Andijon)"
             />
           </label>
           <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
             {f.pricingTo}
             <input
               name="to_region_id"
-              defaultValue="1718"
+              defaultValue="1706"
               className={dashInput}
               disabled={busy}
+              title="Region SOATO as integer (Buxoro)"
             />
           </label>
           <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
             {f.pricingKg}
             <input
               name="weight"
-              defaultValue="1"
+              defaultValue="2.5"
               className={dashInput}
               disabled={busy}
             />
           </label>
-          <div className="flex items-end">
+          <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
+            L × W × H (cm)
+            <div className="grid grid-cols-3 gap-1">
+              <input
+                name="length"
+                defaultValue="30"
+                className={dashInput}
+                disabled={busy}
+              />
+              <input
+                name="width"
+                defaultValue="20"
+                className={dashInput}
+                disabled={busy}
+              />
+              <input
+                name="height"
+                defaultValue="15"
+                className={dashInput}
+                disabled={busy}
+              />
+            </div>
+          </label>
+          <div className="flex items-end sm:col-span-2">
             <button type="submit" className={dashBtnSecondary} disabled={busy}>
               {f.pricingRun}
             </button>

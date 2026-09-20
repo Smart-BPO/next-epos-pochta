@@ -10,7 +10,9 @@ import { resolveZone } from "@/lib/pricing/estimate";
 
 /**
  * Non-binding quote via FCargo Client API (server-to-server).
- * Falls back (caller) to CMS matrix when not configured or request fails.
+ * Body shape matches OpenAPI POST /pricing/calculate:
+ * { from_region_id, to_region_id, weight, length?, width?, height? }
+ * where region ids are region SOATO integers (e.g. 1726).
  */
 export async function estimateViaFcargo(
   input: EstimateInput,
@@ -27,12 +29,24 @@ export async function estimateViaFcargo(
   });
   if (!from || !to) return null;
 
-  const weight =
-    input.weightKg && input.weightKg > 0
-      ? input.weightKg
-      : input.lengthCm && input.widthCm && input.heightCm
-        ? undefined
-        : 1;
+  const hasDims =
+    Boolean(input.lengthCm && input.lengthCm > 0) &&
+    Boolean(input.widthCm && input.widthCm > 0) &&
+    Boolean(input.heightCm && input.heightCm > 0);
+
+  const hasWeight = Boolean(input.weightKg && input.weightKg > 0);
+
+  // OpenAPI: either weight or all three dims; when both present server bills max.
+  let weight: number;
+  if (hasWeight) {
+    weight = input.weightKg!;
+  } else if (hasDims) {
+    const vol =
+      (input.lengthCm! * input.widthCm! * input.heightCm!) / 5000;
+    weight = Math.max(0.1, Number(vol.toFixed(2)));
+  } else {
+    weight = 1;
+  }
 
   const body: {
     from_region_id: number;
@@ -44,18 +58,13 @@ export async function estimateViaFcargo(
   } = {
     from_region_id: from.regionIdNum,
     to_region_id: to.regionIdNum,
-    weight: weight ?? 1,
+    weight,
   };
 
-  if (input.lengthCm && input.lengthCm > 0) body.length = input.lengthCm;
-  if (input.widthCm && input.widthCm > 0) body.width = input.widthCm;
-  if (input.heightCm && input.heightCm > 0) body.height = input.heightCm;
-
-  // Prefer volumetric-only when mass unknown but dims present.
-  if ((!input.weightKg || input.weightKg <= 0) && body.length && body.width && body.height) {
-    // OpenAPI requires weight; send computed volumetric hint (divisor 5000) as weight floor.
-    const vol = (body.length * body.width * body.height) / 5000;
-    body.weight = Math.max(0.1, Number(vol.toFixed(2)));
+  if (hasDims) {
+    body.length = input.lengthCm!;
+    body.width = input.widthCm!;
+    body.height = input.heightCm!;
   }
 
   const result = await fcargoCalculatePrice(body);

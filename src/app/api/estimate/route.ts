@@ -93,7 +93,12 @@ export async function POST(request: Request) {
 
   const result = await runEstimate(input);
   if (!result.ok) {
-    const status = result.error === "calculator_disabled" ? 503 : 400;
+    const status =
+      result.error === "calculator_disabled" ||
+      result.error === "fcargo_unavailable" ||
+      result.error === "fcargo_estimate_failed"
+        ? 503
+        : 400;
     return NextResponse.json({ error: result.error }, { status });
   }
 
