@@ -79,6 +79,19 @@ async function fcargoFetch<T>(
   }
 
   const started = Date.now();
+  const logHeaders = { ...headers };
+
+  const logCommon = {
+    direction: "out" as const,
+    method,
+    path,
+    url,
+    requestHeaders: logHeaders,
+    requestBody: opts.body,
+    leadId: opts.leadId,
+    orderId: opts.orderId != null ? String(opts.orderId) : undefined,
+    trackingNumber: opts.trackingNumber,
+  };
 
   try {
     const res = await fetch(url, {
@@ -86,6 +99,11 @@ async function fcargoFetch<T>(
       headers,
       body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
       cache: "no-store",
+    });
+
+    const responseHeaders: Record<string, string> = {};
+    res.headers.forEach((v, k) => {
+      responseHeaders[k] = v;
     });
 
     const json = (await res.json().catch(() => null)) as
@@ -112,16 +130,11 @@ async function fcargoFetch<T>(
         noteFcargoTenantFailure();
       }
       logFcargoRequest({
-        direction: "out",
-        method,
-        path,
+        ...logCommon,
         httpStatus: res.status,
         durationMs,
         ok: false,
-        leadId: opts.leadId,
-        orderId: opts.orderId != null ? String(opts.orderId) : undefined,
-        trackingNumber: opts.trackingNumber,
-        requestBody: opts.body,
+        responseHeaders,
         responseBody: json,
         errorCode: result.code,
         errorMessage: result.message,
@@ -135,16 +148,11 @@ async function fcargoFetch<T>(
       requestId: (json as FcargoEnvelope<T>).request_id,
     };
     logFcargoRequest({
-      direction: "out",
-      method,
-      path,
+      ...logCommon,
       httpStatus: res.status,
       durationMs,
       ok: true,
-      leadId: opts.leadId,
-      orderId: opts.orderId != null ? String(opts.orderId) : undefined,
-      trackingNumber: opts.trackingNumber,
-      requestBody: opts.body,
+      responseHeaders,
       responseBody: json,
     });
     return okResult;
@@ -160,16 +168,10 @@ async function fcargoFetch<T>(
       };
     }
     logFcargoRequest({
-      direction: "out",
-      method,
-      path,
+      ...logCommon,
       httpStatus: 0,
       durationMs: Date.now() - started,
       ok: false,
-      leadId: opts.leadId,
-      orderId: opts.orderId != null ? String(opts.orderId) : undefined,
-      trackingNumber: opts.trackingNumber,
-      requestBody: opts.body,
       errorCode: "NETWORK",
       errorMessage: message,
     });

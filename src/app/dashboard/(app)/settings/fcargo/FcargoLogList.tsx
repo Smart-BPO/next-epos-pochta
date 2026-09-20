@@ -29,11 +29,25 @@ function pickEventType(row: FcargoLogRow): string | null {
   return null;
 }
 
-function JsonBlock({ value }: { value: unknown }) {
+function JsonBlock({
+  label,
+  value,
+}: {
+  label: string;
+  value: unknown;
+}) {
+  if (value == null) return null;
   return (
-    <pre className="m-0 mt-2 max-h-64 overflow-auto rounded-lg bg-black/[0.04] p-3 text-[11px] leading-relaxed text-ink">
-      {JSON.stringify(value, null, 2)}
-    </pre>
+    <div className="mt-2">
+      <p className="m-0 mb-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
+        {label}
+      </p>
+      <pre className="m-0 max-h-64 overflow-auto rounded-lg bg-black/[0.04] p-3 text-[11px] leading-relaxed text-ink">
+        {typeof value === "string"
+          ? value
+          : JSON.stringify(value, null, 2)}
+      </pre>
+    </div>
   );
 }
 
@@ -65,8 +79,12 @@ export function FcargoLogList({
             const eventType =
               variant === "webhook" ? pickEventType(row) : null;
             const expanded = openId === row.id;
-            const hasBodies =
-              row.request_body != null || row.response_body != null;
+            const hasDetail =
+              row.request_headers != null ||
+              row.response_headers != null ||
+              row.request_body != null ||
+              row.response_body != null ||
+              Boolean(row.url);
 
             return (
               <li
@@ -101,25 +119,36 @@ export function FcargoLogList({
                   {row.order_id ? ` · #${row.order_id}` : ""}
                   {row.duration_ms != null ? ` · ${row.duration_ms}ms` : ""}
                 </div>
-                {hasBodies ? (
+                {hasDetail ? (
                   <button
                     type="button"
                     className="mt-1 text-[11px] font-semibold text-primary"
-                    onClick={() =>
-                      setOpenId(expanded ? null : row.id)
-                    }
+                    onClick={() => setOpenId(expanded ? null : row.id)}
                   >
                     {expanded ? f.logCollapse : f.logExpand}
                   </button>
                 ) : null}
                 {expanded ? (
                   <div className="grid gap-1">
-                    {row.request_body != null ? (
-                      <JsonBlock value={row.request_body} />
+                    {row.url ? (
+                      <JsonBlock label={f.logUrl} value={row.url} />
                     ) : null}
-                    {row.response_body != null ? (
-                      <JsonBlock value={row.response_body} />
-                    ) : null}
+                    <JsonBlock
+                      label={f.logRequestHeaders}
+                      value={row.request_headers}
+                    />
+                    <JsonBlock
+                      label={f.logRequestBody}
+                      value={row.request_body}
+                    />
+                    <JsonBlock
+                      label={f.logResponseHeaders}
+                      value={row.response_headers}
+                    />
+                    <JsonBlock
+                      label={f.logResponseBody}
+                      value={row.response_body}
+                    />
                   </div>
                 ) : null}
               </li>

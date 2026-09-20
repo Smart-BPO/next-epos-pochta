@@ -542,6 +542,11 @@ export type DashCopy = {
     webhooksLead: string;
     logExpand: string;
     logCollapse: string;
+    logUrl: string;
+    logRequestHeaders: string;
+    logRequestBody: string;
+    logResponseHeaders: string;
+    logResponseBody: string;
     eventType: string;
     status: string;
     statusOff: string;

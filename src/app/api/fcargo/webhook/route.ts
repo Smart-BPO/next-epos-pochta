@@ -10,7 +10,7 @@ import {
   processFcargoWebhookInbox,
   resolveFcargoEventId,
 } from "@/lib/fcargo/webhook-inbox";
-import { logFcargoRequest } from "@/lib/fcargo/log";
+import { logFcargoRequest, pickRequestHeadersForLog } from "@/lib/fcargo/log";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -86,22 +86,37 @@ export async function POST(request: Request) {
       })()
     : false;
 
+  const inboundHeaders = pickRequestHeadersForLog(request);
+  const started = Date.now();
+
   if (!hmacOk && !legacyOk) {
+    const resBody = { received: false, error: "unauthorized" };
     logFcargoRequest({
       direction: "in",
       method: "POST",
       path: "/api/fcargo/webhook",
+      url: "/api/fcargo/webhook/",
       httpStatus: 401,
+      durationMs: Date.now() - started,
       ok: false,
+      requestHeaders: inboundHeaders,
+      requestBody: rawBody
+        ? (() => {
+            try {
+              return JSON.parse(rawBody);
+            } catch {
+              return { raw: rawBody.slice(0, 2000) };
+            }
+          })()
+        : null,
+      responseHeaders: { "content-type": "application/json" },
+      responseBody: resBody,
       errorCode: "UNAUTHORIZED",
       errorMessage: signatureHeader
         ? "invalid_webhook_signature"
         : "missing_or_invalid_webhook_auth",
     });
-    return NextResponse.json(
-      { received: false, error: "unauthorized" },
-      { status: 401 },
-    );
+    return NextResponse.json(resBody, { status: 401 });
   }
 
   let body: unknown = null;
@@ -120,16 +135,21 @@ export async function POST(request: Request) {
 
   // Connectivity probe from FCargo dashboard — ack only.
   if (eventType === "webhook.test") {
+    const resBody = { received: true };
     logFcargoRequest({
       direction: "in",
       method: "POST",
       path: "/api/fcargo/webhook",
+      url: "/api/fcargo/webhook/",
       httpStatus: 200,
+      durationMs: Date.now() - started,
       ok: true,
+      requestHeaders: inboundHeaders,
       requestBody: body,
-      responseBody: { received: true, eventType: "webhook.test" },
+      responseHeaders: { "content-type": "application/json" },
+      responseBody: { ...resBody, eventType: "webhook.test" },
     });
-    return NextResponse.json({ received: true });
+    return NextResponse.json(resBody);
   }
 
   const deliveryId =
@@ -156,21 +176,24 @@ export async function POST(request: Request) {
   });
 
   if (!queued) {
+    const resBody = { received: false, error: "enqueue_failed" };
     logFcargoRequest({
       direction: "in",
       method: "POST",
       path: "/api/fcargo/webhook",
+      url: "/api/fcargo/webhook/",
       httpStatus: 503,
+      durationMs: Date.now() - started,
       ok: false,
+      requestHeaders: inboundHeaders,
+      requestBody: body,
+      responseHeaders: { "content-type": "application/json" },
+      responseBody: resBody,
       errorCode: "ENQUEUE_FAILED",
       errorMessage: "inbox_unavailable",
-      requestBody: body,
     });
     // Non-2xx so FCargo retries (durable path failed).
-    return NextResponse.json(
-      { received: false, error: "enqueue_failed" },
-      { status: 503 },
-    );
+    return NextResponse.json(resBody, { status: 503 });
   }
 
   after(() =>
@@ -182,11 +205,14 @@ export async function POST(request: Request) {
     }),
   );
 
+  const resBody = { received: true };
   logFcargoRequest({
     direction: "in",
     method: "POST",
     path: "/api/fcargo/webhook",
+    url: "/api/fcargo/webhook/",
     httpStatus: 200,
+    durationMs: Date.now() - started,
     ok: true,
     trackingNumber:
       body && typeof body === "object"
@@ -204,9 +230,11 @@ export async function POST(request: Request) {
             return typeof tn === "string" ? tn : undefined;
           })()
         : undefined,
+    requestHeaders: inboundHeaders,
     requestBody: body,
+    responseHeaders: { "content-type": "application/json" },
     responseBody: {
-      received: true,
+      ...resBody,
       queued: true,
       inserted: queued.inserted,
       eventId: queued.eventId,
@@ -214,7 +242,7 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json({ received: true });
+  return NextResponse.json(resBody);
 }
 
 export async function GET() {
