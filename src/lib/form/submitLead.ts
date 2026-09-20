@@ -39,7 +39,10 @@ export async function submitLead({
   successTitle,
   successText,
   eventPrefix,
-}: SubmitLeadOptions): Promise<{ id: string } | null> {
+}: SubmitLeadOptions): Promise<{
+  id: string;
+  fcargoTrackingNumber?: string;
+} | null> {
   trackEvent(`${eventPrefix}_submit_attempt`);
 
   try {
@@ -56,14 +59,27 @@ export async function submitLead({
         data,
       }),
     });
-    const json = (await res.json()) as { id?: string; error?: string };
+    const json = (await res.json()) as {
+      id?: string;
+      error?: string;
+      fcargoTrackingNumber?: string;
+      fcargoOrderId?: string | number;
+    };
     if (!res.ok || !json.id) {
       throw new Error(json.error || "submit_failed");
     }
 
     trackEvent(`${eventPrefix}_submit_success`);
-    toast.success(`${successTitle}. ID: ${json.id}\n${successText}`);
-    return { id: json.id };
+    const trackLine = json.fcargoTrackingNumber
+      ? locale === "uz"
+        ? `\nTrek: ${json.fcargoTrackingNumber}`
+        : `\nТрек: ${json.fcargoTrackingNumber}`
+      : "";
+    toast.success(`${successTitle}. ID: ${json.id}${trackLine}\n${successText}`);
+    return {
+      id: json.id,
+      fcargoTrackingNumber: json.fcargoTrackingNumber,
+    };
   } catch {
     trackEvent(`${eventPrefix}_submit_error`);
     toast.error(formErrorMessage(locale));

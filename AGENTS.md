@@ -13,7 +13,8 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
   - Secrets: `.env.local` or Hostinger panel — see `.env.example` / `.env.production.example`
   - Server-only: `SUPABASE_URL` + `SUPABASE_ANON_KEY` (or `SUPABASE_PUBLISHABLE_KEY`) + `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_SECRET_KEY` / `SUPABASE_API_KEY` (+ `CMS_BOOTSTRAP_SECRET` only for first owner). Never `NEXT_PUBLIC_SUPABASE_*`.
  - Telegram: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, optional `TELEGRAM_WEBHOOK_SECRET` — manage webhook in `/dashboard/settings/telegram/`
- - Messaging secrets master key: `MESSAGING_SECRETS_KEY` — encrypts Playmobile / Eskiz / Resend credentials stored in CMS (`/dashboard/messaging/`)
+ - Messaging secrets master key: `MESSAGING_SECRETS_KEY` — encrypts Playmobile / Eskiz / Resend credentials stored in CMS (`/dashboard/messaging/`) and FCargo API key (`/dashboard/settings/fcargo/`)
+ - FCargo Client API: configure in `/dashboard/settings/fcargo/` (owner). Optional one-shot `FCARGO_*` env import if CMS has no key yet.
  - SMS (Play Mobile / Eskiz) + Resend: configure in `/dashboard/messaging/providers/` (env `PLAYMOBILE_*` / `RESEND_*` still work as one-time import)
  - Remotes: keep **in sync** on `main` — `diasbek/next-epos-pochta` → **epos.nocode.uz**, `Smart-BPO/next-epos-pochta` → **epos-pochta.uz**. Local `origin` dual-pushes both; always `git push origin` (or push both explicitly). Never leave either remote behind after a requested push. Legacy `epos.nocode.uz` 301s to canonical `epos-pochta.uz` in proxy.
 

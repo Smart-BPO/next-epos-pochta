@@ -76,6 +76,96 @@ function pickName(data: Record<string, unknown>): string {
   return leadClientLabel({ data });
 }
 
+/** Best-effort FCargo order for calculator leads; never fails the lead. */
+async function attachFcargoOrderToLead(opts: {
+  id: string;
+  type: LeadType;
+  locale: "uz" | "ru";
+  data: Record<string, unknown>;
+  requestId?: string;
+}): Promise<Record<string, unknown> | null> {
+  if (opts.type !== "price") return null;
+  if (opts.data.source !== "calculator") return null;
+
+  const fromCityId =
+    typeof opts.data.fromCityId === "string" ? opts.data.fromCityId : "";
+  const toCityId =
+    typeof opts.data.toCityId === "string" ? opts.data.toCityId : "";
+  if (!fromCityId || !toCityId) return null;
+
+  try {
+    const { createFcargoOrderFromLead } = await import(
+      "@/lib/fcargo/create-from-lead"
+    );
+    const created = await createFcargoOrderFromLead({
+      leadId: opts.id,
+      requestId: opts.requestId,
+      name: pickName(opts.data),
+      phone: pickPhone(opts.data),
+      fromCityId,
+      toCityId,
+      weightKg:
+        typeof opts.data.weightKg === "number" ? opts.data.weightKg : null,
+      lengthCm:
+        typeof opts.data.lengthCm === "number" ? opts.data.lengthCm : null,
+      widthCm:
+        typeof opts.data.widthCm === "number" ? opts.data.widthCm : null,
+      heightCm:
+        typeof opts.data.heightCm === "number" ? opts.data.heightCm : null,
+      locale: opts.locale,
+    });
+
+    if (!created.ok) return null;
+
+    const order = created.order;
+    const patch = {
+      fcargoOrderId: order.order_id,
+      fcargoTrackingNumber: order.tracking_number,
+      fcargoStatus:
+        typeof order.status === "string"
+          ? order.status
+          : order.status && typeof order.status === "object"
+            ? (order.status as { code?: string }).code ?? null
+            : null,
+    };
+
+    if (hasSupabaseAdminConfig()) {
+      try {
+        const admin = createSupabaseAdminClient();
+        const { data: row } = await admin
+          .from("epos_leads")
+          .select("payload")
+          .eq("id", opts.id)
+          .maybeSingle();
+        const prev =
+          row?.payload && typeof row.payload === "object"
+            ? (row.payload as Record<string, unknown>)
+            : {};
+        const prevData =
+          prev.data && typeof prev.data === "object"
+            ? (prev.data as Record<string, unknown>)
+            : {};
+        await admin
+          .from("epos_leads")
+          .update({
+            payload: {
+              ...prev,
+              data: { ...prevData, ...patch },
+            },
+          })
+          .eq("id", opts.id);
+      } catch (e) {
+        console.warn("[lead:fcargo:persist]", e);
+      }
+    }
+
+    return patch;
+  } catch (e) {
+    console.warn("[lead:fcargo]", e);
+    return null;
+  }
+}
+
 async function notifyLeadCreated(opts: {
   id: string;
   type: LeadType;
@@ -474,7 +564,24 @@ async function handleFull(body: LeadPayload, locale: "uz" | "ru") {
     data,
   });
 
-  return NextResponse.json({ id, ok: true });
+  const fcargo = await attachFcargoOrderToLead({
+    id,
+    type: body.type,
+    locale,
+    data,
+    requestId: body.requestId,
+  });
+
+  return NextResponse.json({
+    id,
+    ok: true,
+    ...(fcargo
+      ? {
+          fcargoOrderId: fcargo.fcargoOrderId,
+          fcargoTrackingNumber: fcargo.fcargoTrackingNumber,
+        }
+      : {}),
+  });
 }
 
 export async function POST(request: Request) {

@@ -33,6 +33,7 @@ export function DashNavIcon({
   if (href.startsWith("/dashboard/news")) return <IconNews {...props} />;
   if (href.startsWith("/dashboard/delivery")) return <IconMap {...props} />;
   if (href.includes("/telegram")) return <IconTelegram {...props} />;
+  if (href.includes("/fcargo")) return <IconPackage {...props} />;
   if (href.startsWith("/dashboard/messaging")) return <IconMessaging {...props} />;
   if (href.startsWith("/dashboard/settings")) return <IconSettings {...props} />;
   if (href.startsWith("/dashboard/media")) return <IconMedia {...props} />;

@@ -70,6 +70,7 @@ export const dashUz: DashCopy = {
     media: "Rasmlar",
     settings: "Sozlamalar",
     telegram: "Telegram",
+    fcargo: "FCargo",
     messaging: "Xabarlar",
     messagingShort: "SMS",
     pricing: "Kalkulyator",

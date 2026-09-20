@@ -1,3 +1,7 @@
+/**
+ * Browser only talks to our Next routes (`/api/estimate`, `/api/leads`).
+ * FCargo Client API is called server-to-server inside those handlers — never from the browser.
+ */
 import type { EstimateInput, QuoteEstimate } from "@/lib/pricing/estimate";
 import type { PublicPricingUiConfig } from "@/lib/pricing/types";
 

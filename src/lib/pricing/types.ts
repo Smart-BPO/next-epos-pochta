@@ -53,7 +53,7 @@ export type PricingSettingsRow = {
 
 export const ESTIMATE_FORMULA_VERSION = "2026-09-v5-matrix";
 
-export type PricingRateSource = "route" | "zone";
+export type PricingRateSource = "route" | "zone" | "fcargo";
 
 export type PricingRouteOverride = {
   id?: number;

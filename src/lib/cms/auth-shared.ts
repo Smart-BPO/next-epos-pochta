@@ -30,6 +30,7 @@ export type AdminMutation =
   | "settings"
   | "telegram_webhook"
   | "messaging_secrets"
+  | "fcargo_secrets"
   | "users";
 
 const CONTENT_AREAS: AdminPermissionArea[] = [

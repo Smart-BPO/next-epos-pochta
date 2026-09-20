@@ -39,6 +39,14 @@ export default async function DashboardSettingsPage() {
       </p>
       <p>
         <Link
+          href="/dashboard/settings/fcargo/"
+          className="inline-flex items-center rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgb(15_18_24/0.04)] transition hover:border-primary/30"
+        >
+          FCargo API (калькулятор / заказы) →
+        </Link>
+      </p>
+      <p>
+        <Link
           href="/dashboard/pricing/"
           className="inline-flex items-center rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgb(15_18_24/0.04)] transition hover:border-primary/30"
         >

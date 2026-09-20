@@ -139,6 +139,21 @@ export async function runEstimate(
   if (!loaded.enabled && !opts?.draft) {
     return { ok: false, error: "calculator_disabled" };
   }
+
+  // Prefer live FCargo Client API when configured; CMS matrix remains fallback.
+  if (!opts?.draft) {
+    try {
+      const { estimateViaFcargo } = await import("@/lib/fcargo/estimate");
+      const remote = await estimateViaFcargo(input);
+      if (remote) return { ok: true, estimate: remote };
+    } catch (e) {
+      console.warn(
+        "[pricing:fcargo]",
+        e instanceof Error ? e.message : "estimate_failed",
+      );
+    }
+  }
+
   return {
     ok: true,
     estimate: estimateQuote(

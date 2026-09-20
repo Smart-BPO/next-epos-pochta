@@ -68,6 +68,7 @@ export type DashCopy = {
     media: string;
     settings: string;
     telegram: string;
+    fcargo: string;
     messaging: string;
     messagingShort: string;
     pricing: string;

@@ -70,6 +70,7 @@ export const dashRu: DashCopy = {
     media: "Медиа",
     settings: "Настройки",
     telegram: "Telegram",
+    fcargo: "FCargo",
     messaging: "Сообщения",
     messagingShort: "СМС",
     pricing: "Калькулятор",
