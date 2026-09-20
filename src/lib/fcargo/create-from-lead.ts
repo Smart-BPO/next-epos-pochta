@@ -108,5 +108,28 @@ export async function createFcargoOrderFromLead(
     return { ok: false, message: result.message };
   }
 
-  return { ok: true, order: result.data };
+  const order = result.data;
+  const statusLabel =
+    typeof order.status === "string"
+      ? order.status
+      : order.status && typeof order.status === "object"
+        ? (order.status as { code?: string; name?: string }).code ||
+          (order.status as { name?: string }).name ||
+          null
+        : null;
+
+  try {
+    const { upsertFcargoOrderLink } = await import("@/lib/fcargo/orders-store");
+    await upsertFcargoOrderLink({
+      leadId: input.leadId,
+      fcargoOrderId: order.order_id,
+      trackingNumber: order.tracking_number,
+      fcargoStatus: statusLabel,
+      statusRaw: order.status ?? order,
+    });
+  } catch (e) {
+    console.warn("[fcargo:order:link]", e);
+  }
+
+  return { ok: true, order };
 }

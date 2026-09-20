@@ -43,7 +43,7 @@ export async function saveProviderAction(formData: FormData) {
     throw new Error("Invalid provider");
   }
   if (!hasMessagingSecretsKey()) {
-    throw new Error("MESSAGING_SECRETS_KEY is not set");
+    throw new Error("На сервере не задан ключ шифрования");
   }
 
   const enabled = String(formData.get("enabled") ?? "") === "on";

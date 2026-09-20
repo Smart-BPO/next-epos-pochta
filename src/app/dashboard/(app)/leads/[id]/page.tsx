@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { requireAccess, canMutate } from "@/lib/cms/auth";
+import { getDashT } from "@/i18n/dashboard/server";
 import { LeadStatusSelect } from "@/components/dashboard/LeadStatusSelect";
 import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
@@ -54,11 +55,12 @@ export default async function LeadDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const admin = await requireAccess("leads");
+  const { t } = await getDashT();
   if (!admin) {
     return (
       <DashAccessDenied
-        title="Заявка"
-        lead="Раздел для ролей CRM / owner / viewer."
+        title={t.leads.detailTitle}
+        lead={t.leads.detailDeniedLead}
       />
     );
   }

@@ -54,10 +54,10 @@ export async function setTelegramWebhookAction(
   try {
     await requireTelegramAdmin({ ownerOnly: true });
   } catch {
-    return { ok: false, error: "Только owner может устанавливать webhook" };
+    return { ok: false, error: "Подключение меняет только владелец" };
   }
   if (!hasTelegramBotToken()) {
-    return { ok: false, error: "На сервере нет TELEGRAM_BOT_TOKEN" };
+    return { ok: false, error: "На сервере не задан токен бота" };
   }
 
   const customUrl = String(formData.get("webhook_url") ?? "").trim();
@@ -79,8 +79,8 @@ export async function setTelegramWebhookAction(
   return {
     ok: true,
     message: secret
-      ? `Webhook установлен: ${url}`
-      : `Webhook установлен: ${url}. Рекомендуем задать TELEGRAM_WEBHOOK_SECRET.`,
+      ? `Подключено: ${url}`
+      : `Подключено: ${url}. Задайте секрет подключения на сервере.`,
   };
 }
 
@@ -91,10 +91,10 @@ export async function deleteTelegramWebhookAction(
   try {
     await requireTelegramAdmin({ ownerOnly: true });
   } catch {
-    return { ok: false, error: "Только owner может удалять webhook" };
+    return { ok: false, error: "Отключение меняет только владелец" };
   }
   if (!hasTelegramBotToken()) {
-    return { ok: false, error: "На сервере нет TELEGRAM_BOT_TOKEN" };
+    return { ok: false, error: "На сервере не задан токен бота" };
   }
 
   const result = await deleteWebhook(true);
@@ -102,7 +102,7 @@ export async function deleteTelegramWebhookAction(
   if (!result.ok) {
     return { ok: false, error: result.description };
   }
-  return { ok: true, message: "Webhook удалён" };
+  return { ok: true, message: "Отключено" };
 }
 
 export async function refreshTelegramWebhookAction(
@@ -119,7 +119,7 @@ export async function refreshTelegramWebhookAction(
     ok: true,
     message: info.result.url
       ? `Активен: ${info.result.url}`
-      : "Webhook не установлен",
+      : "Не подключено",
   };
 }
 
@@ -129,13 +129,13 @@ export async function sendTelegramTestAction(
 ): Promise<TelegramActionState> {
   await requireTelegramAdmin();
   if (!hasTelegramBotToken()) {
-    return { ok: false, error: "На сервере нет TELEGRAM_BOT_TOKEN" };
+    return { ok: false, error: "На сервере не задан токен бота" };
   }
   const chatId = getTelegramChatId();
   if (!chatId) {
     return {
       ok: false,
-      error: "TELEGRAM_CHAT_ID не задан. Напишите боту /id и добавьте chat_id в env.",
+      error: "Чат для уведомлений не задан. Напишите боту /id и укажите номер чата на сервере.",
     };
   }
 
@@ -143,12 +143,12 @@ export async function sendTelegramTestAction(
   const botName = me.ok ? me.result.username || me.result.first_name : "bot";
   const result = await sendMessage({
     chatId,
-    text: `EPOS test ping from dashboard (@${botName})\n${new Date().toISOString()}`,
+    text: `EPOS: проверка из панели (@${botName})\n${new Date().toISOString()}`,
   });
   if (!result.ok) {
     return { ok: false, error: result.description };
   }
-  return { ok: true, message: `Тест отправлен в chat ${chatId}` };
+  return { ok: true, message: `Тест отправлен в чат ${chatId}` };
 }
 
 export async function setTelegramWebAppMenuAction(
@@ -158,10 +158,10 @@ export async function setTelegramWebAppMenuAction(
   try {
     await requireTelegramAdmin({ ownerOnly: true });
   } catch {
-    return { ok: false, error: "Только owner может ставить Mini App кнопку" };
+    return { ok: false, error: "Кнопку меняет только владелец" };
   }
   if (!hasTelegramBotToken()) {
-    return { ok: false, error: "На сервере нет TELEGRAM_BOT_TOKEN" };
+    return { ok: false, error: "На сервере не задан токен бота" };
   }
 
   const origin = await resolveSiteOrigin();
@@ -184,6 +184,6 @@ export async function setTelegramWebAppMenuAction(
 
   return {
     ok: true,
-    message: `Menu button set: «${text.slice(0, 16)}» → ${url}. getChatMenuButton: ${checkLabel}. Если в клиенте не видно — в @BotFather выполните /setdomain → epos-pochta.uz`,
+    message: `Кнопка «${text.slice(0, 16)}» → ${url}. Статус: ${checkLabel}. Если не видно — в @BotFather укажите домен epos-pochta.uz`,
   };
 }

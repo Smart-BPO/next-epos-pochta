@@ -494,12 +494,30 @@ async function handleFinalize(body: LeadPayload, locale: "uz" | "ru") {
     data: merged,
   });
 
+  const fcargo = await attachFcargoOrderToLead({
+    id: id!,
+    type: "price",
+    locale,
+    data: {
+      ...merged,
+      source: "calculator",
+    },
+    requestId: body.requestId,
+  });
+
   return NextResponse.json({
     id,
     uid: resumeToken,
     ok: true,
     complete: true,
     status: "new",
+    ...(fcargo
+      ? {
+          fcargoOrderId: fcargo.fcargoOrderId,
+          fcargoTrackingNumber: fcargo.fcargoTrackingNumber,
+          fcargoStatus: fcargo.fcargoStatus,
+        }
+      : {}),
   });
 }
 

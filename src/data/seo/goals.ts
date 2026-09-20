@@ -36,6 +36,11 @@ export const SEO_ANALYTICS_GOALS = {
   },
 } as const;
 
+/** GA4 conversion event names — mark the same keys in GA4 Admin → Events. */
+export const SEO_GA4_CONVERSION_EVENTS = Object.keys(SEO_ANALYTICS_GOALS) as Array<
+  keyof typeof SEO_ANALYTICS_GOALS
+>;
+
 /** Final cluster → URL map from Wordstat (phase 1).
  * wordstatFreq = RU seed (or shared Latin head); wordstatFreqUz = UZ Latin seed (2026-09-10).
  */
@@ -293,7 +298,8 @@ export type SeoEngine = "google" | "yandex";
 export type SeoLocale = "uz" | "ru";
 
 /** SERP tracking matrix: query → landing → engines (Wordstat-aligned, 2026-09-10).
- * Do not change targetPath without GSC evidence (avoid Yandex cannibalization).
+ * `googleVolumeHint` — optional Keyword Planner / GSC volume after Google keyword layer pass
+ * (see google-keyword-layer.md). Do not change targetPath without GSC evidence.
  */
 export const SEO_SERP_MATRIX: ReadonlyArray<{
   cluster: keyof typeof SEO_PRIORITY_QUERIES | "head";
@@ -303,6 +309,8 @@ export const SEO_SERP_MATRIX: ReadonlyArray<{
   engines: SeoEngine[];
   competitors: ReadonlyArray<string>;
   wordstatFreq?: number;
+  /** Approx monthly Google.uz searches; fill after Keyword Planner — not Wordstat. */
+  googleVolumeHint?: number;
 }> = [
   {
     cluster: "brand",

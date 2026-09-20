@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import type { TelegramActionState } from "./actions";
 import {
   deleteTelegramWebhookAction,
@@ -45,6 +46,7 @@ export function TelegramWebhookForms({
   defaultWebAppUrl: string;
   isOwner: boolean;
 }) {
+  const t = useDashT().telegram;
   const [setState, setAction, setPending] = useActionState(
     setTelegramWebhookAction,
     null,
@@ -79,15 +81,10 @@ export function TelegramWebhookForms({
 
       {isOwner ? (
         <form action={menuAction} className={`${dashCardPad} grid gap-3`}>
-          <h2 className={dashSectionTitle}>Кнопка Mini App (menu button)</h2>
-          <p className="m-0 text-sm text-black/45">
-            Bot API <code className="text-xs">setChatMenuButton</code>. Домен
-            должен быть разрешён в @BotFather →{" "}
-            <code className="text-xs">/setdomain</code> →{" "}
-            <code className="text-xs">epos-pochta.uz</code>.
-          </p>
+          <h2 className={dashSectionTitle}>{t.menuTitle}</h2>
+          <p className="m-0 text-sm text-black/45">{t.menuLead}</p>
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            WebApp URL
+            {t.webappUrl}
             <input
               name="webapp_url"
               defaultValue={defaultWebAppUrl}
@@ -96,7 +93,7 @@ export function TelegramWebhookForms({
             />
           </label>
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            Текст кнопки (до 16)
+            {t.buttonText}
             <input
               name="button_text"
               defaultValue="EPOS"
@@ -110,20 +107,17 @@ export function TelegramWebhookForms({
             disabled={busy}
             className={`${dashBtnPrimary} w-fit disabled:opacity-60`}
           >
-            {menuPending ? "Установка…" : "Установить Mini App кнопку"}
+            {menuPending ? t.menuSubmitting : t.menuSubmit}
           </button>
         </form>
       ) : null}
 
       {isOwner ? (
         <form action={setAction} className={`${dashCardPad} grid gap-3`}>
-          <h2 className={dashSectionTitle}>Установить webhook</h2>
-          <p className="m-0 text-sm text-black/45">
-            URL должен быть публичным HTTPS. Локальный localhost Telegram не
-            примет. Только owner.
-          </p>
+          <h2 className={dashSectionTitle}>{t.connectTitle}</h2>
+          <p className="m-0 text-sm text-black/45">{t.connectLead}</p>
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            Webhook URL
+            {t.serviceUrl}
             <input
               name="webhook_url"
               defaultValue={defaultWebhookUrl}
@@ -139,21 +133,18 @@ export function TelegramWebhookForms({
               disabled={busy}
               className="size-4 rounded border-black/20"
             />
-            Сбросить pending updates
+            {t.dropPending}
           </label>
           <button
             type="submit"
             disabled={busy}
             className={`${dashBtnPrimary} w-fit disabled:opacity-60`}
           >
-            {setPending ? "Установка…" : "Set webhook"}
+            {setPending ? t.connectSubmitting : t.connectSubmit}
           </button>
         </form>
       ) : (
-        <p className={`${dashCardPad} text-sm text-black/55`}>
-          Установка webhook / Mini App кнопки — только owner. Можно обновить
-          статус и отправить тест.
-        </p>
+        <p className={`${dashCardPad} text-sm text-black/55`}>{t.ownerOnlyHint}</p>
       )}
 
       <div className="flex flex-wrap gap-2">
@@ -163,7 +154,7 @@ export function TelegramWebhookForms({
             disabled={busy}
             className={`${dashBtnSecondary} disabled:opacity-60`}
           >
-            {refreshPending ? "…" : "Обновить статус"}
+            {refreshPending ? t.deleting : t.refreshStatus}
           </button>
         </form>
         <form action={testAction}>
@@ -172,7 +163,7 @@ export function TelegramWebhookForms({
             disabled={busy}
             className={`${dashBtnSecondary} disabled:opacity-60`}
           >
-            {testPending ? "…" : "Тест в TELEGRAM_CHAT_ID"}
+            {testPending ? t.deleting : t.sendTest}
           </button>
         </form>
         {isOwner ? (
@@ -182,7 +173,7 @@ export function TelegramWebhookForms({
               disabled={busy}
               className="inline-flex items-center justify-center rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-semibold text-black/55 transition hover:bg-black/[0.03] disabled:opacity-60"
             >
-              {delPending ? "…" : "Удалить webhook"}
+              {delPending ? t.deleting : t.deleteConnection}
             </button>
           </form>
         ) : null}

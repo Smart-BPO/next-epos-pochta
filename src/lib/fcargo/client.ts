@@ -11,6 +11,7 @@ import {
   hasFcargoConfig,
   resolveFcargoConfig,
 } from "@/lib/fcargo/settings";
+import { logFcargoRequest } from "@/lib/fcargo/log";
 import type {
   FcargoCreateOrderRequest,
   FcargoCreateOrderResult,
@@ -27,6 +28,9 @@ type RequestOpts = {
   body?: unknown;
   idempotencyKey?: string;
   scopeHint?: string;
+  leadId?: string;
+  orderId?: string | number;
+  trackingNumber?: string;
 };
 
 async function fcargoFetch<T>(
@@ -43,6 +47,7 @@ async function fcargoFetch<T>(
     };
   }
 
+  const method = opts.method ?? "GET";
   const url = `${cfg.baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
   const headers: Record<string, string> = {
     Accept: "application/json",
@@ -57,9 +62,11 @@ async function fcargoFetch<T>(
     headers["Idempotency-Key"] = opts.idempotencyKey;
   }
 
+  const started = Date.now();
+
   try {
     const res = await fetch(url, {
-      method: opts.method ?? "GET",
+      method,
       headers,
       body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
       cache: "no-store",
@@ -70,9 +77,11 @@ async function fcargoFetch<T>(
       | FcargoErrorEnvelope
       | null;
 
+    const durationMs = Date.now() - started;
+
     if (!res.ok || !json || json.success === false) {
       const err = json as FcargoErrorEnvelope | null;
-      return {
+      const result: FcargoResult<T> = {
         ok: false,
         code: err?.error?.code || `HTTP_${res.status}`,
         message:
@@ -83,18 +92,63 @@ async function fcargoFetch<T>(
         status: res.status,
         details: err?.error?.details ?? undefined,
       };
+      logFcargoRequest({
+        direction: "out",
+        method,
+        path,
+        httpStatus: res.status,
+        durationMs,
+        ok: false,
+        leadId: opts.leadId,
+        orderId: opts.orderId != null ? String(opts.orderId) : undefined,
+        trackingNumber: opts.trackingNumber,
+        requestBody: opts.body,
+        responseBody: json,
+        errorCode: result.code,
+        errorMessage: result.message,
+      });
+      return result;
     }
 
-    return {
+    const okResult: FcargoResult<T> = {
       ok: true,
       data: (json as FcargoEnvelope<T>).data as T,
       requestId: (json as FcargoEnvelope<T>).request_id,
     };
+    logFcargoRequest({
+      direction: "out",
+      method,
+      path,
+      httpStatus: res.status,
+      durationMs,
+      ok: true,
+      leadId: opts.leadId,
+      orderId: opts.orderId != null ? String(opts.orderId) : undefined,
+      trackingNumber: opts.trackingNumber,
+      requestBody: opts.body,
+      responseBody: json,
+    });
+    return okResult;
   } catch (e) {
+    const message = e instanceof Error ? e.message : "network_error";
+    logFcargoRequest({
+      direction: "out",
+      method,
+      path,
+      httpStatus: 0,
+      durationMs: Date.now() - started,
+      ok: false,
+      leadId: opts.leadId,
+      orderId: opts.orderId != null ? String(opts.orderId) : undefined,
+      trackingNumber: opts.trackingNumber,
+      requestBody: opts.body,
+      errorCode: "NETWORK",
+      errorMessage: message,
+    });
     return {
       ok: false,
       code: "NETWORK",
-      message: e instanceof Error ? e.message : "network_error",
+      message,
       status: 0,
     };
   }
@@ -133,6 +187,7 @@ export function fcargoCreateOrder(
     body,
     idempotencyKey,
     scopeHint: "orders:create",
+    leadId: body.external_order_id,
   });
 }
 
@@ -141,13 +196,15 @@ export function fcargoListOrders() {
 }
 
 export function fcargoGetOrder(orderId: string | number) {
-  return fcargoFetch<unknown>(`/orders/${encodeURIComponent(String(orderId))}`);
+  return fcargoFetch<unknown>(`/orders/${encodeURIComponent(String(orderId))}`, {
+    orderId,
+  });
 }
 
 export function fcargoCancelOrder(orderId: string | number) {
   return fcargoFetch<unknown>(
     `/orders/${encodeURIComponent(String(orderId))}/cancel`,
-    { method: "POST" },
+    { method: "POST", orderId },
   );
 }
 
@@ -164,6 +221,7 @@ export function fcargoGetPackage(packageId: string | number) {
 export function fcargoTrackPackage(tracking: string) {
   return fcargoFetch<unknown>(
     `/packages/${encodeURIComponent(tracking)}/track`,
+    { trackingNumber: tracking },
   );
 }
 

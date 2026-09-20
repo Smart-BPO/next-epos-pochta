@@ -101,19 +101,33 @@ export const ensureSiteNewsInCms = cache(async (): Promise<number> => {
   let inserted = 0;
   for (const article of siteNewsSeed) {
     if (have.has(article.slug)) continue;
-    await upsertNewsArticle({
-      slug: article.slug,
-      status: article.status,
-      category: article.category,
-      coverImage: article.coverImage,
-      coverAlt: article.coverAlt,
-      ogImage: article.ogImage,
-      tags: article.tags,
-      noindex: article.noindex,
-      publishedAt: article.publishedAt,
-      locales: article.locales,
-    });
-    inserted += 1;
+    try {
+      await upsertNewsArticle({
+        slug: article.slug,
+        status: article.status,
+        category: article.category,
+        coverImage: article.coverImage,
+        coverAlt: article.coverAlt,
+        ogImage: article.ogImage,
+        tags: article.tags,
+        noindex: article.noindex,
+        publishedAt: article.publishedAt,
+        locales: article.locales,
+      });
+      have.add(article.slug);
+      inserted += 1;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      // Parallel SSG / concurrent ensure: slug may appear between select and insert.
+      if (
+        message.includes("epos_news_articles_slug_key") ||
+        message.includes("duplicate key")
+      ) {
+        have.add(article.slug);
+        continue;
+      }
+      console.error("[cms:news:ensure]", message);
+    }
   }
   return inserted;
 });
@@ -179,19 +193,23 @@ export async function upsertNewsArticle(input: NewsUpsertInput) {
       ? (input.publishedAt ?? new Date().toISOString())
       : (input.publishedAt ?? null);
 
-  const { error: articleError } = await admin.from("epos_news_articles").upsert({
-    id,
-    slug: input.slug,
-    status: input.status,
-    category: input.category,
-    cover_image: input.coverImage || null,
-    cover_alt: input.coverAlt ?? "",
-    og_image: input.ogImage || null,
-    tags: input.tags ?? [],
-    noindex: Boolean(input.noindex),
-    published_at: publishedAt,
-    updated_at: new Date().toISOString(),
-  });
+  const { error: articleError } = await admin.from("epos_news_articles").upsert(
+    {
+      id,
+      slug: input.slug,
+      status: input.status,
+      category: input.category,
+      cover_image: input.coverImage || null,
+      cover_alt: input.coverAlt ?? "",
+      og_image: input.ogImage || null,
+      tags: input.tags ?? [],
+      noindex: Boolean(input.noindex),
+      published_at: publishedAt,
+      updated_at: new Date().toISOString(),
+    },
+    // Prefer primary key when updating an existing row; slug conflict is handled by callers.
+    { onConflict: "id" },
+  );
   if (articleError) throw new Error(articleError.message);
 
   for (const locale of ["uz", "ru"] as const) {

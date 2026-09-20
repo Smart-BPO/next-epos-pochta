@@ -21,6 +21,7 @@ import {
   fcargoResolveSoato,
   fcargoTrackPackage,
 } from "@/lib/fcargo/client";
+import { syncOpenFcargoOrders } from "@/lib/fcargo/sync-status";
 
 function revalidate() {
   revalidatePath("/dashboard/settings/fcargo/");
@@ -98,7 +99,7 @@ async function withProbe(
 export async function saveFcargoSettingsAction(formData: FormData) {
   const admin = await requireMutation("fcargo_secrets");
   if (!hasMessagingSecretsKey()) {
-    throw new Error("MESSAGING_SECRETS_KEY is not set");
+    throw new Error("Master encryption key is not set");
   }
 
   const enabled = String(formData.get("enabled") ?? "") === "on";
@@ -107,6 +108,7 @@ export async function saveFcargoSettingsAction(formData: FormData) {
   const modeRaw = String(formData.get("mode") ?? "live").trim();
   const mode: FcargoMode = modeRaw === "test" ? "test" : "live";
   const apiKey = String(formData.get("api_key") ?? "").trim();
+  const webhookSecret = String(formData.get("webhook_secret") ?? "").trim();
 
   if (!tenantDomain) throw new Error("Tenant domain required");
 
@@ -116,6 +118,7 @@ export async function saveFcargoSettingsAction(formData: FormData) {
     baseUrl,
     mode,
     apiKey: apiKey || null,
+    webhookSecret: webhookSecret || null,
   });
 
   await writeAuditLog({
@@ -123,7 +126,13 @@ export async function saveFcargoSettingsAction(formData: FormData) {
     action: "fcargo.settings.save",
     entityType: "fcargo_settings",
     entityId: "default",
-    payload: { enabled, tenantDomain, mode, keyUpdated: Boolean(apiKey) },
+    payload: {
+      enabled,
+      tenantDomain,
+      mode,
+      keyUpdated: Boolean(apiKey),
+      webhookSecretUpdated: Boolean(webhookSecret),
+    },
   });
 
   revalidate();
@@ -250,4 +259,13 @@ export async function debugFcargoProbeAction(
         meta: null,
       };
   }
+}
+
+export async function syncFcargoOrdersAction(): Promise<{
+  checked: number;
+  updated: number;
+  errors: number;
+}> {
+  await requireMutation("fcargo_secrets");
+  return syncOpenFcargoOrders({ limit: 40 });
 }

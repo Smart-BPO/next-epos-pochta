@@ -18,7 +18,7 @@ import {
 } from "@/components/dashboard/icons";
 import { DashTable, DashTd, DashTh } from "@/components/dashboard/ui";
 import { useDashLocale, useDashT } from "@/components/dashboard/DashLocaleProvider";
-import { dashIntlLocale } from "@/i18n/dashboard";
+import { dashFormat, dashIntlLocale } from "@/i18n/dashboard";
 import { isIsoInDateRange } from "@/lib/dashboard/date-range";
 import { cn } from "@/lib/cn";
 import {
@@ -50,34 +50,29 @@ export type OverviewShipmentRow = {
 
 const LEAD_STATUS: Record<
   string,
-  { label: string; className: string; bar: string; dot: string }
+  { className: string; bar: string; dot: string }
 > = {
   draft: {
-    label: "Черновик",
     className: "bg-black/[0.06] text-black/50",
     bar: "bg-black/30",
     dot: "bg-black/30",
   },
   new: {
-    label: "Новая",
     className: "bg-[#fee2e2] text-[#b91c1c]",
     bar: "bg-primary",
     dot: "bg-primary",
   },
   in_progress: {
-    label: "В работе",
     className: "bg-[#fef3c7] text-[#b45309]",
     bar: "bg-amber-500",
     dot: "bg-amber-500",
   },
   done: {
-    label: "Готово",
     className: "bg-[#dcfce7] text-[#15803d]",
     bar: "bg-emerald-500",
     dot: "bg-emerald-500",
   },
   spam: {
-    label: "Спам",
     className: "bg-black/[0.06] text-black/50",
     bar: "bg-black/30",
     dot: "bg-black/30",
@@ -137,7 +132,14 @@ function leadClient(row: OverviewLeadRow) {
   return name || phone || row.type;
 }
 
-function leadRoute(row: OverviewLeadRow) {
+function leadRoute(
+  row: OverviewLeadRow,
+  fallbacks: {
+    business: string;
+    contact: string;
+    estimate: string;
+  },
+) {
   const data = row.payload?.data ?? {};
   const from =
     (typeof data.from === "string" && data.from) ||
@@ -149,10 +151,10 @@ function leadRoute(row: OverviewLeadRow) {
     "";
   if (from && to) return `${from} → ${to}`;
   return row.type === "business"
-    ? "Бизнес"
+    ? fallbacks.business
     : row.type === "contact"
-      ? "Контакт"
-      : "Расчёт";
+      ? fallbacks.contact
+      : fallbacks.estimate;
 }
 
 function buildDaySeries(leads: OverviewLeadRow[], days: number) {
@@ -311,6 +313,7 @@ export function OverviewDashboardClient({
   const statusCounts = statusOrder.map((key) => ({
     key,
     count: scopedLeads.filter((l) => l.status === key).length,
+    label: t.badge.lead[key],
     ...LEAD_STATUS[key]!,
   }));
   const statusTotal = Math.max(
@@ -319,15 +322,22 @@ export function OverviewDashboardClient({
   );
 
   const recent = scopedLeads.slice(0, 8);
+  const routeFallbacks = {
+    business: t.overview.typeFallbackBusiness,
+    contact: t.overview.typeFallbackContact,
+    estimate: t.overview.typeFallbackEstimate,
+  };
 
   const kpis = [
     {
-      label: "Новые заявки",
+      label: t.overview.kpiNewLeads,
       value: leadsNew,
       hint:
         pendingShipments > 0
-          ? `${pendingShipments} из Mini App ждут`
-          : `${deltaPct >= 0 ? "+" : ""}${deltaPct}% за 7 дней`,
+          ? dashFormat(t.overview.kpiPendingWebapp, { n: pendingShipments })
+          : dashFormat(t.overview.kpiDelta7d, {
+              signed: `${deltaPct >= 0 ? "+" : ""}${deltaPct}`,
+            }),
       hintClass:
         pendingShipments > 0
           ? "text-amber-700"
@@ -339,18 +349,18 @@ export function OverviewDashboardClient({
       iconBg: "bg-primary-soft",
     },
     {
-      label: "В обработке",
+      label: t.overview.kpiInProgress,
       value: leadsProgress,
-      hint: "лиды в работе",
+      hint: t.overview.kpiInProgressHint,
       hintClass: "text-amber-700",
       href: "/dashboard/leads/",
       icon: <IconProgress className="text-amber-600" />,
       iconBg: "bg-amber-50",
     },
     {
-      label: "Закрыто сегодня",
+      label: t.overview.kpiDoneToday,
       value: doneToday,
-      hint: "статус done",
+      hint: t.overview.kpiDoneTodayHint,
       hintClass: "text-emerald-600",
       href: "/dashboard/leads/?status=done",
       icon: <IconCheck className="text-emerald-600" />,
@@ -359,7 +369,7 @@ export function OverviewDashboardClient({
     {
       label: t.contacts.title,
       value: contacts,
-      hint: "мини-приложение",
+      hint: t.overview.kpiContactsHint,
       hintClass: "text-black/45",
       href: "/dashboard/webapp/contacts/",
       icon: <IconMoney className="text-sky-600" />,
@@ -421,9 +431,9 @@ export function OverviewDashboardClient({
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)_minmax(14rem,0.7fr)]">
         <section className={dashCardPad}>
           <div className="flex items-center justify-between gap-3">
-            <h2 className={dashSectionTitle}>Динамика заявок</h2>
+            <h2 className={dashSectionTitle}>{t.overview.chartTitle}</h2>
             <span className="rounded-lg border border-black/8 px-2.5 py-1 text-xs font-medium text-black/50">
-              7 дней
+              7
             </span>
           </div>
           <div className="mt-2">
@@ -431,18 +441,18 @@ export function OverviewDashboardClient({
           </div>
           <div className="mt-1 flex flex-wrap gap-4 text-xs text-black/45">
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-0.5 w-4 rounded bg-primary" /> Текущие 7 дней (
-              {curSum})
+              <span className="h-0.5 w-4 rounded bg-primary" />{" "}
+              {dashFormat(t.overview.chartCurrent7, { n: curSum })}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="h-px w-4 border-t border-dashed border-black/35" />{" "}
-              Предыдущие 7 ({prevSum})
+              {dashFormat(t.overview.chartPrev7, { n: prevSum })}
             </span>
           </div>
         </section>
 
         <section className={dashCardPad}>
-          <h2 className={dashSectionTitle}>Статусы заявок</h2>
+          <h2 className={dashSectionTitle}>{t.overview.statusesTitle}</h2>
           <ul className="mt-4 space-y-3">
             {statusCounts.map((row) => {
               const pct = Math.round((row.count / statusTotal) * 100);
@@ -479,25 +489,25 @@ export function OverviewDashboardClient({
         </section>
 
         <section className={dashCardPad}>
-          <h2 className={dashSectionTitle}>Быстрые действия</h2>
+          <h2 className={dashSectionTitle}>{t.overview.quickActionsTitle}</h2>
           <div className="mt-4 flex flex-col gap-2.5">
             <Link href="/dashboard/leads/" className={dashBtnPrimary}>
               <IconPlus className="size-4" />
-              Открыть заявки
+              {t.overview.openLeads}
             </Link>
             <Link href="/dashboard/news/new/" className={dashBtnSecondary}>
               <IconNews className="size-4 text-black/45" />
-              Добавить новость
+              {t.overview.addNews}
             </Link>
             <Link href="/webapp/" className={dashBtnSecondary} target="_blank">
               <IconPackage className="size-4 text-black/45" />
-              Открыть WebApp
+              {t.overview.quickWebapp}
             </Link>
             <Link
               href="/dashboard/settings/telegram/"
               className={dashBtnSecondary}
             >
-              Telegram webhook
+              {t.overview.quickTelegram}
             </Link>
           </div>
         </section>
@@ -505,36 +515,44 @@ export function OverviewDashboardClient({
 
       <section className={dashCard}>
         <div className="flex items-center justify-between gap-3 border-b border-black/[0.06] px-5 py-4">
-          <h2 className={dashSectionTitle}>Последние заявки</h2>
+          <h2 className={dashSectionTitle}>{t.overview.recentLeadsTitle}</h2>
           <Link
             href="/dashboard/leads/"
             className="text-sm font-semibold text-primary hover:underline"
           >
-            Все заявки →
+            {t.overview.allLeads}
           </Link>
         </div>
         <div className="overflow-x-auto">
           <DashTable>
             <thead>
               <tr>
-                <DashTh>№</DashTh>
-                <DashTh>Клиент</DashTh>
-                <DashTh className="hidden sm:table-cell">Направление</DashTh>
-                <DashTh>Статус</DashTh>
-                <DashTh className="hidden md:table-cell">Создано</DashTh>
-                <DashTh>Действия</DashTh>
+                <DashTh>{t.overview.colNum}</DashTh>
+                <DashTh>{t.overview.colClient}</DashTh>
+                <DashTh className="hidden sm:table-cell">
+                  {t.overview.colRoute}
+                </DashTh>
+                <DashTh>{t.overview.colStatus}</DashTh>
+                <DashTh className="hidden md:table-cell">
+                  {t.overview.colCreated}
+                </DashTh>
+                <DashTh>{t.overview.colActions}</DashTh>
               </tr>
             </thead>
             <tbody>
               {recent.length === 0 ? (
                 <tr>
                   <DashTd className="py-10 text-center text-black/40" colSpan={6}>
-                    Пока нет заявок
+                    {t.leads.emptyTitle}
                   </DashTd>
                 </tr>
               ) : (
                 recent.map((row) => {
                   const st = LEAD_STATUS[row.status] ?? LEAD_STATUS.new!;
+                  const statusKey =
+                    row.status in t.badge.lead
+                      ? (row.status as keyof typeof t.badge.lead)
+                      : "new";
                   return (
                     <tr key={row.id} className="hover:bg-black/[0.015]">
                       <DashTd className="font-mono text-xs text-black/70">
@@ -549,7 +567,7 @@ export function OverviewDashboardClient({
                         {leadClient(row)}
                       </DashTd>
                       <DashTd className="hidden truncate text-black/60 sm:table-cell">
-                        {leadRoute(row)}
+                        {leadRoute(row, routeFallbacks)}
                       </DashTd>
                       <DashTd>
                         <span
@@ -558,7 +576,7 @@ export function OverviewDashboardClient({
                             st.className,
                           )}
                         >
-                          {st.label}
+                          {t.badge.lead[statusKey]}
                         </span>
                       </DashTd>
                       <DashTd className="hidden text-black/50 md:table-cell">
@@ -569,7 +587,7 @@ export function OverviewDashboardClient({
                           href={`/dashboard/leads/${row.id}/`}
                           className="text-sm font-semibold text-primary hover:underline"
                         >
-                          Открыть
+                          {t.common.open}
                         </Link>
                       </DashTd>
                     </tr>

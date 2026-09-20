@@ -92,6 +92,8 @@ export async function getFcargoSettingsView(): Promise<FcargoSettingsView> {
     mode: "live",
     hasSecrets: false,
     secretsHint: maskSecret(""),
+    hasWebhookSecret: false,
+    webhookSecretHint: maskSecret(""),
     masterKeyOk,
     lastTestAt: null,
     lastTestOk: null,
@@ -101,7 +103,9 @@ export async function getFcargoSettingsView(): Promise<FcargoSettingsView> {
 
   const row = await loadRow();
   if (!row) return empty;
-  const meta = (row.secrets_meta ?? {}) as NonNullable<Row["secrets_meta"]>;
+  const meta = (row.secrets_meta ?? {}) as NonNullable<Row["secrets_meta"]> & {
+    webhook_last4?: string;
+  };
   const mode: FcargoMode = row.mode === "test" ? "test" : "live";
   const cmsReady =
     Boolean(row.enabled) &&
@@ -109,13 +113,31 @@ export async function getFcargoSettingsView(): Promise<FcargoSettingsView> {
     Boolean(row.tenant_domain?.trim()) &&
     masterKeyOk;
 
+  let hasApiKey = Boolean(meta.last4);
+  let hasWebhookSecret = Boolean(meta.webhook_last4);
+  if (row.secrets_cipher && masterKeyOk && (!hasApiKey || !hasWebhookSecret)) {
+    try {
+      const secrets = decryptJson<Record<string, string>>(row.secrets_cipher);
+      if (!hasApiKey) hasApiKey = Boolean((secrets.api_key ?? "").trim());
+      if (!hasWebhookSecret) {
+        hasWebhookSecret = Boolean((secrets.webhook_secret ?? "").trim());
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   return {
     enabled: Boolean(row.enabled),
     tenantDomain: row.tenant_domain || "epos-pochta.uz",
     baseUrl: normalizeBaseUrl(row.base_url || DEFAULT_BASE),
     mode,
-    hasSecrets: Boolean(row.secrets_cipher),
+    hasSecrets: hasApiKey,
     secretsHint: meta.last4 ? `••••${meta.last4}` : maskSecret(""),
+    hasWebhookSecret,
+    webhookSecretHint: meta.webhook_last4
+      ? `••••${meta.webhook_last4}`
+      : maskSecret(""),
     masterKeyOk,
     lastTestAt: row.last_test_at,
     lastTestOk: row.last_test_ok,
@@ -182,9 +204,11 @@ export async function saveFcargoSettings(params: {
   mode: FcargoMode;
   /** Leave blank to keep existing key */
   apiKey?: string | null;
+  /** Leave blank to keep existing webhook secret */
+  webhookSecret?: string | null;
 }): Promise<void> {
   if (!hasMessagingSecretsKey()) {
-    throw new Error("MESSAGING_SECRETS_KEY is not set");
+    throw new Error("Master encryption key is not set");
   }
 
   const client = createSupabaseAdminClient();
@@ -198,15 +222,32 @@ export async function saveFcargoSettings(params: {
   let secrets_meta =
     (existing?.secrets_meta as Record<string, unknown> | null) ?? {};
 
+  const prev = secrets_cipher
+    ? decryptJson<Record<string, string>>(secrets_cipher)
+    : {};
+  let merged = { ...prev };
+  let changed = false;
+
   const incomingKey = (params.apiKey ?? "").trim();
   if (incomingKey) {
-    const prev = secrets_cipher
-      ? decryptJson<Record<string, string>>(secrets_cipher)
-      : {};
-    const merged = { ...prev, api_key: incomingKey };
+    merged = { ...merged, api_key: incomingKey };
+    changed = true;
+  }
+
+  const incomingWebhook = (params.webhookSecret ?? "").trim();
+  if (incomingWebhook) {
+    merged = { ...merged, webhook_secret: incomingWebhook };
+    changed = true;
+  }
+
+  if (changed) {
     secrets_cipher = encryptJson(merged);
     secrets_meta = {
-      last4: last4(incomingKey),
+      ...secrets_meta,
+      last4: merged.api_key ? last4(merged.api_key) : secrets_meta.last4,
+      webhook_last4: merged.webhook_secret
+        ? last4(merged.webhook_secret)
+        : secrets_meta.webhook_last4,
       updated_at: new Date().toISOString(),
       fields: Object.keys(merged),
     };
@@ -229,9 +270,43 @@ export async function saveFcargoSettings(params: {
   invalidateFcargoConfigCache();
 }
 
+/** Webhook / cron shared secret from CMS (or FCARGO_WEBHOOK_SECRET / FCARGO_SYNC_SECRET env). */
+export async function resolveFcargoWebhookSecret(): Promise<string | null> {
+  if (hasSupabaseAdminConfig() && hasMessagingSecretsKey()) {
+    try {
+      const client = createSupabaseAdminClient();
+      const { data } = await client
+        .from("epos_fcargo_settings")
+        .select("secrets_cipher")
+        .eq("id", "default")
+        .maybeSingle();
+      if (data?.secrets_cipher) {
+        const secrets = decryptJson<Record<string, string>>(data.secrets_cipher);
+        const fromCms = (secrets.webhook_secret ?? "").trim();
+        if (fromCms) return fromCms;
+      }
+    } catch {
+      // fall through to env
+    }
+  }
+  const fromEnv =
+    (process.env.FCARGO_WEBHOOK_SECRET ?? "").trim() ||
+    (process.env.FCARGO_SYNC_SECRET ?? "").trim();
+  return fromEnv || null;
+}
+
+export function timingSafeEqualString(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let out = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    out |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return out === 0;
+}
+
 export async function clearFcargoApiKey(): Promise<void> {
   if (!hasMessagingSecretsKey()) {
-    throw new Error("MESSAGING_SECRETS_KEY is not set");
+    throw new Error("Master encryption key is not set");
   }
   const client = createSupabaseAdminClient();
   const { error } = await client

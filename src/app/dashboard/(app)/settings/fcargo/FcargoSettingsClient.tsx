@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "react-toastify";
+import { useDashT } from "@/components/dashboard/DashLocaleProvider";
+import { dashFormat } from "@/i18n/dashboard";
 import type { FcargoSettingsView } from "@/lib/fcargo/types";
 import {
   dashBtnPrimary,
@@ -14,8 +16,24 @@ import {
   clearFcargoApiKeyAction,
   debugFcargoProbeAction,
   saveFcargoSettingsAction,
+  syncFcargoOrdersAction,
   type FcargoDebugProbeResult,
 } from "./actions";
+
+export type FcargoLogRow = {
+  id: string;
+  direction: string;
+  method: string;
+  path: string;
+  http_status: number | null;
+  duration_ms: number | null;
+  ok: boolean | null;
+  lead_id: string | null;
+  order_id: string | null;
+  tracking_number: string | null;
+  error_message: string | null;
+  created_at: string;
+};
 
 function JsonBlock({ value }: { value: unknown }) {
   return (
@@ -28,10 +46,16 @@ function JsonBlock({ value }: { value: unknown }) {
 export function FcargoSettingsClient({
   settings,
   canEdit,
+  webhookUrl,
+  recentLog,
 }: {
   settings: FcargoSettingsView;
   canEdit: boolean;
+  webhookUrl: string;
+  recentLog: FcargoLogRow[];
 }) {
+  const t = useDashT();
+  const f = t.fcargo;
   const [pending, startTransition] = useTransition();
   const [probeResult, setProbeResult] = useState<FcargoDebugProbeResult | null>(
     null,
@@ -40,20 +64,20 @@ export function FcargoSettingsClient({
   async function onSave(formData: FormData) {
     try {
       await saveFcargoSettingsAction(formData);
-      toast.success("Сохранено");
+      toast.success(f.saved);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Ошибка сохранения");
+      toast.error(err instanceof Error ? err.message : f.saveFailed);
     }
   }
 
   function onClearKey() {
-    if (!confirm("Удалить API-ключ из CMS и выключить FCargo?")) return;
+    if (!confirm(f.clearConfirm)) return;
     startTransition(async () => {
       try {
         await clearFcargoApiKeyAction();
-        toast.success("Ключ удалён");
+        toast.success(f.keyCleared);
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Ошибка");
+        toast.error(err instanceof Error ? err.message : f.saveFailed);
       }
     });
   }
@@ -63,49 +87,59 @@ export function FcargoSettingsClient({
       try {
         const result = await debugFcargoProbeAction(formData);
         setProbeResult(result);
-        if (result.ok) toast.success(`${result.probe} · ${result.elapsedMs}ms`);
-        else toast.error(result.message || result.code || "Ошибка");
+        if (result.ok) {
+          toast.success(`${f.probeOk} · ${result.elapsedMs}ms`);
+        } else {
+          toast.error(result.message || result.code || f.requestFailed);
+        }
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Ошибка запроса");
+        toast.error(err instanceof Error ? err.message : f.requestFailed);
       }
     });
   }
 
-  const sourceLabel =
-    settings.runtimeSource === "cms"
-      ? "CMS (шифрованный ключ)"
-      : settings.runtimeSource === "env"
-        ? "legacy env FCARGO_*"
-        : "не настроено";
+  function onSync() {
+    startTransition(async () => {
+      try {
+        const result = await syncFcargoOrdersAction();
+        toast.success(
+          dashFormat(f.syncDone, {
+            checked: result.checked,
+            updated: result.updated,
+            errors: result.errors,
+          }),
+        );
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : f.requestFailed);
+      }
+    });
+  }
+
+  const statusLabel =
+    settings.runtimeSource === "none"
+      ? f.statusOff
+      : settings.enabled
+        ? f.statusOn
+        : f.statusDisabled;
+
+  const modeLabel = settings.mode === "test" ? f.modeTest : f.modeLive;
 
   return (
     <div className="grid max-w-3xl gap-5">
-      <section className={`${dashCardPad} text-sm text-black/65`}>
-        <p className="m-0 font-semibold text-ink">Server-to-server</p>
-        <p className="mt-2 m-0">
-          Браузер сайта ходит только в{" "}
-          <code className="text-xs">/api/estimate</code> и{" "}
-          <code className="text-xs">/api/leads</code>. Ключ FCargo и вызовы{" "}
-          <code className="text-xs">api.fcargo.uz</code> остаются на сервере
-          Next.js — во фронт не попадают.
-        </p>
-        <p className="mt-2 m-0 text-xs">
-          Runtime сейчас: <strong className="text-ink">{sourceLabel}</strong>
-          {settings.mode ? ` · mode=${settings.mode}` : ""}
-          {settings.hasSecrets ? ` · key ${settings.secretsHint}` : ""}
-        </p>
-      </section>
+      <p className={`${dashCardPad} m-0 text-sm text-black/60`}>
+        {f.status}: <strong className="text-ink">{statusLabel}</strong>
+        {settings.hasSecrets ? ` · ${f.keyHint} ${settings.secretsHint}` : ""}
+        {settings.mode ? ` · ${modeLabel}` : ""}
+      </p>
 
       {!settings.masterKeyOk ? (
         <p className={`${dashCardPad} m-0 text-sm text-primary`}>
-          На сервере нет{" "}
-          <code className="text-xs">MESSAGING_SECRETS_KEY</code> — API-ключ
-          зашифровать и сохранить нельзя.
+          {f.masterKeyMissing}
         </p>
       ) : null}
 
       <form action={onSave} className={`${dashCardPad} grid gap-3`}>
-        <h2 className={dashSectionTitle}>Подключение</h2>
+        <h2 className={dashSectionTitle}>{f.sectionConnect}</h2>
 
         <label className="flex items-center gap-2 text-sm font-medium">
           <input
@@ -115,11 +149,11 @@ export function FcargoSettingsClient({
             disabled={!canEdit || !settings.masterKeyOk}
             className="size-4 rounded border-black/20"
           />
-          Включить FCargo (калькулятор + заказы)
+          {f.enabled}
         </label>
 
         <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-black/40">
-          Tenant domain
+          {f.domain}
           <input
             name="tenant_domain"
             defaultValue={settings.tenantDomain}
@@ -131,19 +165,19 @@ export function FcargoSettingsClient({
         </label>
 
         <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-black/40">
-          Base URL
+          {f.serverUrl}
           <input
             name="base_url"
             defaultValue={settings.baseUrl}
             disabled={!canEdit}
             className={`${dashInput} font-normal normal-case`}
-            placeholder="https://api.fcargo.uz/api/client/v1"
+            placeholder="https://api.fcargo.uz"
           />
         </label>
 
         <fieldset className="grid gap-2">
           <legend className="text-xs font-semibold uppercase tracking-wide text-black/40">
-            Режим ключа (test / live)
+            {f.mode}
           </legend>
           <div className="flex gap-4 text-sm font-medium">
             <label className="flex items-center gap-2">
@@ -154,7 +188,7 @@ export function FcargoSettingsClient({
                 defaultChecked={settings.mode === "live"}
                 disabled={!canEdit}
               />
-              live
+              {f.modeLiveLabel}
             </label>
             <label className="flex items-center gap-2">
               <input
@@ -164,16 +198,13 @@ export function FcargoSettingsClient({
                 defaultChecked={settings.mode === "test"}
                 disabled={!canEdit}
               />
-              test
+              {f.modeTestLabel}
             </label>
           </div>
-          <p className="m-0 text-xs text-black/45">
-            Должен совпадать с режимом ключа в кабинете FCargo.
-          </p>
         </fieldset>
 
         <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-black/40">
-          API key
+          {f.apiKey}
           <input
             name="api_key"
             type="password"
@@ -181,18 +212,60 @@ export function FcargoSettingsClient({
             className={`${dashInput} font-normal normal-case`}
             placeholder={
               settings.hasSecrets
-                ? `Пусто = не менять (${settings.secretsHint})`
-                : "Вставьте ключ из FCargo"
+                ? dashFormat(f.apiKeyPlaceholderKeep, {
+                    hint: settings.secretsHint,
+                  })
+                : f.apiKeyPlaceholderNew
             }
             autoComplete="new-password"
           />
         </label>
 
+        <div className="mt-2 border-t border-black/[0.06] pt-3">
+          <h3 className="m-0 mb-1 text-sm font-semibold text-ink">
+            {f.sectionWebhook}
+          </h3>
+          <p className="m-0 mb-3 text-xs text-black/50">{f.webhookLead}</p>
+
+          <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-black/40">
+            {f.webhookUrl}
+            <input
+              readOnly
+              value={webhookUrl}
+              className={`${dashInput} font-normal normal-case`}
+              onFocus={(e) => e.currentTarget.select()}
+            />
+          </label>
+
+          <label className="mt-3 grid gap-1 text-xs font-semibold uppercase tracking-wide text-black/40">
+            {f.webhookSecret}
+            <input
+              name="webhook_secret"
+              type="password"
+              disabled={!canEdit || !settings.masterKeyOk}
+              className={`${dashInput} font-normal normal-case`}
+              placeholder={
+                settings.hasWebhookSecret
+                  ? dashFormat(f.webhookSecretPlaceholderKeep, {
+                      hint: settings.webhookSecretHint,
+                    })
+                  : f.webhookSecretPlaceholderNew
+              }
+              autoComplete="new-password"
+            />
+          </label>
+          <p className="m-0 mt-1 text-[11px] text-black/40">
+            {f.webhookHeaderHint}
+          </p>
+        </div>
+
         {settings.lastTestAt ? (
           <p className="m-0 text-xs text-black/50">
-            Последний health:{" "}
-            {settings.lastTestOk ? "OK" : `ошибка — ${settings.lastError ?? "?"}`}{" "}
-            · {new Date(settings.lastTestAt).toLocaleString("ru-RU")}
+            {f.lastCheck}:{" "}
+            {settings.lastTestOk
+              ? f.lastCheckOk
+              : `${f.lastCheckFail} — ${settings.lastError ?? "?"}`}{" "}
+            · {new Date(settings.lastTestAt).toLocaleString()}
           </p>
         ) : null}
 
@@ -203,7 +276,7 @@ export function FcargoSettingsClient({
               className={dashBtnPrimary}
               disabled={!settings.masterKeyOk || pending}
             >
-              Сохранить
+              {f.save}
             </button>
             <button
               type="button"
@@ -211,34 +284,78 @@ export function FcargoSettingsClient({
               onClick={onClearKey}
               disabled={!settings.hasSecrets || pending}
             >
-              Удалить ключ
+              {f.clearKey}
             </button>
           </div>
         ) : (
-          <p className="m-0 text-sm text-black/50">
-            Редактирование — только owner.
-          </p>
+          <p className="m-0 text-sm text-black/50">{f.roleDenied}</p>
         )}
       </form>
 
       {canEdit ? (
+        <section className={`${dashCardPad} grid gap-3`}>
+          <h2 className={dashSectionTitle}>{f.syncTitle}</h2>
+          <p className="m-0 text-sm text-black/55">{f.syncLead}</p>
+          <button
+            type="button"
+            className={dashBtnSecondary}
+            onClick={onSync}
+            disabled={pending || settings.runtimeSource === "none"}
+          >
+            {f.syncRun}
+          </button>
+        </section>
+      ) : null}
+
+      <section className={`${dashCardPad} grid gap-3`}>
+        <h2 className={dashSectionTitle}>{f.logTitle}</h2>
+        {recentLog.length === 0 ? (
+          <p className="m-0 text-sm text-black/45">{f.logEmpty}</p>
+        ) : (
+          <ul className="m-0 grid list-none gap-2 p-0 text-xs text-black/70">
+            {recentLog.map((row) => (
+              <li
+                key={row.id}
+                className="rounded-lg border border-black/[0.06] px-3 py-2"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-semibold text-ink">
+                    {row.direction === "in" ? f.logIn : f.logOut}
+                  </span>
+                  <span>
+                    {row.method} {row.path}
+                  </span>
+                  {row.http_status != null ? (
+                    <span className="text-black/40">{row.http_status}</span>
+                  ) : null}
+                  {row.ok === false ? (
+                    <span className="text-primary">{row.error_message || "err"}</span>
+                  ) : null}
+                </div>
+                <div className="mt-0.5 text-[11px] text-black/40">
+                  {new Date(row.created_at).toLocaleString()}
+                  {row.lead_id ? ` · ${row.lead_id}` : ""}
+                  {row.order_id ? ` · #${row.order_id}` : ""}
+                  {row.duration_ms != null ? ` · ${row.duration_ms}ms` : ""}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {canEdit ? (
         <section className={`${dashCardPad} grid gap-4`}>
-          <div>
-            <h2 className={dashSectionTitle}>Отладка API</h2>
-            <p className="mt-1 m-0 text-sm text-black/55">
-              Запросы уходят с сервера Next.js с сохранённым ключом. Ответ
-              показывается здесь без секретов.
-            </p>
-          </div>
+          <h2 className={dashSectionTitle}>{f.debugTitle}</h2>
 
           <div className="flex flex-wrap gap-2">
             {(
               [
-                ["health", "GET /health"],
-                ["statuses", "GET /statuses"],
-                ["regions", "GET /locations/regions"],
-                ["orders", "GET /orders"],
-                ["packages", "GET /packages"],
+                ["health", f.probeCheck],
+                ["statuses", f.probeStatuses],
+                ["regions", f.probeRegions],
+                ["orders", f.probeOrders],
+                ["packages", f.probePackages],
               ] as const
             ).map(([probe, label]) => (
               <form key={probe} action={runProbe}>
@@ -260,7 +377,7 @@ export function FcargoSettingsClient({
           >
             <input type="hidden" name="probe" value="pricing" />
             <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
-              from_region_id (SOATO)
+              {f.pricingFrom}
               <input
                 name="from_region_id"
                 defaultValue="1726"
@@ -269,7 +386,7 @@ export function FcargoSettingsClient({
               />
             </label>
             <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
-              to_region_id
+              {f.pricingTo}
               <input
                 name="to_region_id"
                 defaultValue="1718"
@@ -278,7 +395,7 @@ export function FcargoSettingsClient({
               />
             </label>
             <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
-              kg
+              {f.pricingKg}
               <input
                 name="weight"
                 defaultValue="1"
@@ -288,7 +405,7 @@ export function FcargoSettingsClient({
             </label>
             <div className="flex items-end">
               <button type="submit" className={dashBtnSecondary} disabled={pending}>
-                Pricing
+                {f.pricingRun}
               </button>
             </div>
           </form>
@@ -299,17 +416,17 @@ export function FcargoSettingsClient({
           >
             <input type="hidden" name="probe" value="track" />
             <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
-              Tracking
+              {f.trackLabel}
               <input
                 name="tracking"
-                placeholder="трек-номер"
+                placeholder={f.trackLabel}
                 className={dashInput}
                 disabled={pending}
               />
             </label>
             <div className="flex items-end">
               <button type="submit" className={dashBtnSecondary} disabled={pending}>
-                Track
+                {f.trackRun}
               </button>
             </div>
           </form>
@@ -320,17 +437,17 @@ export function FcargoSettingsClient({
           >
             <input type="hidden" name="probe" value="order" />
             <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
-              Order ID
+              {f.orderId}
               <input
                 name="order_id"
-                placeholder="id заказа"
+                placeholder={f.orderId}
                 className={dashInput}
                 disabled={pending}
               />
             </label>
             <div className="flex items-end">
               <button type="submit" className={dashBtnSecondary} disabled={pending}>
-                Get order
+                {f.orderRun}
               </button>
             </div>
           </form>
@@ -341,7 +458,7 @@ export function FcargoSettingsClient({
           >
             <input type="hidden" name="probe" value="resolve" />
             <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
-              SOATO resolve
+              {f.regionCode}
               <input
                 name="soato"
                 defaultValue="1726"
@@ -351,7 +468,7 @@ export function FcargoSettingsClient({
             </label>
             <div className="flex items-end">
               <button type="submit" className={dashBtnSecondary} disabled={pending}>
-                Resolve
+                {f.regionRun}
               </button>
             </div>
           </form>
@@ -359,24 +476,15 @@ export function FcargoSettingsClient({
           {probeResult ? (
             <div className="grid gap-2">
               <p className="m-0 text-xs text-black/50">
-                {probeResult.probe}
-                {probeResult.ok ? " · OK" : " · FAIL"}
+                {probeResult.ok ? f.probeOk : f.probeFail}
                 {` · ${probeResult.elapsedMs}ms`}
-                {probeResult.requestId
-                  ? ` · req ${probeResult.requestId}`
-                  : ""}
-                {probeResult.meta
-                  ? ` · ${probeResult.meta.source} · ${probeResult.meta.tenantDomain}`
-                  : ""}
               </p>
               <JsonBlock
                 value={
                   probeResult.ok
                     ? probeResult.data
                     : {
-                        code: probeResult.code,
                         message: probeResult.message,
-                        status: probeResult.status,
                         details: probeResult.data,
                       }
                 }
@@ -385,25 +493,6 @@ export function FcargoSettingsClient({
           ) : null}
         </section>
       ) : null}
-
-      <section className={`${dashCardPad} text-sm text-black/60`}>
-        <p className="m-0 font-semibold text-ink">Права ключа в FCargo</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5">
-          <li>
-            <code className="text-xs">pricing:read</code>,{" "}
-            <code className="text-xs">orders:create</code>
-          </li>
-          <li>
-            <code className="text-xs">orders:read</code>,{" "}
-            <code className="text-xs">packages:read</code>,{" "}
-            <code className="text-xs">packages:track</code>
-          </li>
-          <li>
-            желательно <code className="text-xs">locations:read</code>,{" "}
-            <code className="text-xs">statuses:read</code>
-          </li>
-        </ul>
-      </section>
     </div>
   );
 }

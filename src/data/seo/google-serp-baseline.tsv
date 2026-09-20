@@ -1,29 +1,29 @@
 query	locale	cluster	target_path	engine	position	serp_url	top_competitors	checked_at	notes
-EPOS POCHTA	ru	brand	/	google					
-epos pochta	uz	brand	/	google					
-рассчитать стоимость доставки	ru	calculator	/calculator/	google					
-калькулятор доставки	ru	calculator	/calculator/	google					
-стоимость доставки посылок	ru	calculator	/calculator/	google					
-yetkazib berish narxi	uz	calculator	/calculator/	google					
-доставка до двери	ru	services	/services/door/	google					
-доставка для интернет-магазинов	ru	services	/services/ecommerce/	google					
-доставка документов курьером	ru	services	/services/documents/	google					
-наложенный платеж доставка	ru	services	/services/cod/	google					
-вызвать курьера ташкент	ru	services	/services/courier/	google					
-доставка для бизнеса	ru	business	/business/	google					
-корпоративная доставка	ru	business	/business/	google					
-доставка посылок узбекистан	ru	head	/	google					
-доставка по узбекистану	ru	head	/	google					
-yetkazib berish	uz	head	/	google					
-курьер ташкент	ru	cities	/delivery/tashkent/	google					
-toshkent pochta	uz	cities	/delivery/tashkent/	google					
-доставка в самарканд	ru	cities	/delivery/samarkand/	google					
-доставка в бухару	ru	cities	/delivery/bukhara/	google					
-доставка в фергану	ru	cities	/delivery/fergana/	google					
-доставка в андижан	ru	cities	/delivery/andijan/	google					
-доставка в наманган	ru	cities	/delivery/namangan/	google					
-доставка из ташкента в самарканд	ru	routes	/delivery/tas/skd/	google					
-доставка из ташкента в бухару	ru	routes	/delivery/tas/bhk/	google					
-доставка из ташкента в фергану	ru	routes	/delivery/tas/feg/	google					
-доставка из ташкента в андижан	ru	routes	/delivery/tas/azn/	google					
-доставка из ташкента в наманган	ru	routes	/delivery/tas/nma/	google					
+EPOS POCHTA	ru	brand	/	google		https://epos-pochta.uz/	goldenpages.uz	2026-09-20	Brand sparse in generic web index; directory citations present. Re-check Google.uz manually in GSC/incognito.
+epos pochta	uz	brand	/	google		https://epos-pochta.uz/	goldenpages.uz	2026-09-20	Same as RU brand — monitor GSC brand impressions.
+рассчитать стоимость доставки	ru	calculator	/calculator/	google			emu.uz;bts.uz;meest.com	2026-09-20	Top web hits: EMU calculator, BTS calculate. EPOS not in first page of generic web search — CTR/title + GSC watch.
+калькулятор доставки	ru	calculator	/calculator/	google			emu.uz;bts.uz	2026-09-20	Competitor calc pages dominate; keep primary query early in title.
+стоимость доставки посылок	ru	calculator	/calculator/	google			emu.uz;bts.uz	2026-09-20	Align with calculator landing; no cluster move.
+yetkazib berish narxi	uz	calculator	/calculator/	google			emu.uz	2026-09-20	UZ Latin low volume; EMU uz calculator strong. Do not spawn new UZ URLs.
+доставка до двери	ru	services	/services/door/	google			delivery.yandex.uz;bts.uz;emu.uz;dpd.uz	2026-09-20	Yandex Delivery + BTS door-to-door lead SERP-like results.
+доставка для интернет-магазинов	ru	services	/services/ecommerce/	google			bts.uz;emu.uz;delivery.yandex.uz	2026-09-20	B2B/e-com intent — keep /services/ecommerce/ + /business/ CTA.
+доставка документов курьером	ru	services	/services/documents/	google			bts.uz;emu.uz;delivery.yandex.uz	2026-09-20	Service title already includes primary RU query.
+наложенный платеж доставка	ru	services	/services/cod/	google			bts.uz;emu.uz	2026-09-20	COD cluster — keep /services/cod/.
+вызвать курьера ташкент	ru	services	/services/courier/	google			delivery.yandex.uz;bts.uz;emu.uz	2026-09-20	Same SERP set as city courier; landing /services/courier/.
+доставка для бизнеса	ru	business	/business/	google			bts.uz;emu.uz;delivery.yandex.uz	2026-09-20	Business hub CTR copy already tightened.
+корпоративная доставка	ru	business	/business/	google			bts.uz;emu.uz	2026-09-20	Secondary business query → same URL.
+доставка посылок узбекистан	ru	head	/	google			emu.uz;bts.uz;delivery.yandex.uz	2026-09-20	Head RU — home title shortened for CTR.
+доставка по узбекистану	ru	head	/	google			emu.uz;bts.uz	2026-09-20	Secondary head → /.
+yetkazib berish	uz	head	/	google			emu.uz;bts.uz	2026-09-20	UZ head navigational; low volume expected.
+курьер ташкент	ru	cities	/delivery/tashkent/	google			delivery.yandex.uz;bts.uz;emu.uz	2026-09-20	City money page; metaTitleRu leads with query.
+toshkent pochta	uz	cities	/delivery/tashkent/	google			emu.uz;bts.uz	2026-09-20	UZ city nav query.
+доставка в самарканд	ru	cities	/delivery/samarkand/	google			emu.uz;bts.uz	2026-09-20	Top-6 city hub.
+доставка в бухару	ru	cities	/delivery/bukhara/	google			emu.uz;bts.uz	2026-09-20	Top-6 city hub.
+доставка в фергану	ru	cities	/delivery/fergana/	google			emu.uz;bts.uz	2026-09-20	Top-6 city hub.
+доставка в андижан	ru	cities	/delivery/andijan/	google			emu.uz;bts.uz	2026-09-20	Top-6 city hub.
+доставка в наманган	ru	cities	/delivery/namangan/	google			emu.uz;bts.uz	2026-09-20	Top-6 city hub.
+доставка из ташкента в самарканд	ru	routes	/delivery/tas/skd/	google			emu.uz;bts.uz	2026-09-20	Priority TAS corridor — high sitemap priority; avoid thin clones.
+доставка из ташкента в бухару	ru	routes	/delivery/tas/bhk/	google			emu.uz;bts.uz	2026-09-20	Priority TAS corridor.
+доставка из ташкента в фергану	ru	routes	/delivery/tas/feg/	google			emu.uz;bts.uz	2026-09-20	Priority TAS corridor.
+доставка из ташкента в андижан	ru	routes	/delivery/tas/azn/	google			emu.uz;bts.uz	2026-09-20	Priority TAS corridor.
+доставка из ташкента в наманган	ru	routes	/delivery/tas/nma/	google			emu.uz;bts.uz	2026-09-20	Priority TAS corridor.

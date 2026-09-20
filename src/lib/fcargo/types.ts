@@ -95,6 +95,8 @@ export type FcargoSettingsView = {
   mode: FcargoMode;
   hasSecrets: boolean;
   secretsHint: string;
+  hasWebhookSecret: boolean;
+  webhookSecretHint: string;
   masterKeyOk: boolean;
   lastTestAt: string | null;
   lastTestOk: boolean | null;

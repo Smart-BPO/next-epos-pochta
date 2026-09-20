@@ -29,6 +29,8 @@ function MetrikaRouteHits({ counterId }: { counterId: string }) {
 
 /**
  * Analytics after first paint — `lazyOnload` keeps Metrika/GA off the LCP path.
+ * GA4: set NEXT_PUBLIC_GA_ID (G-…); mark SEO_GA4_CONVERSION_EVENTS in GA4 Admin.
+ * Do not enable GTM by default (avoids double-counting with gtag + Metrika).
  * Webvisor stays off (heavy main-thread); enable later in Metrika UI if needed.
  */
 export function SiteAnalytics() {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { getSiteSettings } from "@/lib/cms/site-settings";
+import { getDashT } from "@/i18n/dashboard/server";
 import { DashDenied } from "@/components/dashboard/DashDenied";
 import { saveSettingsAction } from "./actions";
 import {
@@ -17,16 +18,29 @@ export default async function DashboardSettingsPage() {
     return <DashDenied section="settings" />;
   }
 
+  const { t } = await getDashT();
   const s = await getSiteSettings();
   const canWrite = canMutate(admin.role, "settings");
+
+  const fields = [
+    ["phone", t.settings.phone, s.phone],
+    ["phone_display", t.settings.phoneDisplay, s.phoneDisplay],
+    ["email", t.settings.email, s.email],
+    ["telegram_url", t.settings.telegramUrl, s.telegramUrl],
+    ["instagram_url", t.settings.instagramUrl, s.instagramUrl],
+    ["facebook_url", t.settings.facebookUrl, s.facebookUrl],
+    ["hours", t.settings.hours, s.hours],
+    ["address_line", t.settings.addressRu, s.addressLine],
+    ["address_line_uz", t.settings.addressUz, s.addressLineUz],
+    ["map_lat", t.settings.mapLat, String(s.mapLat ?? "")],
+    ["map_lng", t.settings.mapLng, String(s.mapLng ?? "")],
+  ] as const;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className={dashPageTitle}>Настройки сайта</h1>
-        <p className={dashPageLead}>
-          NAP, часы, мессенджеры. Тарифы здесь не публикуются.
-        </p>
+        <h1 className={dashPageTitle}>{t.settings.title}</h1>
+        <p className={dashPageLead}>{t.settings.lead}</p>
       </div>
 
       <p>
@@ -34,7 +48,7 @@ export default async function DashboardSettingsPage() {
           href="/dashboard/settings/telegram/"
           className="inline-flex items-center rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgb(15_18_24/0.04)] transition hover:border-primary/30"
         >
-          Telegram webhook →
+          {t.settings.linkTelegram}
         </Link>
       </p>
       <p>
@@ -42,7 +56,7 @@ export default async function DashboardSettingsPage() {
           href="/dashboard/settings/fcargo/"
           className="inline-flex items-center rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgb(15_18_24/0.04)] transition hover:border-primary/30"
         >
-          FCargo API (калькулятор / заказы) →
+          {t.settings.linkDelivery}
         </Link>
       </p>
       <p>
@@ -50,7 +64,7 @@ export default async function DashboardSettingsPage() {
           href="/dashboard/pricing/"
           className="inline-flex items-center rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-[0_1px_2px_rgb(15_18_24/0.04)] transition hover:border-primary/30"
         >
-          Калькулятор / сметы →
+          {t.settings.linkPricing}
         </Link>
       </p>
 
@@ -58,21 +72,7 @@ export default async function DashboardSettingsPage() {
         action={saveSettingsAction}
         className={`${dashCardPad} grid max-w-xl gap-3`}
       >
-        {(
-          [
-            ["phone", "Телефон (E.164)", s.phone],
-            ["phone_display", "Телефон (отображение)", s.phoneDisplay],
-            ["email", "Email", s.email],
-            ["telegram_url", "Telegram URL", s.telegramUrl],
-            ["instagram_url", "Instagram URL", s.instagramUrl],
-            ["facebook_url", "Facebook URL", s.facebookUrl],
-            ["hours", "Часы работы", s.hours],
-            ["address_line", "Адрес (RU)", s.addressLine],
-            ["address_line_uz", "Адрес (UZ)", s.addressLineUz],
-            ["map_lat", "Map lat", String(s.mapLat ?? "")],
-            ["map_lng", "Map lng", String(s.mapLng ?? "")],
-          ] as const
-        ).map(([name, label, value]) => (
+        {fields.map(([name, label, value]) => (
           <label
             key={name}
             className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40"
@@ -88,7 +88,7 @@ export default async function DashboardSettingsPage() {
         ))}
         {canWrite ? (
           <button type="submit" className={`${dashBtnPrimary} mt-1 w-fit`}>
-            Сохранить
+            {t.settings.save}
           </button>
         ) : null}
       </form>

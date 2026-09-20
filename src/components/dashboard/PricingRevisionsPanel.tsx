@@ -47,7 +47,7 @@ export function PricingRevisionsPanel({
     startTransition(async () => {
       try {
         await saveManualRevisionAction(label);
-        toast.success("Снимок сохранён");
+        toast.success(t.pricing.snapshotSaved);
         window.location.reload();
       } catch {
         toast.error(t.errors.saveFailed);
@@ -63,7 +63,7 @@ export function PricingRevisionsPanel({
           config: draftConfig,
           target: "draft",
         });
-        toast.success("Draft сохранён");
+        toast.success(t.pricing.draftSaved);
       } catch {
         toast.error(t.errors.saveFailed);
       }
@@ -71,11 +71,11 @@ export function PricingRevisionsPanel({
   };
 
   const publish = () => {
-    if (!confirm("Опубликовать draft в live?")) return;
+    if (!confirm(t.pricing.publishConfirm)) return;
     startTransition(async () => {
       try {
         await publishDraftAction();
-        toast.success("Опубликовано");
+        toast.success(t.pricing.published);
         window.location.reload();
       } catch {
         toast.error(t.errors.saveFailed);
@@ -84,11 +84,11 @@ export function PricingRevisionsPanel({
   };
 
   const restore = (id: number) => {
-    if (!confirm("Восстановить снимок в draft (и матрицу)?")) return;
+    if (!confirm(t.pricing.restoreConfirm)) return;
     startTransition(async () => {
       try {
         await restoreRevisionAction(id);
-        toast.success("Восстановлено");
+        toast.success(t.pricing.restored);
         window.location.reload();
       } catch {
         toast.error(t.errors.saveFailed);
@@ -100,12 +100,9 @@ export function PricingRevisionsPanel({
     <div className="space-y-5">
       <section className={`${dashCardPad} space-y-3`}>
         <h2 className="m-0 text-[0.95rem] font-semibold text-ink">
-          Draft / Live
+          {t.pricing.revisionsTitle}
         </h2>
-        <p className="m-0 text-sm text-black/50">
-          Live = id 1 (публичный API). Draft = id 2. Publish копирует draft →
-          live.
-        </p>
+        <p className="m-0 text-sm text-black/50">{t.pricing.revisionsLead}</p>
         {canWrite ? (
           <div className="flex flex-wrap gap-2">
             <button
@@ -114,7 +111,7 @@ export function PricingRevisionsPanel({
               disabled={pending}
               onClick={saveDraft}
             >
-              Сохранить текущие зоны в draft
+              {t.pricing.saveDraft}
             </button>
             <button
               type="button"
@@ -122,19 +119,21 @@ export function PricingRevisionsPanel({
               disabled={pending}
               onClick={publish}
             >
-              Publish draft → live
+              {t.pricing.publish}
             </button>
           </div>
         ) : null}
       </section>
 
       <section className={`${dashCardPad} space-y-3`}>
-        <h2 className="m-0 text-[0.95rem] font-semibold text-ink">Ревизии</h2>
+        <h2 className="m-0 text-[0.95rem] font-semibold text-ink">
+          {t.pricing.snapshotSave}
+        </h2>
         {canWrite ? (
           <div className="flex flex-wrap gap-2">
             <input
               className={`${dashInput} max-w-xs font-normal normal-case`}
-              placeholder="Подпись снимка"
+              placeholder={t.pricing.snapshotLabel}
               value={label}
               onChange={(e) => setLabel(e.target.value)}
             />
@@ -144,12 +143,12 @@ export function PricingRevisionsPanel({
               disabled={pending}
               onClick={snapshot}
             >
-              Снимок сейчас
+              {t.pricing.snapshotSave}
             </button>
           </div>
         ) : null}
         {revisions.length === 0 ? (
-          <p className="m-0 text-sm text-black/45">Пока нет снимков.</p>
+          <p className="m-0 text-sm text-black/45">{t.pricing.noSnapshots}</p>
         ) : (
           <ul className="m-0 grid list-none gap-2 p-0">
             {revisions.map((r) => (
@@ -159,17 +158,11 @@ export function PricingRevisionsPanel({
               >
                 <div>
                   <p className="m-0 font-medium text-ink">
-                    #{r.id} · {r.kind}
+                    #{r.id}
                     {r.label ? ` · ${r.label}` : ""}
                   </p>
                   <p className="m-0 text-xs text-black/40">
-                    {new Date(r.created_at).toLocaleString("ru-RU")}
-                    {r.snapshot?.formulaVersion
-                      ? ` · ${r.snapshot.formulaVersion}`
-                      : ""}
-                    {Array.isArray(r.snapshot?.routes)
-                      ? ` · routes ${r.snapshot.routes.length}`
-                      : ""}
+                    {new Date(r.created_at).toLocaleString()}
                   </p>
                 </div>
                 {canWrite ? (
@@ -179,7 +172,7 @@ export function PricingRevisionsPanel({
                     disabled={pending}
                     onClick={() => restore(r.id)}
                   >
-                    Restore → draft
+                    {t.pricing.restore}
                   </button>
                 ) : null}
               </li>

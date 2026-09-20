@@ -68,6 +68,7 @@ export function getCourierServiceSchema() {
       SITE_CONFIG.telegramUrl,
       SITE_CONFIG.instagramUrl,
       SITE_CONFIG.facebookUrl,
+      googleMapsUrl,
       yandexMapsUrl,
     ].filter(Boolean),
     address: postalAddress(),

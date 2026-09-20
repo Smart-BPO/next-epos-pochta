@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "react-toastify";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
+import { dashFormat } from "@/i18n/dashboard";
 import {
   settlementLabel,
   uzbekistanHubSettlements,
@@ -75,7 +76,7 @@ export function PricingMatrixPanel({
 
   const savePair = () => {
     if (!fromId || !toId || fromId === toId) {
-      toast.error("Выберите два разных хаба");
+      toast.error(t.pricing.pickTwoHubs);
       return;
     }
     startTransition(async () => {
@@ -126,7 +127,7 @@ export function PricingMatrixPanel({
     startTransition(async () => {
       try {
         const count = await importRoutesCsvAction(csv);
-        toast.success(`Импорт: ${count}`);
+        toast.success(dashFormat(t.pricing.importCount, { n: count }));
         window.location.reload();
       } catch {
         toast.error(t.errors.saveFailed);
@@ -149,14 +150,12 @@ export function PricingMatrixPanel({
     <div className="space-y-5">
       <section className={`${dashCardPad} space-y-3`}>
         <h2 className="m-0 text-[0.95rem] font-semibold text-ink">
-          Оверрайд пары хабов
+          {t.pricing.matrixTitle}
         </h2>
-        <p className="m-0 text-sm text-black/50">
-          Sparse-матрица поверх зон. Пустая пара = зональный расчёт.
-        </p>
+        <p className="m-0 text-sm text-black/50">{t.pricing.matrixLead}</p>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            From
+            {t.pricing.from}
             <select
               className={`${dashInput} font-normal normal-case`}
               value={fromId}
@@ -171,7 +170,7 @@ export function PricingMatrixPanel({
             </select>
           </label>
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            To
+            {t.pricing.to}
             <select
               className={`${dashInput} font-normal normal-case`}
               value={toId}
@@ -186,7 +185,7 @@ export function PricingMatrixPanel({
             </select>
           </label>
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            Base
+            {t.pricing.base}
             <input
               type="number"
               className={`${dashInput} font-normal normal-case`}
@@ -196,7 +195,7 @@ export function PricingMatrixPanel({
             />
           </label>
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            Per kg
+            {t.pricing.perKg}
             <input
               type="number"
               className={`${dashInput} font-normal normal-case`}
@@ -206,7 +205,7 @@ export function PricingMatrixPanel({
             />
           </label>
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            ETA min
+            {t.pricing.etaMin}
             <input
               type="number"
               className={`${dashInput} font-normal normal-case`}
@@ -216,7 +215,7 @@ export function PricingMatrixPanel({
             />
           </label>
           <label className="grid gap-1.5 text-xs font-semibold uppercase tracking-wide text-black/40">
-            ETA max
+            {t.pricing.etaMax}
             <input
               type="number"
               className={`${dashInput} font-normal normal-case`}
@@ -233,16 +232,15 @@ export function PricingMatrixPanel({
             disabled={pending}
             onClick={savePair}
           >
-            Сохранить пару
+            {t.common.save}
           </button>
         ) : null}
         {preview ? (
           <p className="m-0 text-sm text-ink">
-            Превью 1 кг:{" "}
+            {t.pricing.previewResult}:{" "}
             <strong>
               {formatUzs(preview.amount, "ru")} {preview.currency}
-            </strong>{" "}
-            · {preview.etaDays} дн. · {preview.rateSource}
+            </strong>
           </p>
         ) : null}
       </section>
@@ -250,24 +248,24 @@ export function PricingMatrixPanel({
       <section className={`${dashCardPad} space-y-3`}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="m-0 text-[0.95rem] font-semibold text-ink">
-            Активные оверрайды ({routes.length})
+            {t.pricing.matrixTitle} ({routes.length})
           </h2>
           <button type="button" className={dashBtnSecondary} onClick={exportCsv}>
-            CSV в буфер
+            {t.pricing.exportCsv}
           </button>
         </div>
         {routes.length === 0 ? (
-          <p className="m-0 text-sm text-black/45">Пока нет пар — везде зоны.</p>
+          <p className="m-0 text-sm text-black/45">{t.pricing.matrixLead}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-black/10 text-xs uppercase tracking-wide text-black/40">
-                  <th className="py-2 pr-2 font-semibold">From</th>
-                  <th className="py-2 pr-2 font-semibold">To</th>
-                  <th className="py-2 pr-2 font-semibold">Base</th>
-                  <th className="py-2 pr-2 font-semibold">/kg</th>
-                  <th className="py-2 pr-2 font-semibold">ETA</th>
+                  <th className="py-2 pr-2 font-semibold">{t.pricing.from}</th>
+                  <th className="py-2 pr-2 font-semibold">{t.pricing.to}</th>
+                  <th className="py-2 pr-2 font-semibold">{t.pricing.base}</th>
+                  <th className="py-2 pr-2 font-semibold">{t.pricing.perKg}</th>
+                  <th className="py-2 pr-2 font-semibold">{t.pricing.etaMin}</th>
                   <th className="py-2 font-semibold" />
                 </tr>
               </thead>
@@ -289,7 +287,7 @@ export function PricingMatrixPanel({
                           disabled={pending}
                           onClick={() => remove(r.id!)}
                         >
-                          Удалить
+                          {t.common.delete}
                         </button>
                       ) : null}
                     </td>
@@ -304,11 +302,9 @@ export function PricingMatrixPanel({
       {canWrite ? (
         <section className={`${dashCardPad} space-y-3`}>
           <h2 className="m-0 text-[0.95rem] font-semibold text-ink">
-            Импорт CSV
+            {t.pricing.importCsv}
           </h2>
-          <p className="m-0 text-xs text-black/45">
-            from,to,base,perKg,etaMin,etaMax — заменяет всю матрицу
-          </p>
+          <p className="m-0 text-xs text-black/45">{t.pricing.csvHint}</p>
           <textarea
             className={`${dashInput} min-h-28 font-mono text-xs font-normal normal-case`}
             value={csv}
@@ -321,7 +317,7 @@ export function PricingMatrixPanel({
             disabled={pending || !csv.trim()}
             onClick={importCsv}
           >
-            Импортировать
+            {t.pricing.importCsv}
           </button>
         </section>
       ) : null}
