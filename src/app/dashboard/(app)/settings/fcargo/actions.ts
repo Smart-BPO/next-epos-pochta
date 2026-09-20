@@ -96,46 +96,65 @@ async function withProbe(
   };
 }
 
-export async function saveFcargoSettingsAction(formData: FormData) {
-  const admin = await requireMutation("fcargo_secrets");
-  if (!hasMessagingSecretsKey()) {
-    throw new Error("Master encryption key is not set");
-  }
+export type FcargoSaveState = {
+  ok?: boolean;
+  error?: string;
+  message?: string;
+} | null;
 
-  const enabled = String(formData.get("enabled") ?? "") === "on";
-  const tenantDomain = String(formData.get("tenant_domain") ?? "").trim();
-  const baseUrl = String(formData.get("base_url") ?? "").trim();
-  const modeRaw = String(formData.get("mode") ?? "live").trim();
-  const mode: FcargoMode = modeRaw === "test" ? "test" : "live";
-  const apiKey = String(formData.get("api_key") ?? "").trim();
-  const webhookSecret = String(formData.get("webhook_secret") ?? "").trim();
+export async function saveFcargoSettingsAction(
+  _prev: FcargoSaveState,
+  formData: FormData,
+): Promise<FcargoSaveState> {
+  try {
+    const admin = await requireMutation("fcargo_secrets");
+    if (!hasMessagingSecretsKey()) {
+      return { ok: false, error: "Master encryption key is not set" };
+    }
 
-  if (!tenantDomain) throw new Error("Tenant domain required");
+    const enabled = String(formData.get("enabled") ?? "") === "on";
+    const tenantDomain = String(formData.get("tenant_domain") ?? "").trim();
+    const baseUrl = String(formData.get("base_url") ?? "").trim();
+    const modeRaw = String(formData.get("mode") ?? "live").trim();
+    const mode: FcargoMode = modeRaw === "test" ? "test" : "live";
+    const apiKey = String(formData.get("api_key") ?? "").trim();
+    const webhookSecret = String(formData.get("webhook_secret") ?? "").trim();
 
-  await saveFcargoSettings({
-    enabled,
-    tenantDomain,
-    baseUrl,
-    mode,
-    apiKey: apiKey || null,
-    webhookSecret: webhookSecret || null,
-  });
+    if (!tenantDomain) {
+      return { ok: false, error: "Tenant domain required" };
+    }
 
-  await writeAuditLog({
-    actor: admin,
-    action: "fcargo.settings.save",
-    entityType: "fcargo_settings",
-    entityId: "default",
-    payload: {
+    await saveFcargoSettings({
       enabled,
       tenantDomain,
+      baseUrl,
       mode,
-      keyUpdated: Boolean(apiKey),
-      webhookSecretUpdated: Boolean(webhookSecret),
-    },
-  });
+      apiKey: apiKey || null,
+      webhookSecret: webhookSecret || null,
+    });
 
-  revalidate();
+    await writeAuditLog({
+      actor: admin,
+      action: "fcargo.settings.save",
+      entityType: "fcargo_settings",
+      entityId: "default",
+      payload: {
+        enabled,
+        tenantDomain,
+        mode,
+        keyUpdated: Boolean(apiKey),
+        webhookSecretUpdated: Boolean(webhookSecret),
+      },
+    });
+
+    revalidate();
+    return { ok: true, message: "saved" };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "save_failed",
+    };
+  }
 }
 
 export async function clearFcargoApiKeyAction() {

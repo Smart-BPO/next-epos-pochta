@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition, useActionState } from "react";
 import { toast } from "react-toastify";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { dashFormat } from "@/i18n/dashboard";
@@ -60,15 +60,16 @@ export function FcargoSettingsClient({
   const [probeResult, setProbeResult] = useState<FcargoDebugProbeResult | null>(
     null,
   );
+  const [saveState, saveAction, savePending] = useActionState(
+    saveFcargoSettingsAction,
+    null,
+  );
 
-  async function onSave(formData: FormData) {
-    try {
-      await saveFcargoSettingsAction(formData);
-      toast.success(f.saved);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : f.saveFailed);
-    }
-  }
+  useEffect(() => {
+    if (!saveState) return;
+    if (saveState.ok) toast.success(f.saved);
+    else if (saveState.error) toast.error(saveState.error);
+  }, [saveState, f.saved]);
 
   function onClearKey() {
     if (!confirm(f.clearConfirm)) return;
@@ -82,7 +83,8 @@ export function FcargoSettingsClient({
     });
   }
 
-  function runProbe(formData: FormData) {
+  function submitProbe(form: HTMLFormElement) {
+    const formData = new FormData(form);
     startTransition(async () => {
       try {
         const result = await debugFcargoProbeAction(formData);
@@ -115,6 +117,8 @@ export function FcargoSettingsClient({
     });
   }
 
+  const busy = pending || savePending;
+
   const statusLabel =
     settings.runtimeSource === "none"
       ? f.statusOff
@@ -138,7 +142,7 @@ export function FcargoSettingsClient({
         </p>
       ) : null}
 
-      <form action={onSave} className={`${dashCardPad} grid gap-3`}>
+      <form action={saveAction} className={`${dashCardPad} grid gap-3`}>
         <h2 className={dashSectionTitle}>{f.sectionConnect}</h2>
 
         <label className="flex items-center gap-2 text-sm font-medium">
@@ -274,7 +278,7 @@ export function FcargoSettingsClient({
             <button
               type="submit"
               className={dashBtnPrimary}
-              disabled={!settings.masterKeyOk || pending}
+              disabled={!settings.masterKeyOk || busy}
             >
               {f.save}
             </button>
@@ -282,7 +286,7 @@ export function FcargoSettingsClient({
               type="button"
               className={dashBtnSecondary}
               onClick={onClearKey}
-              disabled={!settings.hasSecrets || pending}
+              disabled={!settings.hasSecrets || busy}
             >
               {f.clearKey}
             </button>
@@ -300,7 +304,7 @@ export function FcargoSettingsClient({
             type="button"
             className={dashBtnSecondary}
             onClick={onSync}
-            disabled={pending || settings.runtimeSource === "none"}
+            disabled={busy || settings.runtimeSource === "none"}
           >
             {f.syncRun}
           </button>
@@ -329,7 +333,9 @@ export function FcargoSettingsClient({
                     <span className="text-black/40">{row.http_status}</span>
                   ) : null}
                   {row.ok === false ? (
-                    <span className="text-primary">{row.error_message || "err"}</span>
+                    <span className="text-primary">
+                      {row.error_message || "err"}
+                    </span>
                   ) : null}
                 </div>
                 <div className="mt-0.5 text-[11px] text-black/40">
@@ -358,12 +364,18 @@ export function FcargoSettingsClient({
                 ["packages", f.probePackages],
               ] as const
             ).map(([probe, label]) => (
-              <form key={probe} action={runProbe}>
+              <form
+                key={probe}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  submitProbe(e.currentTarget);
+                }}
+              >
                 <input type="hidden" name="probe" value={probe} />
                 <button
                   type="submit"
                   className={dashBtnSecondary}
-                  disabled={pending}
+                  disabled={busy}
                 >
                   {label}
                 </button>
@@ -372,7 +384,10 @@ export function FcargoSettingsClient({
           </div>
 
           <form
-            action={runProbe}
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitProbe(e.currentTarget);
+            }}
             className="grid gap-2 rounded-xl border border-black/[0.06] p-3 sm:grid-cols-[1fr_1fr_6rem_auto]"
           >
             <input type="hidden" name="probe" value="pricing" />
@@ -382,7 +397,7 @@ export function FcargoSettingsClient({
                 name="from_region_id"
                 defaultValue="1726"
                 className={dashInput}
-                disabled={pending}
+                disabled={busy}
               />
             </label>
             <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
@@ -391,7 +406,7 @@ export function FcargoSettingsClient({
                 name="to_region_id"
                 defaultValue="1718"
                 className={dashInput}
-                disabled={pending}
+                disabled={busy}
               />
             </label>
             <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
@@ -400,18 +415,21 @@ export function FcargoSettingsClient({
                 name="weight"
                 defaultValue="1"
                 className={dashInput}
-                disabled={pending}
+                disabled={busy}
               />
             </label>
             <div className="flex items-end">
-              <button type="submit" className={dashBtnSecondary} disabled={pending}>
+              <button type="submit" className={dashBtnSecondary} disabled={busy}>
                 {f.pricingRun}
               </button>
             </div>
           </form>
 
           <form
-            action={runProbe}
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitProbe(e.currentTarget);
+            }}
             className="grid gap-2 rounded-xl border border-black/[0.06] p-3 sm:grid-cols-[1fr_auto]"
           >
             <input type="hidden" name="probe" value="track" />
@@ -421,18 +439,21 @@ export function FcargoSettingsClient({
                 name="tracking"
                 placeholder={f.trackLabel}
                 className={dashInput}
-                disabled={pending}
+                disabled={busy}
               />
             </label>
             <div className="flex items-end">
-              <button type="submit" className={dashBtnSecondary} disabled={pending}>
+              <button type="submit" className={dashBtnSecondary} disabled={busy}>
                 {f.trackRun}
               </button>
             </div>
           </form>
 
           <form
-            action={runProbe}
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitProbe(e.currentTarget);
+            }}
             className="grid gap-2 rounded-xl border border-black/[0.06] p-3 sm:grid-cols-[1fr_auto]"
           >
             <input type="hidden" name="probe" value="order" />
@@ -442,18 +463,21 @@ export function FcargoSettingsClient({
                 name="order_id"
                 placeholder={f.orderId}
                 className={dashInput}
-                disabled={pending}
+                disabled={busy}
               />
             </label>
             <div className="flex items-end">
-              <button type="submit" className={dashBtnSecondary} disabled={pending}>
+              <button type="submit" className={dashBtnSecondary} disabled={busy}>
                 {f.orderRun}
               </button>
             </div>
           </form>
 
           <form
-            action={runProbe}
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitProbe(e.currentTarget);
+            }}
             className="grid gap-2 rounded-xl border border-black/[0.06] p-3 sm:grid-cols-[1fr_auto]"
           >
             <input type="hidden" name="probe" value="resolve" />
@@ -463,11 +487,11 @@ export function FcargoSettingsClient({
                 name="soato"
                 defaultValue="1726"
                 className={dashInput}
-                disabled={pending}
+                disabled={busy}
               />
             </label>
             <div className="flex items-end">
-              <button type="submit" className={dashBtnSecondary} disabled={pending}>
+              <button type="submit" className={dashBtnSecondary} disabled={busy}>
                 {f.regionRun}
               </button>
             </div>
