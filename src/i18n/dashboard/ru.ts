@@ -560,7 +560,10 @@ export const dashRu: DashCopy = {
     masterKeyMissing: "На сервере не задан ключ шифрования — сохранить ключ доступа нельзя.",
     sectionConnect: "Подключение",
     enabled: "Включить",
-    domain: "Домен сайта",
+    domain: "Tenant-домен FCargo",
+    domainPlaceholder: "как в X-Tenant-Domain в playground",
+    domainHint:
+      "Не домен сайта. Скопируйте значение заголовка X-Tenant-Domain из FCargo playground (часто slug тенанта, напр. acme-cargo).",
     serverUrl: "Адрес сервера",
     mode: "Режим",
     modeLiveLabel: "Боевой",

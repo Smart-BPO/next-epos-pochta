@@ -100,6 +100,7 @@ export type FcargoSaveState = {
   ok?: boolean;
   error?: string;
   message?: string;
+  warning?: string;
 } | null;
 
 export async function saveFcargoSettingsAction(
@@ -133,6 +134,9 @@ export async function saveFcargoSettingsAction(
       webhookSecret: webhookSecret || null,
     });
 
+    const { clearFcargoTenantCircuit } = await import("@/lib/fcargo/runtime");
+    clearFcargoTenantCircuit();
+
     await writeAuditLog({
       actor: admin,
       action: "fcargo.settings.save",
@@ -147,8 +151,20 @@ export async function saveFcargoSettingsAction(
       },
     });
 
+    // Probe health so wrong X-Tenant-Domain is visible immediately.
+    let warning: string | undefined;
+    if (enabled) {
+      const health = await withProbe("GET /health", () => fcargoHealth());
+      if (health.ok) {
+        await markFcargoTest(true);
+      } else {
+        await markFcargoTest(false, health.message);
+        warning = health.message || "health_failed";
+      }
+    }
+
     revalidate();
-    return { ok: true, message: "saved" };
+    return { ok: true, message: "saved", warning };
   } catch (err) {
     return {
       ok: false,

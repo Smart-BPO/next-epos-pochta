@@ -75,7 +75,9 @@ export async function POST(request: Request) {
     "";
 
   const hmacOk = signatureHeader
-    ? verifyFcargoWebhookSignature(rawBody, signatureHeader, expected)
+    ? verifyFcargoWebhookSignature(rawBody, signatureHeader, expected, {
+        previousSecret: process.env.FCARGO_WEBHOOK_SECRET_PREVIOUS ?? null,
+      })
     : false;
   const legacyOk = !hmacOk
     ? (() => {

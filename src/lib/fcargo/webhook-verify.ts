@@ -6,17 +6,20 @@ import { createHmac, timingSafeEqual } from "node:crypto";
  * Verify FCargo outbound webhook HMAC.
  * Header: `X-FCargo-Signature: t=<ts>,d=<delivery_id>,v1=<hex>[,v2=<hex>]`
  * Signed string: `<timestamp>.<delivery_id>.<raw_body>`
- * @see FCargo Webhooks docs
+ * Supports secret rotation via optional `previousSecret`.
  */
 export function verifyFcargoWebhookSignature(
   rawBody: string,
   header: string,
   secret: string,
-  opts?: { maxSkewSec?: number; nowSec?: number },
+  opts?: {
+    maxSkewSec?: number;
+    nowSec?: number;
+    previousSecret?: string | null;
+  },
 ): boolean {
-  const secretTrim = secret.trim();
   const headerTrim = header.trim();
-  if (!secretTrim || !headerTrim) return false;
+  if (!headerTrim) return false;
 
   const parts: Record<string, string> = {};
   for (const kv of headerTrim.split(",")) {
@@ -28,7 +31,7 @@ export function verifyFcargoWebhookSignature(
   }
 
   const t = Number(parts.t);
-  const d = parts.d;
+  const d = parts.d ?? "";
   if (!Number.isFinite(t) || !d) return false;
 
   const now = opts?.nowSec ?? Math.floor(Date.now() / 1000);
@@ -36,20 +39,28 @@ export function verifyFcargoWebhookSignature(
   if (Math.abs(now - t) > maxSkew) return false;
 
   const signed = `${parts.t}.${d}.${rawBody}`;
-  const expected = createHmac("sha256", secretTrim)
-    .update(signed, "utf8")
-    .digest("hex");
+  const secrets = [secret, opts?.previousSecret]
+    .map((s) => (s ?? "").trim())
+    .filter(Boolean);
 
-  const expectedBuf = Buffer.from(expected, "utf8");
-  for (const slot of ["v1", "v2"] as const) {
+  const sigKeys = Object.keys(parts).filter((k) => /^v\d+$/.test(k));
+  if (!sigKeys.length || !secrets.length) return false;
+
+  for (const slot of sigKeys) {
     const got = parts[slot];
     if (!got) continue;
     const gotBuf = Buffer.from(got, "utf8");
-    if (
-      expectedBuf.length === gotBuf.length &&
-      timingSafeEqual(expectedBuf, gotBuf)
-    ) {
-      return true;
+    for (const s of secrets) {
+      const expected = createHmac("sha256", s)
+        .update(signed, "utf8")
+        .digest("hex");
+      const expectedBuf = Buffer.from(expected, "utf8");
+      if (
+        expectedBuf.length === gotBuf.length &&
+        timingSafeEqual(expectedBuf, gotBuf)
+      ) {
+        return true;
+      }
     }
   }
   return false;

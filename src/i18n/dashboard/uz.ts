@@ -560,7 +560,10 @@ export const dashUz: DashCopy = {
     masterKeyMissing: "Serverda shifrlash kaliti yo‘q — kirish kalitini saqlab bo‘lmaydi.",
     sectionConnect: "Ulanish",
     enabled: "Yoqish",
-    domain: "Sayt domeni",
+    domain: "FCargo tenant-domeni",
+    domainPlaceholder: "playground X-Tenant-Domain qiymati",
+    domainHint:
+      "Sayt domeni emas. FCargo playground dagi X-Tenant-Domain sarlavhasini nusxalang (ko‘pincha tenant slug).",
     serverUrl: "Server manzili",
     mode: "Rejim",
     modeLiveLabel: "Ishchi",

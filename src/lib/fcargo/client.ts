@@ -15,6 +15,8 @@ import { logFcargoRequest } from "@/lib/fcargo/log";
 import {
   isDynamicServerBailError,
   isFcargoLiveFetchAllowed,
+  isFcargoTenantNotFoundMessage,
+  noteFcargoTenantFailure,
 } from "@/lib/fcargo/runtime";
 import type {
   FcargoCreateOrderRequest,
@@ -105,6 +107,9 @@ async function fcargoFetch<T>(
         status: res.status,
         details: err?.error?.details ?? undefined,
       };
+      if (isFcargoTenantNotFoundMessage(result.message)) {
+        noteFcargoTenantFailure();
+      }
       logFcargoRequest({
         direction: "out",
         method,

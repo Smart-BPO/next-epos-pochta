@@ -37,8 +37,10 @@ export function FcargoConfigClient({
 
   useEffect(() => {
     if (!saveState) return;
-    if (saveState.ok) toast.success(f.saved);
-    else if (saveState.error) toast.error(saveState.error);
+    if (saveState.ok) {
+      toast.success(f.saved);
+      if (saveState.warning) toast.warning(saveState.warning);
+    } else if (saveState.error) toast.error(saveState.error);
   }, [saveState, f.saved]);
 
   function onClearKey() {
@@ -118,9 +120,12 @@ export function FcargoConfigClient({
             defaultValue={settings.tenantDomain}
             disabled={!canEdit}
             className={`${dashInput} font-normal normal-case`}
-            placeholder="epos-pochta.uz"
+            placeholder={f.domainPlaceholder}
             required
           />
+          <span className="font-normal normal-case tracking-normal text-[11px] text-black/40">
+            {f.domainHint}
+          </span>
         </label>
 
         <label className="grid gap-1 text-xs font-semibold uppercase tracking-wide text-black/40">

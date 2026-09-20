@@ -554,6 +554,8 @@ export type DashCopy = {
     sectionConnect: string;
     enabled: string;
     domain: string;
+    domainPlaceholder: string;
+    domainHint: string;
     serverUrl: string;
     mode: string;
     modeLiveLabel: string;

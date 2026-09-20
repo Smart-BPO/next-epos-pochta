@@ -89,7 +89,7 @@ export async function getFcargoSettingsView(): Promise<FcargoSettingsView> {
   const masterKeyOk = hasMessagingSecretsKey();
   const empty: FcargoSettingsView = {
     enabled: false,
-    tenantDomain: "epos-pochta.uz",
+    tenantDomain: "",
     baseUrl: DEFAULT_BASE,
     mode: "live",
     hasSecrets: false,
@@ -131,7 +131,7 @@ export async function getFcargoSettingsView(): Promise<FcargoSettingsView> {
 
   return {
     enabled: Boolean(row.enabled),
-    tenantDomain: row.tenant_domain || "epos-pochta.uz",
+    tenantDomain: row.tenant_domain || "",
     baseUrl: normalizeBaseUrl(row.base_url || DEFAULT_BASE),
     mode,
     hasSecrets: hasApiKey,
