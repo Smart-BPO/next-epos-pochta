@@ -7,8 +7,8 @@ type BrandLogoVariant = "color" | "onRed" | "white";
 
 const SRC: Record<BrandLogoVariant, Record<Locale, string>> = {
   color: {
-    uz: "/images/brand/logo-uz.svg",
-    ru: "/images/brand/logo-ru.svg",
+    uz: "/images/brand/logo-uz-red.svg",
+    ru: "/images/brand/logo-ru-red.svg",
   },
   onRed: {
     uz: "/images/brand/logo-uz-color.svg",
