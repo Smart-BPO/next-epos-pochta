@@ -55,7 +55,7 @@ export function AboutPageView({ locale }: { locale: Locale }) {
 
       <section className="relative isolate overflow-visible py-[var(--section-y)]">
         <Image
-          src="/images/hero/uzbekistan-map.svg"
+          src="/images/hero/uzbekistan-map-v2.svg"
           alt=""
           width={1000}
           height={652}

@@ -1,4 +1,4 @@
-/** SVG path data extracted from public/images/hero/uzbekistan-map.svg (viewBox 0 0 1000 652). */
+/** SVG path data extracted from public/images/hero/uzbekistan-map-v2.svg (viewBox 0 0 1000 652). */
 export const UZBEKISTAN_MAP_VIEWBOX = "0 0 1000 652";
 
 export const UZBEKISTAN_MAP_PATHS = {

@@ -123,7 +123,7 @@ export async function HomePageView({ locale }: { locale: Locale }) {
           <div className={homeHeroVisual} aria-hidden>
             <MediaMinWidth minWidthPx={1024}>
               <Image
-                src="/images/hero/uzbekistan-map.svg"
+                src="/images/hero/uzbekistan-map-v2.svg"
                 alt=""
                 width={1000}
                 height={652}
