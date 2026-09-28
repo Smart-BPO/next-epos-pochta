@@ -19,7 +19,7 @@ const newsArticlesSeed: SeedArticle[] = [
     status: "published",
     category: "company",
     publishedAt: "2026-03-01T09:00:00.000Z",
-    coverImage: "/images/home/needs/parcels.png",
+    coverImage: "/images/home/needs/parcels.webp",
     tags: ["company", "launch", "service"],
     locales: {
       uz: {
@@ -62,7 +62,7 @@ const newsArticlesSeed: SeedArticle[] = [
     status: "published",
     category: "geography",
     publishedAt: "2026-04-15T09:00:00.000Z",
-    coverImage: "/images/home/needs/regular.png",
+    coverImage: "/images/home/needs/regular.webp",
     tags: ["geography", "coverage", "routes"],
     locales: {
       uz: {
@@ -105,7 +105,7 @@ const newsArticlesSeed: SeedArticle[] = [
     status: "published",
     category: "business",
     publishedAt: "2026-05-20T09:00:00.000Z",
-    coverImage: "/images/home/needs/goods.png",
+    coverImage: "/images/home/needs/goods.webp",
     tags: ["business", "api", "ecommerce"],
     locales: {
       uz: {
@@ -148,7 +148,7 @@ const newsArticlesSeed: SeedArticle[] = [
     status: "published",
     category: "product",
     publishedAt: "2026-06-10T09:00:00.000Z",
-    coverImage: "/images/home/needs/documents.png",
+    coverImage: "/images/home/needs/documents.webp",
     tags: ["tracking", "product", "support"],
     locales: {
       uz: {
@@ -191,7 +191,7 @@ const newsArticlesSeed: SeedArticle[] = [
     status: "published",
     category: "product",
     publishedAt: "2026-07-02T09:00:00.000Z",
-    coverImage: "/images/home/needs/parcels.png",
+    coverImage: "/images/home/needs/parcels.webp",
     tags: ["door", "courier", "product"],
     locales: {
       uz: {
@@ -226,7 +226,7 @@ const newsArticlesSeed: SeedArticle[] = [
     status: "published",
     category: "business",
     publishedAt: "2026-08-12T09:00:00.000Z",
-    coverImage: "/images/home/needs/goods.png",
+    coverImage: "/images/home/needs/goods.webp",
     tags: ["returns", "cod", "business"],
     locales: {
       uz: {
@@ -261,7 +261,7 @@ const newsArticlesSeed: SeedArticle[] = [
     status: "published",
     category: "product",
     publishedAt: "2026-08-20T09:00:00.000Z",
-    coverImage: "/images/home/needs/documents.png",
+    coverImage: "/images/home/needs/documents.webp",
     tags: ["calculator", "pricing", "guide"],
     locales: {
       uz: {
@@ -304,7 +304,7 @@ const newsArticlesSeed: SeedArticle[] = [
     status: "published",
     category: "geography",
     publishedAt: "2026-09-01T09:00:00.000Z",
-    coverImage: "/images/home/needs/goods.png",
+    coverImage: "/images/home/needs/goods.webp",
     tags: ["geography", "cities", "routes"],
     locales: {
       uz: {

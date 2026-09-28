@@ -28,9 +28,10 @@ const CAPABILITY_ICONS = [
 ] as const;
 
 const SEGMENT_IMAGES = [
-  "/images/home/needs/goods.png",
-  "/images/home/needs/regular.png",
-  "/images/home/needs/parcels.png",
+  "/images/home/needs/goods.webp",
+  "/images/home/needs/parcels.webp",
+  "/images/home/needs/documents.webp",
+  "/images/home/needs/regular.webp",
 ] as const;
 
 export function BusinessPageView({ locale }: { locale: Locale }) {
