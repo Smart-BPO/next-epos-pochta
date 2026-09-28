@@ -127,13 +127,13 @@ export const uzCopy: SiteCopy = {
         description: "Biznes uchun doimiy yoʻnalishlar va individual shartlar.",
       },
     ],
-    modesTitle: "Yetkazib berish usullari",
+    modesTitle: "Joʻnatma yoʻli",
     chainSteps: [
-      "Buyurtma",
-      "Ombor",
+      "Ariza",
+      "Kuryer olib ketadi",
+      "Saralash markazi",
       "Yoʻlda",
-      "EPOS punkti",
-      "Eshikgacha",
+      "Eshikkacha",
     ],
     modes: [
       {
@@ -159,22 +159,61 @@ export const uzCopy: SiteCopy = {
     ],
     benefitsTitle: "Afzalliklar",
     benefits: [
-      "Oʻzbekiston hududi boʻylab yetkazib berish",
-      "Uchtagacha bepul topshirish urinishi",
-      "Yetkazilmagan joʻnatmani bepul qaytarish",
-      "SMS xabarnomalar",
-      "Onlayn kuzatuv",
-      "Mijozlarni qoʻllab-quvvatlash",
-      "Biznes uchun API va hisobotlar",
-      "Muntazam joʻnatmalar uchun individual shartlar",
+      {
+        title: "1 kunda yetkazish",
+        text: "Toshkent viloyati, Andijon, Namangan, Fargʻona, Samarqand, Sirdaryo va Jizzaxga.",
+      },
+      {
+        title: "Butun Oʻzbekiston boʻylab",
+        text: "Boshqa viloyatlarga 2 kungacha.",
+      },
+      {
+        title: "Eshikdan eshikkacha",
+        text: "Kuryer joʻnatmani oʻzi olib ketadi va qabul qiluvchiga topshiradi.",
+      },
+      {
+        title: "20 kg gacha posilkalar",
+        text: "Ogʻirroq yuk kelishuv asosida.",
+      },
+      {
+        title: "Onlayn kuzatuv",
+        text: "Veb sayt va Telegram orqali.",
+      },
+      {
+        title: "SMS va Telegram xabarnomalar",
+        text: "Har bir status haqida.",
+      },
+      {
+        title: "COD — yetkazib berishda toʻlov",
+        text: "Xaridordan toʻlovni topshirish vaqtida qabul qilamiz va 3 bank kuni ichida hisobingizga oʻtkazamiz.",
+      },
+      {
+        title: "API va integratsiyalar",
+        text: "Internet-doʻkonlar va marketpleyslar uchun buyurtmalar, statuslar.",
+      },
     ],
     howTitle: "Yetkazib berish qanday ishlaydi",
     howSteps: [
-      { title: "Soʻrov qoldiring", text: "Yoʻnalish va joʻnatma parametrlarini koʻrsating." },
-      { title: "Hisob oling", text: "Menejer narx va muddatni aytadi." },
-      { title: "Joʻnatmani topshiring", text: "Punktga olib keling yoki kuryer chaqiring." },
-      { title: "Kuzating", text: "Trek-raqam boʻyicha statusni tekshiring." },
+      {
+        title: "Joʻnatma yarating",
+        text: "Kabinetda, API orqali yoki call-markaz orqali.",
+      },
+      {
+        title: "Kuryer olib ketadi",
+        text: "Belgilangan vaqtda omboringiz yoki ofisingizdan.",
+      },
+      {
+        title: "Yetkazamiz va kuzatasiz",
+        text: "Har bir status saytda, kabinetda va Telegramda.",
+      },
+      {
+        title: "Pulni oling",
+        text: "COD boʻyicha toʻlovlar 3 bank kuni ichida hisobingizga.",
+      },
     ],
+    howNote:
+      "Hali hamkorimiz emasmisiz? Ariza qoldiring — menejer shartlarni kelishib, shartnoma tayyorlaydi.",
+    howCta: "Hamkor boʻlish",
     businessTitle: "Oʻz kuryer xizmatisiz buyurtmalarni yetkazing",
     businessEyebrow: "E-commerce va biznes uchun",
     businessLead:

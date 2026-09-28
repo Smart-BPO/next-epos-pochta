@@ -155,7 +155,7 @@ Ushbu boʻlim isteʼmolchining qonun bilan kafolatlangan huquqlarini yoki qonun 
 
 ## 15. Daʼvolar
 
-Yoʻqolish, shikastlanish, topshirilmaslik yoki kechikish boʻyicha daʼvolar support@epos.uz manziliga yozma shaklda yuboriladi yoki qonunchilikda belgilangan boʻlsa, joʻnatma qabul qilingan yoki belgilangan joyda taqdim etiladi.
+Yoʻqolish, shikastlanish, topshirilmaslik yoki kechikish boʻyicha daʼvolar info@epos-pochta.uz manziliga yozma shaklda yuboriladi yoki qonunchilikda belgilangan boʻlsa, joʻnatma qabul qilingan yoki belgilangan joyda taqdim etiladi.
 
 Daʼvoda joʻnatma turi, trek-raqam, qabul qilingan sana va joy, yoʻnalish, arizachining maʼlumotlari, buzilish tavsifi va talab koʻrsatiladi. Mavjud boʻlsa, toʻlov hujjati, joʻnatma hujjatlari, qoʻyilma roʻyxati, shikastlanish fotosuratlari va boshqa tasdiqlovchi materiallar ilova qilinadi.
 
@@ -179,7 +179,7 @@ Nizolar Oʻzbekiston Respublikasi qonunchiligida belgilangan tartibda koʻrib ch
 STIR: 312949361  
 Manzil: Toshkent sh., Sergeli tumani, Bunyodobod MFY, Toshkent halqa avtomobil yoʻli, 7-uy  
 Telefon: +998 88 709 22 99  
-E-mail: support@epos.uz  
+E-mail: info@epos-pochta.uz  
 Telegram: https://t.me/epos_operator  
 Ish vaqti: dushanba–shanba, 09:00–18:00
 

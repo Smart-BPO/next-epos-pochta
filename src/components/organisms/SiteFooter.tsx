@@ -32,7 +32,7 @@ function SupportIcon({ src }: { src: string }) {
 
 export async function SiteFooter({ locale, content }: SiteFooterProps) {
   const site = await getRuntimeSiteConfig();
-  const supportEmail = site.email || "support@epos.uz";
+  const supportEmail = site.email || "info@epos-pochta.uz";
   const socials = [
     {
       href: site.telegramUrl,

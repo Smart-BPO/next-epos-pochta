@@ -10,8 +10,16 @@ const STEPS = [
     width: 720,
     height: 720,
   },
+  // TODO(brand): replace with 3D webp «courier picks up parcel»
+  // (person/courier taking a box). Parcel asset is a temporary stand-in.
   {
-    id: "warehouse",
+    id: "courier",
+    src: "/images/home/business/epos-parcel.webp",
+    width: 720,
+    height: 720,
+  },
+  {
+    id: "sorting",
     src: "/images/home/business/fulfillment-warehouse.webp",
     width: 720,
     height: 720,
@@ -19,12 +27,6 @@ const STEPS = [
   {
     id: "transit",
     src: "/images/home/business/epos-van.webp",
-    width: 720,
-    height: 720,
-  },
-  {
-    id: "pickup",
-    src: "/images/home/business/pickup-point.webp",
     width: 720,
     height: 720,
   },

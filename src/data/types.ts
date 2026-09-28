@@ -111,9 +111,11 @@ export interface SiteCopy {
     chainSteps: [string, string, string, string, string];
     modes: Array<{ id: DeliveryMode; title: string; description: string }>;
     benefitsTitle: string;
-    benefits: string[];
+    benefits: Array<{ title: string; text: string }>;
     howTitle: string;
     howSteps: Array<{ title: string; text: string }>;
+    howNote: string;
+    howCta: string;
     businessTitle: string;
     businessEyebrow: string;
     businessLead: string;

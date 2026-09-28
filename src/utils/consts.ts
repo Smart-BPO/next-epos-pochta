@@ -10,7 +10,7 @@ export const SITE_CONFIG = {
   url: getCanonicalSiteUrl(),
   phone: getPublicEnv("NEXT_PUBLIC_CONTACT_PHONE", "+998887092299"),
   phoneDisplay: "+998 88 709 22 99",
-  email: getPublicEnv("NEXT_PUBLIC_CONTACT_EMAIL", ""),
+  email: getPublicEnv("NEXT_PUBLIC_CONTACT_EMAIL", "info@epos-pochta.uz"),
   telegramUrl: getPublicEnv(
     "NEXT_PUBLIC_TELEGRAM_URL",
     "https://t.me/epos_operator",

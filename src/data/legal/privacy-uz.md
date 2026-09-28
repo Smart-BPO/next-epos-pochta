@@ -116,7 +116,7 @@ Foydalanuvchi:
 - qonunda nazarda tutilgan hollarda qayta ishlashni cheklashni soʻrash;
 - vakolatli davlat organi yoki sudga murojaat qilish huquqiga ega.
 
-Huquqlarni amalga oshirish uchun support@epos.uz manziliga murojaat yuboriladi. Murojaatda ism, aloqa raqami, soʻrov mazmuni va yetkazib berish bilan bogʻliq boʻlsa, trek-raqamni koʻrsatish tavsiya etiladi. EPOS POCHTA maʼlumotlarning noqonuniy oshkor qilinishining oldini olish uchun shaxsni tasdiqlashni soʻrashi mumkin.
+Huquqlarni amalga oshirish uchun info@epos-pochta.uz manziliga murojaat yuboriladi. Murojaatda ism, aloqa raqami, soʻrov mazmuni va yetkazib berish bilan bogʻliq boʻlsa, trek-raqamni koʻrsatish tavsiya etiladi. EPOS POCHTA maʼlumotlarning noqonuniy oshkor qilinishining oldini olish uchun shaxsni tasdiqlashni soʻrashi mumkin.
 
 Rozilikni chaqirib olish undan oldingi qonuniy qayta ishlashga taʼsir qilmaydi hamda shartnomani bajarish, qonunchilikka rioya qilish yoki huquqlarni himoya qilish uchun zarur qayta ishlashni toʻxtatmaydi.
 
@@ -136,7 +136,7 @@ EPOS POCHTA qonunchilik, sayt, xizmatlar yoki maʼlumotlarni qayta ishlash tarti
 STIR: 312949361  
 Manzil: Toshkent sh., Sergeli tumani, Bunyodobod MFY, Toshkent halqa avtomobil yoʻli, 7-uy  
 Telefon: +998 88 709 22 99  
-E-mail: support@epos.uz  
+E-mail: info@epos-pochta.uz  
 Telegram: https://t.me/epos_operator  
 Ish vaqti: dushanba–shanba, 09:00–18:00
 
