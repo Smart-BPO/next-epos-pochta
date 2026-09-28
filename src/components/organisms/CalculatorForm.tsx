@@ -26,6 +26,7 @@ import { matchCityQuery } from "@/lib/pricing/matchCity";
 import { CALC_LIMITS, CALC_QUICK_CITIES } from "@/lib/pricing/limits";
 import type { PublicPricingUiConfig } from "@/lib/pricing/types";
 import { cn } from "@/lib/cn";
+import { SITE_CONFIG } from "@/utils/consts";
 import {
   checkRow,
   controlCheckbox,
@@ -220,6 +221,8 @@ export function CalculatorForm({
     if (!isValidUzPhone(phone) || !consent) return;
 
     setLeadSubmitting(true);
+    const phoneDisplay = normalizePhone(phone);
+    const successText = c.leadSuccessText.replace("{phone}", phoneDisplay);
     const result = await submitLead({
       type: "price",
       locale,
@@ -227,7 +230,7 @@ export function CalculatorForm({
       website,
       data: {
         name: name.trim(),
-        phone: normalizePhone(phone),
+        phone: phoneDisplay,
         from: locale === "uz" ? fromMeta.uz : fromMeta.ru,
         to: locale === "uz" ? toMeta.uz : toMeta.ru,
         fromCityId: fromMeta.id,
@@ -247,7 +250,7 @@ export function CalculatorForm({
         consent: true,
       },
       successTitle: c.leadSuccessTitle,
-      successText: c.leadSuccessText,
+      successText,
       eventPrefix: "calculator_lead",
     });
     setLeadSubmitting(false);
@@ -448,91 +451,118 @@ export function CalculatorForm({
               className="rounded-2xl border border-emerald-200/80 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-900"
               role="status"
             >
-              <strong>
-                {c.leadSuccessTitle}. ID: {leadId}
-              </strong>
-              <p className="mb-0 mt-1 opacity-90">{c.leadSuccessText}</p>
+              <strong>{c.leadSuccessTitle}</strong>
+              <p className="mb-0 mt-1 opacity-90">
+                {c.leadSuccessText.replace("{phone}", normalizePhone(phone))}
+              </p>
             </div>
           ) : (
-            <form
-              className="grid gap-3 border-t border-black/[0.06] pt-4"
-              onSubmit={(e) => void submitLeadRequest(e)}
-              noValidate
-            >
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="grid gap-1.5">
-                  <label htmlFor="calc-phone" className={fieldLabel}>
-                    {fc.phone} *
-                  </label>
-                  <Input
-                    id="calc-phone"
-                    name="phone"
-                    type="tel"
+            <div className="grid gap-4 border-t border-black/[0.06] pt-4">
+              <div className="grid gap-2">
+                <h3 className="m-0 font-display text-base font-semibold text-black sm:text-lg">
+                  {c.leadTitle}
+                </h3>
+                <p className="m-0 text-sm text-black/70">{c.callPrompt}</p>
+                <div>
+                  <Button
+                    href={`tel:${SITE_CONFIG.phone}`}
+                    variant="primary"
                     size="sm"
-                    autoComplete="tel"
-                    inputMode="tel"
-                    placeholder="+998 XX XXX XX XX"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    aria-invalid={Boolean(phoneError)}
-                    invalid={Boolean(phoneError)}
-                  />
-                  {phoneError ? (
-                    <p className={cn(fieldError, "m-0")}>{phoneError}</p>
-                  ) : null}
-                </div>
-                <div className="grid gap-1.5">
-                  <label htmlFor="calc-name" className={fieldLabel}>
-                    {fc.name}
-                  </label>
-                  <Input
-                    id="calc-name"
-                    name="name"
-                    type="text"
-                    size="sm"
-                    autoComplete="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
+                    onClick={() =>
+                      trackEvent("calculator_call_click", {
+                        source: "calculator_result",
+                      })
+                    }
+                  >
+                    {c.callCta}
+                  </Button>
                 </div>
               </div>
 
-              <label className={cn(checkRow, "!mb-0 text-[0.85rem]")}>
-                <input
-                  type="checkbox"
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  className={controlCheckbox}
-                />
-                <ConsentLabel locale={locale} />
-              </label>
-              {consentError ? (
-                <p className={cn(fieldError, "m-0")}>{consentError}</p>
-              ) : null}
+              <form
+                className="grid gap-3 border-t border-black/[0.06] pt-4"
+                onSubmit={(e) => void submitLeadRequest(e)}
+                noValidate
+              >
+                <div className="grid gap-1">
+                  <p className="m-0 font-medium text-black">{c.leadOrTitle}</p>
+                  <p className="m-0 text-sm text-black/60">{c.leadOrLead}</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-1.5">
+                    <label htmlFor="calc-phone" className={fieldLabel}>
+                      {fc.phone} *
+                    </label>
+                    <Input
+                      id="calc-phone"
+                      name="phone"
+                      type="tel"
+                      size="sm"
+                      autoComplete="tel"
+                      inputMode="tel"
+                      placeholder="+998 XX XXX XX XX"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      aria-invalid={Boolean(phoneError)}
+                      invalid={Boolean(phoneError)}
+                    />
+                    {phoneError ? (
+                      <p className={cn(fieldError, "m-0")}>{phoneError}</p>
+                    ) : null}
+                  </div>
+                  <div className="grid gap-1.5">
+                    <label htmlFor="calc-name" className={fieldLabel}>
+                      {c.leadNameLabel}
+                    </label>
+                    <Input
+                      id="calc-name"
+                      name="name"
+                      type="text"
+                      size="sm"
+                      autoComplete="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-              <div className="absolute left-[-9999px] h-0 w-0 overflow-hidden" aria-hidden>
-                <label htmlFor="calc-website">{fc.honeypot}</label>
-                <input
-                  id="calc-website"
-                  name="website"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                />
-              </div>
+                <label className={cn(checkRow, "!mb-0 text-[0.85rem]")}>
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(e) => setConsent(e.target.checked)}
+                    className={controlCheckbox}
+                  />
+                  <ConsentLabel locale={locale} />
+                </label>
+                {consentError ? (
+                  <p className={cn(fieldError, "m-0")}>{consentError}</p>
+                ) : null}
 
-              <div>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="sm"
-                  disabled={leadSubmitting}
-                >
-                  {c.confirmCta}
-                </Button>
-              </div>
-            </form>
+                <div className="absolute left-[-9999px] h-0 w-0 overflow-hidden" aria-hidden>
+                  <label htmlFor="calc-website">{fc.honeypot}</label>
+                  <input
+                    id="calc-website"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="sm"
+                    disabled={leadSubmitting}
+                  >
+                    {c.confirmCta}
+                  </Button>
+                </div>
+              </form>
+            </div>
           )}
         </div>
       ) : null}

@@ -258,6 +258,12 @@ export interface SiteCopy {
     resultRangeLabel: string;
     resultEtaLabel: string;
     billableLabel: string;
+    leadTitle: string;
+    callPrompt: string;
+    callCta: string;
+    leadOrTitle: string;
+    leadOrLead: string;
+    leadNameLabel: string;
     confirmCta: string;
     leadSuccessTitle: string;
     leadSuccessText: string;
