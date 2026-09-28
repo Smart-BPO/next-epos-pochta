@@ -39,7 +39,7 @@ export const homeHeroVisual =
   "relative z-0 mt-2 hidden w-full max-h-[12rem] sm:max-h-[14rem] lg:mt-0 lg:block lg:min-h-[20rem] lg:max-h-none lg:w-full";
 
 export const homeHeroMap =
-  "pointer-events-none relative mx-auto block h-auto w-full max-w-[16rem] select-none object-contain object-bottom opacity-90 sm:max-w-[20rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-right lg:opacity-100";
+  "pointer-events-none relative mx-auto block h-auto w-full max-w-[16rem] select-none object-contain object-center opacity-90 sm:max-w-[20rem] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:h-full lg:w-[min(110%,42rem)] lg:max-w-none lg:object-contain lg:object-right lg:opacity-100";
 
 /**
  * Mobile: in-flow white section between hero and needs.

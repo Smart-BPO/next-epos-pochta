@@ -104,7 +104,7 @@ export function Header({ locale, content }: HeaderProps) {
             className="relative z-10 flex h-8 w-[84px] shrink-0 items-center sm:h-9 sm:w-[92px]"
             aria-label={SITE_CONFIG.name}
           >
-            <BrandLogo locale={locale} variant="onRed" alt="" priority />
+            <BrandLogo locale={locale} variant="color" alt="" priority />
           </Link>
 
           <nav

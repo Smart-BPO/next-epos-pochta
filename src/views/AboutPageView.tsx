@@ -53,13 +53,13 @@ export function AboutPageView({ locale }: { locale: Locale }) {
         </PageContainer>
       </section>
 
-      <section className="relative isolate overflow-hidden py-[var(--section-y)]">
+      <section className="relative isolate overflow-visible py-[var(--section-y)]">
         <Image
           src="/images/hero/uzbekistan-map.svg"
           alt=""
           width={1000}
           height={652}
-          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(100%,40rem)] max-w-[min(100%,46rem)] select-none object-contain object-right opacity-90 md:block"
+          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[min(100%,42rem)] max-w-[min(100%,48rem)] select-none object-contain object-right opacity-90 md:block"
           unoptimized
         />
         <PageContainer className="relative z-10 flex flex-col gap-6 md:gap-9">
