@@ -89,10 +89,10 @@ export const uzCopy: SiteCopy = {
     geography: "Shaharlar boʻylab yetkazib berish",
   },
   home: {
-    heroTitle: "Yetkazib berish Oʻzbekiston boʻylab — pochta va kuryer",
+    heroTitle: "Oʻzbekiston boʻylab yetkazib berish xizmati",
     heroLead:
-      "Pochta, hujjatlar va biznes joʻnatmalari — Toshkent va viloyatlar. Yetkazib berish narxini kalkulyatorda hisoblang; yakuniy narxni menejer tasdiqlaydi.",
-    heroNote: "Jismoniy shaxslar, internet-doʻkonlar va kompaniyalar uchun",
+      "Kuryerlik xizmati, eshikdan eshikkacha yetkazish va biznes joʻnatmalari — Toshkent va barcha viloyatlar. Yetkazib berish narxini kalkulyatorda hisoblang.",
+    heroNote: "E-commerce va korporativ mijozlar uchun.",
     trackTitle: "Pochta qayerda?",
     trackPlaceholder: "Trek-raqamni kiriting",
     trackHint: "Trek-raqam kvitansiyada yoki SMS da koʻrsatiladi",
