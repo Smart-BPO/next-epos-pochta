@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
+import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { getRuntimeSiteConfig } from "@/lib/cms/site-settings";
 import { cn } from "@/lib/cn";
 import { pageContainer } from "@/styles/ui";
@@ -60,14 +61,11 @@ export async function SiteFooter({ locale, content }: SiteFooterProps) {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
           <div className="flex flex-col gap-8 sm:col-span-2 lg:col-span-1">
             <div className="flex flex-col gap-4">
-              <Link href={localePath(locale, "/")} className="inline-block w-[92px]">
-                <Image
-                  src="/images/brand/logo.svg"
-                  alt={site.name}
-                  width={92}
-                  height={36}
-                  unoptimized
-                />
+              <Link
+                href={localePath(locale, "/")}
+                className="inline-flex h-9 w-[92px] items-center"
+              >
+                <BrandLogo locale={locale} alt={site.name} />
               </Link>
               <p className="m-0 max-w-sm text-sm leading-5 text-black/60">
                 {content.footer.blurb}

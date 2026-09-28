@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import type { Locale } from "@/i18n/config";
 import { localePath, stripLocalePrefix } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import { SITE_CONFIG } from "@/utils/consts";
+import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { Button } from "@/components/atoms/Button";
 import { LanguageSwitcher } from "@/components/molecules/LanguageSwitcher";
 import { cn } from "@/lib/cn";
@@ -104,15 +104,7 @@ export function Header({ locale, content }: HeaderProps) {
             className="relative z-10 flex h-8 w-[84px] shrink-0 items-center sm:h-9 sm:w-[92px]"
             aria-label={SITE_CONFIG.name}
           >
-            <Image
-              src="/images/brand/logo.svg"
-              alt=""
-              width={92}
-              height={36}
-              className="h-full w-auto"
-              priority
-              unoptimized
-            />
+            <BrandLogo locale={locale} alt="" priority />
           </Link>
 
           <nav

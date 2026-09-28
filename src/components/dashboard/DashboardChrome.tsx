@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import type { AdminUser } from "@/lib/cms/auth-shared";
 import { canAccess } from "@/lib/cms/auth-shared";
+import { BrandLogo } from "@/components/atoms/BrandLogo";
+import { useDashLocale } from "@/components/dashboard/DashLocaleProvider";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { DashTopBar } from "@/components/dashboard/chrome/DashTopBar";
@@ -27,6 +28,7 @@ export function DashboardChrome({
   notifications: DashNotificationsSnapshot;
   children: React.ReactNode;
 }) {
+  const { locale } = useDashLocale();
   const items = DASHBOARD_NAV.filter((item) => canAccess(admin.role, item.area));
 
   return (
@@ -39,15 +41,7 @@ export function DashboardChrome({
               className="inline-flex h-8 w-[84px] items-center"
               aria-label={SITE_CONFIG.name}
             >
-              <Image
-                src="/images/brand/logo.svg"
-                alt={SITE_CONFIG.name}
-                width={92}
-                height={36}
-                className="h-full w-auto"
-                priority
-                unoptimized
-              />
+              <BrandLogo locale={locale} priority />
             </Link>
           </div>
 

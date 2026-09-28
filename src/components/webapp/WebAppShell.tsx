@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { getWebAppCopy } from "@/data/webapp-copy";
+import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { WebAppTabBar } from "@/components/webapp/WebAppTabBar";
-import { SITE_CONFIG } from "@/utils/consts";
 
 export function WebAppShell({ children }: { children: React.ReactNode }) {
   const { locale, setLocale } = useTelegram();
@@ -15,14 +14,9 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-10 border-b border-black/8 bg-white/95 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 px-4 py-3">
           <div className="flex min-w-0 items-center gap-2.5">
-            <Image
-              src="/images/brand/logo.svg"
-              alt={SITE_CONFIG.name}
-              width={72}
-              height={28}
-              unoptimized
-              priority
-            />
+            <span className="inline-flex h-7 w-[72px] items-center">
+              <BrandLogo locale={locale} width={72} height={30} priority />
+            </span>
             <span className="truncate text-[0.65rem] font-semibold uppercase tracking-wide text-black/35">
               {copy.brand}
             </span>
