@@ -3,10 +3,14 @@ import type { Locale } from "@/i18n/config";
 import { cn } from "@/lib/cn";
 import { SITE_CONFIG } from "@/utils/consts";
 
-type BrandLogoVariant = "color" | "onRed" | "white";
+type BrandLogoVariant = "color" | "red" | "onRed" | "white";
 
 const SRC: Record<BrandLogoVariant, Record<Locale, string>> = {
   color: {
+    uz: "/images/brand/logo-uz.svg",
+    ru: "/images/brand/logo-ru.svg",
+  },
+  red: {
     uz: "/images/brand/logo-uz-red.svg",
     ru: "/images/brand/logo-ru-red.svg",
   },
