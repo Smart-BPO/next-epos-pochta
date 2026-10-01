@@ -110,18 +110,12 @@ export function listDeliveryRouteParams(
   return params;
 }
 
-/** Fewer SSG pages for Hostinger memory — priority corridors only; rest on-demand. */
+/** All hub A→B corridors for SSG (Hostinger cannot reliably SSR missing route HTML). */
 export function listPriorityDeliveryRouteParams(
   cities: DeliveryCity[] = DELIVERY_CITIES,
-  priorityCodes: readonly string[] = [
-    "tas",
-    "skd",
-    "bhk",
-    "azn",
-    "nma",
-    "feg",
-  ],
+  priorityCodes?: readonly string[],
 ): Array<{ from: string; to: string }> {
+  if (!priorityCodes?.length) return listDeliveryRouteParams(cities);
   const allowed = new Set(
     priorityCodes.map((c) => c.toLowerCase()).filter((c) =>
       cities.some((city) => city.code === c),

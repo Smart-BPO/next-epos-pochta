@@ -95,22 +95,26 @@ export async function DeliveryRoutePageView({
 
   let routeEstimate: Awaited<ReturnType<typeof runEstimate>> | null = null;
   if (fromSettlement && toSettlement) {
-    routeEstimate = await runEstimate({
-      fromRegionId: fromSettlement.regionId,
-      fromCityId: fromSettlement.id,
-      toRegionId: toSettlement.regionId,
-      toCityId: toSettlement.id,
-      weightKg: 1,
-      lengthCm: 20,
-      widthCm: 15,
-      heightCm: 10,
-      unknownDims: false,
-      pickup: false,
-      doorDelivery: false,
-      places: 1,
-      urgent: false,
-      category: "parcel",
-    });
+    try {
+      routeEstimate = await runEstimate({
+        fromRegionId: fromSettlement.regionId,
+        fromCityId: fromSettlement.id,
+        toRegionId: toSettlement.regionId,
+        toCityId: toSettlement.id,
+        weightKg: 1,
+        lengthCm: 20,
+        widthCm: 15,
+        heightCm: 10,
+        unknownDims: false,
+        pickup: false,
+        doorDelivery: false,
+        places: 1,
+        urgent: false,
+        category: "parcel",
+      });
+    } catch {
+      routeEstimate = null;
+    }
   }
 
   return (

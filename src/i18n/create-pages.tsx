@@ -26,7 +26,7 @@ import {
 } from "@/lib/news/repository";
 import {
   getDeliveryRoute,
-  listPriorityDeliveryRouteParams,
+  listDeliveryRouteParams,
   routeMetaDescription,
   routeMetaTitle,
   routePath,
@@ -39,7 +39,6 @@ import {
   serviceMetaTitle,
   servicePath,
 } from "@/data/seo/service-landings";
-import { SEO_PRIORITY_HUB_CODES } from "@/data/seo/goals";
 import { PublicFormPageSkeleton } from "@/components/skeleton/public";
 
 const suspenseFallback = <PublicFormPageSkeleton />;
@@ -315,7 +314,9 @@ export function createDeliveryRoutePage(locale: Locale) {
     generateStaticParams: async () => {
       const { loadDeliveryCities } = await import("@/lib/cms/delivery-hubs");
       const cities = await loadDeliveryCities();
-      return listPriorityDeliveryRouteParams(cities, SEO_PRIORITY_HUB_CODES);
+      // Prerender every A→B hub corridor. On-demand SSR for these URLs 500s on
+      // Hostinger/LiteSpeed when the HTML was never written at build time.
+      return listDeliveryRouteParams(cities);
     },
     generateMetadata: async ({
       params,
