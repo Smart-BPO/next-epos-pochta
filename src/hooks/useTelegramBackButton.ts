@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 
 /** Show Telegram BackButton while `active`; hide on root tabs. */
 export function useTelegramBackButton(active: boolean, onBack: () => void) {
   const { webApp } = useTelegram();
-  const onBackRef = useRef(onBack);
-  onBackRef.current = onBack;
+  const handleBack = useEffectEvent(() => onBack());
 
   useEffect(() => {
     const btn = webApp?.BackButton;
@@ -18,7 +17,7 @@ export function useTelegramBackButton(active: boolean, onBack: () => void) {
       return;
     }
 
-    const handler = () => onBackRef.current();
+    const handler = () => handleBack();
     btn.onClick(handler);
     btn.show();
     return () => {

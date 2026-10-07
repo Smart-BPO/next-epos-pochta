@@ -102,11 +102,7 @@ export function WebAppView() {
   );
 
   useEffect(() => {
-    if (!ready) return;
-    if (!isTelegram || !initData) {
-      setPhase("ready");
-      return;
-    }
+    if (!ready || !isTelegram || !initData) return;
 
     let cancelled = false;
 
@@ -165,7 +161,8 @@ export function WebAppView() {
     };
   }, [ready, isTelegram, initData, phase, contact, applyRemoteSession]);
 
-  if (!ready || phase === "boot") {
+  // Outside Telegram there is no remote session to boot.
+  if (!ready || (phase === "boot" && isTelegram && initData)) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-white px-4">
         <p className="m-0 text-sm text-black/45">…</p>

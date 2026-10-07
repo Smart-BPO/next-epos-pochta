@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ContactGate } from "@/components/webapp/ContactGate";
 import { ShipmentForm } from "@/components/webapp/ShipmentForm";
 import { getWebAppCopy } from "@/data/webapp-copy";
@@ -24,9 +24,11 @@ export function ShipTab({
   const [successId, setSuccessId] = useState<string | null>(null);
   const [editingContact, setEditingContact] = useState(false);
 
-  useEffect(() => {
+  const [seenDraft, setSeenDraft] = useState(draft);
+  if (seenDraft !== draft) {
+    setSeenDraft(draft);
     setSuccessId(null);
-  }, [draft]);
+  }
 
   const showContactGate = !contact || editingContact;
   useTelegramBackButton(

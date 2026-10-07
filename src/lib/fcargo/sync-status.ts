@@ -18,10 +18,7 @@ import {
   upsertFcargoPackage,
 } from "@/lib/fcargo/packages-store";
 import { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
-import {
-  linkPackageToVerifiedContact,
-  syncShipmentMirrorFromPackage,
-} from "@/lib/fcargo/link-contact";
+import { linkPackageToVerifiedContact } from "@/lib/fcargo/link-contact";
 
 export type LeadCrmStatus = "draft" | "new" | "in_progress" | "done" | "spam";
 
@@ -467,12 +464,7 @@ export async function syncOpenFcargoOrders(opts?: {
         order_id: row.fcargo_order_id,
         external_order_id: row.external_order_id ?? row.lead_id,
       });
-      if (ingested.package) {
-        updated += 1;
-        if (ingested.package.contact_session_id) {
-          await syncShipmentMirrorFromPackage(ingested.package);
-        }
-      }
+      if (ingested.package) updated += 1;
     } catch {
       errors += 1;
     }

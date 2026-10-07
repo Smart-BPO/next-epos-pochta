@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useIsClient } from "@/hooks/useIsClient";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
@@ -36,7 +37,7 @@ export function GeoSection({
   const [query, setQuery] = useState("");
   const [activeIso, setActiveIso] = useState<MapRegionIso | null>("UZTK");
   const [listOpen, setListOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsClient();
   const [menuBox, setMenuBox] = useState<{
     top: number;
     left: number;
@@ -80,15 +81,9 @@ export function GeoSection({
 
   const showMenu = listOpen && query.trim().length > 0;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   useLayoutEffect(() => {
-    if (!showMenu) {
-      setMenuBox(null);
-      return;
-    }
+    // Hidden menu ignores menuBox; update() re-measures on the next open.
+    if (!showMenu) return;
 
     const update = () => {
       const el = searchWrapRef.current;
@@ -249,7 +244,7 @@ export function GeoSection({
                       ) : (
                         <ul className="m-0 grid list-none gap-0.5 p-0">
                           {matches.map((item) => (
-                            <li key={item.id} role="option">
+                            <li key={item.id} role="option" aria-selected={false}>
                               <button
                                 type="button"
                                 className="flex w-full items-center justify-between gap-3 rounded-xl border border-transparent px-3 py-2 text-left transition-colors hover:border-black/10 hover:bg-surface-muted"

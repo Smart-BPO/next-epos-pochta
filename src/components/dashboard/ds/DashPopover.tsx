@@ -47,16 +47,12 @@ export function DashPopover({
 }) {
   const panelId = useId();
   const isClient = useIsClient();
-  const triggerEl = useRef<HTMLElement | null>(null);
+  const [triggerNode, setTriggerNode] = useState<HTMLElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState<PanelPos>({ top: 0, left: 0 });
 
-  const setTriggerRef = useCallback((node: HTMLElement | null) => {
-    triggerEl.current = node;
-  }, []);
-
   const updatePos = useCallback(() => {
-    const el = triggerEl.current;
+    const el = triggerNode;
     const panel = panelRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -72,7 +68,7 @@ export function DashPopover({
       top = rect.top - panelH - gap;
     }
     setPos({ top, left });
-  }, [align]);
+  }, [align, triggerNode]);
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -100,7 +96,7 @@ export function DashPopover({
     const onPointer = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node | null;
       if (!target) return;
-      if (triggerEl.current?.contains(target)) return;
+      if (triggerNode?.contains(target)) return;
       if (panelRef.current?.contains(target)) return;
       onOpenChange(false);
     };
@@ -110,12 +106,12 @@ export function DashPopover({
       document.removeEventListener("mousedown", onPointer);
       document.removeEventListener("touchstart", onPointer);
     };
-  }, [open, onOpenChange]);
+  }, [open, onOpenChange, triggerNode]);
 
   return (
     <span className={cn("relative inline-flex", className)}>
       {trigger({
-        ref: setTriggerRef,
+        ref: setTriggerNode,
         "aria-expanded": open,
         "aria-controls": panelId,
         onClick: () => onOpenChange(!open),

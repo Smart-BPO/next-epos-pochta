@@ -21,7 +21,6 @@ import {
   phoneRequired,
   requiredString,
   withNormalizedPhone,
-  yesNo,
   yesNoRequired,
 } from "@/lib/form/schemas";
 import { submitLead } from "@/lib/form/submitLead";

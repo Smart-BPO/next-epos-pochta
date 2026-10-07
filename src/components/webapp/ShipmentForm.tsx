@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { Button } from "@/components/atoms/Button";
 import { getWebAppCopy } from "@/data/webapp-copy";
@@ -36,15 +36,18 @@ export function ShipmentForm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!initialDraft) return;
-    setFrom(initialDraft.from);
-    setTo(initialDraft.to);
-    setWeight(initialDraft.weight);
-    setLength(initialDraft.length);
-    setWidth(initialDraft.width);
-    setHeight(initialDraft.height);
-  }, [initialDraft]);
+  const [appliedDraft, setAppliedDraft] = useState(initialDraft);
+  if (appliedDraft !== initialDraft) {
+    setAppliedDraft(initialDraft);
+    if (initialDraft) {
+      setFrom(initialDraft.from);
+      setTo(initialDraft.to);
+      setWeight(initialDraft.weight);
+      setLength(initialDraft.length);
+      setWidth(initialDraft.width);
+      setHeight(initialDraft.height);
+    }
+  }
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

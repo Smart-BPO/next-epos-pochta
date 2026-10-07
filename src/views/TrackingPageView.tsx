@@ -96,31 +96,34 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
     trackEvent("track_search_error", { reason });
   }
 
-  function runLookup(raw: string, syncUrl: boolean) {
+  /** `?number=` drives the lookup; same number (or empty) is looked up directly. */
+  function runLookup(raw: string) {
     const trimmed = raw.trim();
+    trackEvent("track_search_submit");
+    if (trimmed && trimmed !== queryNumber) {
+      router.replace(`${pathname}?number=${encodeURIComponent(trimmed)}`, {
+        scroll: false,
+      });
+      return;
+    }
     setState("loading");
     startTransition(async () => {
-      trackEvent("track_search_submit");
       const result = await lookupTracking(trimmed, locale);
       applyResult(result);
-      if (syncUrl) {
-        const qs = trimmed
-          ? `?number=${encodeURIComponent(trimmed)}`
-          : "";
-        router.replace(`${pathname}${qs}`, { scroll: false });
-      }
     });
   }
 
-  useEffect(() => {
+  const [lookedUpNumber, setLookedUpNumber] = useState(queryNumber);
+  if (lookedUpNumber !== queryNumber) {
+    setLookedUpNumber(queryNumber);
     setNumber(queryNumber);
-    if (!queryNumber) {
-      setState("idle");
-      setShipment(null);
-      return;
-    }
+    setShipment(null);
+    setState(queryNumber ? "loading" : "idle");
+  }
+
+  useEffect(() => {
+    if (!queryNumber) return;
     let cancelled = false;
-    setState("loading");
     startTransition(async () => {
       const result = await lookupTracking(queryNumber, locale);
       if (!cancelled) applyResult(result);
@@ -151,7 +154,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
               className={trackForm}
               onSubmit={(e) => {
                 e.preventDefault();
-                runLookup(number, true);
+                runLookup(number);
               }}
             >
               <label htmlFor="track-number" className={fieldLabel}>

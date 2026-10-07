@@ -19,6 +19,7 @@ export const FCARGO_PHONE_LINK_CAP = 20;
 
 const PULL_TTL_MS = 3 * 60_000;
 const PULL_MAX_PAGES = 4;
+const PULL_TRACKED_PHONES_MAX = 5_000;
 const lastPullByPhone = new Map<string, number>();
 
 const FALLBACK_LABEL = "FCargo";
@@ -199,6 +200,11 @@ export async function pullFcargoPackagesForPhone(
     return { pulled: 0, skipped: "throttled" };
   }
   if (!(await hasFcargoConfig())) return { pulled: 0, skipped: "not_configured" };
+  if (lastPullByPhone.size > PULL_TRACKED_PHONES_MAX) {
+    for (const [p, at] of lastPullByPhone) {
+      if (now - at >= PULL_TTL_MS) lastPullByPhone.delete(p);
+    }
+  }
   lastPullByPhone.set(phone, now);
 
   let pulled = 0;

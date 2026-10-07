@@ -33,9 +33,11 @@ export function DashMobileNav({
 
   const restActive = rest.some((item) => pathMatches(pathname, item.href));
 
-  useEffect(() => {
+  const [navPath, setNavPath] = useState(pathname);
+  if (navPath !== pathname) {
+    setNavPath(pathname);
     setMoreOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");

@@ -192,11 +192,15 @@ export function LeadsKanbanBoard({
   const [activeId, setActiveId] = useState<string | null>(null);
   const columnsRef = useRef(columns);
 
+  const [groupedRows, setGroupedRows] = useState(rows);
+  if (groupedRows !== rows) {
+    setGroupedRows(rows);
+    setColumns(groupByStatus(rows));
+  }
+
   useEffect(() => {
-    const next = groupByStatus(rows);
-    setColumns(next);
-    columnsRef.current = next;
-  }, [rows]);
+    columnsRef.current = columns;
+  }, [columns]);
 
   const setColumnsBoth = (
     next:

@@ -32,12 +32,22 @@ export default async function WebappShipmentsPage() {
       new Set(rows.map((r) => r.track_number?.trim()).filter(Boolean) as string[]),
     );
     if (tracks.length) {
-      const { data: packages } = await client
-        .from("epos_fcargo_packages")
-        .select("tracking_number, status, last_event_at")
-        .in("tracking_number", tracks);
+      const chunks: string[][] = [];
+      for (let i = 0; i < tracks.length; i += 100) {
+        chunks.push(tracks.slice(i, i + 100));
+      }
+      const results = await Promise.all(
+        chunks.map((chunk) =>
+          client
+            .from("epos_fcargo_packages")
+            .select("tracking_number, status, last_event_at")
+            .in("tracking_number", chunk),
+        ),
+      );
       const byTrack = new Map(
-        (packages ?? []).map((p) => [p.tracking_number as string, p]),
+        results
+          .flatMap((r) => r.data ?? [])
+          .map((p) => [p.tracking_number as string, p]),
       );
       rows = rows.map((r) => {
         const pkg = r.track_number ? byTrack.get(r.track_number.trim()) : null;

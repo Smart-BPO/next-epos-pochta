@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
@@ -171,13 +171,15 @@ export function CalculatorForm({
   const [leadTracking, setLeadTracking] = useState<string | null>(null);
   const [requestId] = useState(() => createRequestId("calc"));
 
-  useEffect(() => {
+  // Reset dimensions only when SSR limits (formula version) change.
+  const [limitsVersion, setLimitsVersion] = useState(publicUi?.formulaVersion);
+  if (limitsVersion !== publicUi?.formulaVersion) {
+    setLimitsVersion(publicUi?.formulaVersion);
     setWeight(limits.weightKg.default);
     setLength(limits.lengthCm.default);
     setWidth(limits.widthCm.default);
     setHeight(limits.heightCm.default);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when SSR limits arrive
-  }, [publicUi?.formulaVersion]);
+  }
 
   const fromMeta = getSettlementById(fromCity);
   const toMeta = getSettlementById(toCity);

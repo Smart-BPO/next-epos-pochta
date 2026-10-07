@@ -117,7 +117,10 @@ export async function refreshFcargoLeadAction(formData: FormData) {
   const tracking =
     link?.tracking_number ??
     (typeof data.fcargoTrackingNumber === "string" ? data.fcargoTrackingNumber : null);
-  if (!orderId && !tracking) throw new Error("fcargo_order_missing");
+  if (!orderId && !tracking) {
+    console.warn("[leads:fcargo-refresh]", id, "order_missing");
+    return;
+  }
 
   const phone = typeof data.phone === "string" ? normalizeUzPhone(data.phone) : "";
   const customerId =
@@ -135,7 +138,11 @@ export async function refreshFcargoLeadAction(formData: FormData) {
     const res = await fcargoTrackPackage(tracking);
     if (res.ok) raw = res.data;
   }
-  if (!raw) throw new Error("fcargo_unavailable");
+  if (!raw) {
+    console.warn("[leads:fcargo-refresh]", id, "fcargo_unavailable");
+    revalidateLeads(id);
+    return;
+  }
 
   const parsed = sync.parseFcargoWebhookPayload(raw);
   await sync.applyFcargoStatusUpdate({

@@ -64,10 +64,11 @@ export function NewsListControls({
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState(q);
-
-  useEffect(() => {
+  const [syncedQ, setSyncedQ] = useState(q);
+  if (syncedQ !== q) {
+    setSyncedQ(q);
     setSearch(q);
-  }, [q]);
+  }
 
   useEffect(() => {
     const handle = window.setTimeout(() => {

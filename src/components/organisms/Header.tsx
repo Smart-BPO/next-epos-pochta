@@ -72,9 +72,11 @@ export function Header({ locale, content }: HeaderProps) {
   const trackHref = localePath(locale, "/tracking/");
   const menuLabel = open ? content.ui.close : content.ui.menu;
 
-  useEffect(() => {
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     if (!open) return;

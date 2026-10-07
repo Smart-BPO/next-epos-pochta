@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useIsClient } from "@/hooks/useIsClient";
 import Select, { type ClassNamesConfig, type GroupBase } from "react-select";
 import type { Locale } from "@/i18n/config";
 import {
@@ -150,12 +151,8 @@ export function SettlementSelect({
   isClearable = true,
   variant = "default",
 }: SettlementSelectProps) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsClient();
   const [inputValue, setInputValue] = useState("");
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const options = useMemo(() => {
     const hubIds = new Set(uzbekistanHubSettlements.map((s) => s.id));

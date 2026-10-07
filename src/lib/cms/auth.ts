@@ -9,7 +9,6 @@ import {
   isAdminRole,
   type AdminMutation,
   type AdminPermissionArea,
-  type AdminRole,
   type AdminUser,
 } from "@/lib/cms/auth-shared";
 

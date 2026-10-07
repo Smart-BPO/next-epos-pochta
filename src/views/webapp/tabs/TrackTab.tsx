@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getWebAppCopy } from "@/data/webapp-copy";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { useWebAppNav } from "@/components/webapp/WebAppNav";
@@ -23,6 +23,21 @@ type ShipmentRow = {
 
 type Filter = "all" | "active" | "done";
 
+/** `null` on any failure — the caller shows the generic error. */
+async function fetchShipmentList(initData: string): Promise<ShipmentRow[] | null> {
+  try {
+    const res = await fetch("/api/webapp/shipments/list/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData }),
+    });
+    const json = (await res.json()) as { items?: ShipmentRow[] };
+    return res.ok ? (json.items ?? []) : null;
+  } catch {
+    return null;
+  }
+}
+
 function statusLabel(copy: ReturnType<typeof getWebAppCopy>, status: string) {
   if (status === "confirmed") return copy.statusConfirmed;
   if (status === "cancelled") return copy.statusCancelled;
@@ -39,40 +54,29 @@ export function TrackTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/webapp/shipments/list/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ initData }),
+  useEffect(() => {
+    let cancelled = false;
+    const load = () =>
+      fetchShipmentList(initData).then((items) => {
+        if (cancelled) return;
+        if (items) {
+          setRows(items);
+          setError("");
+        } else {
+          setError(copy.submitError);
+        }
+        setLoading(false);
       });
-      const json = (await res.json()) as {
-        ok?: boolean;
-        items?: ShipmentRow[];
-        error?: string;
-      };
-      if (!res.ok) throw new Error(json.error || "list_failed");
-      setRows(json.items ?? []);
-    } catch {
-      setError(copy.submitError);
-    } finally {
-      setLoading(false);
-    }
-  }, [initData, copy.submitError]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState === "visible") void load();
     };
+    void load();
     document.addEventListener("visibilitychange", onVisible);
-    return () => document.removeEventListener("visibilitychange", onVisible);
-  }, [load]);
+    return () => {
+      cancelled = true;
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [initData, copy.submitError]);
 
   useEffect(() => {
     if (!highlightShipmentId) return;
