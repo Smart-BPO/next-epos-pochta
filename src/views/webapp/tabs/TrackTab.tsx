@@ -85,10 +85,19 @@ export function TrackTab() {
   }, [highlightShipmentId, setHighlightShipmentId]);
 
   const filtered = rows.filter((row) => {
+    const stage = row.fcargo_status
+      ? fcargoStatusCopy(row.fcargo_status, locale).stage
+      : null;
     if (filter === "active") {
+      if (stage) {
+        return !["delivered", "cancelled", "returned"].includes(stage);
+      }
       return row.status === "pending_manager" || row.status === "draft";
     }
-    if (filter === "done") return row.status === "confirmed";
+    if (filter === "done") {
+      if (stage) return stage === "delivered";
+      return row.status === "confirmed";
+    }
     return true;
   });
 

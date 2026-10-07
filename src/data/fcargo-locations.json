@@ -1,0 +1,2676 @@
+{
+  "generatedAt": "2026-10-07",
+  "source": "FCargo GET /locations/regions",
+  "locations": [
+    {
+      "soato": "1703",
+      "regionSoato": "1703",
+      "regionSlug": "andijan",
+      "level": "region",
+      "fcargoName": "Andijon viloyati",
+      "uzbgeoSlug": "andijan",
+      "ru": "Андижанская область",
+      "uz": "Andijon viloyati",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1703202",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Oltinko'l tumani",
+      "uzbgeoSlug": "altynkul",
+      "ru": "Алтынкульский район",
+      "uz": "Oltinko'l tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1703203",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Andijon tumani",
+      "uzbgeoSlug": "andijan_district",
+      "ru": "Андижанский район",
+      "uz": "Andijon tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1703206",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Baliqchi tumani",
+      "uzbgeoSlug": "balykchi",
+      "ru": "Балыкчинский район",
+      "uz": "Baliqchi tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1703209",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Bo'z tumani",
+      "uzbgeoSlug": "bustan",
+      "ru": "Бустонский район",
+      "uz": "Bo'ston tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1703210",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Buloqboshi tumani",
+      "uzbgeoSlug": "bulakbashi",
+      "ru": "Булакбашинский район",
+      "uz": "Buloqboshi tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1703211",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Jalaquduq tumani",
+      "uzbgeoSlug": "jalaquduk",
+      "ru": "Жалакудукский район",
+      "uz": "Jalaquduq tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati",
+      "citySlugs": [
+        "jalaquduk_city"
+      ]
+    },
+    {
+      "soato": "1703214",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Izboskan tumani",
+      "uzbgeoSlug": "izbaskan",
+      "ru": "Избасканский район",
+      "uz": "Izboskan tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati",
+      "citySlugs": [
+        "paytug_city"
+      ]
+    },
+    {
+      "soato": "1703217",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Ulug'nor tumani",
+      "uzbgeoSlug": "ulugnor",
+      "ru": "Улугнорский район",
+      "uz": "Ulug'nor tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1703220",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Qo'rg'ontepa tumani",
+      "uzbgeoSlug": "kurgantepa",
+      "ru": "Кургантепинский район",
+      "uz": "Qo'rg'ontepa tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati",
+      "citySlugs": [
+        "kurgantepa_city",
+        "karasu_city"
+      ]
+    },
+    {
+      "soato": "1703224",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Asaka tumani",
+      "uzbgeoSlug": "asaka",
+      "ru": "Асакинский район",
+      "uz": "Asaka tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati",
+      "citySlugs": [
+        "asaka_city"
+      ]
+    },
+    {
+      "soato": "1703227",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Marxamat tumani",
+      "uzbgeoSlug": "markhamat",
+      "ru": "Мархаматский район",
+      "uz": "Marxamat tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati",
+      "citySlugs": [
+        "markhamat_city"
+      ]
+    },
+    {
+      "soato": "1703230",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Shahrixon tumani",
+      "uzbgeoSlug": "shakhrikhan",
+      "ru": "Шахриханский район",
+      "uz": "Shaxrixon tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati",
+      "citySlugs": [
+        "shakhrikhan_city"
+      ]
+    },
+    {
+      "soato": "1703232",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Paxtaobod tumani",
+      "uzbgeoSlug": "pakhtaabad",
+      "ru": "Пахтаабадский район",
+      "uz": "Paxtaobod tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati",
+      "citySlugs": [
+        "pakhtaabad_city"
+      ]
+    },
+    {
+      "soato": "1703236",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Xo'jaobod tumani",
+      "uzbgeoSlug": "khojaabad",
+      "ru": "Ходжаабадский район",
+      "uz": "Xo'jaobod tumani",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati",
+      "citySlugs": [
+        "khojaabad_city"
+      ]
+    },
+    {
+      "soato": "1703401",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Andijon shahri",
+      "uzbgeoSlug": "andijan_city",
+      "ru": "Андижан",
+      "uz": "Andijon",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1703408",
+      "regionSoato": "1703",
+      "level": "district",
+      "fcargoName": "Xonobod shahri",
+      "uzbgeoSlug": "khanabad_city",
+      "ru": "Ханабад",
+      "uz": "Xonobod",
+      "regionRu": "Андижанская область",
+      "regionUz": "Andijon viloyati"
+    },
+    {
+      "soato": "1706",
+      "regionSoato": "1706",
+      "regionSlug": "bukhara",
+      "level": "region",
+      "fcargoName": "Buxoro viloyati",
+      "uzbgeoSlug": "bukhara",
+      "ru": "Бухарская область",
+      "uz": "Buxoro viloyati",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati"
+    },
+    {
+      "soato": "1706204",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Olot tumani",
+      "uzbgeoSlug": "alat",
+      "ru": "Алатский район",
+      "uz": "Olot tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati",
+      "citySlugs": [
+        "alat_city"
+      ]
+    },
+    {
+      "soato": "1706207",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Buxoro tumani",
+      "uzbgeoSlug": "bukhara_district",
+      "ru": "Бухарский район",
+      "uz": "Buxoro tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati",
+      "citySlugs": [
+        "galaosiyo_city"
+      ]
+    },
+    {
+      "soato": "1706212",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Vobkent tumani",
+      "uzbgeoSlug": "vobkent",
+      "ru": "Вабкентский район",
+      "uz": "Vobkent tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati",
+      "citySlugs": [
+        "vobkent_city"
+      ]
+    },
+    {
+      "soato": "1706215",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "G'ijduvon tumani",
+      "uzbgeoSlug": "gijduvan",
+      "ru": "Гиждуванский район",
+      "uz": "G'ijduvon tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati",
+      "citySlugs": [
+        "gijduvan_city"
+      ]
+    },
+    {
+      "soato": "1706219",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Kogon tumani",
+      "uzbgeoSlug": "kagan",
+      "ru": "Каганский район",
+      "uz": "Kogon tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati"
+    },
+    {
+      "soato": "1706230",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Qorako'l tumani",
+      "uzbgeoSlug": "karakul",
+      "ru": "Каракульский район",
+      "uz": "Qorako'l tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati",
+      "citySlugs": [
+        "karakul_city"
+      ]
+    },
+    {
+      "soato": "1706232",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Qorovulbozor tumani",
+      "uzbgeoSlug": "qorovulbozor",
+      "ru": "Караулбазарский район",
+      "uz": "Qorovulbozor tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati",
+      "citySlugs": [
+        "qorovulbozor_city"
+      ]
+    },
+    {
+      "soato": "1706240",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Peshku tumani",
+      "uzbgeoSlug": "peshkun",
+      "ru": "Пешкунский район",
+      "uz": "Peshku tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati"
+    },
+    {
+      "soato": "1706242",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Romitan tumani",
+      "uzbgeoSlug": "romitan",
+      "ru": "Ромитанский район",
+      "uz": "Romitan tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati",
+      "citySlugs": [
+        "romitan_city"
+      ]
+    },
+    {
+      "soato": "1706246",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Jondor tumani",
+      "uzbgeoSlug": "jondor",
+      "ru": "Жондорский район",
+      "uz": "Jondor tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati"
+    },
+    {
+      "soato": "1706258",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Shofirkon tumani",
+      "uzbgeoSlug": "shafirkan",
+      "ru": "Шафирканский район",
+      "uz": "Shofirkon tumani",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati",
+      "citySlugs": [
+        "shafirkan_city"
+      ]
+    },
+    {
+      "soato": "1706401",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Buxoro shahri",
+      "uzbgeoSlug": "bukhara_city",
+      "ru": "Бухара",
+      "uz": "Buxoro",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati"
+    },
+    {
+      "soato": "1706403",
+      "regionSoato": "1706",
+      "level": "district",
+      "fcargoName": "Kogon shahri",
+      "uzbgeoSlug": "kagan_city",
+      "ru": "Каган",
+      "uz": "Kogon",
+      "regionRu": "Бухарская область",
+      "regionUz": "Buxoro viloyati"
+    },
+    {
+      "soato": "1708",
+      "regionSoato": "1708",
+      "regionSlug": "jizzakh",
+      "level": "region",
+      "fcargoName": "Jizzax viloyati",
+      "uzbgeoSlug": "jizzakh",
+      "ru": "Джизакская область",
+      "uz": "Jizzax viloyati",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708201",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Arnasoy tumani",
+      "uzbgeoSlug": "arnasay",
+      "ru": "Арнасайский район",
+      "uz": "Arnasoy tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708204",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Baxmal tumani",
+      "uzbgeoSlug": "bakhmal",
+      "ru": "Бахмальский район",
+      "uz": "Baxmal tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708209",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "G'allaorol tumani",
+      "uzbgeoSlug": "gallaaral",
+      "ru": "Галляаральский район",
+      "uz": "G'allaorol tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati",
+      "citySlugs": [
+        "gallaaral_city"
+      ]
+    },
+    {
+      "soato": "1708212",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Sh.Rashidov tumani",
+      "uzbgeoSlug": "sharof_rashidov",
+      "ru": "Шароф-Рашидовский район",
+      "uz": "Sharof Rashidov tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708215",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Do'stlik tumani",
+      "uzbgeoSlug": "dustlik",
+      "ru": "Дустликский район",
+      "uz": "Do'stlik tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati",
+      "citySlugs": [
+        "dustlik_city"
+      ]
+    },
+    {
+      "soato": "1708218",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Zomin tumani",
+      "uzbgeoSlug": "zomin",
+      "ru": "Зааминский район",
+      "uz": "Zomin tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708220",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Zarbdor tumani",
+      "uzbgeoSlug": "zarbdar",
+      "ru": "Зарбдарский район",
+      "uz": "Zarbdor tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708223",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Mirzacho'l tumani",
+      "uzbgeoSlug": "mirzachul",
+      "ru": "Мирзачульский район",
+      "uz": "Mirzacho'l tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati",
+      "citySlugs": [
+        "gagarin_city"
+      ]
+    },
+    {
+      "soato": "1708225",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Zafarobod tumani",
+      "uzbgeoSlug": "zafarabad",
+      "ru": "Зафарабадский район",
+      "uz": "Zafarobod tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708228",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Paxtakor tumani",
+      "uzbgeoSlug": "pakhtakor",
+      "ru": "Пахтакорский район",
+      "uz": "Paxtakor tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati",
+      "citySlugs": [
+        "pakhtakor_city"
+      ]
+    },
+    {
+      "soato": "1708235",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Forish tumani",
+      "uzbgeoSlug": "farish",
+      "ru": "Фаришский район",
+      "uz": "Forish tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708237",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Yangiobod tumani",
+      "uzbgeoSlug": "yangiabad",
+      "ru": "Янгиабадский район",
+      "uz": "Yangiobod tumani",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1708401",
+      "regionSoato": "1708",
+      "level": "district",
+      "fcargoName": "Jizzax shahri",
+      "uzbgeoSlug": "jizzakh_city",
+      "ru": "Джизак",
+      "uz": "Jizzax",
+      "regionRu": "Джизакская область",
+      "regionUz": "Jizzax viloyati"
+    },
+    {
+      "soato": "1710",
+      "regionSoato": "1710",
+      "regionSlug": "kashkadarya",
+      "level": "region",
+      "fcargoName": "Qashqadaryo viloyati",
+      "uzbgeoSlug": "kashkadarya",
+      "ru": "Кашкадарьинская область",
+      "uz": "Qashqadaryo viloyati",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati"
+    },
+    {
+      "soato": "1710207",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "G'uzor tumani",
+      "uzbgeoSlug": "guzar",
+      "ru": "Гузарский район",
+      "uz": "G'uzor tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "guzar_city"
+      ]
+    },
+    {
+      "soato": "1710212",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Dehqonobod tumani",
+      "uzbgeoSlug": "dehkanabad",
+      "ru": "Дехканабадский район",
+      "uz": "Dehqonobod tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati"
+    },
+    {
+      "soato": "1710220",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Qamashi tumani",
+      "uzbgeoSlug": "kamashi",
+      "ru": "Камашинский район",
+      "uz": "Qamashi tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "kamashi_city"
+      ]
+    },
+    {
+      "soato": "1710224",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Qarshi tumani",
+      "uzbgeoSlug": "karshi",
+      "ru": "Каршинский район",
+      "uz": "Qarshi tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "beshkent_city"
+      ]
+    },
+    {
+      "soato": "1710229",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Koson tumani",
+      "uzbgeoSlug": "kasan",
+      "ru": "Касанский район",
+      "uz": "Koson tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "kasan_city"
+      ]
+    },
+    {
+      "soato": "1710232",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Kitob tumani",
+      "uzbgeoSlug": "kitab",
+      "ru": "Китабский район",
+      "uz": "Kitob tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "kitab_city"
+      ]
+    },
+    {
+      "soato": "1710233",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Mirishkor tumani",
+      "uzbgeoSlug": "mirishkor",
+      "ru": "Миришкорский район",
+      "uz": "Mirishkor tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati"
+    },
+    {
+      "soato": "1710234",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Muborak tumani",
+      "uzbgeoSlug": "mubarek",
+      "ru": "Мубарекский район",
+      "uz": "Muborak tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "mubarek_city"
+      ]
+    },
+    {
+      "soato": "1710235",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Nishon tumani",
+      "uzbgeoSlug": "nishon",
+      "ru": "Нишанский район",
+      "uz": "Nishon tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "yangi_nishan_city",
+        "tallimarjon_city"
+      ]
+    },
+    {
+      "soato": "1710237",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Kasbi tumani",
+      "uzbgeoSlug": "kasbi",
+      "ru": "Касбинский район",
+      "uz": "Kasbi tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati"
+    },
+    {
+      "soato": "1710240",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Ko'kdala tumani",
+      "uzbgeoSlug": "kukdala",
+      "ru": "Кукдалинский район",
+      "uz": "Ko'kdala tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati"
+    },
+    {
+      "soato": "1710242",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Chiroqchi tumani",
+      "uzbgeoSlug": "chirakchi",
+      "ru": "Чиракчинский район",
+      "uz": "Chiroqchi tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "chirakchi_city"
+      ]
+    },
+    {
+      "soato": "1710245",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Shahrisabz tumani",
+      "uzbgeoSlug": "shakhrisabz",
+      "ru": "Шахрисабзский район",
+      "uz": "Shahrisabz tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati"
+    },
+    {
+      "soato": "1710250",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Yakkabog' tumani",
+      "uzbgeoSlug": "yakkabag",
+      "ru": "Яккабагский район",
+      "uz": "Yakkabog' tumani",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati",
+      "citySlugs": [
+        "yakkabag_city"
+      ]
+    },
+    {
+      "soato": "1710401",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Qarshi shahri",
+      "uzbgeoSlug": "karshi_city",
+      "ru": "Карши",
+      "uz": "Qarshi",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati"
+    },
+    {
+      "soato": "1710405",
+      "regionSoato": "1710",
+      "level": "district",
+      "fcargoName": "Shahrisabz shahri",
+      "uzbgeoSlug": "shakhrisabz_city",
+      "ru": "Шахрисабз",
+      "uz": "Shahrisabz",
+      "regionRu": "Кашкадарьинская область",
+      "regionUz": "Qashqadaryo viloyati"
+    },
+    {
+      "soato": "1712",
+      "regionSoato": "1712",
+      "regionSlug": "navoi",
+      "level": "region",
+      "fcargoName": "Navoiy viloyati",
+      "uzbgeoSlug": "navoi",
+      "ru": "Навоийская область",
+      "uz": "Navoiy viloyati",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1712211",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Konimex tumani",
+      "uzbgeoSlug": "kanimekh",
+      "ru": "Канимехский район",
+      "uz": "Konimex tumani",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1712216",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Qiziltepa tumani",
+      "uzbgeoSlug": "kyzyltepa",
+      "ru": "Кызылтепинский район",
+      "uz": "Qiziltepa tumani",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati",
+      "citySlugs": [
+        "kyzyltepa_city"
+      ]
+    },
+    {
+      "soato": "1712230",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Navbahor tumani",
+      "uzbgeoSlug": "navbahor",
+      "ru": "Навбахорский район",
+      "uz": "Navbahor tumani",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1712234",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Karmana tumani",
+      "uzbgeoSlug": "karmana",
+      "ru": "Карманинский район",
+      "uz": "Karmana tumani",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1712238",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Nurota tumani",
+      "uzbgeoSlug": "nurota",
+      "ru": "Нуратинский район",
+      "uz": "Nurota tumani",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati",
+      "citySlugs": [
+        "nurota_city"
+      ]
+    },
+    {
+      "soato": "1712244",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Tomdi tumani",
+      "uzbgeoSlug": "tomdy",
+      "ru": "Тамдынский район",
+      "uz": "Tomdi tumani",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1712248",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Uchquduq tumani",
+      "uzbgeoSlug": "uchkuduk",
+      "ru": "Учкудукский район",
+      "uz": "Uchquduq tumani",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati",
+      "citySlugs": [
+        "uchkuduk_city"
+      ]
+    },
+    {
+      "soato": "1712251",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Xatirchi tumani",
+      "uzbgeoSlug": "khatyrchi",
+      "ru": "Хатырчинский район",
+      "uz": "Xatirchi tumani",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1712401",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Navoiy shahri",
+      "uzbgeoSlug": "navoi_city",
+      "ru": "Навои",
+      "uz": "Navoiy",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1712408",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "Zarafshon shahri",
+      "uzbgeoSlug": "zarafshan_city",
+      "ru": "Зарафшан",
+      "uz": "Zarafshon",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1712412",
+      "regionSoato": "1712",
+      "level": "district",
+      "fcargoName": "G'ozg'on tumani",
+      "uzbgeoSlug": "gazgan_city",
+      "ru": "Газган",
+      "uz": "G'ozg'on",
+      "regionRu": "Навоийская область",
+      "regionUz": "Navoiy viloyati"
+    },
+    {
+      "soato": "1714",
+      "regionSoato": "1714",
+      "regionSlug": "namangan",
+      "level": "region",
+      "fcargoName": "Namangan viloyati",
+      "uzbgeoSlug": "namangan",
+      "ru": "Наманганская область",
+      "uz": "Namangan viloyati",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati"
+    },
+    {
+      "soato": "1714204",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Mingbuloq tumani",
+      "uzbgeoSlug": "mingbulak",
+      "ru": "Мингбулакский район",
+      "uz": "Mingbuloq tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati"
+    },
+    {
+      "soato": "1714207",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Kosonsoy tumani",
+      "uzbgeoSlug": "kasansay",
+      "ru": "Касансайский район",
+      "uz": "Kosonsoy tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati",
+      "citySlugs": [
+        "kasansay_city"
+      ]
+    },
+    {
+      "soato": "1714212",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Namangan tumani",
+      "uzbgeoSlug": "namangan_district",
+      "ru": "Наманганский район",
+      "uz": "Namangan tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati"
+    },
+    {
+      "soato": "1714216",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Norin tumani",
+      "uzbgeoSlug": "naryn",
+      "ru": "Нарынский район",
+      "uz": "Norin tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati",
+      "citySlugs": [
+        "khakkulabad_city"
+      ]
+    },
+    {
+      "soato": "1714219",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Pop tumani",
+      "uzbgeoSlug": "pop",
+      "ru": "Папский район",
+      "uz": "Pop tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati",
+      "citySlugs": [
+        "pop_city"
+      ]
+    },
+    {
+      "soato": "1714224",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "To'raqo'rg'on tumani",
+      "uzbgeoSlug": "turakurgan",
+      "ru": "Туракурганский район",
+      "uz": "To'raqo'rg'on tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati"
+    },
+    {
+      "soato": "1714229",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Uychi tumani",
+      "uzbgeoSlug": "uychi",
+      "ru": "Уйчинский район",
+      "uz": "Uychi tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati"
+    },
+    {
+      "soato": "1714234",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Uchqo'rg'on tumani",
+      "uzbgeoSlug": "uchkurgan",
+      "ru": "Учкурганский район",
+      "uz": "Uchqo'rg'on tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati",
+      "citySlugs": [
+        "uchkurgan_city"
+      ]
+    },
+    {
+      "soato": "1714236",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Chortoq tumani",
+      "uzbgeoSlug": "chartak",
+      "ru": "Чартакский район",
+      "uz": "Chortoq tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati",
+      "citySlugs": [
+        "chartak_city"
+      ]
+    },
+    {
+      "soato": "1714237",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Chust tumani",
+      "uzbgeoSlug": "chust",
+      "ru": "Чустский район",
+      "uz": "Chust tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati",
+      "citySlugs": [
+        "chust_city"
+      ]
+    },
+    {
+      "soato": "1714242",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Yangiqo'rg'on tumani",
+      "uzbgeoSlug": "yangikurgan",
+      "ru": "Янгикурганский район",
+      "uz": "Yangiqo'rg'on tumani",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati"
+    },
+    {
+      "soato": "1714401",
+      "regionSoato": "1714",
+      "level": "district",
+      "fcargoName": "Namangan shahri",
+      "uzbgeoSlug": "namangan_city",
+      "ru": "Наманган",
+      "uz": "Namangan",
+      "regionRu": "Наманганская область",
+      "regionUz": "Namangan viloyati"
+    },
+    {
+      "soato": "1718",
+      "regionSoato": "1718",
+      "regionSlug": "samarkand",
+      "level": "region",
+      "fcargoName": "Samarqand viloyati",
+      "uzbgeoSlug": "samarkand",
+      "ru": "Самаркандская область",
+      "uz": "Samarqand viloyati",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718203",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Oqdaryo tumani",
+      "uzbgeoSlug": "akdarya",
+      "ru": "Акдарьинский район",
+      "uz": "Oqdaryo tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718206",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Bulung'ur tumani",
+      "uzbgeoSlug": "bulungur",
+      "ru": "Булунгурский район",
+      "uz": "Bulung'ur tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati",
+      "citySlugs": [
+        "bulungur_city"
+      ]
+    },
+    {
+      "soato": "1718209",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Jomboy tumani",
+      "uzbgeoSlug": "jomboy",
+      "ru": "Джамбайский район",
+      "uz": "Jomboy tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati",
+      "citySlugs": [
+        "jomboy_city"
+      ]
+    },
+    {
+      "soato": "1718212",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Ishtixon tumani",
+      "uzbgeoSlug": "ishtykhan",
+      "ru": "Иштыханский район",
+      "uz": "Ishtixon tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati",
+      "citySlugs": [
+        "ishtykhan_city"
+      ]
+    },
+    {
+      "soato": "1718215",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Kattaqo'rg'on tumani",
+      "uzbgeoSlug": "kattakurgan",
+      "ru": "Каттакурганский район",
+      "uz": "Kattaqo'rg'on tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718216",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Qo'shrabot tumani",
+      "uzbgeoSlug": "koshrabad",
+      "ru": "Кошрабадский район",
+      "uz": "Qo'shrabot tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718218",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Narpay tumani",
+      "uzbgeoSlug": "narpai",
+      "ru": "Нарпайский район",
+      "uz": "Narpay tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718224",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Payariq tumani",
+      "uzbgeoSlug": "payaryk",
+      "ru": "Пайарыкский район",
+      "uz": "Payariq tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati",
+      "citySlugs": [
+        "payaryk_city",
+        "chelak_city"
+      ]
+    },
+    {
+      "soato": "1718227",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Pastdarg'om tumani",
+      "uzbgeoSlug": "pastdargom",
+      "ru": "Пастдаргомский район",
+      "uz": "Pastdarg'om tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati",
+      "citySlugs": [
+        "juma_city"
+      ]
+    },
+    {
+      "soato": "1718230",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Paxtachi tumani",
+      "uzbgeoSlug": "pakhtachi",
+      "ru": "Пахтачийский район",
+      "uz": "Paxtachi tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718233",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Samarqand tumani",
+      "uzbgeoSlug": "samarkand_district",
+      "ru": "Самаркандский район",
+      "uz": "Samarqand tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718235",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Nurobod tumani",
+      "uzbgeoSlug": "nurabad",
+      "ru": "Нурабадский район",
+      "uz": "Nurobod tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati",
+      "citySlugs": [
+        "nurabad_city"
+      ]
+    },
+    {
+      "soato": "1718236",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Urgut tumani",
+      "uzbgeoSlug": "urgut",
+      "ru": "Ургутский район",
+      "uz": "Urgut tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718238",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Tayloq tumani",
+      "uzbgeoSlug": "tailak",
+      "ru": "Тайлякский район",
+      "uz": "Tayloq tumani",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718401",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Samarqand shahri",
+      "uzbgeoSlug": "samarkand_city",
+      "ru": "Самарканд",
+      "uz": "Samarqand",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1718406",
+      "regionSoato": "1718",
+      "level": "district",
+      "fcargoName": "Kattaqo'rg'on shahri",
+      "uzbgeoSlug": "kattakurgan_city",
+      "ru": "Каттакурган",
+      "uz": "Kattaqo'rg'on",
+      "regionRu": "Самаркандская область",
+      "regionUz": "Samarqand viloyati"
+    },
+    {
+      "soato": "1722",
+      "regionSoato": "1722",
+      "regionSlug": "surkhandarya",
+      "level": "region",
+      "fcargoName": "Surxondaryo viloyati",
+      "uzbgeoSlug": "surkhandarya",
+      "ru": "Сурхандарьинская область",
+      "uz": "Surxondaryo viloyati",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1722201",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Oltinsoy tumani",
+      "uzbgeoSlug": "altynsay",
+      "ru": "Алтынсайский район",
+      "uz": "Oltinsoy tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1722202",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Angor tumani",
+      "uzbgeoSlug": "angor",
+      "ru": "Ангорский район",
+      "uz": "Angor tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1722203",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Bandixon tumani",
+      "uzbgeoSlug": "bandykhan",
+      "ru": "Бандихонский район",
+      "uz": "Bandixon tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1722204",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Boysun tumani",
+      "uzbgeoSlug": "baysun",
+      "ru": "Байсунский район",
+      "uz": "Boysun tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati",
+      "citySlugs": [
+        "baysun_city"
+      ]
+    },
+    {
+      "soato": "1722207",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Muzrabot tumani",
+      "uzbgeoSlug": "muzrabad",
+      "ru": "Музрабадский район",
+      "uz": "Muzrabot tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1722210",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Denov tumani",
+      "uzbgeoSlug": "denau",
+      "ru": "Денауский район",
+      "uz": "Denov tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati",
+      "citySlugs": [
+        "denau_city"
+      ]
+    },
+    {
+      "soato": "1722212",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Jarqo'rg'on tumani",
+      "uzbgeoSlug": "jarkurgan",
+      "ru": "Джаркурганский район",
+      "uz": "Jarqo'rg'on tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati",
+      "citySlugs": [
+        "jarkurgan_city"
+      ]
+    },
+    {
+      "soato": "1722214",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Qumqo'rg'on tumani",
+      "uzbgeoSlug": "kumkurgan",
+      "ru": "Кумкурганский район",
+      "uz": "Qumqo'rg'on tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati",
+      "citySlugs": [
+        "kumkurgan_city"
+      ]
+    },
+    {
+      "soato": "1722215",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Qiziriq tumani",
+      "uzbgeoSlug": "kizirik",
+      "ru": "Кизирикский район",
+      "uz": "Qiziriq tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1722217",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Sariosiyo tumani",
+      "uzbgeoSlug": "sariosia",
+      "ru": "Сариасийский район",
+      "uz": "Sariosiyo tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati",
+      "citySlugs": [
+        "shargun_city"
+      ]
+    },
+    {
+      "soato": "1722220",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Termiz tumani",
+      "uzbgeoSlug": "termiz",
+      "ru": "Термезский район",
+      "uz": "Termiz tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1722221",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Uzun tumani",
+      "uzbgeoSlug": "uzun",
+      "ru": "Узунский район",
+      "uz": "Uzun tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1722223",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Sherobod tumani",
+      "uzbgeoSlug": "sherabad",
+      "ru": "Шерабадский район",
+      "uz": "Sherobod tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati",
+      "citySlugs": [
+        "sherabad_city"
+      ]
+    },
+    {
+      "soato": "1722226",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Sho'rchi tumani",
+      "uzbgeoSlug": "shurchi",
+      "ru": "Шурчинский район",
+      "uz": "Sho'rchi tumani",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati",
+      "citySlugs": [
+        "shurchi_city"
+      ]
+    },
+    {
+      "soato": "1722401",
+      "regionSoato": "1722",
+      "level": "district",
+      "fcargoName": "Termiz shahri",
+      "uzbgeoSlug": "termiz_city",
+      "ru": "Термез",
+      "uz": "Termiz",
+      "regionRu": "Сурхандарьинская область",
+      "regionUz": "Surxondaryo viloyati"
+    },
+    {
+      "soato": "1724",
+      "regionSoato": "1724",
+      "regionSlug": "syrdarya",
+      "level": "region",
+      "fcargoName": "Sirdaryo viloyati",
+      "uzbgeoSlug": "syrdarya",
+      "ru": "Сырдарьинская область",
+      "uz": "Sirdaryo viloyati",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724206",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Oqoltin tumani",
+      "uzbgeoSlug": "akaltyn",
+      "ru": "Акалтынский район",
+      "uz": "Oqoltin tumani",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724212",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Boyovut tumani",
+      "uzbgeoSlug": "bayaut",
+      "ru": "Баяутский район",
+      "uz": "Boyovut tumani",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724216",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Sayxunobod tumani",
+      "uzbgeoSlug": "saykhunabad",
+      "ru": "Сайхунабадский район",
+      "uz": "Sayxunobod tumani",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724220",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Guliston tumani",
+      "uzbgeoSlug": "gulistan",
+      "ru": "Гулистанский район",
+      "uz": "Guliston tumani",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724226",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Sardoba tumani",
+      "uzbgeoSlug": "sardoba",
+      "ru": "Сардобский район",
+      "uz": "Sardoba tumani",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724228",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Mirzaobod tumani",
+      "uzbgeoSlug": "mirzaabad",
+      "ru": "Мирзаабадский район",
+      "uz": "Mirzaobod tumani",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724231",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Sirdaryo tumani",
+      "uzbgeoSlug": "syrdarya_district",
+      "ru": "Сырдарьинский район",
+      "uz": "Sirdaryo tumani",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati",
+      "citySlugs": [
+        "syrdarya_city"
+      ]
+    },
+    {
+      "soato": "1724235",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Xovos tumani",
+      "uzbgeoSlug": "khovos",
+      "ru": "Хавасский район",
+      "uz": "Xovos tumani",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724401",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Guliston shahri",
+      "uzbgeoSlug": "gulistan_city",
+      "ru": "Гулистан",
+      "uz": "Guliston",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724410",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Shirin shahri",
+      "uzbgeoSlug": "shirin_city",
+      "ru": "Ширин",
+      "uz": "Shirin",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724413",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Yangiyer shahri",
+      "uzbgeoSlug": "yangier_city",
+      "ru": "Янгиер",
+      "uz": "Yangiyer",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1724414",
+      "regionSoato": "1724",
+      "level": "district",
+      "fcargoName": "Baxt shahri",
+      "uzbgeoSlug": "bakht_city",
+      "ru": "Бахт",
+      "uz": "Baxt",
+      "regionRu": "Сырдарьинская область",
+      "regionUz": "Sirdaryo viloyati"
+    },
+    {
+      "soato": "1726",
+      "regionSoato": "1726",
+      "regionSlug": "tashkent_city",
+      "level": "city",
+      "fcargoName": "Toshkent shahri",
+      "uzbgeoSlug": "tashkent_city",
+      "ru": "Ташкент",
+      "uz": "Toshkent",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726262",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Uchtepa tumani",
+      "uzbgeoSlug": "uchtepa",
+      "ru": "Учтепинский район",
+      "uz": "Uchtepa tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726264",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Bektemir tumani",
+      "uzbgeoSlug": "bektemir",
+      "ru": "Бектемирский район",
+      "uz": "Bektemir tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726266",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Yunusobod tumani",
+      "uzbgeoSlug": "yunusabad",
+      "ru": "Юнусабадский район",
+      "uz": "Yunusobod tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726269",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Mirzo Ulug'bek tumani",
+      "uzbgeoSlug": "mirzo_ulugbek",
+      "ru": "Мирзо-Улугбекский район",
+      "uz": "Mirzo Ulug'bek tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726273",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Mirobod tumani",
+      "uzbgeoSlug": "mirabad",
+      "ru": "Мирабадский район",
+      "uz": "Mirobod tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726277",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Shayxontohur tumani",
+      "uzbgeoSlug": "shaykhantakhur",
+      "ru": "Шайхантахурский район",
+      "uz": "Shayxontoxur tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726280",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Olmazor tumani",
+      "uzbgeoSlug": "almazar",
+      "ru": "Алмазарский район",
+      "uz": "Olmazor tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726283",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Sirg'ali tumani",
+      "uzbgeoSlug": "sergeli",
+      "ru": "Сергелийский район",
+      "uz": "Sirg'ali tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726287",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Yakkasaroy tumani",
+      "uzbgeoSlug": "yakkasaray",
+      "ru": "Яккасарайский район",
+      "uz": "Yakkasaroy tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726290",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Yashnobod tumani",
+      "uzbgeoSlug": "yashnabad",
+      "ru": "Яшнабадский район",
+      "uz": "Yashnobod tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726292",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Yangihayot tumani",
+      "uzbgeoSlug": "yangikhayot",
+      "ru": "Янгихаётский район",
+      "uz": "Yangihayot tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1726294",
+      "regionSoato": "1726",
+      "level": "district",
+      "fcargoName": "Chilonzor tumani",
+      "uzbgeoSlug": "chilanzar",
+      "ru": "Чиланзарский район",
+      "uz": "Chilonzor tumani",
+      "regionRu": "Город Ташкент",
+      "regionUz": "Toshkent shahri"
+    },
+    {
+      "soato": "1727",
+      "regionSoato": "1727",
+      "regionSlug": "tashkent",
+      "level": "region",
+      "fcargoName": "Toshkent viloyati",
+      "uzbgeoSlug": "tashkent",
+      "ru": "Ташкентская область",
+      "uz": "Toshkent viloyati",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727206",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Oqqo'rg'on tumani",
+      "uzbgeoSlug": "akkurgan",
+      "ru": "Аккурганский район",
+      "uz": "Oqqo'rg'on tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati",
+      "citySlugs": [
+        "akkurgan_city"
+      ]
+    },
+    {
+      "soato": "1727212",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Ohangaron tumani",
+      "uzbgeoSlug": "akhangaran",
+      "ru": "Ахангаранский район",
+      "uz": "Ohangaron tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727220",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Bekobod tumani",
+      "uzbgeoSlug": "bekabad",
+      "ru": "Бекабадский район",
+      "uz": "Bekobod tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727224",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Bo'stonliq tumani",
+      "uzbgeoSlug": "bostanlyk",
+      "ru": "Бостанлыкский район",
+      "uz": "Bo'stonliq tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati",
+      "citySlugs": [
+        "gazalkent_city"
+      ]
+    },
+    {
+      "soato": "1727228",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Bo'ka tumani",
+      "uzbgeoSlug": "buka",
+      "ru": "Букинский район",
+      "uz": "Bo'ka tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati",
+      "citySlugs": [
+        "buka_city"
+      ]
+    },
+    {
+      "soato": "1727233",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Quyichirchiq tumani",
+      "uzbgeoSlug": "kuyichirchik",
+      "ru": "Куйичирчикский район",
+      "uz": "Quyichirchiq tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati",
+      "citySlugs": [
+        "dustabad_city"
+      ]
+    },
+    {
+      "soato": "1727237",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Zangiota tumani",
+      "uzbgeoSlug": "zangiata",
+      "ru": "Зангиатинский район",
+      "uz": "Zangiota tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727239",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Yuqorichirchiq tumani",
+      "uzbgeoSlug": "yukorichirchik",
+      "ru": "Юкоричирчикский район",
+      "uz": "Yuqorichirchiq tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727248",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Qibray tumani",
+      "uzbgeoSlug": "kibray",
+      "ru": "Кибрайский район",
+      "uz": "Qibray tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727249",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Parkent tumani",
+      "uzbgeoSlug": "parkent",
+      "ru": "Паркентский район",
+      "uz": "Parkent tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati",
+      "citySlugs": [
+        "parkent_city"
+      ]
+    },
+    {
+      "soato": "1727250",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Piskent tumani",
+      "uzbgeoSlug": "piskent",
+      "ru": "Пскентский район",
+      "uz": "Piskent tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati",
+      "citySlugs": [
+        "piskent_city"
+      ]
+    },
+    {
+      "soato": "1727253",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "O'rtachirchiq tumani",
+      "uzbgeoSlug": "urtachirchik",
+      "ru": "Уртачирчикский район",
+      "uz": "O'rtachirchiq tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727256",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Chinoz tumani",
+      "uzbgeoSlug": "chinaz",
+      "ru": "Чиназский район",
+      "uz": "Chinoz tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati",
+      "citySlugs": [
+        "chinaz_city"
+      ]
+    },
+    {
+      "soato": "1727259",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Yangiyo'l tumani",
+      "uzbgeoSlug": "yangiyul",
+      "ru": "Янгиюльский район",
+      "uz": "Yangiyo'l tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727265",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Toshkent tumani",
+      "uzbgeoSlug": "tashkent_district",
+      "ru": "Ташкентский район",
+      "uz": "Toshkent tumani",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati",
+      "citySlugs": [
+        "keles_city"
+      ]
+    },
+    {
+      "soato": "1727401",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Nurafshon shahri",
+      "uzbgeoSlug": "nurafshan_city",
+      "ru": "Нурафшан",
+      "uz": "Nurafshon",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727404",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Olmaliq shahri",
+      "uzbgeoSlug": "almalyk_city",
+      "ru": "Алмалык",
+      "uz": "Olmaliq",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727407",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Angren shahri",
+      "uzbgeoSlug": "angren_city",
+      "ru": "Ангрен",
+      "uz": "Angren",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727413",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Bekobod shahri",
+      "uzbgeoSlug": "bekabad_city",
+      "ru": "Бекабад",
+      "uz": "Bekobod",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727415",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Ohangaron shahri",
+      "uzbgeoSlug": "akhangaran_city",
+      "ru": "Ахангаран",
+      "uz": "Ohangaron",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727419",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Chirchiq shahri",
+      "uzbgeoSlug": "chirchik_city",
+      "ru": "Чирчик",
+      "uz": "Chirchiq",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1727424",
+      "regionSoato": "1727",
+      "level": "district",
+      "fcargoName": "Yangiyo'l shahri",
+      "uzbgeoSlug": "yangiyul_city",
+      "ru": "Янгиюль",
+      "uz": "Yangiyo'l",
+      "regionRu": "Ташкентская область",
+      "regionUz": "Toshkent viloyati"
+    },
+    {
+      "soato": "1730",
+      "regionSoato": "1730",
+      "regionSlug": "fergana",
+      "level": "region",
+      "fcargoName": "Farg'ona viloyati",
+      "uzbgeoSlug": "fergana",
+      "ru": "Ферганская область",
+      "uz": "Farg'ona viloyati",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730203",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Oltiariq tumani",
+      "uzbgeoSlug": "altyaryk",
+      "ru": "Алтыарыкский район",
+      "uz": "Oltiariq tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730206",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Qo'shtepa tumani",
+      "uzbgeoSlug": "kushtepa",
+      "ru": "Куштепинский район",
+      "uz": "Qo'shtepa tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730209",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Bog'dod tumani",
+      "uzbgeoSlug": "baghdad",
+      "ru": "Багдадский район",
+      "uz": "Bog'dod tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730212",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Buvayda tumani",
+      "uzbgeoSlug": "buvayda",
+      "ru": "Бувайдинский район",
+      "uz": "Buvayda tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730215",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Beshariq tumani",
+      "uzbgeoSlug": "besharik",
+      "ru": "Бешарыкский район",
+      "uz": "Beshariq tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati",
+      "citySlugs": [
+        "besharik_city"
+      ]
+    },
+    {
+      "soato": "1730218",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Quva tumani",
+      "uzbgeoSlug": "kuva",
+      "ru": "Кувинский район",
+      "uz": "Quva tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati",
+      "citySlugs": [
+        "kuva_city"
+      ]
+    },
+    {
+      "soato": "1730221",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Uchko'prik tumani",
+      "uzbgeoSlug": "uchkuprik",
+      "ru": "Учкуприкский район",
+      "uz": "Uchko'prik tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730224",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Rishton tumani",
+      "uzbgeoSlug": "rishtan",
+      "ru": "Риштанский район",
+      "uz": "Rishton tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati",
+      "citySlugs": [
+        "rishtan_city"
+      ]
+    },
+    {
+      "soato": "1730226",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "So'x tumani",
+      "uzbgeoSlug": "sokh",
+      "ru": "Сохский район",
+      "uz": "So'x tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730227",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Toshloq tumani",
+      "uzbgeoSlug": "tashlak",
+      "ru": "Ташлакский район",
+      "uz": "Toshloq tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730230",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "O'zbekiston tumani",
+      "uzbgeoSlug": "uzbekistan",
+      "ru": "Узбекистанский район",
+      "uz": "O'zbekiston tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati",
+      "citySlugs": [
+        "yaypan_city"
+      ]
+    },
+    {
+      "soato": "1730233",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Farg'ona tumani",
+      "uzbgeoSlug": "fergana_district",
+      "ru": "Ферганский район",
+      "uz": "Farg'ona tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730236",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Dang'ara tumani",
+      "uzbgeoSlug": "dangara",
+      "ru": "Дангаринский район",
+      "uz": "Dang'ara tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730238",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Furqat tumani",
+      "uzbgeoSlug": "furkat",
+      "ru": "Фуркатский район",
+      "uz": "Furqat tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730242",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Yozyovon tumani",
+      "uzbgeoSlug": "yazyavan",
+      "ru": "Язъяванский район",
+      "uz": "Yozyovon tumani",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730401",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Farg'ona shahri",
+      "uzbgeoSlug": "fergana_city",
+      "ru": "Фергана",
+      "uz": "Farg'ona",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730405",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Qo'qon shahri",
+      "uzbgeoSlug": "kokand_city",
+      "ru": "Коканд",
+      "uz": "Qo'qon",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730408",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Quvasoy shahri",
+      "uzbgeoSlug": "kuvasay_city",
+      "ru": "Кувасай",
+      "uz": "Quvasoy",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1730412",
+      "regionSoato": "1730",
+      "level": "district",
+      "fcargoName": "Marg'ilon shahri",
+      "uzbgeoSlug": "margilan_city",
+      "ru": "Маргилан",
+      "uz": "Marg'ilon",
+      "regionRu": "Ферганская область",
+      "regionUz": "Farg'ona viloyati"
+    },
+    {
+      "soato": "1733",
+      "regionSoato": "1733",
+      "regionSlug": "khorezm",
+      "level": "region",
+      "fcargoName": "Xorazm viloyati",
+      "uzbgeoSlug": "khorezm",
+      "ru": "Хорезмская область",
+      "uz": "Xorazm viloyati",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733204",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Bog'ot tumani",
+      "uzbgeoSlug": "bagat",
+      "ru": "Багатский район",
+      "uz": "Bog'ot tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733208",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Gurlan tumani",
+      "uzbgeoSlug": "gurlan",
+      "ru": "Гурленский район",
+      "uz": "Gurlan tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733212",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Qo'shko'pir tumani",
+      "uzbgeoSlug": "kushkupyr",
+      "ru": "Кошкупырский район",
+      "uz": "Qo'shko'pir tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733217",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Urganch tumani",
+      "uzbgeoSlug": "urgench",
+      "ru": "Ургенчский район",
+      "uz": "Urganch tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733220",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Xazorasp tumani",
+      "uzbgeoSlug": "khazarasp",
+      "ru": "Хазараспский район",
+      "uz": "Xazorasp tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733221",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Tuproqqal'a tumani",
+      "uzbgeoSlug": "tuprakkala",
+      "ru": "Тупроккалинский район",
+      "uz": "Tuproqqal'a tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati",
+      "citySlugs": [
+        "pitnak_city"
+      ]
+    },
+    {
+      "soato": "1733223",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Xonqa tumani",
+      "uzbgeoSlug": "khanka",
+      "ru": "Ханкинский район",
+      "uz": "Xonqa tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733226",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Xiva tumani",
+      "uzbgeoSlug": "khiva",
+      "ru": "Хивинский район",
+      "uz": "Xiva tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733230",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Shovot tumani",
+      "uzbgeoSlug": "shavat",
+      "ru": "Шаватский район",
+      "uz": "Shovot tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733233",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Yangiariq tumani",
+      "uzbgeoSlug": "yangiaryk",
+      "ru": "Янгиарыкский район",
+      "uz": "Yangiariq tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733236",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Yangibozor tumani",
+      "uzbgeoSlug": "yangibazar",
+      "ru": "Янгибазарский район",
+      "uz": "Yangibozor tumani",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733401",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Urganch shahri",
+      "uzbgeoSlug": "urgench_city",
+      "ru": "Ургенч",
+      "uz": "Urganch",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1733406",
+      "regionSoato": "1733",
+      "level": "district",
+      "fcargoName": "Xiva shahri",
+      "uzbgeoSlug": "khiva_city",
+      "ru": "Хива",
+      "uz": "Xiva",
+      "regionRu": "Хорезмская область",
+      "regionUz": "Xorazm viloyati"
+    },
+    {
+      "soato": "1735",
+      "regionSoato": "1735",
+      "regionSlug": "karakalpakstan",
+      "level": "region",
+      "fcargoName": "Qoraqalpog'iston Respublikasi",
+      "uzbgeoSlug": "karakalpakstan",
+      "ru": "Республика Каракалпакстан",
+      "uz": "Qoraqalpog'iston Respublikasi",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    },
+    {
+      "soato": "1735204",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Amudaryo tumani",
+      "uzbgeoSlug": "amudarya",
+      "ru": "Амударьинский район",
+      "uz": "Amudaryo tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "mangit_city"
+      ]
+    },
+    {
+      "soato": "1735207",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Beruniy tumani",
+      "uzbgeoSlug": "beruniy",
+      "ru": "Берунийский район",
+      "uz": "Beruniy tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "beruniy_city"
+      ]
+    },
+    {
+      "soato": "1735209",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Bo'zatov tumani",
+      "uzbgeoSlug": "bozatau",
+      "ru": "Бозатауский район",
+      "uz": "Bo'zatov tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    },
+    {
+      "soato": "1735211",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Qorao'zak tumani",
+      "uzbgeoSlug": "karauzak",
+      "ru": "Караузякский район",
+      "uz": "Qorao'zak tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    },
+    {
+      "soato": "1735212",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Kegeyli tumani",
+      "uzbgeoSlug": "kegeyli",
+      "ru": "Кегейлийский район",
+      "uz": "Kegeyli tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    },
+    {
+      "soato": "1735215",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Qo'ng'irot tumani",
+      "uzbgeoSlug": "kungrad",
+      "ru": "Кунградский район",
+      "uz": "Qo'ng'irot tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "kungrad_city"
+      ]
+    },
+    {
+      "soato": "1735218",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Qanliko'l tumani",
+      "uzbgeoSlug": "kanlykul",
+      "ru": "Канлыкульский район",
+      "uz": "Qanliko'l tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    },
+    {
+      "soato": "1735222",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Mo'ynoq tumani",
+      "uzbgeoSlug": "muynak",
+      "ru": "Муйнакский район",
+      "uz": "Mo'ynoq tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "muynak_city"
+      ]
+    },
+    {
+      "soato": "1735225",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Nukus tumani",
+      "uzbgeoSlug": "nukus",
+      "ru": "Нукусский район",
+      "uz": "Nukus tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    },
+    {
+      "soato": "1735228",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Taxiatosh tumani",
+      "uzbgeoSlug": "takhiatash",
+      "ru": "Тахиаташский район",
+      "uz": "Taxiatosh tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    },
+    {
+      "soato": "1735230",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Taxtako'pir tumani",
+      "uzbgeoSlug": "takhtakupyr",
+      "ru": "Тахтакупырский район",
+      "uz": "Taxtako'pir tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    },
+    {
+      "soato": "1735233",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "To'rtko'l tumani",
+      "uzbgeoSlug": "turtkul",
+      "ru": "Турткульский район",
+      "uz": "To'rtko'l tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "turtkul_city"
+      ]
+    },
+    {
+      "soato": "1735236",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Xo'jayli tumani",
+      "uzbgeoSlug": "khojeyli",
+      "ru": "Ходжейлийский район",
+      "uz": "Xo'jayli tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "khojeyli_city"
+      ]
+    },
+    {
+      "soato": "1735240",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Chimboy tumani",
+      "uzbgeoSlug": "chimbay",
+      "ru": "Чимбайский район",
+      "uz": "Chimboy tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "chimbay_city"
+      ]
+    },
+    {
+      "soato": "1735243",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Shumanay tumani",
+      "uzbgeoSlug": "shumanai",
+      "ru": "Шуманайский район",
+      "uz": "Shumanay tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "shumanai_city"
+      ]
+    },
+    {
+      "soato": "1735250",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Ellikqal'a tumani",
+      "uzbgeoSlug": "ellikkala",
+      "ru": "Элликкалинский район",
+      "uz": "Ellikkala tumani",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi",
+      "citySlugs": [
+        "boston_city"
+      ]
+    },
+    {
+      "soato": "1735401",
+      "regionSoato": "1735",
+      "level": "district",
+      "fcargoName": "Nukus shahri",
+      "uzbgeoSlug": "nukus_city",
+      "ru": "Нукус",
+      "uz": "Nukus",
+      "regionRu": "Республика Каракалпакстан",
+      "regionUz": "Qoraqalpog'iston Respublikasi"
+    }
+  ]
+}

@@ -1,89 +1,76 @@
-import {
-  getAllCities,
-  getAllDistricts,
-  getAllRegions,
-} from "uzbgeo";
-import { DELIVERY_CITIES } from "@/data/delivery-cities";
+import fcargoLocations from "@/data/fcargo-locations.json";
 
 export type SettlementLevel = "region" | "district" | "city";
 
 export type Settlement = {
+  /** FCargo SOATO (district 7 digits, or region 4 digits). */
   id: string;
+  /** Region-level SOATO (4 digits). */
   regionId: string;
+  /** uzbgeo region slug for map UI (e.g. tashkent_city). */
+  regionSlug: string;
   level: SettlementLevel;
   ru: string;
   uz: string;
   regionRu: string;
   regionUz: string;
+  /** Original uzbgeo slug when known (legacy / SEO hubs). */
+  legacySlug?: string | null;
+  fcargoName?: string;
 };
 
-function regionLabel(region: ReturnType<typeof getAllRegions>[number]) {
-  return {
-    ru: region.titles.ru,
-    uz: region.titles.uz,
-  };
+type RawLocation = {
+  soato: string;
+  regionSoato: string;
+  regionSlug?: string | null;
+  level: SettlementLevel;
+  fcargoName: string;
+  uzbgeoSlug: string | null;
+  ru: string;
+  uz: string;
+  regionRu: string;
+  regionUz: string;
+  citySlugs?: string[];
+};
+
+const raw = fcargoLocations.locations as RawLocation[];
+
+/** Flat searchable list keyed by FCargo SOATO. */
+export const uzbekistanSettlements: Settlement[] = raw.map((l) => ({
+  id: l.soato,
+  regionId: l.regionSoato,
+  regionSlug: l.regionSlug ?? "",
+  level: l.level,
+  ru: l.ru,
+  uz: l.uz,
+  regionRu: l.regionRu,
+  regionUz: l.regionUz,
+  legacySlug: l.uzbgeoSlug,
+  fcargoName: l.fcargoName,
+}));
+
+const bySoato = new Map(uzbekistanSettlements.map((s) => [s.id, s]));
+
+/** Legacy uzbgeo slug → FCargo SOATO (district/city/region). */
+const legacySlugMap = new Map<string, string>();
+for (const l of raw) {
+  if (l.uzbgeoSlug) legacySlugMap.set(l.uzbgeoSlug, l.soato);
+  for (const citySlug of l.citySlugs ?? []) {
+    if (!legacySlugMap.has(citySlug)) legacySlugMap.set(citySlug, l.soato);
+  }
 }
 
-/** Flat searchable list: regions + districts + cities (uzbgeo). */
-export const uzbekistanSettlements: Settlement[] = (() => {
-  const regions = getAllRegions();
-  const regionBySlug = new Map(regions.map((r) => [r.slug, r]));
+export function legacySlugToSoato(slug: string): string | null {
+  const s = slug.trim();
+  if (!s) return null;
+  if (/^\d{4}(\d{3})?$/.test(s)) return s;
+  return legacySlugMap.get(s) ?? null;
+}
 
-  const items: Settlement[] = [];
-
-  for (const region of regions) {
-    const isCityRegion = region.category === "city";
-    items.push({
-      id: region.slug,
-      regionId: region.slug,
-      level: isCityRegion ? "city" : "region",
-      ru: isCityRegion ? region.names.ru : region.titles.ru,
-      uz: isCityRegion ? region.names.uz : region.titles.uz,
-      regionRu: region.titles.ru,
-      regionUz: region.titles.uz,
-    });
-  }
-
-  for (const district of getAllDistricts()) {
-    const region = regionBySlug.get(district.regionSlug);
-    if (!region) continue;
-    const labels = regionLabel(region);
-    // Some tumans reuse the viloyat slug (e.g. "samarkand") — keep ids unique.
-    const id =
-      district.slug === district.regionSlug
-        ? `${district.slug}_district`
-        : district.slug;
-    items.push({
-      id,
-      regionId: district.regionSlug,
-      level: "district",
-      ru: district.titles.ru,
-      uz: district.titles.uz,
-      regionRu: labels.ru,
-      regionUz: labels.uz,
-    });
-  }
-
-  for (const city of getAllCities()) {
-    const region = regionBySlug.get(city.regionSlug);
-    if (!region) continue;
-    const labels = regionLabel(region);
-    items.push({
-      id: city.slug,
-      regionId: city.regionSlug,
-      level: "city",
-      ru: city.names.ru,
-      uz: city.names.uz,
-      regionRu: labels.ru,
-      regionUz: labels.uz,
-    });
-  }
-
-  return items;
-})();
-
+/** Resolve SOATO or legacy slug to a settlement. */
 export function getSettlementById(id: string): Settlement | undefined {
-  return uzbekistanSettlements.find((s) => s.id === id);
+  const soato = legacySlugToSoato(id) ?? id.trim();
+  return bySoato.get(soato);
 }
 
 export function settlementLabel(
@@ -95,19 +82,30 @@ export function settlementLabel(
 
 /** @deprecated Prefer uzbekistanSettlements — kept for geo search / quick chips. */
 export const uzbekistanCities = uzbekistanSettlements.filter(
-  (s) => s.level === "city",
+  (s) => s.level === "city" || s.level === "district",
 );
 
-/**
- * Top-level hub cities for quick route entry (delivery network hubs).
- * E.g. Tashkent, Samarkand, Nukus — not districts / tumans.
- */
-export const uzbekistanHubSettlements: Settlement[] = (() => {
-  const byId = new Map(uzbekistanSettlements.map((s) => [s.id, s]));
-  // Keep delivery-hub order (Tashkent first, …).
-  return DELIVERY_CITIES.flatMap((c) => {
-    if (!c.settlementId) return [];
-    const settlement = byId.get(c.settlementId);
+/** Hub order for calculator chips (legacy uzbgeo city slugs → SOATO). */
+const HUB_LEGACY_SLUGS = [
+  "tashkent_city",
+  "samarkand_city",
+  "bukhara_city",
+  "namangan_city",
+  "andijan_city",
+  "fergana_city",
+  "nukus_city",
+  "karshi_city",
+  "termiz_city",
+  "navoi_city",
+  "jizzakh_city",
+  "urgench_city",
+] as const;
+
+/** Delivery-hub settlements in hub order (Tashkent first, …). */
+export const uzbekistanHubSettlements: Settlement[] = HUB_LEGACY_SLUGS.flatMap(
+  (slug) => {
+    const soato = legacySlugToSoato(slug);
+    const settlement = soato ? bySoato.get(soato) : undefined;
     return settlement ? [settlement] : [];
-  });
-})();
+  },
+);

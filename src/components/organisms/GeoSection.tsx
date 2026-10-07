@@ -65,7 +65,7 @@ export function GeoSection({
     return uzbekistanSettlements
       .filter(
         (item) =>
-          item.regionId === activeRegion.slug && item.level !== "region",
+          item.regionSlug === activeRegion.slug && item.level !== "region",
       )
       .slice(0, 6);
   }, [activeRegion]);
@@ -74,8 +74,8 @@ export function GeoSection({
     setActiveIso(iso);
   };
 
-  const applyMatch = (regionId: string) => {
-    const region = MAP_REGION_BY_SLUG[regionId];
+  const applyMatch = (regionSlug: string) => {
+    const region = MAP_REGION_BY_SLUG[regionSlug];
     if (region) setActiveIso(region.iso);
   };
 
@@ -142,7 +142,7 @@ export function GeoSection({
     locale === "uz" ? "Shahar sahifasi" : "Страница города";
 
   const pickMatch = (item: (typeof matches)[number]) => {
-    applyMatch(item.regionId);
+    applyMatch(item.regionSlug);
     setQuery(settlementLabel(item, locale));
     setListOpen(false);
   };
@@ -186,7 +186,7 @@ export function GeoSection({
                             item.regionRu.toLowerCase().includes(q)
                           );
                         });
-                        if (hit) applyMatch(hit.regionId);
+                        if (hit) applyMatch(hit.regionSlug);
                       }}
                       onFocus={() => {
                         if (query.trim()) setListOpen(true);

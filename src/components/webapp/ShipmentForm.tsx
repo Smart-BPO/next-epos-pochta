@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { Button } from "@/components/atoms/Button";
 import { getWebAppCopy } from "@/data/webapp-copy";
@@ -9,6 +9,7 @@ import type { WebAppContactSession } from "@/lib/webapp/session";
 import type { ShipmentDraft } from "@/components/webapp/WebAppNav";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { Input, Textarea } from "@/components/atoms/Input";
+import { isValidUzPhone, normalizePhone } from "@/lib/form/utils";
 import { fieldLabel } from "@/styles/ui";
 
 type ShipmentFormProps = {
@@ -33,8 +34,12 @@ export function ShipmentForm({
   const [width, setWidth] = useState(initialDraft?.width ?? "");
   const [height, setHeight] = useState(initialDraft?.height ?? "");
   const [comment, setComment] = useState("");
+  const [receiverName, setReceiverName] = useState("");
+  const [receiverPhone, setReceiverPhone] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  /** Stable across retries of the same form submit. */
+  const requestIdRef = useRef<string | null>(null);
 
   const [appliedDraft, setAppliedDraft] = useState(initialDraft);
   if (appliedDraft !== initialDraft) {
@@ -51,14 +56,24 @@ export function ShipmentForm({
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!from || !to || from === to) {
+    if (!from || !to || from === to || !receiverName.trim()) {
       setError(copy.required);
+      return;
+    }
+    if (!isValidUzPhone(receiverPhone)) {
+      setError(copy.invalidPhone);
       return;
     }
 
     setBusy(true);
     setError("");
     try {
+      if (!requestIdRef.current) {
+        requestIdRef.current =
+          typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `wa-${performance.now().toString(36)}`;
+      }
       const fromMeta = getSettlementById(from);
       const toMeta = getSettlementById(to);
       const res = await fetch("/api/webapp/shipment/", {
@@ -78,19 +93,23 @@ export function ShipmentForm({
           widthCm: width,
           heightCm: height,
           comment,
+          receiverName: receiverName.trim(),
+          receiverPhone: normalizePhone(receiverPhone),
+          requestId: requestIdRef.current,
           initData,
         }),
       });
       const json = (await res.json()) as {
         ok?: boolean;
         id?: string;
+        trackingNumber?: string;
         error?: string;
       };
       if (!res.ok || !json.id) {
         throw new Error(json.error || "submit_failed");
       }
       webApp?.HapticFeedback?.notificationOccurred("success");
-      onSuccess(json.id);
+      onSuccess(json.trackingNumber || json.id);
     } catch {
       setError(copy.submitError);
       webApp?.HapticFeedback?.notificationOccurred("error");
@@ -149,6 +168,26 @@ export function ShipmentForm({
             onChange={setTo}
             placeholder={copy.toLabel}
             variant="compact"
+          />
+        </label>
+
+        <label className="grid gap-1.5">
+          <span className={fieldLabel}>{copy.receiverNameLabel}</span>
+          <Input
+            value={receiverName}
+            onChange={(e) => setReceiverName(e.target.value)}
+            placeholder={copy.namePlaceholder}
+            autoComplete="name"
+          />
+        </label>
+        <label className="grid gap-1.5">
+          <span className={fieldLabel}>{copy.receiverPhoneLabel}</span>
+          <Input
+            value={receiverPhone}
+            onChange={(e) => setReceiverPhone(e.target.value)}
+            placeholder={copy.phonePlaceholder}
+            inputMode="tel"
+            autoComplete="tel"
           />
         </label>
 

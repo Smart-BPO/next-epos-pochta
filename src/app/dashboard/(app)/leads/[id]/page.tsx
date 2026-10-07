@@ -83,31 +83,24 @@ export default async function LeadDetailPage({
   const row = data as LeadRow;
   const payloadData = row.payload?.data ?? {};
 
-  const [{ data: fcargoOrder }, { data: fcargoPackage }] = await Promise.all([
-    client
-      .from("epos_fcargo_orders")
-      .select("fcargo_order_id, tracking_number, fcargo_status, last_synced_at")
-      .eq("lead_id", row.id)
-      .maybeSingle(),
-    client
-      .from("epos_fcargo_packages")
-      .select("status, last_event_at, contact_session_id, event_type")
-      .eq("lead_id", row.id)
-      .order("last_event_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-  ]);
+  const { data: fcargoPackage } = await client
+    .from("epos_fcargo_packages")
+    .select(
+      "fcargo_order_id, tracking_number, status, last_event_at, contact_session_id, event_type",
+    )
+    .eq("lead_id", row.id)
+    .order("last_event_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
   const fcargo = {
     orderId:
-      fcargoOrder?.fcargo_order_id ??
+      fcargoPackage?.fcargo_order_id ??
       (payloadData.fcargoOrderId != null ? String(payloadData.fcargoOrderId) : ""),
     tracking:
-      fcargoOrder?.tracking_number ?? str(payloadData.fcargoTrackingNumber),
+      fcargoPackage?.tracking_number ?? str(payloadData.fcargoTrackingNumber),
     status:
-      fcargoPackage?.status ??
-      fcargoOrder?.fcargo_status ??
-      (str(payloadData.fcargoStatus) || null),
-    updatedAt: fcargoPackage?.last_event_at ?? fcargoOrder?.last_synced_at ?? null,
+      fcargoPackage?.status ?? (str(payloadData.fcargoStatus) || null),
+    updatedAt: fcargoPackage?.last_event_at ?? null,
     contactSessionId: fcargoPackage?.contact_session_id ?? null,
     price:
       typeof payloadData.fcargoPrice === "number"

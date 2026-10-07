@@ -13,7 +13,9 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:geo": "node --env-file=.env.local scripts/sync-fcargo-locations.mjs --check",
+    "sync:geo": "node --env-file=.env.local scripts/sync-fcargo-locations.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -19,6 +19,10 @@ export type FcargoPackageRow = {
   contact_session_id: string | null;
   last_event_at: string | null;
   raw_last: Record<string, unknown>;
+  from_soato?: string | null;
+  to_soato?: string | null;
+  source?: string | null;
+  telegram_user_id?: number | null;
 };
 
 export function normalizeUzPhone(phone: string): string {
@@ -85,6 +89,10 @@ export async function upsertFcargoPackage(input: {
   leadId?: string | null;
   contactSessionId?: string | null;
   rawLast?: unknown;
+  fromSoato?: string | null;
+  toSoato?: string | null;
+  source?: "lead" | "webapp" | "pull" | "webhook" | null;
+  telegramUserId?: number | null;
 }): Promise<FcargoPackageRow | null> {
   if (!hasSupabaseAdminConfig()) return null;
   const client = createSupabaseAdminClient();
@@ -132,32 +140,60 @@ export async function upsertFcargoPackage(input: {
     contact_session_id:
       input.contactSessionId?.trim() || existing?.contact_session_id || null,
     last_event_at: new Date().toISOString(),
-    raw_last: rawLast,
+    // from_soato / to_soato / source / telegram_user_id live in raw_last until
+    // migration 20261007090000 is applied; then prefer dedicated columns.
+    raw_last: {
+      ...rawLast,
+      ...(input.fromSoato ? { from_soato: input.fromSoato } : {}),
+      ...(input.toSoato ? { to_soato: input.toSoato } : {}),
+      ...(input.source ? { source: input.source } : {}),
+      ...(input.telegramUserId != null
+        ? { telegram_user_id: input.telegramUserId }
+        : {}),
+    },
     updated_at: new Date().toISOString(),
   };
 
-  if (existing) {
-    const { data, error } = await client
+  const extended = {
+    ...row,
+    from_soato: input.fromSoato?.trim() || existing?.from_soato || null,
+    to_soato: input.toSoato?.trim() || existing?.to_soato || null,
+    source: input.source?.trim() || existing?.source || null,
+    telegram_user_id:
+      input.telegramUserId != null
+        ? input.telegramUserId
+        : (existing?.telegram_user_id ?? null),
+  };
+
+  const write = async (payload: Record<string, unknown>) => {
+    if (existing) {
+      return client
+        .from("epos_fcargo_packages")
+        .update(payload)
+        .eq("id", existing.id)
+        .select("*")
+        .single();
+    }
+    return client
       .from("epos_fcargo_packages")
-      .update(row)
-      .eq("id", existing.id)
+      .insert(payload)
       .select("*")
       .single();
-    if (error) {
-      console.warn("[fcargo:packages:update]", error.message);
-      return existing;
-    }
-    return data as FcargoPackageRow;
-  }
+  };
 
-  const { data, error } = await client
-    .from("epos_fcargo_packages")
-    .insert(row)
-    .select("*")
-    .single();
+  let { data, error } = await write(extended);
+  if (
+    error &&
+    /from_soato|to_soato|telegram_user_id|\bsource\b/i.test(error.message)
+  ) {
+    ({ data, error } = await write(row));
+  }
   if (error) {
-    console.warn("[fcargo:packages:insert]", error.message);
-    return null;
+    console.warn(
+      existing ? "[fcargo:packages:update]" : "[fcargo:packages:insert]",
+      error.message,
+    );
+    return existing ?? null;
   }
   return data as FcargoPackageRow;
 }

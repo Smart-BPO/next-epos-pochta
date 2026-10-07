@@ -1,99 +1,100 @@
 "use client";
 
-import * as Yup from "yup";
-import {
-  useShipmentStatusLabels,
-} from "@/components/dashboard/DashStatusBadge";
+import { useState, useTransition } from "react";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
-import {
-  DashForm,
-  DashSelect,
-  DashTrackCodeInput,
-} from "@/components/dashboard/ds";
-import { trackCodeOptionalSchema } from "@/lib/dashboard/schemas";
-import { valuesToFormData } from "@/components/dashboard/ds/useDashFormSubmit";
+import { FcargoStatusChip } from "@/components/dashboard/FcargoStatusChip";
 import { dashBtnSecondary } from "@/styles/dashboard";
-
-const STATUSES = ["draft", "pending_manager", "confirmed", "cancelled"] as const;
-
-type Values = {
-  status: string;
-  track_number: string;
-};
 
 export function ShipmentStatusForm({
   id,
-  status,
   trackNumber,
-  action,
+  fcargoStatus,
+  fcargoUpdatedAt,
+  attachAction,
+  refreshAction,
   disabled = false,
 }: {
   id: string;
-  status: string;
   trackNumber: string;
-  action: (formData: FormData) => Promise<void>;
+  fcargoStatus?: string | null;
+  fcargoUpdatedAt?: string | null;
+  attachAction: (formData: FormData) => Promise<void>;
+  refreshAction: (formData: FormData) => Promise<void>;
   disabled?: boolean;
 }) {
   const t = useDashT();
-  const labels = useShipmentStatusLabels();
+  const [pending, startTransition] = useTransition();
+  const [track, setTrack] = useState("");
+  const [error, setError] = useState("");
 
-  const schema = Yup.object({
-    status: Yup.string().oneOf([...STATUSES]).required(),
-    track_number: trackCodeOptionalSchema(t),
-  });
-
-  if (disabled) {
+  if (trackNumber) {
     return (
-      <div className="text-xs text-black/55">
-        <div>{labels[status] ?? status}</div>
-        {trackNumber ? (
-          <div className="mt-1 font-mono text-black/40">{trackNumber}</div>
+      <div className="flex flex-col gap-1.5">
+        <FcargoStatusChip
+          code={fcargoStatus}
+          updatedAt={fcargoUpdatedAt}
+          trackingNumber={trackNumber}
+        />
+        {!disabled ? (
+          <form
+            action={(fd) => {
+              startTransition(async () => {
+                await refreshAction(fd);
+              });
+            }}
+          >
+            <input type="hidden" name="id" value={id} />
+            <button
+              type="submit"
+              disabled={pending}
+              className={`${dashBtnSecondary} py-1.5 text-xs`}
+            >
+              {pending ? t.common.saving : "Обновить из FCargo"}
+            </button>
+          </form>
         ) : null}
       </div>
     );
   }
 
+  if (disabled) {
+    return <span className="text-xs text-black/40">нет трека</span>;
+  }
+
   return (
-    <DashForm<Values>
-      initialValues={{
-        status: STATUSES.includes(status as (typeof STATUSES)[number])
-          ? status
-          : "draft",
-        track_number: trackNumber ?? "",
-      }}
-      schema={schema}
-      successMessage={t.shipments.saved}
-      errorMessage={t.shipments.saveFailed}
-      className="flex w-full min-w-0 flex-col gap-2"
-      onSubmit={async (values) => {
-        const fd = valuesToFormData({ id, ...values });
-        await action(fd);
+    <form
+      className="flex min-w-[10rem] flex-col gap-1.5"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setError("");
+        const fd = new FormData();
+        fd.set("id", id);
+        fd.set("track_number", track.trim());
+        startTransition(async () => {
+          try {
+            await attachAction(fd);
+            setTrack("");
+          } catch {
+            setError(t.shipments.saveFailed);
+          }
+        });
       }}
     >
-      {({ isSubmitting }) => (
-        <>
-          <DashSelect name="status" className="!gap-0">
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {labels[s] ?? s}
-              </option>
-            ))}
-          </DashSelect>
-          <DashTrackCodeInput
-            name="track_number"
-            label={undefined}
-            placeholder={t.shipments.trackPlaceholder}
-            className="!gap-0 [&_input]:py-1.5 [&_input]:text-xs"
-          />
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`${dashBtnSecondary} py-1.5 text-xs`}
-          >
-            {isSubmitting ? t.common.saving : t.common.save}
-          </button>
-        </>
-      )}
-    </DashForm>
+      <input
+        value={track}
+        onChange={(e) => setTrack(e.target.value)}
+        placeholder={t.shipments.trackPlaceholder}
+        className="w-full rounded-lg border border-black/10 px-2 py-1.5 font-mono text-xs"
+        disabled={pending}
+      />
+      <button
+        type="submit"
+        disabled={pending || !track.trim()}
+        className={`${dashBtnSecondary} py-1.5 text-xs`}
+      >
+        {pending ? t.common.saving : "Привязать трек FCargo"}
+      </button>
+      {error ? <p className="m-0 text-[0.65rem] text-red-600">{error}</p> : null}
+    </form>
   );
 }

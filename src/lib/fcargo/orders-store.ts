@@ -2,7 +2,9 @@ import "server-only";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { upsertFcargoPackage } from "@/lib/fcargo/packages-store";
 
+/** Compatibility shape — backed by epos_fcargo_packages after migration. */
 export type FcargoOrderRow = {
   id: string;
   lead_id: string;
@@ -13,6 +15,27 @@ export type FcargoOrderRow = {
   last_synced_at: string | null;
 };
 
+function rowFromPackage(p: {
+  id: string;
+  lead_id: string | null;
+  fcargo_order_id: string | null;
+  tracking_number: string | null;
+  status: string | null;
+  status_raw: Record<string, unknown>;
+  last_event_at: string | null;
+}): FcargoOrderRow | null {
+  if (!p.fcargo_order_id || !p.lead_id) return null;
+  return {
+    id: p.id,
+    lead_id: p.lead_id,
+    fcargo_order_id: p.fcargo_order_id,
+    tracking_number: p.tracking_number,
+    fcargo_status: p.status,
+    fcargo_status_raw: p.status_raw ?? {},
+    last_synced_at: p.last_event_at,
+  };
+}
+
 export async function upsertFcargoOrderLink(params: {
   leadId: string;
   fcargoOrderId: string | number;
@@ -20,31 +43,16 @@ export async function upsertFcargoOrderLink(params: {
   fcargoStatus?: string | null;
   statusRaw?: unknown;
 }): Promise<void> {
-  if (!hasSupabaseAdminConfig()) return;
-  const client = createSupabaseAdminClient();
-  const orderId = String(params.fcargoOrderId);
-  const raw =
-    params.statusRaw && typeof params.statusRaw === "object"
-      ? (params.statusRaw as Record<string, unknown>)
-      : params.statusRaw != null
-        ? { value: params.statusRaw }
-        : {};
-
-  const { error } = await client.from("epos_fcargo_orders").upsert(
-    {
-      lead_id: params.leadId,
-      fcargo_order_id: orderId,
-      tracking_number: params.trackingNumber?.trim() || null,
-      fcargo_status: params.fcargoStatus?.trim() || null,
-      fcargo_status_raw: raw,
-      last_synced_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "lead_id" },
-  );
-  if (error) {
-    console.warn("[fcargo:orders:upsert]", error.message);
-  }
+  await upsertFcargoPackage({
+    leadId: params.leadId,
+    fcargoOrderId: String(params.fcargoOrderId),
+    trackingNumber: params.trackingNumber,
+    status: params.fcargoStatus,
+    statusRaw: params.statusRaw,
+    externalOrderId: params.leadId,
+    eventType: "orders_store.upsert",
+    source: "lead",
+  });
 }
 
 export async function findFcargoOrder(params: {
@@ -54,38 +62,40 @@ export async function findFcargoOrder(params: {
 }): Promise<FcargoOrderRow | null> {
   if (!hasSupabaseAdminConfig()) return null;
   const client = createSupabaseAdminClient();
+  const select =
+    "id, lead_id, fcargo_order_id, tracking_number, status, status_raw, last_event_at";
 
   if (params.orderId) {
     const { data } = await client
-      .from("epos_fcargo_orders")
-      .select(
-        "id, lead_id, fcargo_order_id, tracking_number, fcargo_status, fcargo_status_raw, last_synced_at",
-      )
+      .from("epos_fcargo_packages")
+      .select(select)
       .eq("fcargo_order_id", String(params.orderId))
+      .not("lead_id", "is", null)
+      .limit(1)
       .maybeSingle();
-    if (data) return data as FcargoOrderRow;
+    if (data) return rowFromPackage(data as Parameters<typeof rowFromPackage>[0]);
   }
 
   if (params.leadId) {
     const { data } = await client
-      .from("epos_fcargo_orders")
-      .select(
-        "id, lead_id, fcargo_order_id, tracking_number, fcargo_status, fcargo_status_raw, last_synced_at",
-      )
+      .from("epos_fcargo_packages")
+      .select(select)
       .eq("lead_id", params.leadId)
+      .order("last_event_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
-    if (data) return data as FcargoOrderRow;
+    if (data) return rowFromPackage(data as Parameters<typeof rowFromPackage>[0]);
   }
 
   if (params.tracking) {
     const { data } = await client
-      .from("epos_fcargo_orders")
-      .select(
-        "id, lead_id, fcargo_order_id, tracking_number, fcargo_status, fcargo_status_raw, last_synced_at",
-      )
+      .from("epos_fcargo_packages")
+      .select(select)
       .eq("tracking_number", params.tracking)
+      .not("lead_id", "is", null)
+      .limit(1)
       .maybeSingle();
-    if (data) return data as FcargoOrderRow;
+    if (data) return rowFromPackage(data as Parameters<typeof rowFromPackage>[0]);
   }
 
   return null;
@@ -119,13 +129,17 @@ export async function listOpenFcargoOrders(limit = 40): Promise<FcargoOrderRow[]
   if (!hasSupabaseAdminConfig()) return [];
   const client = createSupabaseAdminClient();
   const { data } = await client
-    .from("epos_fcargo_orders")
+    .from("epos_fcargo_packages")
     .select(
-      "id, lead_id, fcargo_order_id, tracking_number, fcargo_status, fcargo_status_raw, last_synced_at",
+      "id, lead_id, fcargo_order_id, tracking_number, status, status_raw, last_event_at",
     )
-    .order("last_synced_at", { ascending: true })
+    .not("lead_id", "is", null)
+    .not("fcargo_order_id", "is", null)
+    .order("last_event_at", { ascending: true })
     .limit(Math.max(1, Math.min(limit, 100)));
 
-  const rows = (data ?? []) as FcargoOrderRow[];
-  return rows.filter((r) => !isTerminalFcargoStatus(r.fcargo_status));
+  return ((data ?? []) as Parameters<typeof rowFromPackage>[0][])
+    .map(rowFromPackage)
+    .filter((r): r is FcargoOrderRow => Boolean(r))
+    .filter((r) => !isTerminalFcargoStatus(r.fcargo_status));
 }

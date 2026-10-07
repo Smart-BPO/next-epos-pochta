@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { isNextResponse, requireWebAppInitData } from "@/lib/webapp/auth";
+import { createFcargoOrder } from "@/lib/fcargo/create-order";
+import { createHash, randomBytes } from "node:crypto";
 
 type ShipmentPayload = {
   sessionId?: string;
@@ -17,20 +19,26 @@ type ShipmentPayload = {
   widthCm?: number | string;
   heightCm?: number | string;
   comment?: string;
+  receiverName?: string;
+  receiverPhone?: string;
+  /** Client idempotency token (stable across retries). */
+  requestId?: string;
   initData?: string;
 };
-
-function createShipmentId() {
-  const now = new Date();
-  const stamp = now.toISOString().slice(0, 10).replace(/-/g, "");
-  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `WS-${stamp}-${rand}`;
-}
 
 function toNumber(value: unknown) {
   if (value === "" || value == null) return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
+}
+
+function externalIdFor(sessionId: string, requestId: string) {
+  const digest = createHash("sha256")
+    .update(`${sessionId}:${requestId}`)
+    .digest("hex")
+    .slice(0, 12)
+    .toUpperCase();
+  return `WA-${digest}`;
 }
 
 export async function POST(request: Request) {
@@ -54,61 +62,93 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "same_route" }, { status: 400 });
   }
 
-  const id = createShipmentId();
+  const receiverName = (body.receiverName ?? "").trim();
+  const receiverPhone = (body.receiverPhone ?? "").trim();
+  if (!receiverName || !receiverPhone) {
+    return NextResponse.json({ error: "receiver_required" }, { status: 400 });
+  }
+
   const sessionId = body.sessionId.trim();
-  const row = {
-    id,
-    contact_session_id: sessionId,
-    locale: body.locale === "ru" ? "ru" : "uz",
-    phone: body.phone ?? "",
-    telegram_user_id: auth.userId,
-    from_settlement_id: body.fromSettlementId,
-    to_settlement_id: body.toSettlementId,
-    from_label: body.fromLabel ?? "",
-    to_label: body.toLabel ?? "",
-    weight_kg: toNumber(body.weightKg),
-    length_cm: toNumber(body.lengthCm),
-    width_cm: toNumber(body.widthCm),
-    height_cm: toNumber(body.heightCm),
-    comment: (body.comment ?? "").trim(),
-    status: "pending_manager",
-    track_number: null,
-    price_status: "pending_manager",
-  };
+  const locale = body.locale === "ru" ? "ru" : "uz";
+  const requestId =
+    (typeof body.requestId === "string" && body.requestId.trim()) ||
+    randomBytes(8).toString("hex");
 
   if (!hasSupabaseAdminConfig()) {
-    console.info("[webapp:shipment]", JSON.stringify(row));
-    return NextResponse.json({ ok: true, id });
+    return NextResponse.json({ error: "db_unavailable" }, { status: 503 });
   }
 
-  try {
-    const admin = createSupabaseAdminClient();
-    const { data: contact } = await admin
-      .from("epos_webapp_contacts")
-      .select("session_id, telegram_user_id")
-      .eq("session_id", sessionId)
-      .maybeSingle();
-    if (!contact) {
-      return NextResponse.json({ error: "contact_not_found" }, { status: 401 });
-    }
-    if (
-      contact.telegram_user_id != null &&
-      contact.telegram_user_id !== auth.userId
-    ) {
-      return NextResponse.json({ error: "telegram_mismatch" }, { status: 403 });
-    }
-
-    const { error } = await admin.from("epos_webapp_shipments").insert(row);
-    if (error) {
-      console.error("[webapp:shipment:db]", error.message);
-      return NextResponse.json({ error: "db_error" }, { status: 500 });
-    }
-  } catch (err) {
-    console.error("[webapp:shipment:db]", err);
-    return NextResponse.json({ error: "db_error" }, { status: 500 });
+  const admin = createSupabaseAdminClient();
+  const { data: contact } = await admin
+    .from("epos_webapp_contacts")
+    .select("session_id, telegram_user_id, phone, first_name, last_name, source")
+    .eq("session_id", sessionId)
+    .maybeSingle();
+  if (!contact) {
+    return NextResponse.json({ error: "contact_not_found" }, { status: 401 });
+  }
+  if (
+    contact.telegram_user_id != null &&
+    contact.telegram_user_id !== auth.userId
+  ) {
+    return NextResponse.json({ error: "telegram_mismatch" }, { status: 403 });
+  }
+  if (contact.source !== "telegram_contact") {
+    return NextResponse.json({ error: "phone_unverified" }, { status: 403 });
   }
 
-  // Track number arrives later: manager sets it in the dashboard, or FCargo
-  // ingest links it by phone.
-  return NextResponse.json({ ok: true, id });
+  const senderName =
+    [contact.first_name, contact.last_name].filter(Boolean).join(" ").trim() ||
+    "EPOS customer";
+  const senderPhone = contact.phone || body.phone || "";
+  const externalId = externalIdFor(sessionId, requestId);
+
+  const created = await createFcargoOrder({
+    externalId,
+    idempotencyKey: `epos-webapp-${externalId}`,
+    sender: {
+      name: senderName,
+      phone: senderPhone,
+      settlementId: body.fromSettlementId,
+      address: body.fromLabel,
+    },
+    receiver: {
+      name: receiverName,
+      phone: receiverPhone,
+      settlementId: body.toSettlementId,
+      address: body.toLabel,
+    },
+    weightKg: toNumber(body.weightKg),
+    lengthCm: toNumber(body.lengthCm),
+    widthCm: toNumber(body.widthCm),
+    heightCm: toNumber(body.heightCm),
+    comment: (body.comment ?? "").trim(),
+    locale,
+    packageDescription: `EPOS Mini App ${externalId}`,
+    source: "webapp",
+    contactSessionId: sessionId,
+    telegramUserId: auth.userId,
+  });
+
+  if (!created.ok) {
+    const status =
+      created.message === "fcargo_not_configured"
+        ? 503
+        : created.message.startsWith("invalid_")
+          ? 400
+          : 502;
+    return NextResponse.json(
+      { error: created.message || "fcargo_failed" },
+      { status },
+    );
+  }
+
+  return NextResponse.json({
+    ok: true,
+    id: created.order.trackingNumber,
+    trackingNumber: created.order.trackingNumber,
+    orderId: created.order.orderId,
+    status: created.order.status,
+    duplicate: created.order.duplicate,
+  });
 }

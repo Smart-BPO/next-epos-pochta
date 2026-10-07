@@ -42,3 +42,6 @@ next-env.d.ts
 # vercel
 .vercel
 supabase/.temp/
+
+# local operational backups (fcargo-reset)
+/backups/

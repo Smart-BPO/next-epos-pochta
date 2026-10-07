@@ -23,7 +23,7 @@ export {
 } from "@/lib/fcargo/settings";
 export { estimateViaFcargo } from "@/lib/fcargo/estimate";
 export { createFcargoOrderFromLead } from "@/lib/fcargo/create-from-lead";
-export { soatoForSettlement, REGION_SOATO_BY_SLUG } from "@/lib/fcargo/soato";
+export { soatoForSettlement, soatoForRegionSlug } from "@/lib/fcargo/soato";
 export {
   applyFcargoStatusUpdate,
   syncOpenFcargoOrders,

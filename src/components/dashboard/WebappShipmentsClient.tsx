@@ -6,7 +6,6 @@ import {
   useDashLocale,
   useDashT,
 } from "@/components/dashboard/DashLocaleProvider";
-import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import { FcargoStatusChip } from "@/components/dashboard/FcargoStatusChip";
 import { ShipmentStatusForm } from "@/components/dashboard/ShipmentStatusForm";
 import { DashCrudPage, DashListView } from "@/components/dashboard/ds";
@@ -38,11 +37,13 @@ export type WebappShipmentRow = {
 export function WebappShipmentsClient({
   rows,
   readOnly,
-  updateAction,
+  attachAction,
+  refreshAction,
 }: {
   rows: WebappShipmentRow[];
   readOnly: boolean;
-  updateAction: (formData: FormData) => Promise<void>;
+  attachAction: (formData: FormData) => Promise<void>;
+  refreshAction: (formData: FormData) => Promise<void>;
 }) {
   const t = useDashT();
   const { locale } = useDashLocale();
@@ -154,19 +155,11 @@ export function WebappShipmentsClient({
             header: t.list.status,
             sortValue: (r) => r.status,
             cell: (row) => (
-              <div className="flex flex-col gap-1.5">
-                <DashStatusBadge kind="shipment" value={row.status} />
-                {row.status === "pending_manager" ? (
-                  <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-amber-700">
-                    {t.shipments.waitingInLeads}
-                  </span>
-                ) : null}
-                <FcargoStatusChip
-                  code={row.fcargo_status}
-                  updatedAt={row.fcargo_updated_at}
-                  trackingNumber={row.track_number}
-                />
-              </div>
+              <FcargoStatusChip
+                code={row.fcargo_status}
+                updatedAt={row.fcargo_updated_at}
+                trackingNumber={row.track_number}
+              />
             ),
           },
           {
@@ -175,9 +168,11 @@ export function WebappShipmentsClient({
             cell: (row) => (
               <ShipmentStatusForm
                 id={row.id}
-                status={row.status}
                 trackNumber={row.track_number ?? ""}
-                action={updateAction}
+                fcargoStatus={row.fcargo_status}
+                fcargoUpdatedAt={row.fcargo_updated_at}
+                attachAction={attachAction}
+                refreshAction={refreshAction}
                 disabled={readOnly}
               />
             ),

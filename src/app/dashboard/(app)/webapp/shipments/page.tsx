@@ -7,7 +7,10 @@ import {
   WebappShipmentsClient,
   type WebappShipmentRow,
 } from "@/components/dashboard/WebappShipmentsClient";
-import { updateShipmentAction } from "./actions";
+import {
+  attachFcargoTrackAction,
+  refreshFcargoShipmentAction,
+} from "./actions";
 
 export default async function WebappShipmentsPage() {
   const admin = await requireAccess("webapp");
@@ -67,7 +70,8 @@ export default async function WebappShipmentsPage() {
       <WebappShipmentsClient
         rows={rows}
         readOnly={readOnly}
-        updateAction={updateShipmentAction}
+        attachAction={attachFcargoTrackAction}
+        refreshAction={refreshFcargoShipmentAction}
       />
     </Suspense>
   );

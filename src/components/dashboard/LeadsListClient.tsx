@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { toast } from "react-toastify";
 import {
   useDashLocale,
   useDashT,
@@ -38,50 +37,11 @@ function inboxTypeLabel(
   return type;
 }
 
-function InboxShipmentActions({
-  id,
-  disabled,
-  action,
-}: {
-  id: string;
-  disabled: boolean;
-  action: (formData: FormData) => Promise<void>;
-}) {
+function InboxShipmentActions({ id }: { id: string }) {
   const t = useDashT();
-
-  async function run(status: "confirmed" | "cancelled") {
-    const fd = new FormData();
-    fd.set("id", id);
-    fd.set("status", status);
-    try {
-      await action(fd);
-      toast.success(t.leads.moved);
-    } catch {
-      toast.error(t.errors.saveFailed);
-    }
-  }
-
   return (
     <div className="flex flex-wrap items-center gap-1">
       <DashStatusBadge kind="shipment" value="pending_manager" />
-      {!disabled ? (
-        <>
-          <button
-            type="button"
-            className={dashBtnRowSecondary}
-            onClick={() => void run("confirmed")}
-          >
-            {t.leads.confirmShipment}
-          </button>
-          <button
-            type="button"
-            className={dashBtnRowSecondary}
-            onClick={() => void run("cancelled")}
-          >
-            {t.leads.cancelShipment}
-          </button>
-        </>
-      ) : null}
       <Link
         href={`/dashboard/webapp/shipments/?id=${encodeURIComponent(id)}`}
         className={dashBtnRowSecondary}
@@ -95,15 +55,11 @@ function InboxShipmentActions({
 export function LeadsListClient({
   rows,
   readOnly,
-  shipmentReadOnly = true,
   updateStatusAction,
-  updateShipmentStatusAction,
 }: {
   rows: InboxRow[];
   readOnly: boolean;
-  shipmentReadOnly?: boolean;
   updateStatusAction: (formData: FormData) => Promise<void>;
-  updateShipmentStatusAction: (formData: FormData) => Promise<void>;
 }) {
   const t = useDashT();
   const { locale } = useDashLocale();
@@ -127,12 +83,7 @@ export function LeadsListClient({
         defaultSortDir="desc"
         defaultPageSize={50}
         renderKanban={(filtered) => (
-          <LeadsKanbanBoard
-            rows={filtered}
-            readOnly={readOnly}
-            shipmentReadOnly={shipmentReadOnly}
-            updateShipmentStatusAction={updateShipmentStatusAction}
-          />
+          <LeadsKanbanBoard rows={filtered} readOnly={readOnly} />
         )}
         filters={[
           {
@@ -235,11 +186,7 @@ export function LeadsListClient({
             cell: (row) => {
               if (row.kind === "webapp_shipment") {
                 return (
-                  <InboxShipmentActions
-                    id={row.id}
-                    disabled={shipmentReadOnly}
-                    action={updateShipmentStatusAction}
-                  />
+                  <InboxShipmentActions id={row.id} />
                 );
               }
               const step =

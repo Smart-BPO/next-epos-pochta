@@ -32,6 +32,8 @@ export type WebAppCopy = {
   shipmentLead: string;
   fromLabel: string;
   toLabel: string;
+  receiverNameLabel: string;
+  receiverPhoneLabel: string;
   weightLabel: string;
   dimsLabel: string;
   lengthLabel: string;
@@ -103,9 +105,11 @@ const uz: WebAppCopy = {
   calcNeedRoute: "Qayerdan va qayerga ni tanlang",
   shipmentTitle: "Joʻnatmani rasmiylashtirish",
   shipmentLead:
-    "Yoʻnalish va parametrlarni kiriting. Yakuniy narxni menejer tasdiqlaydi.",
+    "Yoʻnalish, qabul qiluvchi va parametrlar. Buyurtma FCargo’da ochiladi — treking darhol beriladi.",
   fromLabel: "Qayerdan",
   toLabel: "Qayerga",
+  receiverNameLabel: "Qabul qiluvchi ismi",
+  receiverPhoneLabel: "Qabul qiluvchi telefoni",
   weightLabel: "Ogʻirlik (kg)",
   dimsLabel: "Oʻlchamlar (sm)",
   lengthLabel: "Uzunlik",
@@ -116,8 +120,8 @@ const uz: WebAppCopy = {
   submitShipment: "Joʻnatma soʻrovini yuborish",
   disclaimer:
     "Bu yakuniy narx / оферта emas. Menejer hisobni tasdiqlagach bogʻlanamiz.",
-  successTitle: "Soʻrov qabul qilindi",
-  successText: "Menejer tez orada bogʻlanadi. Soʻrov ID:",
+  successTitle: "Joʻnatma ochildi",
+  successText: "Trek-raqam:",
   newShipment: "Yana joʻnatma",
   trackTitle: "Mening joʻnatmalarim",
   trackLead: "Status va trek-raqam shu yerda.",
@@ -180,9 +184,11 @@ const ru: WebAppCopy = {
   calcNeedRoute: "Выберите откуда и куда",
   shipmentTitle: "Оформление отправления",
   shipmentLead:
-    "Укажите маршрут и параметры. Итоговую цену подтвердит менеджер.",
+    "Маршрут, получатель и параметры. Заказ создаётся в FCargo — трек сразу.",
   fromLabel: "Откуда",
   toLabel: "Куда",
+  receiverNameLabel: "Имя получателя",
+  receiverPhoneLabel: "Телефон получателя",
   weightLabel: "Вес (кг)",
   dimsLabel: "Габариты (см)",
   lengthLabel: "Длина",
@@ -193,8 +199,8 @@ const ru: WebAppCopy = {
   submitShipment: "Отправить заявку",
   disclaimer:
     "Это не финальная цена и не оферта. После подтверждения менеджером мы свяжемся.",
-  successTitle: "Заявка принята",
-  successText: "Менеджер скоро свяжется. ID заявки:",
+  successTitle: "Отправление создано",
+  successText: "Трек-номер:",
   newShipment: "Ещё отправление",
   trackTitle: "Мои отправления",
   trackLead: "Статус и трек-номер здесь.",

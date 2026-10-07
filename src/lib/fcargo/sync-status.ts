@@ -288,34 +288,16 @@ export async function applyFcargoStatusUpdate(
     fcargoStatus: nextStatus,
   };
 
-  const mapped = mapFcargoStatusToCrm(nextStatus);
-  const current = String(lead.status ?? "new") as LeadCrmStatus;
-  let nextCrm: LeadCrmStatus | null = null;
-
-  if (mapped) {
-    // Do not reopen done/spam unless mapping is done (idempotent)
-    if (current === "spam") {
-      nextCrm = null;
-    } else if (current === "done" && mapped !== "done") {
-      nextCrm = null;
-    } else if (current === "draft") {
-      nextCrm = mapped === "done" ? "done" : mapped === "in_progress" ? "in_progress" : "new";
-    } else {
-      nextCrm = mapped;
-    }
-  }
-
-  const update: Record<string, unknown> = {
-    payload: {
-      ...prevPayload,
-      data: { ...prevData, ...patch },
-    },
-  };
-  if (nextCrm && nextCrm !== current) {
-    update.status = nextCrm;
-  }
-
-  await client.from("epos_leads").update(update).eq("id", lead.id);
+  // CRM funnel stays manager-owned; FCargo status lives in payload + catalog.
+  await client
+    .from("epos_leads")
+    .update({
+      payload: {
+        ...prevPayload,
+        data: { ...prevData, ...patch },
+      },
+    })
+    .eq("id", lead.id);
 
   // Catalog + Mini App mirror follow the same status (linked by lead phone).
   if (nextTracking) {
@@ -340,7 +322,7 @@ export async function applyFcargoStatusUpdate(
     ok: true,
     leadId: lead.id,
     fcargoStatus: nextStatus,
-    crmStatus: nextCrm,
+    crmStatus: null,
   };
 }
 

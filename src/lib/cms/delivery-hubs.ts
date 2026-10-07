@@ -3,8 +3,14 @@ import {
   DELIVERY_CITIES,
   type DeliveryCity,
 } from "@/data/delivery-cities";
+import { legacySlugToSoato } from "@/data/settlements";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+
+function normalizeSettlementId(raw: string | null | undefined): string | undefined {
+  if (!raw?.trim()) return undefined;
+  return legacySlugToSoato(raw.trim()) ?? raw.trim();
+}
 
 type FaqItem = { question: string; answer: string };
 
@@ -62,7 +68,8 @@ function rowToCity(row: HubRow): DeliveryCity {
     nameEn: row.name_en || seed?.nameEn || row.code,
     nameRu: row.name_ru || seed?.nameRu || row.code,
     nameUz: row.name_uz || seed?.nameUz || row.code,
-    settlementId: row.settlement_id || seed?.settlementId,
+    settlementId:
+      normalizeSettlementId(row.settlement_id) || seed?.settlementId,
     etaHintRu: row.eta_hint_ru || seed?.etaHintRu || "",
     etaHintUz: row.eta_hint_uz || seed?.etaHintUz || "",
     leadRu: row.lead_ru || seed?.leadRu || "",

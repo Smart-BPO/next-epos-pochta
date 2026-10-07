@@ -12,10 +12,7 @@ import {
   type LeadDbRow,
   type ShipmentDbRow,
 } from "@/lib/cms/inbox";
-import {
-  updateInboxShipmentStatusAction,
-  updateLeadStatusAction,
-} from "./actions";
+import { updateLeadStatusAction } from "./actions";
 
 export default async function DashboardLeadsPage() {
   const admin = await requireAccess("leads");
@@ -23,8 +20,6 @@ export default async function DashboardLeadsPage() {
     return <DashDenied section="leads" />;
   }
   const readOnly = !canMutate(admin.role, "leads");
-  const shipmentReadOnly = !canMutate(admin.role, "webapp");
-
   let rows: InboxRow[] = [];
   if (hasSupabaseAdminConfig()) {
     const client = createSupabaseAdminClient();
@@ -83,9 +78,7 @@ export default async function DashboardLeadsPage() {
     <LeadsListClient
       rows={rows}
       readOnly={readOnly}
-      shipmentReadOnly={shipmentReadOnly}
       updateStatusAction={updateLeadStatusAction}
-      updateShipmentStatusAction={updateInboxShipmentStatusAction}
     />
   );
 }

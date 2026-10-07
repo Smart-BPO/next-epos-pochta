@@ -33,7 +33,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Tashkent",
     nameRu: "Ташкент",
     nameUz: "Toshkent",
-    settlementId: "tashkent_city",
+    settlementId: "1726",
     etaHintRu: "По городу ориентир чаще всего в пределах 1–2 рабочих дней после забора.",
     etaHintUz: "Shahar ichida odatda olib ketishdan keyin 1–2 ish kuni ichida yetkaziladi.",
     leadRu:
@@ -107,7 +107,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Samarkand",
     nameRu: "Самарканд",
     nameUz: "Samarqand",
-    settlementId: "samarkand_city",
+    settlementId: "1718401",
     etaHintRu: "Межрегиональные отправления в Самарканд обычно занимают несколько рабочих дней — точный срок подтвердит менеджер.",
     etaHintUz: "Samarqandga viloyatlararo joʻnatmalar odatda bir necha ish kunini oladi — aniq muddatni menejer tasdiqlaydi.",
     leadRu:
@@ -181,7 +181,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Bukhara",
     nameRu: "Бухара",
     nameUz: "Buxoro",
-    settlementId: "bukhara_city",
+    settlementId: "1706401",
     etaHintRu: "Срок до Бухары зависит от пункта отправления — ориентир в калькуляторе, подтверждение у менеджера.",
     etaHintUz: "Buxorogacha muddat joʻnatish punktiga bogʻliq — orientir kalkulyatorda, tasdiq menejerda.",
     leadRu:
@@ -255,7 +255,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Namangan",
     nameRu: "Наманган",
     nameUz: "Namangan",
-    settlementId: "namangan_city",
+    settlementId: "1714401",
     etaHintRu: "Доставка в Наманган — межрегиональный маршрут; срок уточняется при расчёте.",
     etaHintUz: "Namanganga yetkazib berish — viloyatlararo yoʻnalish; muddat hisobda aniqlanadi.",
     leadRu:
@@ -329,7 +329,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Andijan",
     nameRu: "Андижан",
     nameUz: "Andijon",
-    settlementId: "andijan_city",
+    settlementId: "1703401",
     etaHintRu: "Андижан — направление Ферганской долины; ориентировочный срок смотрите в калькуляторе.",
     etaHintUz: "Andijon — Fargʻona vodiysi yoʻnalishi; taxminiy muddatni kalkulyatorda koʻring.",
     leadRu:
@@ -403,7 +403,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Fergana",
     nameRu: "Фергана",
     nameUz: "Fargʻona",
-    settlementId: "fergana_city",
+    settlementId: "1730401",
     etaHintRu: "Фергана связана межрегиональными рейсами; точный ETA подтверждает менеджер.",
     etaHintUz: "Fargʻona viloyatlararo reyslar bilan bogʻlangan; aniq ETA ni menejer tasdiqlaydi.",
     leadRu:
@@ -477,7 +477,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Nukus",
     nameRu: "Нукус",
     nameUz: "Nukus",
-    settlementId: "nukus_city",
+    settlementId: "1735401",
     etaHintRu: "Нукус — дальнее направление; заложите запас по сроку и уточните у менеджера.",
     etaHintUz: "Nukus — uzoq yoʻnalish; muddatga zaxira qoʻying va menejer bilan aniqlang.",
     leadRu:
@@ -541,7 +541,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Karshi",
     nameRu: "Карши",
     nameUz: "Qarshi",
-    settlementId: "karshi_city",
+    settlementId: "1710401",
     etaHintRu: "Карши обслуживается межрегионально; срок зависит от города отправления.",
     etaHintUz: "Qarshi viloyatlararo xizmat qilinadi; muddat joʻnatish shahriga bogʻliq.",
     leadRu:
@@ -605,7 +605,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Termez",
     nameRu: "Термез",
     nameUz: "Termiz",
-    settlementId: "termiz_city",
+    settlementId: "1722401",
     etaHintRu: "Термез — южное направление; срок согласуйте заранее с менеджером.",
     etaHintUz: "Termiz — janubiy yoʻnalish; muddatni oldindan menejer bilan kelishing.",
     leadRu:
@@ -669,7 +669,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Navoi",
     nameRu: "Навои",
     nameUz: "Navoiy",
-    settlementId: "navoi_city",
+    settlementId: "1712401",
     etaHintRu: "Навои обслуживается в межрегиональной сети; ETA зависит от пары городов.",
     etaHintUz: "Navoiy viloyatlararo tarmoqda xizmat qilinadi; ETA shaharlar juftligiga bogʻliq.",
     leadRu:
@@ -733,7 +733,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Jizzakh",
     nameRu: "Джизак",
     nameUz: "Jizzax",
-    settlementId: "jizzakh_city",
+    settlementId: "1708401",
     etaHintRu: "Джизак — межрегиональное направление с ориентиром срока в калькуляторе.",
     etaHintUz: "Jizzax — kalkulyatorda muddat orientiri boʻlgan viloyatlararo yoʻnalish.",
     leadRu:
@@ -797,7 +797,7 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameEn: "Urgench",
     nameRu: "Ургенч",
     nameUz: "Urganch",
-    settlementId: "urgench_city",
+    settlementId: "1733401",
     etaHintRu: "Ургенч — западное направление; срок подтверждается при индивидуальном расчёте.",
     etaHintUz: "Urganch — gʻarbiy yoʻnalish; muddat individual hisobda tasdiqlanadi.",
     leadRu:

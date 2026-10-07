@@ -110,13 +110,11 @@ function KanbanColumn({
   status,
   items,
   leadReadOnly,
-  shipmentReadOnly,
   typeLabels,
 }: {
   status: LeadKanbanStatus;
   items: InboxRow[];
   leadReadOnly: boolean;
-  shipmentReadOnly: boolean;
   typeLabels: TypeLabels;
 }) {
   const t = useDashT();
@@ -157,7 +155,7 @@ function KanbanColumn({
                 key={`${row.kind}:${row.id}`}
                 row={row}
                 dragDisabled={
-                  row.kind === "lead" ? leadReadOnly : shipmentReadOnly
+                  row.kind === "lead" ? leadReadOnly : true
                 }
                 typeLabels={typeLabels}
               />
@@ -172,13 +170,9 @@ function KanbanColumn({
 export function LeadsKanbanBoard({
   rows,
   readOnly,
-  shipmentReadOnly = true,
-  updateShipmentStatusAction,
 }: {
   rows: InboxRow[];
   readOnly: boolean;
-  shipmentReadOnly?: boolean;
-  updateShipmentStatusAction: (formData: FormData) => Promise<void>;
 }) {
   const t = useDashT();
   const typeLabels: TypeLabels = {
@@ -242,31 +236,6 @@ export function LeadsKanbanBoard({
         orderedIds: leadIds,
       });
       toast.success(t.leads.moved);
-    } catch {
-      setColumnsBoth(snapshot);
-      toast.error(t.errors.saveFailed);
-    }
-  };
-
-  const persistShipmentOutcome = async (
-    id: string,
-    shipmentStatus: "confirmed" | "cancelled",
-    snapshot: Record<LeadKanbanStatus, InboxRow[]>,
-  ) => {
-    const fd = new FormData();
-    fd.set("id", id);
-    fd.set("status", shipmentStatus);
-    try {
-      await updateShipmentStatusAction(fd);
-      toast.success(t.leads.moved);
-      // Remove from board — no longer pending.
-      setColumnsBoth((prev) => {
-        const next = { ...prev };
-        for (const key of LEAD_KANBAN_STATUSES) {
-          next[key] = prev[key].filter((r) => r.id !== id);
-        }
-        return next;
-      });
     } catch {
       setColumnsBoth(snapshot);
       toast.error(t.errors.saveFailed);
@@ -343,19 +312,8 @@ export function LeadsKanbanBoard({
     }
 
     if (row.kind === "webapp_shipment") {
-      if (status === "done") {
-        await persistShipmentOutcome(row.id, "confirmed", snapshot);
-        return;
-      }
-      if (status === "spam") {
-        await persistShipmentOutcome(row.id, "cancelled", snapshot);
-        return;
-      }
-      // in_progress / draft / reorder in new — revert (no shipment sort_order).
+      // Mini App rows are FCargo mirrors — status only from FCargo.
       setColumnsBoth(snapshot);
-      if (status !== "new") {
-        toast.error(t.errors.saveFailed);
-      }
       return;
     }
 
@@ -382,14 +340,13 @@ export function LeadsKanbanBoard({
           status={status}
           items={columns[status]}
           leadReadOnly={readOnly}
-          shipmentReadOnly={shipmentReadOnly}
           typeLabels={typeLabels}
         />
       ))}
     </div>
   );
 
-  if (readOnly && shipmentReadOnly) {
+  if (readOnly) {
     return board;
   }
 
