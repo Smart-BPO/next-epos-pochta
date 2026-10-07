@@ -202,6 +202,13 @@ export interface SiteCopy {
     errorText: string;
     supportCta: string;
     resultTitle: string;
+    unavailableTitle: string;
+    unavailableText: string;
+    rateLimitedText: string;
+    currentLocation: string;
+    estimatedDelivery: string;
+    deliveredAt: string;
+    historyTitle: string;
   };
   requestPrice: {
     title: string;

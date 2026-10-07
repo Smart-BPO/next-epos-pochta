@@ -7,14 +7,15 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 - Public corporate site + CMS at `/dashboard` (Supabase project **epos** / `iituklcscawinftbyzxc`, Central EU Frankfurt)
 - Content: static TS seed (`src/data`, `src/i18n`) with CMS overlays (news, site settings, delivery hub copy)
 - Locales: `uz` (default, unprefixed) and `ru` (`/ru/`)
-- Tracking page stays a stub until tracking API — `TODO(tracking-api)`; dashboard can set shipment `track_number` manually
+- Tracking: public `/tracking/?number=` → `GET /api/tracking/` → FCargo `packages:track` (rate-limited, cached 60s, no PII). Status labels uz/ru in `src/lib/tracking/fcargo-status.ts`. Mini App list shows FCargo status from `epos_fcargo_packages`; dashboard track number entry ingests into that catalog
 - Env:
   - Public defaults: `.env.development` (local) / `.env.production` (epos-pochta.uz)
   - Secrets: `.env.local` or Hostinger panel — see `.env.example` / `.env.production.example`
   - Server-only: `SUPABASE_URL` + `SUPABASE_ANON_KEY` (or `SUPABASE_PUBLISHABLE_KEY`) + `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_SECRET_KEY` / `SUPABASE_API_KEY` (+ `CMS_BOOTSTRAP_SECRET` only for first owner). Never `NEXT_PUBLIC_SUPABASE_*`.
  - Telegram: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, optional `TELEGRAM_WEBHOOK_SECRET` — manage webhook in `/dashboard/settings/telegram/`
  - Messaging secrets master key: `MESSAGING_SECRETS_KEY` — encrypts Playmobile / Eskiz / Resend credentials stored in CMS (`/dashboard/messaging/`) and FCargo API key + webhook secret (`/dashboard/settings/fcargo/`)
- - FCargo Client API: configure in `/dashboard/settings/fcargo/` (owner). **Tenant domain** = FCargo `X-Tenant-Domain` (playground header / tenant slug), not the public site host. Optional one-shot `FCARGO_*` env import if CMS has no key yet. Pricing `from_region_id`/`to_region_id` = region **SOATO as int** (e.g. 1726); OpenAPI sample `1`/`2` is a placeholder that hits default tariff. When FCargo is enabled, public `/api/estimate` uses Client API only (no silent CMS-matrix substitute).
+ - FCargo Client API: configure in `/dashboard/settings/fcargo/` (owner). **Tenant domain** = FCargo `X-Tenant-Domain` (playground header / tenant slug), not the public site host. Optional one-shot `FCARGO_*` env import if CMS has no key yet. Pricing must send `from_region_soato`/`to_region_soato` **strings** (+ `*_district_soato`) — integer `*_region_id` are FCargo internal ids, not SOATO, and under-quote vs the order. District SOATO is matched by name against cached `/locations/regions` (`src/lib/fcargo/locations.ts`). Quotes are cached 10 min (FCargo 429s on bursts). When FCargo is enabled, public `/api/estimate` uses Client API only (no silent CMS-matrix substitute).
+ - FCargo lead → order: `/api/leads` (calculator source) creates the order **before** staff notify (Telegram/email include tracking + internal `fcargoPrice`); idempotent by `external_order_id` = lead id (409 `DUPLICATE_EXTERNAL_ID` → reuse). Public response / customer notify expose tracking only, never FCargo price. Order/package **reads require** `customer_phone` or `customer_id` (422 otherwise) — sync takes them from the lead payload. Key has no `orders:cancel` scope.
  - FCargo status sync: inbound `POST /api/fcargo/webhook/` verifies HMAC then **enqueues** to `epos_fcargo_webhook_inbox` and returns `{ received: true }` immediately; heavy ingest runs via Next.js `after()` plus safety-net `POST /api/fcargo/drain/` (same shared secret as sync / `FCARGO_SYNC_SECRET`). Pull statuses: `POST /api/fcargo/sync/`. Calculator leads stay in `epos_fcargo_orders`; catalog in `epos_fcargo_packages`; Mini App links by phone → `epos_webapp_shipments`. Full traffic envelope (URL, sanitized headers, bodies) in `epos_fcargo_request_log` with `source` (`out_api` | `in_webhook` | `in_sync` | `in_drain` | `inbox_worker`) + `correlation_id`; drain also **prunes** log rows older than **30 days** (batched).
  - SMS (Play Mobile / Eskiz) + Resend: configure in `/dashboard/messaging/providers/` (env `PLAYMOBILE_*` / `RESEND_*` still work as one-time import)
  - Remotes: keep **in sync** on `main` — `diasbek/next-epos-pochta` → **epos.nocode.uz**, `Smart-BPO/next-epos-pochta` → **epos-pochta.uz**. Local `origin` dual-pushes both; always `git push origin` (or push both explicitly). Never leave either remote behind after a requested push. Legacy `epos.nocode.uz` 301s to canonical `epos-pochta.uz` in proxy.
@@ -24,8 +25,6 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 - Client-side **non-binding estimates** are allowed (A→B + weight/dims) with a clear “not final / manager confirms” disclaimer
 - Never publish official tariffs or present estimates as final prices / оферта
 - Final price only via manager confirmation after a lead («Запросить стоимость» / contacts on estimate)
-- Tracking page stays a stub until tracking API is connected (`TODO(tracking-api)`)
-
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

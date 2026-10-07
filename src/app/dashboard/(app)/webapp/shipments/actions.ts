@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { requireMutation } from "@/lib/cms/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { dispatchNotification } from "@/lib/messaging/dispatch";
+import { fcargoTrackPackage } from "@/lib/fcargo/client";
+import { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
 
 const STATUSES = ["draft", "pending_manager", "confirmed", "cancelled"] as const;
 
@@ -84,7 +86,23 @@ export async function updateShipmentAction(formData: FormData) {
     }
   }
 
-  // TODO(tracking-api): sync status / track_number with external tracking when connected
+  // New track → FCargo catalog, so the Mini App shows live status and
+  // /api/fcargo/sync keeps refreshing it.
+  if (trackNumber && (before?.track_number ?? "") !== trackNumber) {
+    try {
+      const track = await fcargoTrackPackage(trackNumber);
+      if (track.ok && track.data) {
+        await ingestFcargoWebhook({
+          event: "package.status_changed",
+          data: track.data,
+          tracking_number: trackNumber,
+        });
+      }
+    } catch (err) {
+      console.warn("[shipment:fcargo-track]", err);
+    }
+  }
+
   revalidatePath("/dashboard/webapp/shipments");
   revalidatePath("/dashboard/leads");
   revalidatePath("/dashboard");

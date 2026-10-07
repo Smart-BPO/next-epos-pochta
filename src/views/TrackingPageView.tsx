@@ -36,7 +36,22 @@ import {
   trackTimelineRail,
 } from "@/styles/ui";
 
-type UiState = "idle" | "loading" | "invalid" | "not_found" | "found";
+type UiState =
+  | "idle"
+  | "loading"
+  | "invalid"
+  | "not_found"
+  | "unavailable"
+  | "rate_limited"
+  | "found";
+
+function formatDay(iso: string) {
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(iso));
+}
 
 function formatEventTime(iso: string) {
   // ru-RU numeric avoids broken uz-UZ short-month output (e.g. "2026 M09 4").
@@ -66,16 +81,19 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
     if (result.ok && result.shipment) {
       setShipment(result.shipment);
       setState("found");
+      trackEvent("track_search_success", { status: result.shipment.status });
       return;
     }
     setShipment(null);
-    if (!result.ok && result.error === "invalid_format") {
-      setState("invalid");
-      trackEvent("track_search_error", { reason: "invalid_format" });
-      return;
-    }
-    setState("not_found");
-    trackEvent("track_search_error", { reason: "not_found" });
+    const reason = result.error ?? "not_found";
+    setState(
+      reason === "invalid_format"
+        ? "invalid"
+        : reason === "unavailable" || reason === "rate_limited"
+          ? reason
+          : "not_found",
+    );
+    trackEvent("track_search_error", { reason });
   }
 
   function runLookup(raw: string, syncUrl: boolean) {
@@ -173,10 +191,24 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
               </div>
             ) : null}
 
-            {state === "not_found" ? (
+            {state === "rate_limited" ? (
               <div className={`${alertWarning} mb-0`} role="status">
-                <strong>{copy.tracking.errorTitle}</strong>
-                <p className="mb-0">{copy.tracking.errorText}</p>
+                <p className="mb-0">{copy.tracking.rateLimitedText}</p>
+              </div>
+            ) : null}
+
+            {state === "not_found" || state === "unavailable" ? (
+              <div className={`${alertWarning} mb-0`} role="status">
+                <strong>
+                  {state === "unavailable"
+                    ? copy.tracking.unavailableTitle
+                    : copy.tracking.errorTitle}
+                </strong>
+                <p className="mb-0">
+                  {state === "unavailable"
+                    ? copy.tracking.unavailableText
+                    : copy.tracking.errorText}
+                </p>
                 <div className={`${heroActions} mt-3.5`}>
                   <Button
                     href={`tel:${SITE_CONFIG.phone}`}
@@ -198,12 +230,51 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
               <div className="border-t border-black/10 pt-5">
                 <h2 className={trackResultTitle}>{copy.tracking.resultTitle}</h2>
                 <p className={trackResultNumber}>{shipment.number}</p>
+                <p className="m-0 mt-3 text-lg font-semibold text-ink">
+                  {shipment.statusLabel}
+                </p>
+                <dl className="m-0 mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+                  {shipment.currentLocation &&
+                  shipment.status !== "delivered" &&
+                  shipment.status !== "cancelled" ? (
+                    <div>
+                      <dt className="text-ink-muted">
+                        {copy.tracking.currentLocation}
+                      </dt>
+                      <dd className="m-0 font-medium text-ink">
+                        {shipment.currentLocation}
+                      </dd>
+                    </div>
+                  ) : null}
+                  {shipment.deliveredAt ? (
+                    <div>
+                      <dt className="text-ink-muted">
+                        {copy.tracking.deliveredAt}
+                      </dt>
+                      <dd className="m-0 font-medium text-ink">
+                        {formatEventTime(shipment.deliveredAt)}
+                      </dd>
+                    </div>
+                  ) : shipment.estimatedDeliveryAt ? (
+                    <div>
+                      <dt className="text-ink-muted">
+                        {copy.tracking.estimatedDelivery}
+                      </dt>
+                      <dd className="m-0 font-medium text-ink">
+                        {formatDay(shipment.estimatedDeliveryAt)}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
+                <h3 className="m-0 mt-5 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  {copy.tracking.historyTitle}
+                </h3>
                 <ol className={trackTimeline}>
                   {events.map((event, index) => {
                     const isLast = index === events.length - 1;
                     return (
                       <li
-                        key={`${event.code}-${event.occurredAt}`}
+                        key={`${event.code}-${event.occurredAt ?? index}`}
                         className={trackTimelineItem}
                       >
                         <div className={trackTimelineRail} aria-hidden>
@@ -220,10 +291,18 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                         </div>
                         <div className={trackTimelineBody}>
                           <p className={trackTimelineLabel}>{event.label}</p>
-                          <p className={trackTimelineMeta}>
-                            {formatEventTime(event.occurredAt)}
-                            {event.location ? ` · ${event.location}` : ""}
-                          </p>
+                          {event.occurredAt || event.location ? (
+                            <p className={trackTimelineMeta}>
+                              {[
+                                event.occurredAt
+                                  ? formatEventTime(event.occurredAt)
+                                  : null,
+                                event.location ?? null,
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </p>
+                          ) : null}
                           {event.note ? (
                             <p className={trackTimelineNote}>{event.note}</p>
                           ) : null}

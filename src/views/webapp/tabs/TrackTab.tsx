@@ -7,6 +7,7 @@ import { useWebAppNav } from "@/components/webapp/WebAppNav";
 import { Button } from "@/components/atoms/Button";
 import { Chip } from "@/components/atoms/Chip";
 import { cn } from "@/lib/cn";
+import { fcargoStatusCopy } from "@/lib/tracking/fcargo-status";
 import { getCanonicalSiteUrl } from "@/utils/seo/indexing";
 
 type ShipmentRow = {
@@ -15,6 +16,7 @@ type ShipmentRow = {
   to_label: string;
   status: string;
   track_number: string | null;
+  fcargo_status?: string | null;
   weight_kg: number | null;
   created_at: string;
 };
@@ -166,12 +168,18 @@ export function TrackTab() {
                   ? `Trek: ${row.track_number}`
                   : copy.trackWaiting}
               </p>
+              {row.fcargo_status ? (
+                <p className="m-0 mt-1 text-xs font-medium text-ink">
+                  {fcargoStatusCopy(row.fcargo_status, locale).label}
+                </p>
+              ) : null}
               {row.track_number ? (
                 <button
                   type="button"
                   className="mt-2 text-xs font-semibold text-primary hover:underline"
                   onClick={() => {
-                    const url = `${site}/tracking/?number=${encodeURIComponent(row.track_number!)}`;
+                    const path = locale === "ru" ? "/ru/tracking/" : "/tracking/";
+                    const url = `${site}${path}?number=${encodeURIComponent(row.track_number!)}`;
                     window.open(url, "_blank", "noopener,noreferrer");
                   }}
                 >

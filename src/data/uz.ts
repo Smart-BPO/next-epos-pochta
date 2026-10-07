@@ -655,6 +655,14 @@ export const uzCopy: SiteCopy = {
       "Raqamni tekshirib qayta urinib koʻring. Xato takrorlansa, qoʻllab-quvvatlashga murojaat qiling.",
     supportCta: "Qoʻllab-quvvatlashga qoʻngʻiroq",
     resultTitle: "Joʻnatma statusi",
+    unavailableTitle: "Kuzatish xizmati vaqtincha ishlamayapti",
+    unavailableText:
+      "Bir necha daqiqadan soʻng qayta urinib koʻring yoki qoʻngʻiroq qiling — raqam boʻyicha holatni aytamiz.",
+    rateLimitedText: "Soʻrovlar juda koʻp. Bir daqiqa kutib, qayta urinib koʻring.",
+    currentLocation: "Hozir qayerda",
+    estimatedDelivery: "Kutilayotgan yetkazish",
+    deliveredAt: "Yetkazildi",
+    historyTitle: "Tarix",
   },
   requestPrice: {
     title: "Biznes uchun tijorat taklifi",

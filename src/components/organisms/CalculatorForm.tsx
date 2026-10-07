@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
+import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import {
   getSettlementById,
@@ -167,6 +168,7 @@ export function CalculatorForm({
   const [leadAttempted, setLeadAttempted] = useState(false);
   const [leadSubmitting, setLeadSubmitting] = useState(false);
   const [leadId, setLeadId] = useState<string | null>(null);
+  const [leadTracking, setLeadTracking] = useState<string | null>(null);
   const [requestId] = useState(() => createRequestId("calc"));
 
   useEffect(() => {
@@ -254,7 +256,10 @@ export function CalculatorForm({
       eventPrefix: "calculator_lead",
     });
     setLeadSubmitting(false);
-    if (result) setLeadId(result.id);
+    if (result) {
+      setLeadId(result.id);
+      setLeadTracking(result.fcargoTrackingNumber ?? null);
+    }
   };
 
   const calculate = async () => {
@@ -455,6 +460,18 @@ export function CalculatorForm({
               <p className="mb-0 mt-1 opacity-90">
                 {c.leadSuccessText.replace("{phone}", normalizePhone(phone))}
               </p>
+              {leadTracking ? (
+                <p className="mb-0 mt-2">
+                  {locale === "uz" ? "Trek-raqam: " : "Трек-номер: "}
+                  <a
+                    href={`${localePath(locale, "/tracking/")}?number=${encodeURIComponent(leadTracking)}`}
+                    className="font-mono font-semibold underline underline-offset-2"
+                    onClick={() => trackEvent("calculator_lead_track_click")}
+                  >
+                    {leadTracking}
+                  </a>
+                </p>
+              ) : null}
             </div>
           ) : (
             <div className="grid gap-4 border-t border-black/[0.06] pt-4">

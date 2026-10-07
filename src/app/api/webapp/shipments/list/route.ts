@@ -33,5 +33,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "db_error" }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, items: data ?? [] });
+  const rows = data ?? [];
+  const tracks = [
+    ...new Set(rows.map((r) => r.track_number).filter(Boolean) as string[]),
+  ];
+  const fcargoByTrack = new Map<string, string>();
+  if (tracks.length) {
+    const { data: pkgs } = await admin
+      .from("epos_fcargo_packages")
+      .select("tracking_number, status")
+      .in("tracking_number", tracks);
+    for (const p of pkgs ?? []) {
+      if (p.tracking_number && p.status) {
+        fcargoByTrack.set(p.tracking_number, p.status);
+      }
+    }
+  }
+
+  return NextResponse.json({
+    ok: true,
+    items: rows.map((r) => ({
+      ...r,
+      fcargo_status: r.track_number
+        ? (fcargoByTrack.get(r.track_number) ?? null)
+        : null,
+    })),
+  });
 }

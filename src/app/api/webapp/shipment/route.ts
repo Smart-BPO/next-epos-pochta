@@ -108,6 +108,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "db_error" }, { status: 500 });
   }
 
-  // TODO(tracking-api): allocate track number after manager confirms
+  // Track number arrives later: manager sets it in the dashboard, or FCargo
+  // ingest links it by phone.
   return NextResponse.json({ ok: true, id });
 }
