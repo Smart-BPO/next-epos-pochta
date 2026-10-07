@@ -3,10 +3,10 @@
  *
  * FCargo Client API:
  * - Orders use `region_soato` strings (e.g. "1726").
- * - Pricing `from_region_id` / `to_region_id` take the same codes as **integers**
- *   (1726, not list index 1..N). OpenAPI example `1`/`2` is a placeholder —
- *   on real tenants those hit `tariff_source: "default"`; SOATO ints resolve to
- *   `branch_route` like Create Order.
+ * - Pricing must use `from_region_soato` / `to_region_soato` (same strings).
+ *   Integer `from_region_id` / `to_region_id` are FCargo **internal** ids, not
+ *   SOATO: 1726 quotes some unrelated `branch_route` (rejects district SOATO
+ *   with DISTRICT_REGION_MISMATCH) and under-quotes vs the created order.
  *
  * @see https://api.fcargo.uz/api/client/v1/openapi.json (Locations + Pricing)
  */
@@ -35,7 +35,7 @@ const TASHKENT_CITY_IDS = new Set([
 
 export type SoatoRef = {
   regionSoato: string;
-  /** SOATO as integer for POST /pricing/calculate from_region_id / to_region_id. */
+  /** SOATO as integer (legacy; not valid as pricing `from_region_id`). */
   regionIdNum: number;
 };
 

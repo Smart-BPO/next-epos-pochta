@@ -602,6 +602,7 @@ export type DashCopy = {
     trackLabel: string;
     trackRun: string;
     orderId: string;
+    customerPhone: string;
     orderRun: string;
     regionCode: string;
     regionRun: string;

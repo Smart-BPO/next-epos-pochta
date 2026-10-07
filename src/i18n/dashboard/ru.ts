@@ -610,6 +610,7 @@ export const dashRu: DashCopy = {
     trackLabel: "Трек-номер",
     trackRun: "Трек",
     orderId: "ID заказа",
+    customerPhone: "Телефон клиента (для заказов / посылок)",
     orderRun: "Заказ",
     regionCode: "Код региона",
     regionRun: "Проверить",

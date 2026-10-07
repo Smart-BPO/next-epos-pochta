@@ -11,6 +11,8 @@ import {
   fcargoResolveSoato,
   fcargoTrackPackage,
 } from "@/lib/fcargo/client";
+import { normalizeUzPhone } from "@/lib/fcargo/packages-store";
+import type { FcargoPricingRequest } from "@/lib/fcargo/types";
 
 export type FcargoDebugProbeResult = {
   ok: boolean;
@@ -102,6 +104,11 @@ export async function runFcargoDebugProbe(
   clearFcargoTenantCircuit();
 
   const probe = String(formData.get("probe") ?? "").trim();
+  const customerPhone =
+    normalizeUzPhone(String(formData.get("customer_phone") ?? "")) || null;
+  const scope = customerPhone ? { customerPhone } : undefined;
+  const needsCustomer = (name: string) =>
+    fail(name, "customer phone required (FCargo: customer_phone or customer_id)");
 
   switch (probe) {
     case "health":
@@ -115,12 +122,14 @@ export async function runFcargoDebugProbe(
     case "regions":
       return withProbe("GET /locations/regions", () => fcargoListRegions());
     case "orders":
-      return withProbe("GET /orders", () => fcargoListOrders());
+      if (!scope) return needsCustomer("GET /orders");
+      return withProbe("GET /orders", () => fcargoListOrders(scope));
     case "packages":
-      return withProbe("GET /packages", () => fcargoListPackages());
+      if (!scope) return needsCustomer("GET /packages");
+      return withProbe("GET /packages", () => fcargoListPackages(scope));
     case "pricing": {
-      const from = Number(formData.get("from_region_id"));
-      const to = Number(formData.get("to_region_id"));
+      const from = String(formData.get("from_region_id") ?? "").trim();
+      const to = String(formData.get("to_region_id") ?? "").trim();
       const modeRaw = String(formData.get("pricing_mode") ?? "both").trim();
       const mode =
         modeRaw === "weight" || modeRaw === "dims" || modeRaw === "both"
@@ -130,23 +139,16 @@ export async function runFcargoDebugProbe(
       const length = Number(formData.get("length") || 0);
       const width = Number(formData.get("width") || 0);
       const height = Number(formData.get("height") || 0);
-      if (!Number.isFinite(from) || !Number.isFinite(to)) {
+      if (!/^\d{4}$/.test(from) || !/^\d{4}$/.test(to)) {
         return fail(
           "POST /pricing/calculate",
-          "from_region_id / to_region_id required",
+          "region SOATO (4 digits) required for from / to",
         );
       }
 
-      const body: {
-        from_region_id: number;
-        to_region_id: number;
-        weight?: number;
-        length?: number;
-        width?: number;
-        height?: number;
-      } = {
-        from_region_id: from,
-        to_region_id: to,
+      const body: FcargoPricingRequest = {
+        from_region_soato: from,
+        to_region_soato: to,
       };
 
       const hasWeight = Number.isFinite(weight) && weight > 0;
@@ -194,7 +196,10 @@ export async function runFcargoDebugProbe(
       if (!orderId) {
         return fail("GET /orders/{id}", "order_id required");
       }
-      return withProbe(`GET /orders/${orderId}`, () => fcargoGetOrder(orderId));
+      if (!scope) return needsCustomer(`GET /orders/${orderId}`);
+      return withProbe(`GET /orders/${orderId}`, () =>
+        fcargoGetOrder(orderId, scope),
+      );
     }
     case "resolve": {
       const soato = String(formData.get("soato") ?? "").trim();

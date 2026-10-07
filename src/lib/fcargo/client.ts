@@ -23,7 +23,11 @@ import type {
   FcargoCreateOrderResult,
   FcargoEnvelope,
   FcargoErrorEnvelope,
+  FcargoOrderDetail,
+  FcargoOrderSummary,
+  FcargoPage,
   FcargoPricingQuote,
+  FcargoPricingRequest,
   FcargoResult,
 } from "@/lib/fcargo/types";
 
@@ -216,16 +220,7 @@ export function fcargoListStatuses() {
   return fcargoFetch<unknown>("/statuses");
 }
 
-export function fcargoCalculatePrice(input: {
-  from_region_id: number;
-  to_region_id: number;
-  /** Omit when quoting by dimensions only (OpenAPI: weight XOR L×W×H). */
-  weight?: number;
-  length?: number;
-  width?: number;
-  height?: number;
-  service_ids?: number[];
-}) {
+export function fcargoCalculatePrice(input: FcargoPricingRequest) {
   return fcargoFetch<FcargoPricingQuote>("/pricing/calculate", {
     method: "POST",
     body: input,
@@ -246,31 +241,93 @@ export function fcargoCreateOrder(
   });
 }
 
-export function fcargoListOrders() {
-  return fcargoFetch<unknown>("/orders");
+/**
+ * Read endpoints (orders / packages) require `customer_phone` or `customer_id`
+ * — without either FCargo answers 422 `validation.required_without`.
+ */
+export type FcargoCustomerScope = {
+  customerPhone?: string | null;
+  customerId?: string | number | null;
+};
+
+export type FcargoListFilters = FcargoCustomerScope & {
+  externalOrderId?: string;
+  trackingNumber?: string;
+  status?: string;
+  page?: number;
+  perPage?: number;
+};
+
+function customerQuery(
+  scope: FcargoListFilters | undefined,
+): string {
+  if (!scope) return "";
+  const q = new URLSearchParams();
+  if (scope.customerId != null && String(scope.customerId).trim()) {
+    q.set("customer_id", String(scope.customerId).trim());
+  } else if (scope.customerPhone?.trim()) {
+    q.set("customer_phone", scope.customerPhone.trim());
+  }
+  if (scope.externalOrderId) q.set("external_order_id", scope.externalOrderId);
+  if (scope.trackingNumber) q.set("tracking_number", scope.trackingNumber);
+  if (scope.status) q.set("status", scope.status);
+  if (scope.page) q.set("page", String(scope.page));
+  if (scope.perPage) q.set("per_page", String(scope.perPage));
+  const s = q.toString();
+  return s ? `?${s}` : "";
 }
 
-export function fcargoGetOrder(orderId: string | number) {
-  return fcargoFetch<unknown>(`/orders/${encodeURIComponent(String(orderId))}`, {
-    orderId,
-  });
+export function fcargoListOrders(filters?: FcargoListFilters) {
+  return fcargoFetch<FcargoPage<FcargoOrderSummary>>(
+    `/orders${customerQuery(filters)}`,
+    { leadId: filters?.externalOrderId },
+  );
 }
 
+export function fcargoGetOrder(
+  orderId: string | number,
+  scope?: FcargoCustomerScope,
+) {
+  return fcargoFetch<FcargoOrderDetail>(
+    `/orders/${encodeURIComponent(String(orderId))}${customerQuery(scope)}`,
+    { orderId },
+  );
+}
+
+/** Needs `orders:cancel` scope on the key. */
 export function fcargoCancelOrder(orderId: string | number) {
   return fcargoFetch<unknown>(
     `/orders/${encodeURIComponent(String(orderId))}/cancel`,
-    { method: "POST", orderId },
+    { method: "POST", orderId, scopeHint: "orders:cancel" },
   );
 }
 
-export function fcargoListPackages() {
-  return fcargoFetch<unknown>("/packages");
+export function fcargoListPackages(filters?: FcargoListFilters) {
+  return fcargoFetch<FcargoPage<FcargoOrderDetail>>(
+    `/packages${customerQuery(filters)}`,
+  );
 }
 
-export function fcargoGetPackage(packageId: string | number) {
-  return fcargoFetch<unknown>(
-    `/packages/${encodeURIComponent(String(packageId))}`,
+export function fcargoGetPackage(
+  packageId: string | number,
+  scope?: FcargoCustomerScope,
+) {
+  return fcargoFetch<FcargoOrderDetail>(
+    `/packages/${encodeURIComponent(String(packageId))}${customerQuery(scope)}`,
   );
+}
+
+export function fcargoPackageTimeline(
+  packageId: string | number,
+  scope?: FcargoCustomerScope,
+) {
+  return fcargoFetch<unknown[]>(
+    `/packages/${encodeURIComponent(String(packageId))}/timeline${customerQuery(scope)}`,
+  );
+}
+
+export function fcargoListWebhookEvents() {
+  return fcargoFetch<FcargoPage<Record<string, unknown>>>("/webhook-events");
 }
 
 export function fcargoTrackPackage(tracking: string) {

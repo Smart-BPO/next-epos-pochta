@@ -98,6 +98,7 @@ const TERMINAL = new Set([
   "returned",
   "returned_to_sender",
   "lost",
+  "disposed",
   "done",
   "completed",
   "доставлен",

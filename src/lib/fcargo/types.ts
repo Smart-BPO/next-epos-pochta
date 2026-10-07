@@ -34,6 +34,73 @@ export type FcargoPricingQuote = {
   eta_max?: number;
 };
 
+/**
+ * POST /pricing/calculate. Prefer `*_region_soato` strings — integer
+ * `*_region_id` are FCargo internal ids, not SOATO, and quote a different
+ * route than Create Order resolves.
+ */
+export type FcargoPricingRequest = {
+  from_region_id?: number;
+  to_region_id?: number;
+  from_region_soato?: string;
+  to_region_soato?: string;
+  from_district_soato?: string;
+  to_district_soato?: string;
+  sender_phone?: string;
+  receiver_phone?: string;
+  declared_value?: number;
+  is_insured?: boolean;
+  payment_type_id?: number;
+  /** Omit when quoting by dimensions only (OpenAPI: weight XOR L×W×H). */
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  service_ids?: number[];
+};
+
+export type FcargoStatusRef = {
+  id?: number;
+  code?: string;
+  name?: string;
+};
+
+export type FcargoPage<T> = {
+  items: T[];
+  meta?: {
+    page?: number;
+    per_page?: number;
+    total?: number;
+    last_page?: number;
+  };
+};
+
+export type FcargoOrderSummary = {
+  order_id: number;
+  external_order_id?: string | null;
+  tracking_number: string;
+  status?: FcargoStatusRef;
+  price?: number;
+  currency?: string;
+  created_at?: string;
+};
+
+export type FcargoOrderDetail = {
+  id: number;
+  tracking_number: string;
+  external_order_id?: string | null;
+  status?: FcargoStatusRef;
+  is_terminal?: boolean;
+  current_branch?: string | null;
+  price?: number;
+  currency?: string;
+  payment_status?: string;
+  estimated_delivery_at?: string | null;
+  delivered_at?: string | null;
+  timeline?: unknown[];
+  [key: string]: unknown;
+};
+
 export type FcargoParty = {
   name: string;
   phone: string;
@@ -62,6 +129,7 @@ export type FcargoPackageInput = {
 
 export type FcargoCreateOrderRequest = {
   external_order_id?: string;
+  webhook_enabled?: boolean;
   sender: FcargoParty;
   receiver: FcargoParty;
   package: FcargoPackageInput;
@@ -77,6 +145,11 @@ export type FcargoCreateOrderResult = {
   order_id: number | string;
   tracking_number: string;
   barcode?: string | null;
+  sender_customer_id?: number | null;
+  receiver_customer_id?: number | null;
+  price?: number;
+  total_price?: number;
+  currency?: string;
   status?: { code?: string; name?: string } | string;
   [key: string]: unknown;
 };

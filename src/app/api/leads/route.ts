@@ -76,14 +76,31 @@ function pickName(data: Record<string, unknown>): string {
   return leadClientLabel({ data });
 }
 
-/** Best-effort FCargo order for calculator leads; never fails the lead. */
+type FcargoLeadPatch = {
+  fcargoOrderId?: string;
+  fcargoTrackingNumber?: string;
+  fcargoStatus?: string | null;
+  fcargoCustomerId?: number | null;
+  fcargoPrice?: number | null;
+  fcargoCurrency?: string | null;
+  fcargoError?: string;
+};
+
+function numOrNull(v: unknown): number | null {
+  return typeof v === "number" && Number.isFinite(v) ? v : null;
+}
+
+/**
+ * Best-effort FCargo order for calculator leads; never fails the lead.
+ * Failures land in `payload.data.fcargoError` for the manager.
+ */
 async function attachFcargoOrderToLead(opts: {
   id: string;
   type: LeadType;
   locale: "uz" | "ru";
   data: Record<string, unknown>;
   requestId?: string;
-}): Promise<Record<string, unknown> | null> {
+}): Promise<FcargoLeadPatch | null> {
   if (opts.type !== "price") return null;
   if (opts.data.source !== "calculator") return null;
 
@@ -104,30 +121,25 @@ async function attachFcargoOrderToLead(opts: {
       phone: pickPhone(opts.data),
       fromCityId,
       toCityId,
-      weightKg:
-        typeof opts.data.weightKg === "number" ? opts.data.weightKg : null,
-      lengthCm:
-        typeof opts.data.lengthCm === "number" ? opts.data.lengthCm : null,
-      widthCm:
-        typeof opts.data.widthCm === "number" ? opts.data.widthCm : null,
-      heightCm:
-        typeof opts.data.heightCm === "number" ? opts.data.heightCm : null,
+      weightKg: numOrNull(opts.data.weightKg),
+      lengthCm: numOrNull(opts.data.lengthCm),
+      widthCm: numOrNull(opts.data.widthCm),
+      heightCm: numOrNull(opts.data.heightCm),
       locale: opts.locale,
     });
 
-    if (!created.ok) return null;
+    if (!created.ok && created.skipped) return null;
 
-    const order = created.order;
-    const patch = {
-      fcargoOrderId: order.order_id,
-      fcargoTrackingNumber: order.tracking_number,
-      fcargoStatus:
-        typeof order.status === "string"
-          ? order.status
-          : order.status && typeof order.status === "object"
-            ? (order.status as { code?: string }).code ?? null
-            : null,
-    };
+    const patch: FcargoLeadPatch = created.ok
+      ? {
+          fcargoOrderId: created.order.orderId,
+          fcargoTrackingNumber: created.order.trackingNumber,
+          fcargoStatus: created.order.status,
+          fcargoCustomerId: created.order.customerId,
+          fcargoPrice: created.order.price,
+          fcargoCurrency: created.order.currency,
+        }
+      : { fcargoError: created.message };
 
     if (hasSupabaseAdminConfig()) {
       try {
@@ -145,12 +157,13 @@ async function attachFcargoOrderToLead(opts: {
           prev.data && typeof prev.data === "object"
             ? (prev.data as Record<string, unknown>)
             : {};
+        const { fcargoError: _stale, ...prevClean } = prevData;
         await admin
           .from("epos_leads")
           .update({
             payload: {
               ...prev,
-              data: { ...prevData, ...patch },
+              data: { ...prevClean, ...patch },
             },
           })
           .eq("id", opts.id);
@@ -162,8 +175,18 @@ async function attachFcargoOrderToLead(opts: {
     return patch;
   } catch (e) {
     console.warn("[lead:fcargo]", e);
-    return null;
+    return { fcargoError: e instanceof Error ? e.message : "fcargo_failed" };
   }
+}
+
+/** Public response: tracking only — FCargo price stays internal (manager confirms). */
+function fcargoPublicFields(patch: FcargoLeadPatch | null) {
+  if (!patch?.fcargoTrackingNumber) return {};
+  return {
+    fcargoOrderId: patch.fcargoOrderId,
+    fcargoTrackingNumber: patch.fcargoTrackingNumber,
+    fcargoStatus: patch.fcargoStatus ?? null,
+  };
 }
 
 async function notifyLeadCreated(opts: {
@@ -176,7 +199,18 @@ async function notifyLeadCreated(opts: {
   const phone = pickPhone(opts.data);
   const email = pickEmail(opts.data);
   const details = JSON.stringify(opts.data, null, 2);
+  const {
+    fcargoPrice: _price,
+    fcargoCurrency: _currency,
+    fcargoCustomerId: _customer,
+    fcargoError: _error,
+    ...customerVisible
+  } = opts.data;
   const name_part = name && name !== "—" ? `, ${name.split(/\s+/)[0]}` : "";
+  const tracking =
+    typeof opts.data.fcargoTrackingNumber === "string"
+      ? opts.data.fcargoTrackingNumber
+      : "";
   const data = {
     id: opts.id,
     type: opts.type,
@@ -185,7 +219,12 @@ async function notifyLeadCreated(opts: {
     phone,
     email,
     details,
+    tracking,
     locale: opts.locale,
+  };
+  const customerData = {
+    ...data,
+    details: JSON.stringify(customerVisible, null, 2),
   };
 
   let notifiedEmail = false;
@@ -211,7 +250,7 @@ async function notifyLeadCreated(opts: {
     await dispatchNotification({
       event: "lead_created_customer",
       locale: opts.locale,
-      data,
+      data: customerData,
       entityType: "lead",
       entityId: opts.id,
       idempotencyKey: `lead-customer-${opts.id}`,
@@ -487,13 +526,6 @@ async function handleFinalize(body: LeadPayload, locale: "uz" | "ru") {
     resumeToken = inserted.resume_token;
   }
 
-  await notifyLeadCreated({
-    id: id!,
-    type: "price",
-    locale,
-    data: merged,
-  });
-
   const fcargo = await attachFcargoOrderToLead({
     id: id!,
     type: "price",
@@ -505,19 +537,20 @@ async function handleFinalize(body: LeadPayload, locale: "uz" | "ru") {
     requestId: body.requestId,
   });
 
+  await notifyLeadCreated({
+    id: id!,
+    type: "price",
+    locale,
+    data: { ...merged, ...fcargo },
+  });
+
   return NextResponse.json({
     id,
     uid: resumeToken,
     ok: true,
     complete: true,
     status: "new",
-    ...(fcargo
-      ? {
-          fcargoOrderId: fcargo.fcargoOrderId,
-          fcargoTrackingNumber: fcargo.fcargoTrackingNumber,
-          fcargoStatus: fcargo.fcargoStatus,
-        }
-      : {}),
+    ...fcargoPublicFields(fcargo),
   });
 }
 
@@ -575,13 +608,6 @@ async function handleFull(body: LeadPayload, locale: "uz" | "ru") {
     console.info("[lead]", id, body.type);
   }
 
-  await notifyLeadCreated({
-    id,
-    type: body.type,
-    locale,
-    data,
-  });
-
   const fcargo = await attachFcargoOrderToLead({
     id,
     type: body.type,
@@ -590,15 +616,17 @@ async function handleFull(body: LeadPayload, locale: "uz" | "ru") {
     requestId: body.requestId,
   });
 
+  await notifyLeadCreated({
+    id,
+    type: body.type,
+    locale,
+    data: { ...data, ...fcargo },
+  });
+
   return NextResponse.json({
     id,
     ok: true,
-    ...(fcargo
-      ? {
-          fcargoOrderId: fcargo.fcargoOrderId,
-          fcargoTrackingNumber: fcargo.fcargoTrackingNumber,
-        }
-      : {}),
+    ...fcargoPublicFields(fcargo),
   });
 }
 

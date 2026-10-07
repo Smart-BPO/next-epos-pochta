@@ -1,9 +1,17 @@
 import "server-only";
 
-import { fcargoCreateOrder, hasFcargoConfig } from "@/lib/fcargo/client";
-import { soatoForSettlement } from "@/lib/fcargo/soato";
+import {
+  fcargoCreateOrder,
+  fcargoListOrders,
+  hasFcargoConfig,
+} from "@/lib/fcargo/client";
+import { resolveSettlementSoato } from "@/lib/fcargo/locations";
+import { normalizeUzPhone } from "@/lib/fcargo/packages-store";
 import { getSettlementById } from "@/data/settlements";
-import type { FcargoCreateOrderResult } from "@/lib/fcargo/types";
+import type {
+  FcargoCreateOrderRequest,
+  FcargoCreateOrderResult,
+} from "@/lib/fcargo/types";
 
 export type CreateShipmentFromLeadInput = {
   leadId: string;
@@ -20,15 +28,104 @@ export type CreateShipmentFromLeadInput = {
   locale?: string;
 };
 
+export type CreatedFcargoOrder = {
+  orderId: string;
+  trackingNumber: string;
+  status: string | null;
+  customerId: number | null;
+  /** Tariff price from FCargo — internal, manager confirms the final price. */
+  price: number | null;
+  currency: string | null;
+  duplicate: boolean;
+};
+
+/** FCargo wants +998XXXXXXXXX; anything else is rejected before the call. */
+export function toFcargoPhone(raw: string): string | null {
+  const phone = normalizeUzPhone(raw);
+  return /^\+998\d{9}$/.test(phone) ? phone : null;
+}
+
+function statusCode(status: FcargoCreateOrderResult["status"]): string | null {
+  if (typeof status === "string") return status || null;
+  if (status && typeof status === "object") {
+    return status.code || status.name || null;
+  }
+  return null;
+}
+
+function toCreated(
+  order: FcargoCreateOrderResult,
+  duplicate: boolean,
+): CreatedFcargoOrder {
+  const price = Number(order.total_price ?? order.price);
+  return {
+    orderId: String(order.order_id),
+    trackingNumber: order.tracking_number,
+    status: statusCode(order.status),
+    customerId:
+      typeof order.sender_customer_id === "number"
+        ? order.sender_customer_id
+        : null,
+    price: Number.isFinite(price) && price > 0 ? price : null,
+    currency: typeof order.currency === "string" ? order.currency : null,
+    duplicate,
+  };
+}
+
+/** Same lead re-submitted → FCargo answers 409 DUPLICATE_EXTERNAL_ID. */
+async function findExistingOrder(
+  leadId: string,
+  phone: string,
+): Promise<CreatedFcargoOrder | null> {
+  const list = await fcargoListOrders({
+    customerPhone: phone,
+    externalOrderId: leadId,
+  });
+  if (!list.ok) return null;
+  const hit = list.data?.items?.find((o) => o.external_order_id === leadId);
+  if (!hit) return null;
+  return toCreated(
+    {
+      order_id: hit.order_id,
+      tracking_number: hit.tracking_number,
+      status: hit.status,
+      price: hit.price,
+      currency: hit.currency,
+    },
+    true,
+  );
+}
+
+function buildPackage(input: CreateShipmentFromLeadInput) {
+  const pkg: FcargoCreateOrderRequest["package"] = {
+    seats: 1,
+    description: `EPOS lead ${input.leadId}`,
+  };
+  if (input.weightKg && input.weightKg > 0) pkg.weight = input.weightKg;
+  const hasDims =
+    Boolean(input.lengthCm && input.lengthCm > 0) &&
+    Boolean(input.widthCm && input.widthCm > 0) &&
+    Boolean(input.heightCm && input.heightCm > 0);
+  if (hasDims) {
+    pkg.length = input.lengthCm!;
+    pkg.width = input.widthCm!;
+    pkg.height = input.heightCm!;
+  }
+  if (!pkg.weight && !hasDims) pkg.weight = 1;
+  return pkg;
+}
+
 /**
  * Creates a FCargo delivery order from a calculator lead.
  * Sender = customer (pickup contact); receiver uses same contact as placeholder
- * until manager fills destination contact — address lines use settlement labels.
+ * until the manager fills the destination contact — addresses are settlement
+ * labels, SOATO resolves the branch / tariff.
+ * Idempotent per lead: `external_order_id` = lead id.
  */
 export async function createFcargoOrderFromLead(
   input: CreateShipmentFromLeadInput,
 ): Promise<
-  | { ok: true; order: FcargoCreateOrderResult }
+  | { ok: true; order: CreatedFcargoOrder }
   | { ok: false; skipped?: boolean; message: string }
 > {
   if (!(await hasFcargoConfig())) {
@@ -41,14 +138,13 @@ export async function createFcargoOrderFromLead(
     return { ok: false, message: "invalid_settlements" };
   }
 
-  const fromSoato = soatoForSettlement({
-    settlementId: from.id,
-    regionId: from.regionId,
-  });
-  const toSoato = soatoForSettlement({
-    settlementId: to.id,
-    regionId: to.regionId,
-  });
+  const phone = toFcargoPhone(input.phone);
+  if (!phone) return { ok: false, message: "invalid_phone" };
+
+  const [fromSoato, toSoato] = await Promise.all([
+    resolveSettlementSoato({ settlementId: from.id, regionId: from.regionId }),
+    resolveSettlementSoato({ settlementId: to.id, regionId: to.regionId }),
+  ]);
   if (!fromSoato || !toSoato) {
     return { ok: false, message: "soato_unmapped" };
   }
@@ -57,75 +153,78 @@ export async function createFcargoOrderFromLead(
   const fromLabel = uz ? from.uz : from.ru;
   const toLabel = uz ? to.uz : to.ru;
   const name = input.name.trim() || "EPOS customer";
-  const phone = input.phone.trim();
-  if (!phone) return { ok: false, message: "phone_required" };
 
-  const pkg: {
-    weight?: number;
-    length?: number;
-    width?: number;
-    height?: number;
-    seats: number;
-    description: string;
-  } = {
-    seats: 1,
-    description: `EPOS lead ${input.leadId}`,
-  };
-  if (input.weightKg && input.weightKg > 0) pkg.weight = input.weightKg;
-  if (input.lengthCm && input.lengthCm > 0) pkg.length = input.lengthCm;
-  if (input.widthCm && input.widthCm > 0) pkg.width = input.widthCm;
-  if (input.heightCm && input.heightCm > 0) pkg.height = input.heightCm;
-  if (!pkg.weight && !(pkg.length && pkg.width && pkg.height)) {
-    pkg.weight = 1;
-  }
-
-  const result = await fcargoCreateOrder(
-    {
-      external_order_id: input.leadId,
-      sender: {
-        name,
-        phone,
-        region_soato: fromSoato.regionSoato,
-        address: fromLabel,
-      },
-      receiver: {
-        name,
-        phone,
-        region_soato: toSoato.regionSoato,
-        address: toLabel,
-      },
-      package: pkg,
-      payment: { payer_type: "sender" },
-      comment:
-        input.comment?.trim() ||
-        `EPOS calculator lead ${input.leadId}${input.requestId ? ` / ${input.requestId}` : ""}`,
+  const body: FcargoCreateOrderRequest = {
+    external_order_id: input.leadId,
+    webhook_enabled: true,
+    sender: {
+      name,
+      phone,
+      region_soato: fromSoato.regionSoato,
+      ...(fromSoato.districtSoato
+        ? { district_soato: fromSoato.districtSoato }
+        : {}),
+      address: fromLabel,
     },
-    input.leadId,
-  );
+    receiver: {
+      name,
+      phone,
+      region_soato: toSoato.regionSoato,
+      ...(toSoato.districtSoato
+        ? { district_soato: toSoato.districtSoato }
+        : {}),
+      address: toLabel,
+    },
+    package: buildPackage(input),
+    payment: { payer_type: "sender" },
+    comment:
+      input.comment?.trim() ||
+      `EPOS calculator lead ${input.leadId}${input.requestId ? ` / ${input.requestId}` : ""}`,
+  };
 
-  if (!result.ok) {
-    console.warn("[fcargo:order]", result.code, result.message);
-    return { ok: false, message: result.message };
+  const result = await fcargoCreateOrder(body, `epos-lead-${input.leadId}`);
+
+  let order: CreatedFcargoOrder | null = null;
+  if (result.ok) {
+    order = toCreated(result.data, false);
+  } else if (
+    result.status === 409 &&
+    result.code === "DUPLICATE_EXTERNAL_ID"
+  ) {
+    const details =
+      result.details && typeof result.details === "object"
+        ? (result.details as Record<string, unknown>)
+        : {};
+    order =
+      details.order_id != null && typeof details.tracking_number === "string"
+        ? toCreated(
+            {
+              order_id: details.order_id as number | string,
+              tracking_number: details.tracking_number,
+            },
+            true,
+          )
+        : await findExistingOrder(input.leadId, phone);
   }
 
-  const order = result.data;
-  const statusLabel =
-    typeof order.status === "string"
-      ? order.status
-      : order.status && typeof order.status === "object"
-        ? (order.status as { code?: string; name?: string }).code ||
-          (order.status as { name?: string }).name ||
-          null
-        : null;
+  if (!order) {
+    const message = result.ok ? "order_lookup_failed" : result.message;
+    console.warn("[fcargo:order]", result.ok ? "" : result.code, message);
+    return { ok: false, message };
+  }
 
   try {
-    const { upsertFcargoOrderLink } = await import("@/lib/fcargo/orders-store");
-    await upsertFcargoOrderLink({
+    const { findFcargoOrder, upsertFcargoOrderLink } = await import(
+      "@/lib/fcargo/orders-store"
+    );
+    const known =
+      order.duplicate && (await findFcargoOrder({ leadId: input.leadId }));
+    if (!known) await upsertFcargoOrderLink({
       leadId: input.leadId,
-      fcargoOrderId: order.order_id,
-      trackingNumber: order.tracking_number,
-      fcargoStatus: statusLabel,
-      statusRaw: order.status ?? order,
+      fcargoOrderId: order.orderId,
+      trackingNumber: order.trackingNumber,
+      fcargoStatus: order.status,
+      statusRaw: result.ok ? result.data : { duplicate: true },
     });
   } catch (e) {
     console.warn("[fcargo:order:link]", e);

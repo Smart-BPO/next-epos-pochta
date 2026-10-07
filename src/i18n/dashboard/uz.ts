@@ -610,6 +610,7 @@ export const dashUz: DashCopy = {
     trackLabel: "Trek-raqam",
     trackRun: "Trek",
     orderId: "Buyurtma ID",
+    customerPhone: "Mijoz telefoni (buyurtma / jo‘natmalar uchun)",
     orderRun: "Buyurtma",
     regionCode: "Viloyat kodi",
     regionRun: "Tekshirish",

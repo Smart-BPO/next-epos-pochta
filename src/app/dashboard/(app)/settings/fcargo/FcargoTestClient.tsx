@@ -69,6 +69,7 @@ export function FcargoTestClient({
   const trackingRef = useRef<HTMLInputElement>(null);
   const orderRef = useRef<HTMLInputElement>(null);
   const soatoRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
 
   function runProbe(formData: FormData) {
     startTransition(async () => {
@@ -89,6 +90,7 @@ export function FcargoTestClient({
   function onQuickProbe(probe: string) {
     const fd = new FormData();
     fd.set("probe", probe);
+    fd.set("customer_phone", phoneRef.current?.value ?? "");
     runProbe(fd);
   }
 
@@ -125,6 +127,17 @@ export function FcargoTestClient({
           <p className="m-0 text-sm text-primary">{f.statusOff}</p>
         ) : null}
 
+        <label className="grid max-w-xs gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
+          {f.customerPhone}
+          <input
+            ref={phoneRef}
+            placeholder="+998901234567"
+            inputMode="tel"
+            className={dashInput}
+            disabled={busy}
+          />
+        </label>
+
         <div className="flex flex-wrap gap-2">
           {(
             [
@@ -158,7 +171,7 @@ export function FcargoTestClient({
               defaultValue="1703"
               className={dashInput}
               disabled={busy}
-              title="Region SOATO as integer (Andijon)"
+              title="Region SOATO (Andijon)"
             />
           </label>
           <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
@@ -168,7 +181,7 @@ export function FcargoTestClient({
               defaultValue="1706"
               className={dashInput}
               disabled={busy}
-              title="Region SOATO as integer (Buxoro)"
+              title="Region SOATO (Buxoro)"
             />
           </label>
           <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wide text-black/40">
@@ -280,6 +293,7 @@ export function FcargoTestClient({
                 const fd = new FormData();
                 fd.set("probe", "order");
                 fd.set("order_id", orderRef.current?.value ?? "");
+                fd.set("customer_phone", phoneRef.current?.value ?? "");
                 runProbe(fd);
               }}
             >

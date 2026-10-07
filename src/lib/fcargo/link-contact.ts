@@ -17,11 +17,9 @@ function shipmentStatusFromFcargo(
   status: string | null | undefined,
 ): "pending_manager" | "confirmed" | "cancelled" {
   const s = (status ?? "").toLowerCase();
-  if (/cancel|отмен|returned|возврат|lost|утер/.test(s)) return "cancelled";
-  if (/deliver|доставл|completed|complete|done|выдач|получен/.test(s)) {
-    return "confirmed";
+  if (/cancel|отмен|returned|возврат|lost|утер|disposed/.test(s)) {
+    return "cancelled";
   }
-  // in transit etc.
   if (mapFcargoStatusToCrm(status) === "done") return "confirmed";
   return "pending_manager";
 }

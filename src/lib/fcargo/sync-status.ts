@@ -7,8 +7,15 @@ import {
   listOpenFcargoOrders,
   upsertFcargoOrderLink,
 } from "@/lib/fcargo/orders-store";
-import { fcargoGetOrder, fcargoTrackPackage } from "@/lib/fcargo/client";
-import { listOpenCatalogPackages } from "@/lib/fcargo/packages-store";
+import {
+  fcargoGetOrder,
+  fcargoTrackPackage,
+  type FcargoCustomerScope,
+} from "@/lib/fcargo/client";
+import {
+  listOpenCatalogPackages,
+  normalizeUzPhone,
+} from "@/lib/fcargo/packages-store";
 import { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
 import { syncShipmentMirrorFromPackage } from "@/lib/fcargo/link-contact";
 
@@ -18,11 +25,52 @@ export type LeadCrmStatus = "draft" | "new" | "in_progress" | "done" | "spam";
  * Map FCargo delivery status → CRM lead status.
  * Unknown statuses leave CRM unchanged.
  */
+const CRM_BY_FCARGO_CODE: Record<string, LeadCrmStatus | null> = {
+  CREATED: "new",
+  ON_HOLD: "in_progress",
+  EXCEPTION: "in_progress",
+  PICKUP_ASSIGNED: "in_progress",
+  AWAITING_PICKUP: "in_progress",
+  PICKUP_STARTED: "in_progress",
+  PICKUP_FAILED: "in_progress",
+  PICKED_UP: "in_progress",
+  AWAITING_HANDOVER: "in_progress",
+  RECEIVED_AT_ORIGIN_WAREHOUSE: "in_progress",
+  REPACKED: "in_progress",
+  READY_FOR_DISPATCH: "in_progress",
+  IN_TRANSIT: "in_progress",
+  RECEIVED_AT_HUB: "in_progress",
+  ARRIVED_AT_DESTINATION_WAREHOUSE: "in_progress",
+  RECEIVED_AT_DESTINATION_WAREHOUSE: "in_progress",
+  DELIVERY_ASSIGNED: "in_progress",
+  OUT_FOR_DELIVERY: "in_progress",
+  DELIVERY_ATTEMPT_FAILED: "in_progress",
+  DELIVERY_RESCHEDULED: "in_progress",
+  DELIVERED: "done",
+  // Problem / return / cancel flows — manager decides, CRM untouched.
+  REFUSED: null,
+  MISSING: null,
+  DAMAGED: null,
+  AWAITING_SENDER_DECISION: null,
+  RETURN_RECEIVED_AT_WAREHOUSE: null,
+  RETURN_IN_TRANSIT: null,
+  RETURN_OUT_FOR_DELIVERY: null,
+  RETURNED_TO_SENDER: null,
+  CANCELLED: null,
+  LOST: null,
+  DISPOSED: null,
+};
+
 export function mapFcargoStatusToCrm(
   statusRaw: string | null | undefined,
 ): LeadCrmStatus | null {
   if (!statusRaw) return null;
+  const code = statusRaw.trim().toUpperCase();
+  if (code in CRM_BY_FCARGO_CODE) return CRM_BY_FCARGO_CODE[code] ?? null;
+
+  // Legacy / localized labels (pre-code payloads).
   const s = statusRaw.trim().toLowerCase();
+  if (/return|refus/.test(s)) return null;
 
   if (
     /cancel|отмен|returned|возврат|lost|утер/.test(s)
@@ -30,7 +78,7 @@ export function mapFcargoStatusToCrm(
     return null; // delivery cancelled — do not auto-spam CRM
   }
   if (
-    /deliver|доставл|completed|complete|done|выдач|получен/.test(s)
+    /delivered|доставлен|completed|complete|done|выдан|получен/.test(s)
   ) {
     return "done";
   }
@@ -290,6 +338,43 @@ export async function applyFcargoStatusUpdate(
   };
 }
 
+/**
+ * FCargo order reads need `customer_id` or `customer_phone` — taken from the
+ * lead payload written at order creation.
+ */
+async function customerScopesForLeads(
+  leadIds: string[],
+): Promise<Map<string, FcargoCustomerScope>> {
+  const out = new Map<string, FcargoCustomerScope>();
+  if (!leadIds.length || !hasSupabaseAdminConfig()) return out;
+  const client = createSupabaseAdminClient();
+  const { data } = await client
+    .from("epos_leads")
+    .select("id, payload")
+    .in("id", leadIds);
+  for (const lead of data ?? []) {
+    const payload =
+      lead.payload && typeof lead.payload === "object"
+        ? (lead.payload as Record<string, unknown>)
+        : {};
+    const d =
+      payload.data && typeof payload.data === "object"
+        ? (payload.data as Record<string, unknown>)
+        : {};
+    const customerId =
+      typeof d.fcargoCustomerId === "number" ? d.fcargoCustomerId : null;
+    const phone =
+      typeof d.phone === "string" ? normalizeUzPhone(d.phone) : "";
+    if (customerId != null || phone) {
+      out.set(String(lead.id), {
+        customerId,
+        customerPhone: phone || null,
+      });
+    }
+  }
+  return out;
+}
+
 export async function syncOpenFcargoOrders(opts?: {
   limit?: number;
 }): Promise<{ checked: number; updated: number; errors: number }> {
@@ -300,6 +385,8 @@ export async function syncOpenFcargoOrders(opts?: {
   let errors = 0;
   let checked = 0;
 
+  const scopes = await customerScopesForLeads(open.map((r) => r.lead_id));
+
   for (const row of open) {
     checked += 1;
     try {
@@ -307,7 +394,10 @@ export async function syncOpenFcargoOrders(opts?: {
       let tracking = row.tracking_number;
       let raw: unknown = null;
 
-      const orderRes = await fcargoGetOrder(row.fcargo_order_id);
+      const scope = scopes.get(row.lead_id);
+      const orderRes = scope
+        ? await fcargoGetOrder(row.fcargo_order_id, scope)
+        : ({ ok: false } as const);
       if (orderRes.ok) {
         raw = orderRes.data;
         const extracted = extractFromUnknown(orderRes.data);
