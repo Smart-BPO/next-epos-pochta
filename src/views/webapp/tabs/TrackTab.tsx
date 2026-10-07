@@ -67,6 +67,14 @@ export function TrackTab() {
   }, [load]);
 
   useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [load]);
+
+  useEffect(() => {
     if (!highlightShipmentId) return;
     const t = window.setTimeout(() => setHighlightShipmentId(null), 8000);
     return () => window.clearTimeout(t);

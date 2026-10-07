@@ -21,7 +21,8 @@ import {
   leadTypeLabel,
 } from "@/lib/cms/lead-display";
 import { getPublicEnv } from "@/utils/env";
-import { updateLeadStatusAction } from "../actions";
+import { FcargoStatusChip } from "@/components/dashboard/FcargoStatusChip";
+import { refreshFcargoLeadAction, updateLeadStatusAction } from "../actions";
 
 type LeadRow = {
   id: string;
@@ -81,6 +82,40 @@ export default async function LeadDetailPage({
   if (!data) notFound();
   const row = data as LeadRow;
   const payloadData = row.payload?.data ?? {};
+
+  const [{ data: fcargoOrder }, { data: fcargoPackage }] = await Promise.all([
+    client
+      .from("epos_fcargo_orders")
+      .select("fcargo_order_id, tracking_number, fcargo_status, last_synced_at")
+      .eq("lead_id", row.id)
+      .maybeSingle(),
+    client
+      .from("epos_fcargo_packages")
+      .select("status, last_event_at, contact_session_id, event_type")
+      .eq("lead_id", row.id)
+      .order("last_event_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+  const fcargo = {
+    orderId:
+      fcargoOrder?.fcargo_order_id ??
+      (payloadData.fcargoOrderId != null ? String(payloadData.fcargoOrderId) : ""),
+    tracking:
+      fcargoOrder?.tracking_number ?? str(payloadData.fcargoTrackingNumber),
+    status:
+      fcargoPackage?.status ??
+      fcargoOrder?.fcargo_status ??
+      (str(payloadData.fcargoStatus) || null),
+    updatedAt: fcargoPackage?.last_event_at ?? fcargoOrder?.last_synced_at ?? null,
+    contactSessionId: fcargoPackage?.contact_session_id ?? null,
+    price:
+      typeof payloadData.fcargoPrice === "number"
+        ? `${payloadData.fcargoPrice.toLocaleString("ru-RU")} ${str(payloadData.fcargoCurrency) || "UZS"}`
+        : "",
+    error: str(payloadData.fcargoError),
+  };
+  const hasFcargo = Boolean(fcargo.orderId || fcargo.tracking || fcargo.error);
   const draftStep =
     row.status === "draft" ? leadDraftStep(row.payload) : null;
   const siteOrigin =
@@ -200,6 +235,61 @@ export default async function LeadDetailPage({
               />
             </div>
           </div>
+          {hasFcargo ? (
+            <div className="space-y-2 rounded-xl border border-black/[0.06] bg-black/[0.02] p-3">
+              <p className="m-0 text-[0.7rem] font-semibold uppercase tracking-wide text-black/35">
+                FCargo
+              </p>
+              <FcargoStatusChip
+                code={fcargo.status}
+                updatedAt={fcargo.updatedAt}
+                trackingNumber={fcargo.tracking}
+              />
+              <dl className="m-0 grid gap-1 text-xs">
+                {fcargo.orderId ? (
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-black/45">Заказ</dt>
+                    <dd className="m-0 font-mono">{fcargo.orderId}</dd>
+                  </div>
+                ) : null}
+                {fcargo.price ? (
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-black/45">Тариф (внутр.)</dt>
+                    <dd className="m-0 font-medium">{fcargo.price}</dd>
+                  </div>
+                ) : null}
+                <div className="flex justify-between gap-2">
+                  <dt className="text-black/45">Mini App</dt>
+                  <dd className="m-0">
+                    {fcargo.contactSessionId ? (
+                      <Link
+                        href={`/dashboard/webapp/shipments/?contact=${encodeURIComponent(fcargo.contactSessionId)}`}
+                        className="font-mono text-primary hover:underline"
+                      >
+                        {fcargo.contactSessionId}
+                      </Link>
+                    ) : (
+                      <span className="text-black/40">не привязан</span>
+                    )}
+                  </dd>
+                </div>
+                {fcargo.error ? (
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-black/45">Ошибка</dt>
+                    <dd className="m-0 font-mono text-red-700">{fcargo.error}</dd>
+                  </div>
+                ) : null}
+              </dl>
+              {!readOnly && (fcargo.orderId || fcargo.tracking) ? (
+                <form action={refreshFcargoLeadAction}>
+                  <input type="hidden" name="id" value={row.id} />
+                  <button type="submit" className={dashBtnSecondary}>
+                    Обновить статус FCargo
+                  </button>
+                </form>
+              ) : null}
+            </div>
+          ) : null}
           {resumeUrl ? (
             <div>
               <p className="m-0 text-[0.7rem] font-semibold uppercase tracking-wide text-black/35">

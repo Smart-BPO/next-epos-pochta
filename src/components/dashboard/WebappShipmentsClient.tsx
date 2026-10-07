@@ -7,6 +7,7 @@ import {
   useDashT,
 } from "@/components/dashboard/DashLocaleProvider";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import { FcargoStatusChip } from "@/components/dashboard/FcargoStatusChip";
 import { ShipmentStatusForm } from "@/components/dashboard/ShipmentStatusForm";
 import { DashCrudPage, DashListView } from "@/components/dashboard/ds";
 import { dashIntlLocale } from "@/i18n/dashboard";
@@ -30,6 +31,8 @@ export type WebappShipmentRow = {
   track_number: string | null;
   phone: string;
   created_at: string;
+  fcargo_status?: string | null;
+  fcargo_updated_at?: string | null;
 };
 
 export function WebappShipmentsClient({
@@ -158,6 +161,11 @@ export function WebappShipmentsClient({
                     {t.shipments.waitingInLeads}
                   </span>
                 ) : null}
+                <FcargoStatusChip
+                  code={row.fcargo_status}
+                  updatedAt={row.fcargo_updated_at}
+                  trackingNumber={row.track_number}
+                />
               </div>
             ),
           },

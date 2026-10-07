@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isNextResponse, requireWebAppInitData } from "@/lib/webapp/auth";
 import { upsertWebAppContact } from "@/lib/webapp/contact";
+import { verifyTelegramContactResponse } from "@/lib/webapp/telegram-init-data";
 
 type ContactPayload = {
   phone?: string;
@@ -8,6 +9,7 @@ type ContactPayload = {
   lastName?: string;
   locale?: string;
   source?: "telegram_contact" | "manual";
+  contactResponse?: string;
   telegramUser?: {
     id?: number;
     firstName?: string;
@@ -50,8 +52,20 @@ export async function POST(request: Request) {
   }
 
   const locale = body.locale === "ru" ? "ru" : "uz";
+  // Phone counts as Telegram-verified only with a signed contact response;
+  // the bot webhook also upgrades the source when the contact reaches the bot.
+  const signedPhone =
+    body.source === "telegram_contact" && typeof body.contactResponse === "string"
+      ? verifyTelegramContactResponse(
+          body.contactResponse,
+          (process.env.TELEGRAM_BOT_TOKEN ?? "").trim(),
+          auth.userId,
+        )
+      : null;
   const source =
-    body.source === "telegram_contact" ? "telegram_contact" : "manual";
+    signedPhone && normalizePhone(signedPhone) === phone
+      ? "telegram_contact"
+      : "manual";
   const lastName = (body.lastName ?? "").trim();
   const telegramUsername =
     auth.username ??

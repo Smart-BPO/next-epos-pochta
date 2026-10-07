@@ -70,8 +70,10 @@ async function updateExisting(
     input.telegramUsername?.trim() || existing.telegram_username || null;
   const nextPhoto =
     input.photoUrl?.trim() || existing.photo_url || null;
+  // Verified status is tied to the phone: a manual edit to another number drops it.
   const nextSource: WebAppContactSource =
-    existing.source === "telegram_contact" || input.source === "telegram_contact"
+    input.source === "telegram_contact" ||
+    (existing.source === "telegram_contact" && existing.phone === input.phone)
       ? "telegram_contact"
       : "manual";
 

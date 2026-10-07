@@ -19,6 +19,29 @@ export async function POST(request: Request) {
   }
 
   const admin = createSupabaseAdminClient();
+
+  const { data: contact } = await admin
+    .from("epos_webapp_contacts")
+    .select("session_id, phone, source")
+    .eq("telegram_user_id", auth.userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (contact?.source === "telegram_contact" && contact.phone) {
+    try {
+      const { linkFcargoPackagesToContact } = await import(
+        "@/lib/fcargo/link-contact"
+      );
+      await linkFcargoPackagesToContact({
+        sessionId: contact.session_id,
+        phone: contact.phone,
+        telegramUserId: auth.userId,
+      });
+    } catch (e) {
+      console.warn("[webapp:shipments:list:fcargo-link]", e);
+    }
+  }
+
   const { data, error } = await admin
     .from("epos_webapp_shipments")
     .select(

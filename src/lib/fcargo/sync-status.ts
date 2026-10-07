@@ -15,9 +15,13 @@ import {
 import {
   listOpenCatalogPackages,
   normalizeUzPhone,
+  upsertFcargoPackage,
 } from "@/lib/fcargo/packages-store";
 import { ingestFcargoWebhook } from "@/lib/fcargo/ingest";
-import { syncShipmentMirrorFromPackage } from "@/lib/fcargo/link-contact";
+import {
+  linkPackageToVerifiedContact,
+  syncShipmentMirrorFromPackage,
+} from "@/lib/fcargo/link-contact";
 
 export type LeadCrmStatus = "draft" | "new" | "in_progress" | "done" | "spam";
 
@@ -316,18 +320,23 @@ export async function applyFcargoStatusUpdate(
 
   await client.from("epos_leads").update(update).eq("id", lead.id);
 
-  // Sync webapp shipment track_number if matching trek exists
+  // Catalog + Mini App mirror follow the same status (linked by lead phone).
   if (nextTracking) {
-    const shipmentUpdate: Record<string, unknown> = {
-      track_number: nextTracking,
-    };
-    if (mapped === "done") {
-      shipmentUpdate.status = "confirmed";
+    const leadPhone =
+      typeof prevData.phone === "string" ? normalizeUzPhone(prevData.phone) : "";
+    const catalog = await upsertFcargoPackage({
+      fcargoOrderId: link.fcargo_order_id,
+      trackingNumber: nextTracking,
+      status: nextStatus,
+      phones: leadPhone ? [leadPhone] : [],
+      externalOrderId: lead.id,
+      leadId: lead.id,
+    });
+    if (catalog) {
+      await linkPackageToVerifiedContact(catalog).catch((e) => {
+        console.warn("[fcargo:status:mirror]", e);
+      });
     }
-    await client
-      .from("epos_webapp_shipments")
-      .update(shipmentUpdate)
-      .eq("track_number", nextTracking);
   }
 
   return {

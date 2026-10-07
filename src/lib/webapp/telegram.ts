@@ -43,19 +43,23 @@ type ContactRequestedEvent = {
   responseUnsafe?: {
     contact?: TelegramContact;
   };
-  response?: {
-    contact?: TelegramContact;
-  };
+  /** Signed query string (`contact=…&auth_date=…&hash=…`); older clients send an object. */
+  response?: string | { contact?: TelegramContact };
+};
+
+export type SharedTelegramContact = TelegramContact & {
+  /** Raw signed response — server verifies phone ownership with it. */
+  signedResponse?: string;
 };
 
 /** Ask Telegram for phone; falls back to null when unavailable (browser / old clients). */
-export function requestTelegramContact(): Promise<TelegramContact | null> {
+export function requestTelegramContact(): Promise<SharedTelegramContact | null> {
   const tg = getTelegramWebApp();
   if (!tg?.requestContact) return Promise.resolve(null);
 
   return new Promise((resolve) => {
     let settled = false;
-    const finish = (contact: TelegramContact | null) => {
+    const finish = (contact: SharedTelegramContact | null) => {
       if (settled) return;
       settled = true;
       tg.offEvent("contactRequested", onContactRequested);
@@ -68,9 +72,13 @@ export function requestTelegramContact(): Promise<TelegramContact | null> {
         finish(null);
         return;
       }
+      const signedResponse =
+        typeof payload.response === "string" ? payload.response : undefined;
       const contact =
-        payload.responseUnsafe?.contact ?? payload.response?.contact ?? null;
-      finish(contact);
+        payload.responseUnsafe?.contact ??
+        (typeof payload.response === "object" ? payload.response.contact : null) ??
+        null;
+      finish(contact ? { ...contact, signedResponse } : null);
     };
 
     tg.onEvent("contactRequested", onContactRequested);

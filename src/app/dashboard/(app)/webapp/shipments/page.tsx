@@ -27,6 +27,29 @@ export default async function WebappShipmentsPage() {
       .order("created_at", { ascending: false })
       .limit(500);
     rows = (data ?? []) as WebappShipmentRow[];
+
+    const tracks = Array.from(
+      new Set(rows.map((r) => r.track_number?.trim()).filter(Boolean) as string[]),
+    );
+    if (tracks.length) {
+      const { data: packages } = await client
+        .from("epos_fcargo_packages")
+        .select("tracking_number, status, last_event_at")
+        .in("tracking_number", tracks);
+      const byTrack = new Map(
+        (packages ?? []).map((p) => [p.tracking_number as string, p]),
+      );
+      rows = rows.map((r) => {
+        const pkg = r.track_number ? byTrack.get(r.track_number.trim()) : null;
+        return pkg
+          ? {
+              ...r,
+              fcargo_status: pkg.status ?? null,
+              fcargo_updated_at: pkg.last_event_at ?? null,
+            }
+          : r;
+      });
+    }
   }
 
   return (

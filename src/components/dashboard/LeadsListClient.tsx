@@ -8,6 +8,7 @@ import {
 } from "@/components/dashboard/DashLocaleProvider";
 import { LeadStatusSelect } from "@/components/dashboard/LeadStatusSelect";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
+import { FcargoStatusChip } from "@/components/dashboard/FcargoStatusChip";
 import { LeadsKanbanBoard } from "@/components/dashboard/LeadsKanbanBoard";
 import { DashCrudPage, DashListView } from "@/components/dashboard/ds";
 import { dashIntlLocale } from "@/i18n/dashboard";
@@ -16,6 +17,10 @@ import type { InboxRow } from "@/lib/cms/inbox";
 import { dashBtnRowSecondary } from "@/styles/dashboard";
 
 export type LeadListRow = InboxRow;
+
+function payloadString(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
 
 function inboxTypeLabel(
   type: string,
@@ -256,6 +261,12 @@ export function LeadsListClient({
                     status={row.status}
                     action={updateStatusAction}
                     disabled={readOnly}
+                  />
+                  <FcargoStatusChip
+                    code={payloadString(row.payload?.data?.fcargoStatus)}
+                    trackingNumber={payloadString(
+                      row.payload?.data?.fcargoTrackingNumber,
+                    )}
                   />
                 </div>
               );

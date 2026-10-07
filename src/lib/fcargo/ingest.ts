@@ -11,7 +11,7 @@ import {
   type FcargoPackageRow,
 } from "@/lib/fcargo/packages-store";
 import { findFcargoOrder } from "@/lib/fcargo/orders-store";
-import { syncShipmentMirrorFromPackage } from "@/lib/fcargo/link-contact";
+import { linkPackageToVerifiedContact } from "@/lib/fcargo/link-contact";
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object"
@@ -196,9 +196,9 @@ export async function ingestFcargoWebhook(
     rawLast: payload,
   });
 
-  // Mirror shipment if already linked to Mini App
-  if (catalog?.contact_session_id) {
-    await syncShipmentMirrorFromPackage(catalog).catch((e) => {
+  // Mirror into the Mini App (already linked, or a verified contact by phone)
+  if (catalog) {
+    await linkPackageToVerifiedContact(catalog).catch((e) => {
       console.warn("[fcargo:ingest:mirror]", e);
     });
   }

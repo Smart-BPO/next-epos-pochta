@@ -36,6 +36,7 @@ export function ContactGate({ onLinked }: ContactGateProps) {
     firstName: string;
     lastName?: string;
     source: "telegram_contact" | "manual";
+    contactResponse?: string;
   }) => {
     setBusy(true);
     setError("");
@@ -49,6 +50,7 @@ export function ContactGate({ onLinked }: ContactGateProps) {
           lastName: payload.lastName ?? "",
           locale,
           source: payload.source,
+          contactResponse: payload.contactResponse,
           telegramUser: userSnapshot,
           photoUrl: user?.photo_url ?? userSnapshot?.photoUrl ?? "",
           initData,
@@ -102,6 +104,7 @@ export function ContactGate({ onLinked }: ContactGateProps) {
       firstName: contact.first_name || name || "Telegram",
       lastName: contact.last_name,
       source: "telegram_contact",
+      contactResponse: contact.signedResponse,
     });
   };
 

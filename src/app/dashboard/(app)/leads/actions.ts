@@ -87,6 +87,69 @@ export async function updateLeadBoardAction(input: {
   revalidateLeads(orderedIds[0]);
 }
 
+/** Pull the current FCargo status of a lead's order (lead, catalog, Mini App). */
+export async function refreshFcargoLeadAction(formData: FormData) {
+  await requireMutation("leads");
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) throw new Error("Invalid");
+
+  const [{ fcargoGetOrder, fcargoTrackPackage }, sync, { findFcargoOrder }, { normalizeUzPhone }] =
+    await Promise.all([
+      import("@/lib/fcargo/client"),
+      import("@/lib/fcargo/sync-status"),
+      import("@/lib/fcargo/orders-store"),
+      import("@/lib/fcargo/packages-store"),
+    ]);
+
+  const client = createSupabaseAdminClient();
+  const { data: lead } = await client
+    .from("epos_leads")
+    .select("id, payload")
+    .eq("id", id)
+    .maybeSingle();
+  const data =
+    (lead?.payload as { data?: Record<string, unknown> } | null)?.data ?? {};
+  const link = await findFcargoOrder({ leadId: id });
+  const orderId =
+    link?.fcargo_order_id ??
+    (data.fcargoOrderId != null ? String(data.fcargoOrderId) : null);
+  const tracking =
+    link?.tracking_number ??
+    (typeof data.fcargoTrackingNumber === "string" ? data.fcargoTrackingNumber : null);
+  if (!orderId && !tracking) throw new Error("fcargo_order_missing");
+
+  const phone = typeof data.phone === "string" ? normalizeUzPhone(data.phone) : "";
+  const customerId =
+    typeof data.fcargoCustomerId === "number" ? data.fcargoCustomerId : null;
+
+  let raw: unknown = null;
+  if (orderId && (phone || customerId != null)) {
+    const res = await fcargoGetOrder(orderId, {
+      customerId,
+      customerPhone: phone || null,
+    });
+    if (res.ok) raw = res.data;
+  }
+  if (!raw && tracking) {
+    const res = await fcargoTrackPackage(tracking);
+    if (res.ok) raw = res.data;
+  }
+  if (!raw) throw new Error("fcargo_unavailable");
+
+  const parsed = sync.parseFcargoWebhookPayload(raw);
+  await sync.applyFcargoStatusUpdate({
+    orderId: orderId ?? parsed.orderId,
+    externalOrderId: id,
+    tracking: parsed.tracking ?? tracking,
+    status: parsed.status,
+    raw,
+  });
+
+  revalidateLeads(id);
+  revalidateShipments();
+}
+
 /** Confirm / cancel a pending Mini App shipment from the leads inbox. */
 export async function updateInboxShipmentStatusAction(formData: FormData) {
   await requireMutation("webapp");

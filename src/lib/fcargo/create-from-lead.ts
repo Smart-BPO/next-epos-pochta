@@ -230,5 +230,25 @@ export async function createFcargoOrderFromLead(
     console.warn("[fcargo:order:link]", e);
   }
 
+  try {
+    const { upsertFcargoPackage } = await import("@/lib/fcargo/packages-store");
+    const { linkPackageToVerifiedContact } = await import(
+      "@/lib/fcargo/link-contact"
+    );
+    const catalog = await upsertFcargoPackage({
+      fcargoOrderId: order.orderId,
+      trackingNumber: order.trackingNumber,
+      status: order.status,
+      eventType: "order.created",
+      phones: [phone],
+      externalOrderId: input.leadId,
+      leadId: input.leadId,
+      rawLast: { sender: body.sender, receiver: body.receiver },
+    });
+    if (catalog) await linkPackageToVerifiedContact(catalog);
+  } catch (e) {
+    console.warn("[fcargo:order:catalog]", e);
+  }
+
   return { ok: true, order };
 }
