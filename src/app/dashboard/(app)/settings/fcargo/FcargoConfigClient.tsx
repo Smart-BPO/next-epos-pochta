@@ -22,10 +22,19 @@ export function FcargoConfigClient({
   settings,
   canEdit,
   webhookUrl,
+  linkedCount = 0,
+  otpErrors = [],
 }: {
   settings: FcargoSettingsView;
   canEdit: boolean;
   webhookUrl: string;
+  linkedCount?: number;
+  otpErrors?: Array<{
+    phone: string;
+    kind: string;
+    errorCode: string | null;
+    createdAt: string;
+  }>;
 }) {
   const t = useDashT();
   const f = t.fcargo;
@@ -270,6 +279,52 @@ export function FcargoConfigClient({
           </button>
         </section>
       ) : null}
+
+      <section className={`${dashCardPad} grid gap-3`}>
+        <h2 className={dashSectionTitle}>{f.linkedAccountsTitle}</h2>
+        <p className="m-0 text-sm text-ink">
+          {dashFormat(f.linkedAccountsCount, { count: linkedCount })}
+        </p>
+      </section>
+
+      <section className={`${dashCardPad} grid gap-3`}>
+        <h2 className={dashSectionTitle}>{f.otpErrorsTitle}</h2>
+        {otpErrors.length === 0 ? (
+          <p className="m-0 text-sm text-black/50">{f.otpErrorsEmpty}</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-black/10 text-xs uppercase tracking-wide text-black/40">
+                  <th className="py-2 pr-3 font-semibold">{f.otpErrorPhone}</th>
+                  <th className="py-2 pr-3 font-semibold">{f.otpErrorKind}</th>
+                  <th className="py-2 pr-3 font-semibold">{f.otpErrorCode}</th>
+                  <th className="py-2 font-semibold">{f.otpErrorAt}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {otpErrors.map((row, i) => (
+                  <tr
+                    key={`${row.createdAt}-${i}`}
+                    className="border-b border-black/[0.06]"
+                  >
+                    <td className="py-2 pr-3 font-mono text-xs">{row.phone}</td>
+                    <td className="py-2 pr-3">{row.kind}</td>
+                    <td className="py-2 pr-3 font-mono text-xs">
+                      {row.errorCode || "—"}
+                    </td>
+                    <td className="py-2 text-xs text-black/55">
+                      {row.createdAt
+                        ? new Date(row.createdAt).toLocaleString()
+                        : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

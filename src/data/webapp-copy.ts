@@ -64,6 +64,18 @@ export type WebAppCopy = {
   profileSupport: string;
   profileAbout: string;
   profileLang: string;
+  fcargoLinkTitle: string;
+  fcargoLinkLead: string;
+  fcargoSendCode: string;
+  fcargoCodeLabel: string;
+  fcargoVerify: string;
+  fcargoResend: string;
+  fcargoUnlink: string;
+  fcargoLinked: string;
+  fcargoNoCustomer: string;
+  fcargoRateLimited: string;
+  fcargoInvalidCode: string;
+  fcargoError: string;
   blockedTitle: string;
   blockedLead: string;
   blockedCta: string;
@@ -141,6 +153,20 @@ const uz: WebAppCopy = {
   profileSupport: "Operator bilan bogʻlanish",
   profileAbout: "EPOS POCHTA — Oʻzbekiston boʻylab yetkazib berish.",
   profileLang: "Til",
+  fcargoLinkTitle: "FCargo hisobi",
+  fcargoLinkLead:
+    "Mijoz kartangizni SMS orqali bogʻlang — joʻnatmalar va buyurtma ochiladi.",
+  fcargoSendCode: "Kod yuborish",
+  fcargoCodeLabel: "SMS kod",
+  fcargoVerify: "Tasdiqlash",
+  fcargoResend: "Qayta yuborish",
+  fcargoUnlink: "Uzish",
+  fcargoLinked: "FCargo bogʻlangan",
+  fcargoNoCustomer:
+    "Bu raqam hali EPOS mijozi emas. Avval joʻnatma yarating, keyin bogʻlang.",
+  fcargoRateLimited: "Juda koʻp urinish. Keyinroq qayta urinib koʻring.",
+  fcargoInvalidCode: "Kod notoʻgʻri yoki muddati tugagan.",
+  fcargoError: "Xatolik. Qayta urinib koʻring.",
   blockedTitle: "Faqat Telegram da",
   blockedLead:
     "Mini App faqat @epos_pochta_bot orqali ochiladi. Brauzerda ishlamaydi.",
@@ -220,6 +246,20 @@ const ru: WebAppCopy = {
   profileSupport: "Связаться с оператором",
   profileAbout: "EPOS POCHTA — доставка по Узбекистану.",
   profileLang: "Язык",
+  fcargoLinkTitle: "Аккаунт FCargo",
+  fcargoLinkLead:
+    "Привяжите клиентскую карту по SMS — отправления и оформление заказа.",
+  fcargoSendCode: "Отправить код",
+  fcargoCodeLabel: "SMS-код",
+  fcargoVerify: "Подтвердить",
+  fcargoResend: "Отправить ещё раз",
+  fcargoUnlink: "Отвязать",
+  fcargoLinked: "FCargo привязан",
+  fcargoNoCustomer:
+    "Этот номер ещё не клиент EPOS. Сначала оформите отправление, затем привяжите.",
+  fcargoRateLimited: "Слишком много попыток. Попробуйте позже.",
+  fcargoInvalidCode: "Неверный или просроченный код.",
+  fcargoError: "Ошибка. Попробуйте ещё раз.",
   blockedTitle: "Только в Telegram",
   blockedLead:
     "Mini App открывается только через @epos_pochta_bot. В браузере недоступно.",
@@ -296,6 +336,18 @@ const zh: WebAppCopy = {
   profileSupport: "联系操作员",
   profileAbout: "EPOS POCHTA — 乌兹别克斯坦配送。",
   profileLang: "语言",
+  fcargoLinkTitle: "FCargo 账户",
+  fcargoLinkLead: "通过短信绑定客户卡后可查看运单并下单。",
+  fcargoSendCode: "发送验证码",
+  fcargoCodeLabel: "短信验证码",
+  fcargoVerify: "确认",
+  fcargoResend: "重新发送",
+  fcargoUnlink: "解除绑定",
+  fcargoLinked: "已绑定 FCargo",
+  fcargoNoCustomer: "该号码还不是 EPOS 客户。请先寄件，然后再绑定。",
+  fcargoRateLimited: "尝试过多，请稍后再试。",
+  fcargoInvalidCode: "验证码错误或已过期。",
+  fcargoError: "出错了，请再试一次。",
   blockedTitle: "仅在 Telegram 中",
   blockedLead: "Mini App 只能通过 @epos_pochta_bot 打开。浏览器中不可用。",
   blockedCta: "打开机器人",

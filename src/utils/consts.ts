@@ -15,6 +15,7 @@ export const SITE_CONFIG = {
     "NEXT_PUBLIC_TELEGRAM_URL",
     "https://t.me/epos_operator",
   ),
+  telegramBotUrl: "https://t.me/epos_pochta_bot",
   instagramUrl: getPublicEnv(
     "NEXT_PUBLIC_INSTAGRAM_URL",
     "https://www.instagram.com/epos_pochta/",

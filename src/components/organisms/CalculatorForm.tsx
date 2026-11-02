@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import { loc } from "@/i18n/loc";
 import { localePath } from "@/i18n/paths";
@@ -161,6 +161,12 @@ export function CalculatorForm({
   const [submitted, setSubmitted] = useState(false);
   const [estimating, setEstimating] = useState(false);
   const [estimate, setEstimate] = useState<QuoteEstimate | null>(null);
+  const [quoted, setQuoted] = useState<{
+    weight: number;
+    length: number;
+    width: number;
+    height: number;
+  } | null>(null);
   const [estimateError, setEstimateError] = useState<string | null>(null);
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
@@ -171,6 +177,15 @@ export function CalculatorForm({
   const [leadId, setLeadId] = useState<string | null>(null);
   const [leadTracking, setLeadTracking] = useState<string | null>(null);
   const [requestId] = useState(() => createRequestId("calc"));
+  const quoteSeq = useRef(0);
+
+  const dropQuote = () => {
+    quoteSeq.current += 1;
+    setEstimate(null);
+    setQuoted(null);
+    setEstimateError(null);
+    setEstimating(false);
+  };
 
   // Reset dimensions only when SSR limits (formula version) change.
   const [limitsVersion, setLimitsVersion] = useState(publicUi?.formulaVersion);
@@ -180,7 +195,15 @@ export function CalculatorForm({
     setLength(limits.lengthCm.default);
     setWidth(limits.widthCm.default);
     setHeight(limits.heightCm.default);
+    setEstimate(null);
+    setQuoted(null);
+    setEstimateError(null);
+    setEstimating(false);
   }
+
+  useEffect(() => {
+    quoteSeq.current += 1;
+  }, [publicUi?.formulaVersion]);
 
   const fromMeta = getSettlementById(fromCity);
   const toMeta = getSettlementById(toCity);
@@ -212,9 +235,7 @@ export function CalculatorForm({
     setWidth(limits.widthCm.default);
     setHeight(limits.heightCm.default);
     setSubmitted(false);
-    setEstimating(false);
-    setEstimate(null);
-    setEstimateError(null);
+    dropQuote();
     setPhone("");
     setName("");
     setConsent(false);
@@ -271,6 +292,7 @@ export function CalculatorForm({
   };
 
   const calculate = async () => {
+    // Latest quote wins; slider edits drop any in-flight result.
     setSubmitted(true);
     setEstimateError(null);
     setLeadId(null);
@@ -281,6 +303,8 @@ export function CalculatorForm({
       return;
     }
 
+    const seq = ++quoteSeq.current;
+    const quotedInput = { weight, length, width, height };
     setEstimating(true);
     const next = await fetchEstimate({
       fromRegionId: fromMeta.regionId,
@@ -298,15 +322,18 @@ export function CalculatorForm({
       urgent: false,
       category,
     });
+    if (seq !== quoteSeq.current) return;
     setEstimating(false);
 
     if (!next) {
       setEstimate(null);
+      setQuoted(null);
       setEstimateError("estimate_failed");
       return;
     }
 
     setEstimate(next);
+    setQuoted(quotedInput);
     trackEvent("price_estimate_shown", {
       source: "calculator",
       zone: next.zone,
@@ -334,7 +361,10 @@ export function CalculatorForm({
             id="calc-from"
             label={c.fromLabel}
             value={fromCity}
-            onChange={setFromCity}
+            onChange={(id) => {
+              setFromCity(id);
+              dropQuote();
+            }}
             locale={locale}
             content={content}
             quickCityIds={quickCityIds}
@@ -349,6 +379,7 @@ export function CalculatorForm({
               onClick={() => {
                 setFromCity(toCity);
                 setToCity(fromCity);
+                dropQuote();
               }}
             >
               <SwapIcon />
@@ -359,7 +390,10 @@ export function CalculatorForm({
             id="calc-to"
             label={c.toLabel}
             value={toCity}
-            onChange={setToCity}
+            onChange={(id) => {
+              setToCity(id);
+              dropQuote();
+            }}
             locale={locale}
             content={content}
             quickCityIds={quickCityIds}
@@ -378,7 +412,10 @@ export function CalculatorForm({
             max={limits.weightKg.max}
             step={limits.weightKg.step}
             unit={c.unitKg}
-            onChange={setWeight}
+            onChange={(n) => {
+              setWeight(n);
+              dropQuote();
+            }}
           />
           <RangeSlider
             id="calc-length"
@@ -388,7 +425,10 @@ export function CalculatorForm({
             max={limits.lengthCm.max}
             step={limits.lengthCm.step}
             unit={c.unitCm}
-            onChange={setLength}
+            onChange={(n) => {
+              setLength(n);
+              dropQuote();
+            }}
           />
           <RangeSlider
             id="calc-width"
@@ -398,7 +438,10 @@ export function CalculatorForm({
             max={limits.widthCm.max}
             step={limits.widthCm.step}
             unit={c.unitCm}
-            onChange={setWidth}
+            onChange={(n) => {
+              setWidth(n);
+              dropQuote();
+            }}
           />
           <RangeSlider
             id="calc-height"
@@ -408,7 +451,10 @@ export function CalculatorForm({
             max={limits.heightCm.max}
             step={limits.heightCm.step}
             unit={c.unitCm}
-            onChange={setHeight}
+            onChange={(n) => {
+              setHeight(n);
+              dropQuote();
+            }}
           />
         </div>
         <p className="m-0 text-xs leading-relaxed text-black/55">{c.limitsNote}</p>
@@ -454,6 +500,14 @@ export function CalculatorForm({
               <p className="m-0 mt-1 font-display text-xl font-semibold text-black sm:text-2xl">
                 {formatUzs(estimate.amount, locale)} {estimate.currency}
               </p>
+              {quoted ? (
+                <p className="m-0 mt-1 text-sm text-black/55">
+                  {quoted.weight} {c.unitKg}
+                  {quoted.length > 0 && quoted.width > 0 && quoted.height > 0
+                    ? ` · ${quoted.length}×${quoted.width}×${quoted.height} ${c.unitCm}`
+                    : ""}
+                </p>
+              ) : null}
             </div>
             <div>
               <p className="m-0 text-xs font-medium uppercase tracking-wide text-black/55">

@@ -39,6 +39,46 @@ async function fetchShipmentList(initData: string): Promise<ShipmentRow[] | null
   }
 }
 
+/** Prefer FCargo account packages when linked; fall back to phone catalog. */
+async function fetchAccountOrShipments(
+  initData: string,
+  locale: string,
+): Promise<ShipmentRow[] | null> {
+  try {
+    const res = await fetch("/api/account/packages/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData, locale }),
+    });
+    if (res.ok) {
+      const json = (await res.json()) as {
+        packages?: Array<{
+          id: string | number;
+          trackingNumber: string | null;
+          statusCode: string | null;
+          statusLabel: string;
+          fromLabel: string | null;
+          toLabel: string | null;
+          createdAt: string | null;
+        }>;
+      };
+      return (json.packages ?? []).map((pkg) => ({
+        id: String(pkg.id),
+        from_label: pkg.fromLabel || "—",
+        to_label: pkg.toLabel || "—",
+        status: "confirmed",
+        track_number: pkg.trackingNumber,
+        fcargo_status: pkg.statusCode,
+        weight_kg: null,
+        created_at: pkg.createdAt || new Date().toISOString(),
+      }));
+    }
+  } catch {
+    // fall through
+  }
+  return fetchShipmentList(initData);
+}
+
 function statusLabel(copy: ReturnType<typeof getWebAppCopy>, status: string) {
   if (status === "confirmed") return copy.statusConfirmed;
   if (status === "cancelled") return copy.statusCancelled;
@@ -58,7 +98,7 @@ export function TrackTab() {
   useEffect(() => {
     let cancelled = false;
     const load = () =>
-      fetchShipmentList(initData).then((items) => {
+      fetchAccountOrShipments(initData, locale).then((items) => {
         if (cancelled) return;
         if (items) {
           setRows(items);
@@ -77,7 +117,7 @@ export function TrackTab() {
       cancelled = true;
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [initData, copy.submitError]);
+  }, [initData, locale, copy.submitError]);
 
   useEffect(() => {
     if (!highlightShipmentId) return;

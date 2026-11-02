@@ -4,8 +4,9 @@ import { getWebAppCopy } from "@/data/webapp-copy";
 import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { Button } from "@/components/atoms/Button";
+import { SITE_CONFIG } from "@/utils/consts";
 
-const BOT_URL = "https://t.me/epos_pochta_bot";
+const BOT_URL = SITE_CONFIG.telegramBotUrl;
 
 export function WebAppAccessBlocked() {
   const { locale, webApp } = useTelegram();

@@ -1,4 +1,5 @@
 import { requireAccess } from "@/lib/cms/auth";
+import { linkedTelegramSubjectIds } from "@/lib/fcargo/epos-account";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { DashDenied } from "@/components/dashboard/DashDenied";
@@ -60,7 +61,10 @@ export default async function WebappContactsPage() {
 
     const base = (contacts ?? []) as Omit<
       WebappContactRow,
-      "shipmentTotal" | "shipmentPending" | "lastShipmentAt"
+      | "shipmentTotal"
+      | "shipmentPending"
+      | "lastShipmentAt"
+      | "fcargoLinked"
     >[];
 
     const sessionIds = base.map((c) => c.session_id);
@@ -77,6 +81,12 @@ export default async function WebappContactsPage() {
       stats = buildShipmentStats((shipments ?? []) as ShipmentAggRow[]);
     }
 
+    const linkedTg = await linkedTelegramSubjectIds(
+      base
+        .map((c) => c.telegram_user_id)
+        .filter((id): id is number => id != null),
+    );
+
     rows = base.map((c) => {
       const s = stats.get(c.session_id);
       return {
@@ -84,6 +94,9 @@ export default async function WebappContactsPage() {
         shipmentTotal: s?.shipmentTotal ?? 0,
         shipmentPending: s?.shipmentPending ?? 0,
         lastShipmentAt: s?.lastShipmentAt ?? null,
+        fcargoLinked:
+          c.telegram_user_id != null &&
+          linkedTg.has(String(c.telegram_user_id)),
       };
     });
   }

@@ -119,8 +119,13 @@ function redactDeep(value: unknown): unknown {
   const o = value as Record<string, unknown>;
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(o)) {
-    if (/api[_-]?key|secret|password|token|authorization/i.test(k) && typeof v === "string") {
+    if (
+      /api[_-]?key|secret|password|token|authorization|challenge/i.test(k) &&
+      typeof v === "string"
+    ) {
       out[k] = maskSecretValue(v);
+    } else if (k === "code" && typeof v === "string" && /^\d{4,8}$/.test(v)) {
+      out[k] = "••••••";
     } else {
       out[k] = redactDeep(v);
     }

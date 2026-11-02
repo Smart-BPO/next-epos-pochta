@@ -272,6 +272,7 @@ export type DashCopy = {
     openTelegram: string;
     verified: string;
     unverified: string;
+    fcargoLinked: string;
     noShipments: string;
   };
 
@@ -624,6 +625,14 @@ export type DashCopy = {
     logEmpty: string;
     logIn: string;
     logOut: string;
+    linkedAccountsTitle: string;
+    linkedAccountsCount: string;
+    otpErrorsTitle: string;
+    otpErrorsEmpty: string;
+    otpErrorPhone: string;
+    otpErrorKind: string;
+    otpErrorCode: string;
+    otpErrorAt: string;
   };
 
     messaging: {

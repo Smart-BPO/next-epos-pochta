@@ -158,6 +158,45 @@ export type FcargoResult<T> =
   | { ok: true; data: T; requestId?: string }
   | { ok: false; code: string; message: string; status: number; details?: unknown };
 
+/**
+ * Legacy EPOS customer-account API (`/api/v1/web/clients/epos/*`).
+ * Request shapes from OpenAPI; success bodies are under-documented so
+ * the client parses common keys defensively.
+ */
+export type EposOtpStartResult = {
+  challenge: string;
+  expiresInSec: number | null;
+  message: string | null;
+};
+
+export type EposOtpVerifyResult = {
+  accessToken: string;
+  tokenType: string;
+  clientId: string | number | null;
+  name: string | null;
+  phone: string | null;
+  raw: Record<string, unknown>;
+};
+
+export type EposClientProfile = {
+  id: string | number | null;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  raw: Record<string, unknown>;
+};
+
+export type EposClientPackage = {
+  id: string | number;
+  trackingNumber: string | null;
+  statusCode: string | null;
+  statusName: string | null;
+  fromLabel: string | null;
+  toLabel: string | null;
+  createdAt: string | null;
+  raw: Record<string, unknown>;
+};
+
 /** CMS settings view (safe for Client Components — no secrets). */
 export type FcargoMode = "test" | "live";
 

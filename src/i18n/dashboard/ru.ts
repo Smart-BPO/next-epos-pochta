@@ -277,6 +277,7 @@ export const dashRu: DashCopy = {
     openTelegram: "Telegram",
     verified: "Проверен",
     unverified: "Без проверки",
+    fcargoLinked: "FCargo привязан",
     noShipments: "Нет отправлений",
   },
 
@@ -634,6 +635,14 @@ export const dashRu: DashCopy = {
     logEmpty: "Пока нет записей.",
     logIn: "входящий",
     logOut: "исходящий",
+    linkedAccountsTitle: "Привязанные кабинеты клиентов",
+    linkedAccountsCount: "Активных привязок: {count}",
+    otpErrorsTitle: "Последние ошибки OTP",
+    otpErrorsEmpty: "Ошибок пока нет.",
+    otpErrorPhone: "Телефон",
+    otpErrorKind: "Тип",
+    otpErrorCode: "Код",
+    otpErrorAt: "Время",
   },
 
   messaging: {

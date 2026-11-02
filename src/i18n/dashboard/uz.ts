@@ -277,6 +277,7 @@ export const dashUz: DashCopy = {
     openTelegram: "Telegram",
     verified: "Tekshirilgan",
     unverified: "Tekshiruvsiz",
+    fcargoLinked: "FCargo bogʻlangan",
     noShipments: "Joʻnatma yoʻq",
   },
 
@@ -634,6 +635,14 @@ export const dashUz: DashCopy = {
     logEmpty: "Hali yozuv yo‘q.",
     logIn: "kiruvchi",
     logOut: "chiquvchi",
+    linkedAccountsTitle: "Bogʻlangan mijoz kabinetlari",
+    linkedAccountsCount: "Faol bogʻlanishlar: {count}",
+    otpErrorsTitle: "Oxirgi OTP xatolari",
+    otpErrorsEmpty: "Hali xato yo‘q.",
+    otpErrorPhone: "Telefon",
+    otpErrorKind: "Tur",
+    otpErrorCode: "Kod",
+    otpErrorAt: "Vaqt",
   },
 
   messaging: {

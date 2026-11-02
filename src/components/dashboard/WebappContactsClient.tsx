@@ -33,6 +33,7 @@ export type WebappContactRow = {
   shipmentTotal: number;
   shipmentPending: number;
   lastShipmentAt: string | null;
+  fcargoLinked: boolean;
 };
 
 function contactName(row: WebappContactRow) {
@@ -108,6 +109,11 @@ function ContactCard({
               >
                 {row.init_data_ok ? t.contacts.verified : t.contacts.unverified}
               </span>
+              {row.fcargoLinked ? (
+                <span className="rounded-lg bg-sky-50 px-2 py-0.5 text-[0.65rem] font-semibold text-sky-700">
+                  {t.contacts.fcargoLinked}
+                </span>
+              ) : null}
             </div>
           </div>
         </div>
@@ -335,6 +341,17 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
             cell: (row) => (
               <span className="text-xs text-black/50">
                 {row.init_data_ok ? "✓" : "—"}
+              </span>
+            ),
+          },
+          {
+            id: "fcargo",
+            header: t.contacts.fcargoLinked,
+            hideInCard: true,
+            sortValue: (r) => (r.fcargoLinked ? 1 : 0),
+            cell: (row) => (
+              <span className="text-xs text-black/50">
+                {row.fcargoLinked ? "✓" : "—"}
               </span>
             ),
           },

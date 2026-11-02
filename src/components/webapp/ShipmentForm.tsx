@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { Button } from "@/components/atoms/Button";
 import { getWebAppCopy } from "@/data/webapp-copy";
@@ -38,8 +38,31 @@ export function ShipmentForm({
   const [receiverPhone, setReceiverPhone] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [fcargoLinked, setFcargoLinked] = useState(false);
   /** Stable across retries of the same form submit. */
   const requestIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      if (!initData) return;
+      try {
+        const res = await fetch("/api/account/me/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData }),
+        });
+        const json = (await res.json()) as { linked?: unknown };
+        if (!cancelled) setFcargoLinked(Boolean(json.linked));
+      } catch {
+        if (!cancelled) setFcargoLinked(false);
+      }
+    };
+    void check();
+    return () => {
+      cancelled = true;
+    };
+  }, [initData]);
 
   const [appliedDraft, setAppliedDraft] = useState(initialDraft);
   if (appliedDraft !== initialDraft) {
@@ -76,28 +99,32 @@ export function ShipmentForm({
       }
       const fromMeta = getSettlementById(from);
       const toMeta = getSettlementById(to);
-      const res = await fetch("/api/webapp/shipment/", {
+      const payload = {
+        sessionId: contact.sessionId,
+        locale,
+        phone: contact.phone,
+        telegramUserId: contact.telegramUserId ?? user?.id,
+        fromSettlementId: from,
+        toSettlementId: to,
+        fromLabel: fromMeta ? settlementLabel(fromMeta, locale) : "",
+        toLabel: toMeta ? settlementLabel(toMeta, locale) : "",
+        weightKg: weight,
+        lengthCm: length,
+        widthCm: width,
+        heightCm: height,
+        comment,
+        receiverName: receiverName.trim(),
+        receiverPhone: normalizePhone(receiverPhone),
+        requestId: requestIdRef.current,
+        initData,
+      };
+      const endpoint = fcargoLinked
+        ? "/api/account/shipment/"
+        : "/api/webapp/shipment/";
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionId: contact.sessionId,
-          locale,
-          phone: contact.phone,
-          telegramUserId: contact.telegramUserId ?? user?.id,
-          fromSettlementId: from,
-          toSettlementId: to,
-          fromLabel: fromMeta ? settlementLabel(fromMeta, locale) : "",
-          toLabel: toMeta ? settlementLabel(toMeta, locale) : "",
-          weightKg: weight,
-          lengthCm: length,
-          widthCm: width,
-          heightCm: height,
-          comment,
-          receiverName: receiverName.trim(),
-          receiverPhone: normalizePhone(receiverPhone),
-          requestId: requestIdRef.current,
-          initData,
-        }),
+        body: JSON.stringify(payload),
       });
       const json = (await res.json()) as {
         ok?: boolean;
@@ -105,11 +132,12 @@ export function ShipmentForm({
         trackingNumber?: string;
         error?: string;
       };
-      if (!res.ok || !json.id) {
+      const successId = json.trackingNumber || json.id;
+      if (!res.ok || !successId) {
         throw new Error(json.error || "submit_failed");
       }
       webApp?.HapticFeedback?.notificationOccurred("success");
-      onSuccess(json.trackingNumber || json.id);
+      onSuccess(successId);
     } catch {
       setError(copy.submitError);
       webApp?.HapticFeedback?.notificationOccurred("error");

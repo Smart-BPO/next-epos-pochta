@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ContactGate } from "@/components/webapp/ContactGate";
+import { FcargoLinkCard } from "@/components/webapp/FcargoLinkCard";
 import { getWebAppCopy } from "@/data/webapp-copy";
 import { localeLabels, locales } from "@/i18n/config";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
@@ -96,6 +97,8 @@ export function ProfileTab({
           {copy.changeContact}
         </Button>
       </div>
+
+      <FcargoLinkCard contact={contact} />
 
       <div className="rounded-3xl border border-black/10 bg-white p-4">
         <p className="m-0 text-sm text-black/55">{copy.profileAbout}</p>

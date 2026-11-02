@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { localePath, stripLocalePrefix } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import { SITE_CONFIG } from "@/utils/consts";
@@ -70,6 +71,8 @@ export function Header({ locale, content }: HeaderProps) {
   const { path: currentPath } = stripLocalePrefix(pathname);
   const requestHref = localePath(locale, "/calculator/");
   const trackHref = localePath(locale, "/tracking/");
+  const cabinetHref = localePath(locale, "/cabinet/");
+  const cabinetLabel = loc(locale, "Kabinet", "Кабинет", "个人中心");
   const menuLabel = open ? content.ui.close : content.ui.menu;
 
   const [menuPath, setMenuPath] = useState(pathname);
@@ -145,6 +148,12 @@ export function Header({ locale, content }: HeaderProps) {
             >
               {content.ui.track}
             </Link>
+            <Link
+              href={cabinetHref}
+              className={cn(headerControlQuiet, "hidden whitespace-nowrap lg:inline-flex")}
+            >
+              {cabinetLabel}
+            </Link>
 
             <LanguageSwitcher locale={locale} size="compact" />
 
@@ -207,6 +216,14 @@ export function Header({ locale, content }: HeaderProps) {
               onClick={() => setOpen(false)}
             >
               {content.ui.track}
+            </Button>
+            <Button
+              href={cabinetHref}
+              variant="secondary"
+              width="full"
+              onClick={() => setOpen(false)}
+            >
+              {cabinetLabel}
             </Button>
             <Button
               href={requestHref}
