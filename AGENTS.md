@@ -4,7 +4,7 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 
 ## Scope (current)
 
-- Public corporate site + CMS at `/dashboard` (Supabase project **epos** / `iituklcscawinftbyzxc`, Central EU Frankfurt)
+- Public corporate site + CMS at `/dashboard` (Supabase project **epos** / `yxvnsmqwwtgwnrozrvtc`)
 - Content: static TS seed (`src/data`, `src/i18n`) with CMS overlays (news, site settings, delivery hub copy)
 - Locales: `uz` (default, unprefixed) and `ru` (`/ru/`)
 - Tracking: public `/tracking/?number=` → `GET /api/tracking/` → FCargo `packages:track` (rate-limited, cached 60s, no PII). Status labels uz/ru in `src/lib/tracking/fcargo-status.ts`. Mini App list shows FCargo status from `epos_fcargo_packages`; dashboard track number entry ingests into that catalog
