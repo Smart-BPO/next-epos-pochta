@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Button } from "@/components/atoms/Button";
 import { localePath } from "@/i18n/paths";
 import type { Locale } from "@/i18n/config";
@@ -56,13 +56,18 @@ const copy = {
 } as const;
 
 export default function Error({
-  reset,
+  error,
+  retry,
 }: {
   error: Error & { digest?: string };
-  reset: () => void;
+  retry: () => void;
 }) {
   const locale = useSyncExternalStore(subscribe, readLocale, () => "uz" as Locale);
   const t = copy[locale];
+
+  useEffect(() => {
+    console.error("[app]", error);
+  }, [error]);
 
   return (
     <section className={pageIntro}>
@@ -70,7 +75,7 @@ export default function Error({
         <h1 className={pageIntroTitle}>{t.title}</h1>
         <p className={sectionLead}>{t.lead}</p>
         <div className={heroActions}>
-          <Button type="button" onClick={reset}>
+          <Button type="button" onClick={() => retry()}>
             {t.retry}
           </Button>
           <Button href={localePath(locale, "/")} variant="secondary">

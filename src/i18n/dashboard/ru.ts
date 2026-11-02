@@ -133,6 +133,8 @@ export const dashRu: DashCopy = {
     vsPrevPeriod: "к прошлому периоду",
     collapseSidebar: "Свернуть меню",
     expandSidebar: "Развернуть меню",
+    retry: "Повторить",
+    errorLead: "Что-то пошло не так. Попробуйте ещё раз или откройте другой раздел.",
   },
 
   badge: {

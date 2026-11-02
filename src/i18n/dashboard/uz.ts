@@ -133,6 +133,8 @@ export const dashUz: DashCopy = {
     vsPrevPeriod: "avvalgi davrga",
     collapseSidebar: "Menyuni yigʻish",
     expandSidebar: "Menyuni ochish",
+    retry: "Qayta urinish",
+    errorLead: "Nimadir notoʻgʻri ketdi. Qayta urinib koʻring yoki boshqa boʻlimni oching.",
   },
 
   badge: {

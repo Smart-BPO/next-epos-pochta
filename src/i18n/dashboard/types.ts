@@ -131,6 +131,8 @@ export type DashCopy = {
     vsPrevPeriod: string;
     collapseSidebar: string;
     expandSidebar: string;
+    retry: string;
+    errorLead: string;
   };
 
   badge: {

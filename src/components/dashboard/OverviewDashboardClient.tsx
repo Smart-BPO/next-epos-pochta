@@ -16,6 +16,7 @@ import {
   IconPlus,
   IconProgress,
 } from "@/components/dashboard/icons";
+import { DashChartBoundary } from "@/components/dashboard/DashChartBoundary";
 import {
   OverviewFunnelChart,
   OverviewLeadsAreaChart,
@@ -181,91 +182,6 @@ function buildDaySeries(leads: OverviewLeadRow[], days: number) {
   return keys.map((k) => counts[k] ?? 0);
 }
 
-function Sparkline({
-  current,
-  previous,
-}: {
-  current: number[];
-  previous: number[];
-}) {
-  const w = 520;
-  const h = 180;
-  const pad = 12;
-  const max = Math.max(1, ...current, ...previous);
-
-  const toPoints = (values: number[]) =>
-    values
-      .map((v, i) => {
-        const x =
-          pad + (i * (w - pad * 2)) / Math.max(1, values.length - 1);
-        const y = h - pad - (v / max) * (h - pad * 2);
-        return `${x},${y}`;
-      })
-      .join(" ");
-
-  const area = (() => {
-    if (current.length === 0) return "";
-    const pts = current.map((v, i) => {
-      const x =
-        pad + (i * (w - pad * 2)) / Math.max(1, current.length - 1);
-      const y = h - pad - (v / max) * (h - pad * 2);
-      return [x, y] as const;
-    });
-    const first = pts[0]!;
-    const last = pts[pts.length - 1]!;
-    return [
-      `M ${first[0]} ${h - pad}`,
-      `L ${first[0]} ${first[1]}`,
-      ...pts.slice(1).map(([x, y]) => `L ${x} ${y}`),
-      `L ${last[0]} ${h - pad}`,
-      "Z",
-    ].join(" ");
-  })();
-
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-44 w-full" role="img">
-      <defs>
-        <linearGradient id="leadFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgb(211 2 3)" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="rgb(211 2 3)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill="url(#leadFill)" />
-      <polyline
-        fill="none"
-        stroke="rgb(15 18 24 / 0.22)"
-        strokeWidth="2"
-        strokeDasharray="5 5"
-        points={toPoints(previous)}
-      />
-      <polyline
-        fill="none"
-        stroke="rgb(211 2 3)"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        points={toPoints(current)}
-      />
-      {current.map((v, i) => {
-        const x =
-          pad + (i * (w - pad * 2)) / Math.max(1, current.length - 1);
-        const y = h - pad - (v / max) * (h - pad * 2);
-        return (
-          <circle
-            key={i}
-            cx={x}
-            cy={y}
-            r="3.5"
-            fill="white"
-            stroke="rgb(211 2 3)"
-            strokeWidth="2"
-          />
-        );
-      })}
-    </svg>
-  );
-}
-
 export function OverviewDashboardClient({
   name,
   leads,
@@ -302,8 +218,11 @@ export function OverviewDashboardClient({
     (l) => l.status === "done" && dayKey(l.created_at) === today,
   ).length;
 
-  const last7 = buildDaySeries(scopedLeads, 7);
-  const prev7 = buildDaySeries(scopedLeads, 14).slice(0, 7);
+  const last7 = useMemo(() => buildDaySeries(scopedLeads, 7), [scopedLeads]);
+  const prev7 = useMemo(
+    () => buildDaySeries(scopedLeads, 14).slice(0, 7),
+    [scopedLeads],
+  );
   const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
   const curSum = sum(last7);
   const prevSum = sum(prev7);
@@ -572,7 +491,9 @@ export function OverviewDashboardClient({
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)_minmax(14rem,0.7fr)]">
         <div className="space-y-3">
-          <OverviewLeadsAreaChart data={chartDays} />
+          <DashChartBoundary title={t.overview.chartTitle}>
+            <OverviewLeadsAreaChart data={chartDays} />
+          </DashChartBoundary>
           <div className="flex flex-wrap gap-4 px-1 text-xs text-[var(--dash-muted)]">
             <span>
               {dashFormat(t.overview.chartCurrent7, { n: curSum })}
@@ -580,13 +501,12 @@ export function OverviewDashboardClient({
             </span>
             <span>{dashFormat(t.overview.chartPrev7, { n: prevSum })}</span>
           </div>
-          <div className="hidden">
-            <Sparkline current={last7} previous={prev7} />
-          </div>
         </div>
 
         <div className="space-y-3">
-          <OverviewFunnelChart data={funnelData} />
+          <DashChartBoundary title={t.overview.statusesTitle}>
+            <OverviewFunnelChart data={funnelData} />
+          </DashChartBoundary>
           <p className="m-0 px-1 text-sm text-[var(--dash-muted)]">
             {dateFilter.active
               ? t.overview.totalInRange
