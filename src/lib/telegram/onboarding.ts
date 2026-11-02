@@ -41,7 +41,7 @@ export const botOnboardingCopy = {
       "🇷🇺 EPOS POCHTA — служба доставки.",
       "Оформление отправления — в Mini App.",
       "",
-      "Tilni tanlang / Выберите язык:",
+      "Tilni tanlang / Выберите язык / 请选择语言：",
     ].join("\n"),
     langPicked:
       "Til: Oʻzbekcha ✅\n\nDavom etish uchun telefon raqamingizni ulashing. Shundan keyin Mini App ochiladi.",
@@ -63,7 +63,7 @@ export const botOnboardingCopy = {
       "🇺🇿 EPOS POCHTA — yetkazib berish xizmati.",
       "Joʻnatma — Mini App orqali.",
       "",
-      "Выберите язык / Tilni tanlang:",
+      "Выберите язык / Tilni tanlang / 请选择语言：",
     ].join("\n"),
     langPicked:
       "Язык: Русский ✅\n\nЧтобы продолжить, поделитесь номером телефона. После этого откроется Mini App.",
@@ -75,6 +75,23 @@ export const botOnboardingCopy = {
       "Пожалуйста, отправьте телефон кнопкой «Поделиться номером» ниже.",
     restart: "Чтобы начать заново, нажмите /start.",
   },
+  zh: {
+    welcome: [
+      "📦 *EPOS POCHTA*",
+      "",
+      "乌兹别克斯坦境内的快递服务。",
+      "通过这个机器人，您可以在 Telegram Mini App 中办理快件 — 线路、参数以及与经理的联系。",
+      "",
+      "请选择语言 / Tilni tanlang / Выберите язык：",
+    ].join("\n"),
+    langPicked: "语言：中文 ✅\n\n请分享电话号码以继续。之后将打开 Mini App。",
+    shareContactBtn: "📱 分享号码",
+    contactThanks: (name: string, phone: string) =>
+      `谢谢${name ? `，${name}` : ""}！联系方式已保存：${phone}\n\n请打开 Mini App — 在那里办理线路和快件。`,
+    openApp: "EPOS Mini App",
+    needShare: "请使用下方「分享号码」按钮发送电话。",
+    restart: "要重新开始，请点击 /start。",
+  },
 } as const;
 
 /** First screen is bilingual by design; buttons pick locale. */
@@ -85,6 +102,7 @@ export function languageKeyboard() {
         { text: "🇺🇿 Oʻzbekcha", callback_data: "onboard:lang:uz" },
         { text: "🇷🇺 Русский", callback_data: "onboard:lang:ru" },
       ],
+      [{ text: "🇨🇳 中文", callback_data: "onboard:lang:zh" }],
     ],
   };
 }

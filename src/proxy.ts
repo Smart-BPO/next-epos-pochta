@@ -78,9 +78,18 @@ export async function proxy(request: NextRequest) {
   }
 
   const requestHeaders = new Headers(request.headers);
-  const russian =
-    pathname === "/ru" || pathname === "/ru/" || pathname.startsWith("/ru/");
-  requestHeaders.set("x-html-lang", russian ? "ru" : "uz");
+  const publicLocale =
+    pathname === "/ru" || pathname === "/ru/" || pathname.startsWith("/ru/")
+      ? "ru"
+      : pathname === "/zh" ||
+          pathname === "/zh/" ||
+          pathname.startsWith("/zh/")
+        ? "zh"
+        : "uz";
+  requestHeaders.set(
+    "x-html-lang",
+    publicLocale === "zh" ? "zh-Hans" : publicLocale,
+  );
 
   let response = NextResponse.next({
     request: { headers: requestHeaders },
@@ -141,7 +150,7 @@ export async function proxy(request: NextRequest) {
     !pathname.startsWith("/_next") &&
     !isDashboardPath(pathname)
   ) {
-    response.cookies.set("epos_locale", russian ? "ru" : "uz", {
+    response.cookies.set("epos_locale", publicLocale, {
       path: "/",
       maxAge: 60 * 60 * 24 * 365,
       sameSite: "lax",

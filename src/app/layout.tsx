@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
+import type { Locale } from "@/i18n/config";
 import { manrope } from "@/assets/fonts";
 import "./globals.css";
 import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
@@ -45,14 +47,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+function localeFromHtmlLang(value: string | null): Locale {
+  if (value === "ru") return "ru";
+  if (value === "zh-Hans" || value === "zh") return "zh";
+  return "uz";
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerLang = (await headers()).get("x-html-lang");
+  const locale = localeFromHtmlLang(headerLang);
+  const lang = headerLang === "zh-Hans" || locale === "zh" ? "zh-Hans" : locale;
+
   return (
     <html
-      lang="uz"
+      lang={lang}
       className={`${manrope.variable} scroll-smooth scroll-pt-[var(--header-height)]`}
       suppressHydrationWarning
     >
@@ -60,14 +72,14 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              '(function(){try{var p=location.pathname;document.documentElement.lang=(p==="/ru"||p.indexOf("/ru/")===0)?"ru":"uz"}catch(e){}})();',
+              '(function(){try{var p=location.pathname;var lang="uz";if(p==="/ru"||p.indexOf("/ru/")===0)lang="ru";else if(p==="/zh"||p.indexOf("/zh/")===0)lang="zh-Hans";document.documentElement.lang=lang}catch(e){}})();',
           }}
         />
       </head>
       <body
         className="flex min-h-dvh flex-col bg-white font-sans text-ink antialiased"
       >
-        <JsonLd data={getGlobalJsonLdGraph()} />
+        <JsonLd data={getGlobalJsonLdGraph(locale)} />
         {children}
         <SiteAnalytics />
         <AppToaster />

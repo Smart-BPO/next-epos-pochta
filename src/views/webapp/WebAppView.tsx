@@ -93,7 +93,11 @@ export function WebAppView() {
 
       const session = sessionFromApi(json.session);
       writeContactSession(session);
-      if (json.session.locale === "ru" || json.session.locale === "uz") {
+      if (
+        json.session.locale === "ru" ||
+        json.session.locale === "uz" ||
+        json.session.locale === "zh"
+      ) {
         setLocale(json.session.locale as Locale);
       }
       return session;

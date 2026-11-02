@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as Yup from "yup";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import type { SiteCopy } from "@/data/types";
 import {
   ConsentField,
@@ -192,9 +193,12 @@ export function RequestPriceForm({
 
   const commentSeed = useMemo(() => {
     if (!initialCategory.trim()) return "";
-    return locale === "uz"
-      ? `Kategoriya / xizmat: ${initialCategory}`
-      : `Категория / услуга: ${initialCategory}`;
+    return loc(
+      locale,
+      `Kategoriya / xizmat: ${initialCategory}`,
+      `Категория / услуга: ${initialCategory}`,
+      `类别 / 服务：${initialCategory}`,
+    );
   }, [initialCategory, locale]);
 
   const defaults = useMemo<FormValues>(

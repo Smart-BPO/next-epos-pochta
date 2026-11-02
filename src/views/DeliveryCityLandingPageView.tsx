@@ -4,10 +4,15 @@ import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import {
+  cityBody,
   cityDisplayName,
+  cityEtaHint,
+  cityFaq,
+  cityLead,
   cityPath,
   type DeliveryCity,
 } from "@/data/delivery-cities";
+import { loc } from "@/i18n/loc";
 import { routePath, routesFrom, routesTo } from "@/data/delivery-routes";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
@@ -44,16 +49,18 @@ export function DeliveryCityLandingPageView({
 }) {
   const copy = getContent(locale);
   const name = cityDisplayName(city, locale);
-  const lead = locale === "uz" ? city.leadUz : city.leadRu;
-  const body = locale === "uz" ? city.bodyUz : city.bodyRu;
-  const faq = locale === "uz" ? city.faqUz : city.faqRu;
+  const lead = cityLead(city, locale);
+  const body = cityBody(city, locale);
+  const faq = cityFaq(city, locale);
   const homePath = localePath(locale, "/");
   const listPath = localePath(locale, "/delivery/");
   const thisPath = localePath(locale, cityPath(city.slug));
-  const title =
-    locale === "uz"
-      ? `${name}ga yetkazib berish`
-      : `Доставка в ${name}`;
+  const title = loc(
+    locale,
+    `${name}ga yetkazib berish`,
+    `Доставка в ${name}`,
+    `${name}配送`,
+  );
 
   const outbound = routesFrom(city.code).slice(0, 8);
   const inbound = routesTo(city.code).slice(0, 8);
@@ -64,7 +71,7 @@ export function DeliveryCityLandingPageView({
         data={getBreadcrumbSchema([
           { name: copy.calculator.breadcrumbHome, path: homePath },
           {
-            name: locale === "uz" ? "Yetkazib berish" : "Доставка",
+            name: loc(locale, "Yetkazib berish", "Доставка", "配送"),
             path: listPath,
           },
           { name, path: thisPath },
@@ -93,7 +100,7 @@ export function DeliveryCityLandingPageView({
                   href={listPath}
                   className="underline-offset-2 hover:text-primary hover:underline"
                 >
-                  {locale === "uz" ? "Yetkazib berish" : "Доставка"}
+                  {loc(locale, "Yetkazib berish", "Доставка", "配送")}
                 </Link>
               </li>
               <li aria-hidden className="text-black/30">
@@ -107,7 +114,7 @@ export function DeliveryCityLandingPageView({
           <h1 className={pageIntroTitle}>{title}</h1>
           <p className={sectionLead}>{lead}</p>
           <p className="m-0 mt-3 text-sm text-black/55">
-            {locale === "uz" ? city.etaHintUz : city.etaHintRu}
+            {cityEtaHint(city, locale)}
           </p>
         </PageContainer>
       </section>
@@ -132,7 +139,7 @@ export function DeliveryCityLandingPageView({
               {copy.ui.requestPrice}
             </Button>
             <Button href={localePath(locale, "/services/")} variant="secondary">
-              {locale === "uz" ? "Xizmatlar" : "Услуги"}
+              {loc(locale, "Xizmatlar", "Услуги", "服务")}
             </Button>
           </div>
         </PageContainer>
@@ -142,7 +149,7 @@ export function DeliveryCityLandingPageView({
         <section className={section}>
           <PageContainer className="max-w-3xl">
             <h2 className={sectionTitle}>
-              {locale === "uz" ? "Savol-javoblar" : "Вопросы и ответы"}
+              {loc(locale, "Savol-javoblar", "Вопросы и ответы", "常见问题")}
             </h2>
             {faq.map((item) => (
               <details key={item.question} className={faqDetails}>
@@ -158,9 +165,12 @@ export function DeliveryCityLandingPageView({
         <PageContainer className="flex flex-col gap-8">
           <div>
             <h2 className={sectionTitle}>
-              {locale === "uz"
-                ? `${name}dan yoʻnalishlar`
-                : `Направления из ${name}`}
+              {loc(
+                locale,
+                `${name}dan yoʻnalishlar`,
+                `Направления из ${name}`,
+                `从${name}出发的线路`,
+              )}
             </h2>
             <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
               {outbound.map((r) => (
@@ -178,9 +188,12 @@ export function DeliveryCityLandingPageView({
           </div>
           <div>
             <h2 className={sectionTitle}>
-              {locale === "uz"
-                ? `${name}ga yoʻnalishlar`
-                : `Направления в ${name}`}
+              {loc(
+                locale,
+                `${name}ga yoʻnalishlar`,
+                `Направления в ${name}`,
+                `发往${name}的线路`,
+              )}
             </h2>
             <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
               {inbound.map((r) => (

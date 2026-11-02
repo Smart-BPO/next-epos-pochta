@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ContactGate } from "@/components/webapp/ContactGate";
 import { getWebAppCopy } from "@/data/webapp-copy";
+import { localeLabels, locales } from "@/i18n/config";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { useTelegramBackButton } from "@/hooks/useTelegramBackButton";
 import type { WebAppContactSession } from "@/lib/webapp/session";
@@ -71,20 +72,16 @@ export function ProfileTab({
           <div className="flex justify-between gap-2 border-t border-black/[0.06] pt-2">
             <dt className="text-black/45">{copy.profileLang}</dt>
             <dd className="m-0 flex gap-1">
-              <button
-                type="button"
-                className={`rounded-lg px-2 py-0.5 text-xs font-semibold ${locale === "uz" ? "bg-primary text-white" : "bg-black/[0.05] text-black/50"}`}
-                onClick={() => setLocale("uz")}
-              >
-                UZ
-              </button>
-              <button
-                type="button"
-                className={`rounded-lg px-2 py-0.5 text-xs font-semibold ${locale === "ru" ? "bg-primary text-white" : "bg-black/[0.05] text-black/50"}`}
-                onClick={() => setLocale("ru")}
-              >
-                RU
-              </button>
+              {locales.map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  className={`rounded-lg px-2 py-0.5 text-xs font-semibold ${locale === code ? "bg-primary text-white" : "bg-black/[0.05] text-black/50"}`}
+                  onClick={() => setLocale(code)}
+                >
+                  {localeLabels[code]}
+                </button>
+              ))}
             </dd>
           </div>
         </dl>

@@ -30,18 +30,20 @@ export const SITE_CONFIG = {
   ),
   hoursDisplayRu: "Пн–Сб 09:00–18:00",
   hoursDisplayUz: "Du–Sha 09:00–18:00",
+  hoursDisplayZh: "周一至周六 09:00–18:00",
   address: {
     line:
       "г. Ташкент, Сергелийский район, МСГ Bunyodobod, ул. Ташкентская кольцевая автомобильная дорога, дом 7",
     lineUz:
       "Toshkent sh., Sergeli tumani, Bunyodobod MFY, Toshkent halqa avtomobil yoʻli, 7-uy",
+    lineZh: "塔什干市谢尔盖利区 Bunyodobod 社区，塔什干环城公路 7 号",
     /** Approximate pin — refine via NEXT_PUBLIC_MAP_LAT / NEXT_PUBLIC_MAP_LNG. */
     lat: Number(getPublicEnv("NEXT_PUBLIC_MAP_LAT", "41.2085")) || 41.2085,
     lng: Number(getPublicEnv("NEXT_PUBLIC_MAP_LNG", "69.22")) || 69.22,
     inn: "312949361",
     oked: "53200",
   },
-  locales: ["uz", "ru"] as const,
+  locales: ["uz", "ru", "zh"] as const,
   defaultLocale: "uz" as const,
   themeColor: "#d30203",
   analytics: {

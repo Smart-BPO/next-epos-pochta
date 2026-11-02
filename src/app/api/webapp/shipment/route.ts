@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isLocale } from "@/i18n/config";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { isNextResponse, requireWebAppInitData } from "@/lib/webapp/auth";
@@ -69,7 +70,7 @@ export async function POST(request: Request) {
   }
 
   const sessionId = body.sessionId.trim();
-  const locale = body.locale === "ru" ? "ru" : "uz";
+  const locale = isLocale(body.locale) ? body.locale : "uz";
   const requestId =
     (typeof body.requestId === "string" && body.requestId.trim()) ||
     randomBytes(8).toString("hex");

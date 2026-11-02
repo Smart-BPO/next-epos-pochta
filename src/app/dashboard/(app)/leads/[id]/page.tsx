@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { requireAccess, canMutate } from "@/lib/cms/auth";
+import { isLocale } from "@/i18n/config";
+import { localePath } from "@/i18n/paths";
 import { getDashT } from "@/i18n/dashboard/server";
 import { LeadStatusSelect } from "@/components/dashboard/LeadStatusSelect";
 import { DashAccessDenied } from "@/components/dashboard/DashAccessDenied";
@@ -114,8 +116,10 @@ export default async function LeadDetailPage({
   const siteOrigin =
     getPublicEnv("NEXT_PUBLIC_SITE_URL")?.replace(/\/$/, "") ||
     "https://epos-pochta.uz";
-  const resumePath =
-    row.locale === "ru" ? "/ru/request-price/" : "/request-price/";
+  const resumePath = localePath(
+    isLocale(row.locale) ? row.locale : "uz",
+    "/request-price/",
+  );
   const resumeUrl =
     row.status === "draft" && row.resume_token
       ? `${siteOrigin}${resumePath}?uid=${encodeURIComponent(row.resume_token)}`

@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 
 export function normalizePhone(value: string) {
   const digits = value.replace(/\D/g, "");
@@ -40,9 +41,12 @@ export function readUtm() {
 }
 
 export function formErrorMessage(locale: Locale) {
-  return locale === "uz"
-    ? "Yuborishda xato. Maʼlumotlar saqlangan — qayta urinib koʻring."
-    : "Ошибка отправки. Данные сохранены — попробуйте ещё раз.";
+  return loc(
+    locale,
+    "Yuborishda xato. Maʼlumotlar saqlangan — qayta urinib koʻring.",
+    "Ошибка отправки. Данные сохранены — попробуйте ещё раз.",
+    "发送失败。数据已保存 — 请再试一次。",
+  );
 }
 
 export function yesNoOptions(yes: string, no: string) {

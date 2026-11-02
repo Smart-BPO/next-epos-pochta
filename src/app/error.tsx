@@ -17,8 +17,10 @@ function readLocale(): Locale {
     .split("; ")
     .find((row) => row.startsWith("epos_locale="))
     ?.split("=")[1];
-  if (cookie === "ru") return "ru";
-  if (window.location.pathname.startsWith("/ru")) return "ru";
+  if (cookie === "ru" || cookie === "zh" || cookie === "uz") return cookie;
+  const path = window.location.pathname;
+  if (path === "/ru" || path.startsWith("/ru/")) return "ru";
+  if (path === "/zh" || path.startsWith("/zh/")) return "zh";
   return "uz";
 }
 
@@ -42,6 +44,14 @@ const copy = {
     home: "На главную",
     track: "Отследить",
     request: "Запросить стоимость",
+  },
+  zh: {
+    title: "技术错误",
+    lead: "发生错误。请刷新页面或返回首页。",
+    retry: "重试",
+    home: "返回首页",
+    track: "查询",
+    request: "查询价格",
   },
 } as const;
 

@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
@@ -17,7 +18,7 @@ export function NotFoundView({ locale }: { locale: Locale }) {
         <h1 className={pageIntroTitle}>{copy.notFound.title}</h1>
         <p className={sectionLead}>{copy.notFound.lead}</p>
         <Button href={localePath(locale, "/")}>
-          {locale === "uz" ? "Bosh sahifa" : "На главную"}
+          {loc(locale, "Bosh sahifa", "На главную", "返回首页")}
         </Button>
       </PageContainer>
     </section>

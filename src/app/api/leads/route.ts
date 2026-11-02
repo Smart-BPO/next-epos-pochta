@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isLocale, type Locale } from "@/i18n/config";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { dispatchNotification } from "@/lib/messaging/dispatch";
@@ -97,7 +98,7 @@ function numOrNull(v: unknown): number | null {
 async function attachFcargoOrderToLead(opts: {
   id: string;
   type: LeadType;
-  locale: "uz" | "ru";
+  locale: Locale;
   data: Record<string, unknown>;
   requestId?: string;
 }): Promise<FcargoLeadPatch | null> {
@@ -192,7 +193,7 @@ function fcargoPublicFields(patch: FcargoLeadPatch | null) {
 async function notifyLeadCreated(opts: {
   id: string;
   type: LeadType;
-  locale: "uz" | "ru";
+  locale: Locale;
   data: Record<string, unknown>;
 }) {
   const name = pickName(opts.data);
@@ -275,7 +276,7 @@ async function notifyLeadCreated(opts: {
   }
 }
 
-async function handleDraft(body: LeadPayload, locale: "uz" | "ru") {
+async function handleDraft(body: LeadPayload, locale: Locale) {
   if (body.type !== "price") {
     return NextResponse.json({ error: "draft_price_only" }, { status: 400 });
   }
@@ -376,7 +377,7 @@ async function handleDraft(body: LeadPayload, locale: "uz" | "ru") {
   });
 }
 
-async function handleUpdate(body: LeadPayload, locale: "uz" | "ru") {
+async function handleUpdate(body: LeadPayload, locale: Locale) {
   if (body.type !== "price") {
     return NextResponse.json({ error: "update_price_only" }, { status: 400 });
   }
@@ -438,7 +439,7 @@ async function handleUpdate(body: LeadPayload, locale: "uz" | "ru") {
   });
 }
 
-async function handleFinalize(body: LeadPayload, locale: "uz" | "ru") {
+async function handleFinalize(body: LeadPayload, locale: Locale) {
   if (body.type !== "price") {
     return NextResponse.json({ error: "finalize_price_only" }, { status: 400 });
   }
@@ -554,7 +555,7 @@ async function handleFinalize(body: LeadPayload, locale: "uz" | "ru") {
   });
 }
 
-async function handleFull(body: LeadPayload, locale: "uz" | "ru") {
+async function handleFull(body: LeadPayload, locale: Locale) {
   if (body.requestId && hasSupabaseAdminConfig()) {
     try {
       const existing = await findLeadByRequestId(body.requestId);
@@ -653,7 +654,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
-  const locale = body.locale === "ru" ? "ru" : "uz";
+  const locale: Locale = isLocale(body.locale) ? body.locale : "uz";
   const mode: LeadMode = body.mode ?? "full";
 
   if (mode === "draft") return handleDraft(body, locale);

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { pagePaths } from "@/i18n/config";
+import { locales, pagePaths } from "@/i18n/config";
 import { getLocalizedAlternates, localePath } from "@/i18n/paths";
 import { listPublishedSlugs } from "@/lib/news/repository";
 import { loadDeliveryCities } from "@/lib/cms/delivery-hubs";
@@ -44,11 +44,9 @@ function languageAlternates(path: string) {
   const base = getCanonicalSiteUrl();
   const alts = getLocalizedAlternates(path);
   return {
-    languages: {
-      uz: `${base}${alts.uz}`,
-      ru: `${base}${alts.ru}`,
-      "x-default": `${base}${alts["x-default"]}`,
-    },
+    languages: Object.fromEntries(
+      Object.entries(alts).map(([lang, href]) => [lang, `${base}${href}`]),
+    ),
   };
 }
 
@@ -58,7 +56,7 @@ function pushLocalized(
   meta: Omit<MetadataRoute.Sitemap[number], "url" | "alternates">,
 ) {
   const base = getCanonicalSiteUrl();
-  for (const locale of ["uz", "ru"] as const) {
+  for (const locale of locales) {
     entries.push({
       url: `${base}${localePath(locale, path)}`,
       ...meta,

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
@@ -24,7 +25,7 @@ export function AboutPageView({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <JsonLd data={getCourierServiceSchema()} />
+      <JsonLd data={getCourierServiceSchema(locale)} />
       <section className={pageIntro}>
         <PageContainer>
           <h1 className={pageIntroTitle}>{copy.about.title}</h1>
@@ -77,20 +78,32 @@ export function AboutPageView({ locale }: { locale: Locale }) {
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <article className="rounded-2xl border border-black/20 bg-white p-3 sm:rounded-3xl sm:p-[var(--card-pad)]">
               <h3 className="m-0 mb-2 text-sm font-semibold text-black sm:text-lg">
-                {SITE_CONFIG.legalName}
+                {loc(
+                  locale,
+                  "«EPOS POCHTA» MCHJ",
+                  SITE_CONFIG.legalName,
+                  "EPOS POCHTA 有限责任公司",
+                )}
               </h3>
               <p className="m-0 text-xs leading-snug text-black/60 sm:text-sm">
-                ИНН / STIR: {SITE_CONFIG.address.inn}
+                {loc(locale, "STIR", "ИНН / STIR", "税号 STIR")}:{" "}
+                {SITE_CONFIG.address.inn}
                 <br />
-                ОКЭД / OKED: {SITE_CONFIG.address.oked}
+                {loc(locale, "OKED", "ОКЭД / OKED", "行业代码 OKED")}:{" "}
+                {SITE_CONFIG.address.oked}
               </p>
             </article>
             <article className="rounded-2xl border border-black/20 bg-white p-3 sm:rounded-3xl sm:p-[var(--card-pad)]">
               <h3 className="m-0 mb-2 text-sm font-semibold text-black sm:text-lg">
-                {locale === "uz" ? "Manzil" : "Адрес"}
+                {loc(locale, "Manzil", "Адрес", "地址")}
               </h3>
               <p className="m-0 text-xs leading-snug text-black/60 sm:text-sm">
-                {SITE_CONFIG.address.line}
+                {loc(
+                  locale,
+                  SITE_CONFIG.address.lineUz,
+                  SITE_CONFIG.address.line,
+                  SITE_CONFIG.address.lineZh,
+                )}
               </p>
               <Button
                 href={localePath(locale, "/contacts/")}

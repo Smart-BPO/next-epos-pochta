@@ -1,3 +1,4 @@
+import type { Locale } from "@/i18n/config";
 import {
   getTelegramChatId,
   hasTelegramBotToken,
@@ -20,7 +21,7 @@ import { maskRecipient, renderTemplate } from "@/lib/messaging/templates";
 
 export type DispatchInput = {
   event: NotifyEvent;
-  locale?: "uz" | "ru";
+  locale?: Locale;
   data: Record<string, string | number | null | undefined>;
   /** Override recipients */
   to?: {
@@ -41,11 +42,12 @@ export type DispatchResult = {
 
 function resolveLocales(
   mode: string,
-  customerLocale?: "uz" | "ru",
+  customerLocale?: Locale,
 ): Array<"uz" | "ru"> {
   if (mode === "uz") return ["uz"];
   if (mode === "ru") return ["ru"];
   if (mode === "both") return ["uz", "ru"];
+  // Chinese customers use the Uzbek template until a zh template exists.
   return [customerLocale === "ru" ? "ru" : "uz"];
 }
 

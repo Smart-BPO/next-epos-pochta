@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { SiteCopy } from "@/data/types";
-import { uzbekistanSettlements } from "@/data/types";
+import { regionLabel, settlementLabel, uzbekistanSettlements } from "@/data/settlements";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { fieldHint } from "@/styles/ui";
@@ -21,8 +21,8 @@ export function GeoSearch({
   const [submitted, setSubmitted] = useState("");
   const activeQuery = variant === "home" ? submitted : query;
   const matches = uzbekistanSettlements.filter((c) => {
-    const label = locale === "uz" ? c.uz : c.ru;
-    const region = locale === "uz" ? c.regionUz : c.regionRu;
+    const label = `${settlementLabel(c, locale)} ${c.uz} ${c.ru}`;
+    const region = `${regionLabel(c, locale)} ${c.regionUz} ${c.regionRu}`;
     const q = activeQuery.trim().toLowerCase();
     return (
       label.toLowerCase().includes(q) || region.toLowerCase().includes(q)
@@ -59,7 +59,7 @@ export function GeoSearch({
             {matches.slice(0, 6).map((city) => (
               <li key={city.id}>
                 <strong className="text-black">
-                  {locale === "uz" ? city.uz : city.ru}
+                  {settlementLabel(city, locale)}
                 </strong>
                 <p className="m-0 text-sm text-black/60">{copy.home.geoAvailable}</p>
               </li>
@@ -90,7 +90,7 @@ export function GeoSearch({
         <ul className="m-0 list-disc pl-[1.1rem]">
           {matches.slice(0, 8).map((city) => (
             <li key={city.id} className="mb-2">
-              <strong>{locale === "uz" ? city.uz : city.ru}</strong>
+              <strong>{settlementLabel(city, locale)}</strong>
               <div className={fieldHint}>{copy.home.geoAvailable}</div>
             </li>
           ))}

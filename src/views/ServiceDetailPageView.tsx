@@ -2,6 +2,7 @@ import { Chip } from "@/components/atoms/Chip";
 import Image from "next/image";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import type { ServiceItem } from "@/data/types";
@@ -78,12 +79,12 @@ export function ServiceDetailPageView({
     SERVICE_MEDIA[service.id] ?? "/images/services/02-parcel-delivery.webp";
   const action = serviceActionHref(locale, service.id);
   const labels = {
-    audience: locale === "uz" ? "Kimlar uchun" : "Для кого",
-    how: locale === "uz" ? "Qanday ishlaydi" : "Как работает",
-    includes: locale === "uz" ? "Nima kiradi" : "Что входит",
-    accepted: locale === "uz" ? "Qanday joʻnatmalar" : "Какие отправления",
-    quote: locale === "uz" ? "Hisob uchun kerak" : "Данные для расчёта",
-    limits: locale === "uz" ? "Cheklovlar" : "Ограничения",
+    audience: loc(locale, "Kimlar uchun", "Для кого", "面向谁"),
+    how: loc(locale, "Qanday ishlaydi", "Как работает", "如何运作"),
+    includes: loc(locale, "Nima kiradi", "Что входит", "包含什么"),
+    accepted: loc(locale, "Qanday joʻnatmalar", "Какие отправления", "接收哪些快件"),
+    quote: loc(locale, "Hisob uchun kerak", "Данные для расчёта", "报价所需信息"),
+    limits: loc(locale, "Cheklovlar", "Ограничения", "限制"),
   };
 
   const related = copy.services.items.filter((s) => s.id !== service.id);
@@ -94,7 +95,7 @@ export function ServiceDetailPageView({
         data={getBreadcrumbSchema([
           { name: copy.calculator.breadcrumbHome, path: homePath },
           {
-            name: locale === "uz" ? "Xizmatlar" : "Услуги",
+            name: loc(locale, "Xizmatlar", "Услуги", "服务"),
             path: hubPath,
           },
           { name: service.title, path: thisPath },
@@ -125,7 +126,7 @@ export function ServiceDetailPageView({
                   href={hubPath}
                   className="underline-offset-2 hover:text-primary hover:underline"
                 >
-                  {locale === "uz" ? "Xizmatlar" : "Услуги"}
+                  {loc(locale, "Xizmatlar", "Услуги", "服务")}
                 </Link>
               </li>
               <li aria-hidden className="text-black/30">
@@ -214,7 +215,7 @@ export function ServiceDetailPageView({
                   href={localePath(locale, "/delivery/")}
                   variant="secondary"
                 >
-                  {locale === "uz" ? "Shaharlarga" : "По городам"}
+                  {loc(locale, "Shaharlarga", "По городам", "按城市")}
                 </Button>
               </div>
 
@@ -233,7 +234,7 @@ export function ServiceDetailPageView({
 
           <div className="mt-10">
             <h2 className={sectionTitle}>
-              {locale === "uz" ? "Boshqa xizmatlar" : "Другие услуги"}
+              {loc(locale, "Boshqa xizmatlar", "Другие услуги", "其他服务")}
             </h2>
             <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
               {related.map((item) => (

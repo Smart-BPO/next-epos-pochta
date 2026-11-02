@@ -7,7 +7,7 @@ import type {
   NewsListResult,
   NewsSort,
 } from "@/data/news/types";
-import type { Locale } from "@/i18n/config";
+import { intlLocale, type Locale } from "@/i18n/config";
 import { fetchNewsArticlesFromDb } from "@/lib/cms/news";
 import { listNewsCategories } from "@/lib/cms/news-categories";
 import { cache } from "react";
@@ -72,7 +72,7 @@ async function publishedArticles(): Promise<NewsArticle[]> {
 }
 
 function compareTitle(a: string, b: string, locale: Locale) {
-  return a.localeCompare(b, locale === "uz" ? "uz" : "ru", {
+  return a.localeCompare(b, intlLocale(locale), {
     sensitivity: "base",
   });
 }
@@ -280,7 +280,7 @@ export async function listPublishedSlugs(): Promise<string[]> {
 }
 
 export function formatNewsDate(iso: string, locale: Locale): string {
-  return new Intl.DateTimeFormat(locale === "uz" ? "uz-UZ" : "ru-RU", {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     day: "numeric",
     month: "long",
     year: "numeric",

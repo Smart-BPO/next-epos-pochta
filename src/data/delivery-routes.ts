@@ -156,6 +156,11 @@ export function etaLabel(locale: Locale, band: EtaBand): string {
     if (band === "mid") return "Odatda 2–4 ish kuni (orientir)";
     return "Odatda 3–5 ish kuni (orientir)";
   }
+  if (locale === "zh") {
+    if (band === "near") return "通常 1–2 个工作日（参考）";
+    if (band === "mid") return "通常 2–4 个工作日（参考）";
+    return "通常 3–5 个工作日（参考）";
+  }
   if (band === "near") return "Обычно 1–2 рабочих дня (ориентир)";
   if (band === "mid") return "Обычно 2–4 рабочих дня (ориентир)";
   return "Обычно 3–5 рабочих дней (ориентир)";
@@ -183,6 +188,10 @@ export function routeTitle(locale: Locale, route: DeliveryRoute): string {
     const from = cityDisplayName(route.from, locale);
     return `${from}dan ${to}ga yetkazib berish`;
   }
+  if (locale === "zh") {
+    const from = cityDisplayName(route.from, locale);
+    return `从${from}到${to}的配送`;
+  }
   // Russian: из + genitive, в + accusative (nominative for these city names)
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
   return `Доставка из ${fromGen} в ${to}`;
@@ -205,6 +214,13 @@ export function routeMetaTitle(locale: Locale, route: DeliveryRoute): string {
     }
     return `${from} — ${to} yetkazib berish`;
   }
+  if (locale === "zh") {
+    const from = cityDisplayName(route.from, locale);
+    if (isPriorityTasCorridor(route)) {
+      return `从${from}到${to} — 包裹与快递`;
+    }
+    return `从${from}到${to}的配送`;
+  }
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
   if (isPriorityTasCorridor(route)) {
     return `Доставка из ${fromGen} в ${to} — посылки и курьер`;
@@ -222,6 +238,10 @@ export function routeMetaDescription(
     const from = cityDisplayName(route.from, locale);
     return `${from}dan ${to}ga pochta va kuryer (~${route.distanceKm} km). ${eta}. Kalkulyatorda orientir, yakuniy narx — menejer. Oferta emas.`;
   }
+  if (locale === "zh") {
+    const from = cityDisplayName(route.from, locale);
+    return `从${from}到${to}的包裹与快递（约 ${route.distanceKm} 公里）。${eta}。计算器为参考价，最终价格由经理确认。不是要约。`;
+  }
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
   return `Посылки и курьер из ${fromGen} в ${to} (~${route.distanceKm} км). ${eta}. Ориентир в калькуляторе, финал у менеджера. Не оферта.`;
 }
@@ -231,6 +251,10 @@ export function routeLead(locale: Locale, route: DeliveryRoute): string {
   if (locale === "uz") {
     const from = cityDisplayName(route.from, locale);
     return `${from}dan ${to}ga hujjat, pochta va biznes joʻnatmalarini EPOS POCHTA kuryeri orqali yuboring. Masofa ~${route.distanceKm} km. Narx va muddat — kalkulyatorda orientir; bu oferta emas, menejer tasdiqlaydi.`;
+  }
+  if (locale === "zh") {
+    const from = cityDisplayName(route.from, locale);
+    return `通过 EPOS POCHTA 快递员把文件、包裹和企业快件从${from}寄到${to}。距离约 ${route.distanceKm} 公里。时效和费用在计算器中为参考值；这不是要约，由经理确认。`;
   }
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
   return `Отправьте документы, посылки и B2B-отправления из ${fromGen} в ${to} курьером EPOS POCHTA. Расстояние ~${route.distanceKm} км. Срок и стоимость — ориентир в калькуляторе; это не оферта, итог подтверждает менеджер.`;
@@ -259,6 +283,19 @@ export function routeBody(
     ];
   }
 
+  if (locale === "zh") {
+    const base = [
+      `${from}至${to}线路接收文件和包裹。距离约 ${route.distanceKm} 公里；时效参考：${eta}。`,
+      "请在计算器中估算费用，或提交「查询价格」申请。所示金额是参考价，不是要约，也不是公开价目。",
+    ];
+    if (!priority) return base;
+    return [
+      ...base,
+      `${from}和${to}的城市页面有本地快递员、送货上门和企业条件。返程线路请使用本页的「返程」链接。`,
+      "网店的定期取件和状态通过企业申请、按单独条件办理。",
+    ];
+  }
+
   const fromGen = RU_FROM_GENITIVE[route.from.code] ?? route.from.nameRu;
   const base = [
     `По маршруту из ${fromGen} в ${to} принимаем документы и посылки. Расстояние около ${route.distanceKm} км; ориентир по сроку: ${eta}.`,
@@ -280,8 +317,9 @@ export function routeFaq(
   const to = cityDisplayName(route.to, locale);
   const eta = etaLabel(locale, route.etaBand);
   const fromCityFaq =
-    locale === "uz" ? route.from.faqUz[0] : route.from.faqRu[0];
-  const toCityFaq = locale === "uz" ? route.to.faqUz[0] : route.to.faqRu[0];
+    locale === "zh" ? undefined : locale === "uz" ? route.from.faqUz[0] : route.from.faqRu[0];
+  const toCityFaq =
+    locale === "zh" ? undefined : locale === "uz" ? route.to.faqUz[0] : route.to.faqRu[0];
 
   const base =
     locale === "uz"
@@ -309,7 +347,32 @@ export function routeFaq(
             answer: `Ha, alohida sahifa mavjud. Sahifadagi «orqaga» havoladan foydalaning yoki kalkulyatorda punktlarni almashtiring.`,
           },
         ]
-      : [
+      : locale === "zh"
+        ? [
+            {
+              question: `从${from}到${to}需要多久？`,
+              answer: `${eta}。准确时效取决于重量、地址和货物类型，由经理确认。`,
+            },
+            {
+              question: `${from}和${to}之间有多远？`,
+              answer: `公路距离约 ${route.distanceKm} 公里。这是事实参考，不是价格公式。`,
+            },
+            {
+              question: "在哪里查看费用？",
+              answer:
+                "在计算器中填写出发地、目的地、重量和尺寸。所示金额是参考价，不是要约。",
+            },
+            {
+              question: "接收文件和包裹吗？",
+              answer: "接收。面向个人和企业快件。稳定货量请提交企业申请。",
+            },
+            {
+              question: `有从${to}返回${from}的线路吗？`,
+              answer:
+                "有单独的线路页面。请使用本页的「返程」链接，或在计算器中交换地点。",
+            },
+          ]
+        : [
           {
             question: `Сколько занимает доставка из ${from} в ${to}?`,
             answer: `${eta}. Точный срок зависит от веса, адреса и типа груза — подтверждает менеджер.`,
@@ -349,7 +412,19 @@ export function routeFaq(
                 "Ha, olib ketish uchun kuryer chaqirish mumkin. Muntazam oqimlar uchun biznes arizasini qoldiring.",
             },
           ]
-        : [
+        : locale === "zh"
+          ? [
+              {
+                question: `${to}可以送货上门吗？`,
+                answer:
+                  "可以，需确认地址。请在城市页面和报价中核对 — 这不替代单独的「送货上门」服务。",
+              },
+              {
+                question: `可以在${from}叫快递员吗？`,
+                answer: "可以上门取件。稳定货量请提交企业申请。",
+              },
+            ]
+          : [
             {
               question: `Есть доставка до двери в ${to}?`,
               answer:

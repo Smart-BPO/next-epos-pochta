@@ -1,5 +1,7 @@
 import {
   getSettlementById,
+  regionLabel,
+  settlementLabel,
   uzbekistanSettlements,
   type Settlement,
 } from "@/data/settlements";
@@ -24,21 +26,25 @@ export function matchCityQuery(
   const byId = getSettlementById(query.trim());
   if (byId) return byId;
 
+  const namesOf = (item: Settlement) =>
+    [
+      settlementLabel(item, locale),
+      item.uz,
+      item.ru,
+      regionLabel(item, locale),
+    ].map(normalize);
+
   const exact = uzbekistanSettlements.find((item) => {
-    const label = normalize(locale === "uz" ? item.uz : item.ru);
-    const other = normalize(locale === "uz" ? item.ru : item.uz);
-    return label === q || other === q || item.id === q;
+    const names = namesOf(item);
+    return names.some((name) => name === q) || item.id === q;
   });
   if (exact) return exact;
 
   return (
     uzbekistanSettlements.find((item) => {
-      const label = normalize(locale === "uz" ? item.uz : item.ru);
-      const other = normalize(locale === "uz" ? item.ru : item.uz);
+      const names = namesOf(item);
       return (
-        label.includes(q) ||
-        other.includes(q) ||
-        q.includes(label) ||
+        names.some((name) => name.includes(q) || (name && q.includes(name))) ||
         item.id.includes(q.replace(/\s+/g, "_"))
       );
     }) ?? null

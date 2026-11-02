@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isLocale } from "@/i18n/config";
 import { isNextResponse, requireWebAppInitData } from "@/lib/webapp/auth";
 import { upsertWebAppContact } from "@/lib/webapp/contact";
 import { verifyTelegramContactResponse } from "@/lib/webapp/telegram-init-data";
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_name" }, { status: 400 });
   }
 
-  const locale = body.locale === "ru" ? "ru" : "uz";
+  const locale = isLocale(body.locale) ? body.locale : "uz";
   // Phone counts as Telegram-verified only with a signed contact response;
   // the bot webhook also upgrades the source when the contact reaches the bot.
   const signedPhone =

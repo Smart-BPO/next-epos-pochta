@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { PageContainer } from "@/components/atoms/PageContainer";
@@ -45,7 +46,7 @@ export function FaqPageView({ locale }: { locale: Locale }) {
               {copy.footer.geography}
             </Button>
             <Button href={localePath(locale, "/services/")} variant="secondary">
-              {locale === "uz" ? "Xizmatlar" : "Услуги"}
+              {loc(locale, "Xizmatlar", "Услуги", "服务")}
             </Button>
           </div>
         </PageContainer>

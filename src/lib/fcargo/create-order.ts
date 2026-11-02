@@ -7,7 +7,7 @@ import {
 } from "@/lib/fcargo/client";
 import { resolveSettlementSoato } from "@/lib/fcargo/locations";
 import { normalizeUzPhone } from "@/lib/fcargo/packages-store";
-import { getSettlementById } from "@/data/settlements";
+import { getSettlementById, settlementLabel } from "@/data/settlements";
 import type {
   FcargoCreateOrderRequest,
   FcargoCreateOrderResult,
@@ -143,9 +143,13 @@ async function partyAddress(
     regionId: settlement.regionId,
   });
   if (!soato) return null;
-  const uz = locale === "uz";
   const label =
-    party.address?.trim() || (uz ? settlement.uz : settlement.ru);
+    party.address?.trim() ||
+    (locale === "zh"
+      ? settlementLabel(settlement, "zh")
+      : locale === "uz"
+        ? settlement.uz
+        : settlement.ru);
   return {
     soato,
     label,

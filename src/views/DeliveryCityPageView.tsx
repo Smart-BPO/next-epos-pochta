@@ -3,7 +3,8 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
-import { cityDisplayName, cityPath } from "@/data/delivery-cities";
+import { cityDisplayName, cityEtaHint, cityPath } from "@/data/delivery-cities";
+import { loc } from "@/i18n/loc";
 import { loadDeliveryCities } from "@/lib/cms/delivery-hubs";
 import { routePath, routesFrom } from "@/data/delivery-routes";
 import { PageContainer } from "@/components/atoms/PageContainer";
@@ -20,10 +21,12 @@ import {
 export async function DeliveryIndexPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   const cities = await loadDeliveryCities();
-  const title =
-    locale === "uz"
-      ? "Yetkazib berish yoʻnalishlari"
-      : "Маршруты доставки";
+  const title = loc(
+    locale,
+    "Yetkazib berish yoʻnalishlari",
+    "Маршруты доставки",
+    "配送线路",
+  );
 
   return (
     <>
@@ -43,9 +46,12 @@ export async function DeliveryIndexPageView({ locale }: { locale: Locale }) {
         <PageContainer>
           <h1 className={pageIntroTitle}>{title}</h1>
           <p className={sectionLead}>
-            {locale === "uz"
-              ? "Asosiy shaharlar orasidagi yoʻnalishlar (masalan, Toshkent → Samarqand). Shahar sahifasi, kalkulyatorda orientir, yakuniy narx — menejer tasdigʻi."
-              : "Направления между ключевыми городами (например Ташкент → Самарканд). Страница города, ориентир в калькуляторе, финальную цену подтверждает менеджер."}
+            {loc(
+              locale,
+              "Asosiy shaharlar orasidagi yoʻnalishlar (masalan, Toshkent → Samarqand). Shahar sahifasi, kalkulyatorda orientir, yakuniy narx — menejer tasdigʻi.",
+              "Направления между ключевыми городами (например Ташкент → Самарканд). Страница города, ориентир в калькуляторе, финальную цену подтверждает менеджер.",
+              "主要城市之间的线路（例如塔什干 → 撒马尔罕）。城市页面、计算器参考价，最终价格由经理确认。",
+            )}
           </p>
         </PageContainer>
       </section>
@@ -73,16 +79,19 @@ export async function DeliveryIndexPageView({ locale }: { locale: Locale }) {
                   </span>
                 </h2>
                 <p className="m-0 mb-2 max-w-2xl text-sm text-black/55">
-                  {locale === "uz" ? city.etaHintUz : city.etaHintRu}
+                  {cityEtaHint(city, locale)}
                 </p>
                 <p className="m-0 mb-3 text-sm">
                   <Link
                     href={landing}
                     className="font-medium text-primary underline-offset-2 hover:underline"
                   >
-                    {locale === "uz"
-                      ? `${name}ga yetkazib berish →`
-                      : `Доставка в ${name} →`}
+                    {loc(
+                      locale,
+                      `${name}ga yetkazib berish →`,
+                      `Доставка в ${name} →`,
+                      `${name}配送 →`,
+                    )}
                   </Link>
                 </p>
                 <ul className="m-0 flex list-none flex-wrap gap-2 p-0">

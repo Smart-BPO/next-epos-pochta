@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isLocale } from "@/i18n/config";
 import { lookupShipment } from "@/lib/tracking/lookup";
 
 export const runtime = "nodejs";
@@ -37,7 +38,8 @@ const STATUS_BY_ERROR = {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const number = url.searchParams.get("number") ?? "";
-  const locale = url.searchParams.get("locale") === "ru" ? "ru" : "uz";
+  const requested = url.searchParams.get("locale");
+  const locale = isLocale(requested) ? requested : "uz";
 
   if (!checkRateLimit(`track:${clientKey(request)}`)) {
     return NextResponse.json(

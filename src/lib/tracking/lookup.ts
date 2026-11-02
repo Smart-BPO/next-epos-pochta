@@ -1,4 +1,5 @@
 import "server-only";
+import type { Locale } from "@/i18n/config";
 
 import { fcargoTrackPackage, hasFcargoConfig } from "@/lib/fcargo/client";
 import { fcargoStatusCopy } from "./fcargo-status";
@@ -41,7 +42,7 @@ function statusOf(v: unknown): { code?: string; name?: string } {
 }
 
 /** Timeline items are not in the OpenAPI schema — accept common shapes. */
-function mapEvent(item: unknown, locale: "uz" | "ru"): TrackingEvent | null {
+function mapEvent(item: unknown, locale: Locale): TrackingEvent | null {
   const o = rec(item);
   if (!o) return null;
   const st = statusOf(o.status ?? o.status_code ?? o.code);
@@ -67,7 +68,7 @@ function mapEvent(item: unknown, locale: "uz" | "ru"): TrackingEvent | null {
 function toShipment(
   number: string,
   data: Rec,
-  locale: "uz" | "ru",
+  locale: Locale,
 ): TrackingShipment {
   const st = statusOf(data.status);
   const current = fcargoStatusCopy(st.code, locale, st.name);
@@ -104,7 +105,7 @@ function toShipment(
 /** Public lookup by tracking code — FCargo track returns no personal data. */
 export async function lookupShipment(
   rawNumber: string,
-  locale: "uz" | "ru",
+  locale: Locale,
 ): Promise<TrackingLookupResult> {
   const number = normalizeTrackingNumber(rawNumber);
   if (!number || !isValidTrackingNumber(number)) {

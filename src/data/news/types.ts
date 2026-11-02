@@ -38,6 +38,7 @@ export interface NewsArticle {
   locales: {
     uz: NewsLocaleContent;
     ru: NewsLocaleContent;
+    zh: NewsLocaleContent;
   };
 }
 

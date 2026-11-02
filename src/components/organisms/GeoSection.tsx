@@ -10,10 +10,12 @@ import {
 import { createPortal } from "react-dom";
 import { useIsClient } from "@/hooks/useIsClient";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import {
   uzbekistanSettlements,
+  regionLabel,
   settlementLabel,
 } from "@/data/settlements";
 import {
@@ -52,9 +54,8 @@ export function GeoSection({
     if (!q) return [];
     return uzbekistanSettlements
       .filter((item) => {
-        const label = settlementLabel(item, locale).toLowerCase();
-        const region =
-          locale === "uz" ? item.regionUz.toLowerCase() : item.regionRu.toLowerCase();
+        const label = `${settlementLabel(item, locale)} ${item.uz} ${item.ru}`.toLowerCase();
+        const region = regionLabel(item, locale).toLowerCase();
         return label.includes(q) || region.includes(q) || item.id.includes(q);
       })
       .slice(0, 6);
@@ -133,13 +134,14 @@ export function GeoSection({
     };
   }, [showMenu]);
 
-  const mapHint =
-    locale === "uz"
-      ? "Xaritada viloyatni bosing yoki shahar nomini qidiring"
-      : "Нажмите область на карте или найдите город";
+  const mapHint = loc(
+    locale,
+    "Xaritada viloyatni bosing yoki shahar nomini qidiring",
+    "Нажмите область на карте или найдите город",
+    "点击地图上的州，或搜索城市",
+  );
 
-  const openCityLabel =
-    locale === "uz" ? "Shahar sahifasi" : "Страница города";
+  const openCityLabel = loc(locale, "Shahar sahifasi", "Страница города", "城市页面");
 
   const pickMatch = (item: (typeof matches)[number]) => {
     applyMatch(item.regionSlug);
@@ -179,9 +181,10 @@ export function GeoSection({
                         const q = next.trim().toLowerCase();
                         if (!q) return;
                         const hit = uzbekistanSettlements.find((item) => {
-                          const label = settlementLabel(item, locale).toLowerCase();
+                          const label = `${settlementLabel(item, locale)} ${item.uz} ${item.ru}`.toLowerCase();
                           return (
                             label.includes(q) ||
+                            regionLabel(item, locale).toLowerCase().includes(q) ||
                             item.regionUz.toLowerCase().includes(q) ||
                             item.regionRu.toLowerCase().includes(q)
                           );
@@ -255,13 +258,11 @@ export function GeoSection({
                                     {settlementLabel(item, locale)}
                                   </strong>
                                   <span className="text-xs text-black/50">
-                                    {locale === "uz"
-                                      ? item.regionUz
-                                      : item.regionRu}
+                                    {regionLabel(item, locale)}
                                   </span>
                                 </span>
                                 <span className="shrink-0 text-xs font-medium text-primary">
-                                  {locale === "uz" ? "Tanlash" : "Выбрать"}
+                                  {loc(locale, "Tanlash", "Выбрать", "选择")}
                                 </span>
                               </button>
                             </li>

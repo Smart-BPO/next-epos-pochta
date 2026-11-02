@@ -31,7 +31,12 @@ import {
   routeMetaTitle,
   routePath,
 } from "@/data/delivery-routes";
-import { cityPath } from "@/data/delivery-cities";
+import {
+  cityMetaDescription,
+  cityMetaTitle,
+  cityPath,
+} from "@/data/delivery-cities";
+import { loc } from "@/i18n/loc";
 import {
   isServiceSlug,
   SERVICE_SLUGS,
@@ -207,14 +212,18 @@ export function createCalculatorPage(locale: Locale) {
 export function createDeliveryIndexPage(locale: Locale) {
   return {
     generateMetadata: async () => {
-      const title =
-        locale === "uz"
-          ? "Yetkazib berish shaharlari — Oʻzbekiston boʻylab kuryer"
-          : "Доставка по городам Узбекистана — курьерская служба";
-      const description =
-        locale === "uz"
-          ? "EPOS POCHTA — Toshkent, Samarqand, Buxoro va boshqa shaharlarga kuryerlik yetkazib berish. Kalkulyator va menejer tasdigʻi."
-          : "EPOS POCHTA — курьерская доставка в Ташкент, Самарканд, Бухару и другие города. Калькулятор и подтверждение менеджера.";
+      const title = loc(
+        locale,
+        "Yetkazib berish shaharlari — Oʻzbekiston boʻylab kuryer",
+        "Доставка по городам Узбекистана — курьерская служба",
+        "乌兹别克斯坦按城市配送 — 快递",
+      );
+      const description = loc(
+        locale,
+        "EPOS POCHTA — Toshkent, Samarqand, Buxoro va boshqa shaharlarga kuryerlik yetkazib berish. Kalkulyator va menejer tasdigʻi.",
+        "EPOS POCHTA — курьерская доставка в Ташкент, Самарканд, Бухару и другие города. Калькулятор и подтверждение менеджера.",
+        "EPOS POCHTA — 塔什干、撒马尔罕、布哈拉及其他城市的快递。计算器与经理确认。",
+      );
       const path = localePath(locale, "/delivery/");
       const alternates = getLocalizedAlternates("/delivery/");
       return createPageMetadata(title, description, path, {
@@ -261,10 +270,8 @@ export function createDeliveryCityPage(locale: Locale) {
         (await getDeliveryCityBySlugAsync(key)) ??
         (await getDeliveryCityByCodeAsync(key));
       if (!city) return getLocalizedPageMetadata(locale, "services");
-      const title =
-        locale === "uz" ? city.metaTitleUz : city.metaTitleRu;
-      const description =
-        locale === "uz" ? city.metaDescriptionUz : city.metaDescriptionRu;
+      const title = cityMetaTitle(city, locale);
+      const description = cityMetaDescription(city, locale);
       const path = localePath(locale, cityPath(city.slug));
       const alternates = getLocalizedAlternates(cityPath(city.slug));
       return createPageMetadata(title, description, path, {

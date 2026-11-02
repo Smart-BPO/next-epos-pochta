@@ -1,4 +1,5 @@
 import type { NewsArticle } from "@/data/news/types";
+import { newsZhBySlug } from "@/data/news/zh";
 import { seedBlocksToHtml } from "@/lib/news/body-html";
 
 type SeedLocale = { title: string; excerpt: string; body: string[] };
@@ -430,6 +431,13 @@ function normalizeSeed(article: SeedArticle): NewsArticle {
         title: article.locales.ru.title,
         excerpt: article.locales.ru.excerpt,
         bodyHtml: seedBlocksToHtml(article.locales.ru.body),
+      },
+      zh: {
+        title: newsZhBySlug[article.slug]?.title ?? article.locales.ru.title,
+        excerpt: newsZhBySlug[article.slug]?.excerpt ?? article.locales.ru.excerpt,
+        bodyHtml: seedBlocksToHtml(
+          newsZhBySlug[article.slug]?.body ?? article.locales.ru.body,
+        ),
       },
     },
   };

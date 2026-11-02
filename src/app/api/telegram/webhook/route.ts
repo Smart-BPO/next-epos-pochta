@@ -211,7 +211,7 @@ async function handleOnboardLangCallback(
 ) {
   const chatId = query.message?.chat.id;
   const data = query.data ?? "";
-  const match = /^onboard:lang:(uz|ru)$/.exec(data);
+  const match = /^onboard:lang:(uz|ru|zh)$/.exec(data);
   if (chatId == null || !match) {
     await answerCallbackQuery({
       callbackQueryId: query.id,
@@ -226,7 +226,7 @@ async function handleOnboardLangCallback(
 
   await answerCallbackQuery({
     callbackQueryId: query.id,
-    text: locale === "uz" ? "Oʻzbekcha" : "Русский",
+    text: locale === "uz" ? "Oʻzbekcha" : locale === "zh" ? "中文" : "Русский",
   });
 
   if (query.message?.message_id != null) {
@@ -322,7 +322,9 @@ async function handleContactMessage(
       text:
         locale === "ru"
           ? "Не удалось сохранить контакт. Попробуйте /start ещё раз."
-          : "Kontaktni saqlab boʻlmadi. /start ni qayta bosing.",
+          : locale === "zh"
+            ? "未能保存联系方式。请再次点击 /start。"
+            : "Kontaktni saqlab boʻlmadi. /start ni qayta bosing.",
       replyMarkup: { remove_keyboard: true },
     });
     return;

@@ -8,6 +8,7 @@ import {
   type MapRegionIso,
 } from "@/data/uzbekistan-map";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { cn } from "@/lib/cn";
 
 type UzbekistanMapProps = {
@@ -63,7 +64,7 @@ export function UzbekistanMap({
       viewBox={UZBEKISTAN_MAP_VIEWBOX}
       className={cn("h-auto w-full select-none touch-manipulation", className)}
       role="img"
-      aria-label={locale === "uz" ? "Oʻzbekiston xaritasi" : "Карта Узбекистана"}
+      aria-label={loc(locale, "Oʻzbekiston xaritasi", "Карта Узбекистана", "乌兹别克斯坦地图")}
     >
       {orderedIsos.map((iso) => {
         const region = MAP_REGION_BY_ISO[iso];

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import {
@@ -191,7 +192,12 @@ export function CalculatorForm({
 
   const daysLabel =
     estimate &&
-    (locale === "uz" ? `${estimate.etaDays} kun` : `${estimate.etaDays} дн.`);
+    loc(
+      locale,
+      `${estimate.etaDays} kun`,
+      `${estimate.etaDays} дн.`,
+      `${estimate.etaDays} 天`,
+    );
 
   const phoneError =
     leadAttempted && !isValidUzPhone(phone) ? c.errors.phone : undefined;
@@ -235,8 +241,8 @@ export function CalculatorForm({
       data: {
         name: name.trim(),
         phone: phoneDisplay,
-        from: locale === "uz" ? fromMeta.uz : fromMeta.ru,
-        to: locale === "uz" ? toMeta.uz : toMeta.ru,
+        from: settlementLabel(fromMeta, locale),
+        to: settlementLabel(toMeta, locale),
         fromCityId: fromMeta.id,
         toCityId: toMeta.id,
         weightKg: weight,
@@ -313,9 +319,12 @@ export function CalculatorForm({
     <div className="grid gap-0 overflow-hidden rounded-3xl border border-black/10 bg-white">
       {!calculatorEnabled ? (
         <div className="border-b border-black/[0.06] bg-[#fafafa] px-4 py-3 text-sm text-black/55 sm:px-6">
-          {locale === "uz"
-            ? "Kalkulyator vaqtincha o‘chirilgan. Menejerga ariza qoldiring."
-            : "Калькулятор временно отключён. Оставьте заявку менеджеру."}
+          {loc(
+            locale,
+            "Kalkulyator vaqtincha o‘chirilgan. Menejerga ariza qoldiring.",
+            "Калькулятор временно отключён. Оставьте заявку менеджеру.",
+            "计算器暂时关闭。请向经理提交申请。",
+          )}
         </div>
       ) : null}
 
@@ -422,12 +431,13 @@ export function CalculatorForm({
       {estimateError ? (
         <div className="border-t border-black/[0.06] px-4 py-3 text-sm text-danger sm:px-6">
           {estimateError === "calculator_disabled"
-            ? locale === "uz"
-              ? "Kalkulyator o‘chirilgan."
-              : "Калькулятор отключён."
-            : locale === "uz"
-              ? "Hisoblab bo‘lmadi. Qayta urinib ko‘ring."
-              : "Не удалось рассчитать. Попробуйте ещё раз."}
+            ? loc(locale, "Kalkulyator o‘chirilgan.", "Калькулятор отключён.", "计算器已关闭。")
+            : loc(
+                locale,
+                "Hisoblab bo‘lmadi. Qayta urinib ko‘ring.",
+                "Не удалось рассчитать. Попробуйте ещё раз.",
+                "无法计算。请再试一次。",
+              )}
         </div>
       ) : null}
 
@@ -464,7 +474,7 @@ export function CalculatorForm({
               </p>
               {leadTracking ? (
                 <p className="mb-0 mt-2">
-                  {locale === "uz" ? "Trek-raqam: " : "Трек-номер: "}
+                  {loc(locale, "Trek-raqam: ", "Трек-номер: ", "运单号：")}
                   <a
                     href={`${localePath(locale, "/tracking/")}?number=${encodeURIComponent(leadTracking)}`}
                     className="font-mono font-semibold underline underline-offset-2"

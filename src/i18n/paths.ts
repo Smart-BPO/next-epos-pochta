@@ -1,4 +1,4 @@
-import { defaultLocale, locales, type Locale } from "./config";
+import { defaultLocale, htmlLang, locales, type Locale } from "./config";
 
 function normalizePath(path: string) {
   if (!path || path === "/") return "/";
@@ -46,13 +46,15 @@ export function stripLocalePrefix(pathname: string): {
   return { locale: defaultLocale, path: clean };
 }
 
-export function getLocalizedAlternates(path: string) {
+export function getLocalizedAlternates(path: string): Record<string, string> {
   const normalized = normalizePath(path);
-  return {
+  const alternates: Record<string, string> = {
     "x-default": localePath(defaultLocale, normalized),
-    ru: localePath("ru", normalized),
-    uz: localePath("uz", normalized),
   };
+  for (const locale of locales) {
+    alternates[htmlLang[locale]] = localePath(locale, normalized);
+  }
+  return alternates;
 }
 
 export function switchLocalePath(pathname: string, target: Locale): string {

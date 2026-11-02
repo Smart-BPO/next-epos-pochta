@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { localePath } from "@/i18n/paths";
 import type { SiteCopy } from "@/data/types";
 import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { getRuntimeSiteConfig } from "@/lib/cms/site-settings";
+import { SITE_CONFIG } from "@/utils/consts";
 import { cn } from "@/lib/cn";
 import { pageContainer } from "@/styles/ui";
 
@@ -52,8 +54,16 @@ export async function SiteFooter({ locale, content }: SiteFooterProps) {
   ] as const;
 
   const address =
-    locale === "uz" ? site.address.lineUz : site.address.line;
-  const hours = site.hours;
+    loc(locale, site.address.lineUz, site.address.line, site.address.lineZh);
+  const hours =
+    site.hours.trim() && site.hours.trim() !== SITE_CONFIG.hours
+      ? site.hours.trim()
+      : loc(
+          locale,
+          SITE_CONFIG.hoursDisplayUz,
+          SITE_CONFIG.hoursDisplayRu,
+          SITE_CONFIG.hoursDisplayZh,
+        );
 
   return (
     <footer className="mt-auto border-t border-black/10 bg-white py-10 text-black md:py-14">

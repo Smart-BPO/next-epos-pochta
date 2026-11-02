@@ -3,9 +3,11 @@
 import { useMemo, useState } from "react";
 import { useIsClient } from "@/hooks/useIsClient";
 import Select, { type ClassNamesConfig, type GroupBase } from "react-select";
-import type { Locale } from "@/i18n/config";
+import { intlLocale, type Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import {
   getSettlementById,
+  regionLabel as regionName,
   settlementLabel,
   uzbekistanHubSettlements,
   uzbekistanSettlements,
@@ -47,19 +49,23 @@ function levelBadge(level: SettlementLevel, locale: Locale) {
     if (level === "district") return "tuman";
     return "viloyat";
   }
+  if (locale === "zh") {
+    if (level === "city") return "城市";
+    if (level === "district") return "区";
+    return "州";
+  }
   if (level === "city") return "город";
   if (level === "district") return "район";
   return "область";
 }
 
 function hubsHeading(locale: Locale) {
-  return locale === "uz" ? "Yirik shaharlar" : "Крупные города";
+  return loc(locale, "Yirik shaharlar", "Крупные города", "主要城市");
 }
 
 function toOption(settlement: Settlement, locale: Locale): SettlementOption {
   const label = settlementLabel(settlement, locale);
-  const regionLabel =
-    locale === "uz" ? settlement.regionUz : settlement.regionRu;
+  const regionLabel = regionName(settlement, locale);
   return {
     value: settlement.id,
     label,
@@ -170,14 +176,14 @@ export function SettlementSelect({
       if (levelCmp !== 0) return levelCmp;
       return settlementLabel(a, locale).localeCompare(
         settlementLabel(b, locale),
-        locale === "uz" ? "uz" : "ru",
+        intlLocale(locale),
       );
     });
 
     for (const settlement of sorted) {
       const option = toOption(settlement, locale);
       const groupKey =
-        locale === "uz" ? settlement.regionUz : settlement.regionRu;
+        regionName(settlement, locale);
       const list = byRegion.get(groupKey) ?? [];
       list.push(option);
       byRegion.set(groupKey, list);
@@ -262,7 +268,7 @@ export function SettlementSelect({
           </span>
         )}
         noOptionsMessage={() =>
-          locale === "uz" ? "Topilmadi" : "Ничего не найдено"
+          loc(locale, "Topilmadi", "Ничего не найдено", "未找到")
         }
       />
     </div>

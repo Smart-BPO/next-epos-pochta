@@ -11,9 +11,10 @@ export function detectWebAppLocale(fallback: Locale = "uz"): Locale {
   const code = tg?.initDataUnsafe?.user?.language_code?.toLowerCase() ?? "";
   if (code.startsWith("ru")) return "ru";
   if (code.startsWith("uz")) return "uz";
+  if (code.startsWith("zh")) return "zh";
   if (typeof window !== "undefined") {
     const q = new URLSearchParams(window.location.search).get("lang");
-    if (q === "ru" || q === "uz") return q;
+    if (q === "ru" || q === "uz" || q === "zh") return q;
   }
   return fallback;
 }

@@ -63,7 +63,10 @@ export async function POST(request: Request) {
       linkedAt: data.created_at,
       source:
         data.source === "telegram_contact" ? "telegram_contact" : "manual",
-      locale: data.locale === "ru" ? "ru" : "uz",
+      locale:
+        data.locale === "ru" || data.locale === "zh" || data.locale === "uz"
+          ? data.locale
+          : "uz",
     },
   });
 }

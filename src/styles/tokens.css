@@ -30,8 +30,8 @@
   --radius-lg: 1rem;
   --shadow-sm: 0 1px 2px rgb(15 18 24 / 0.05);
   --shadow-md: 0 12px 32px rgb(15 18 24 / 0.1);
-  --font-sans: var(--font-manrope), "Segoe UI", system-ui, sans-serif;
-  --font-display: var(--font-manrope), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-manrope), "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-manrope), "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
   --tap-min: 44px;
   --header-height: 3.5rem;
   --motion-fast: 160ms;

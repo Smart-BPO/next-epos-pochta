@@ -8,6 +8,7 @@ import { Button } from "@/components/atoms/Button";
 import { Chip } from "@/components/atoms/Chip";
 import { cn } from "@/lib/cn";
 import { fcargoStatusCopy } from "@/lib/tracking/fcargo-status";
+import { localePath } from "@/i18n/paths";
 import { getCanonicalSiteUrl } from "@/utils/seo/indexing";
 
 type ShipmentRow = {
@@ -199,7 +200,7 @@ export function TrackTab() {
                   type="button"
                   className="mt-2 text-xs font-semibold text-primary hover:underline"
                   onClick={() => {
-                    const path = locale === "ru" ? "/ru/tracking/" : "/tracking/";
+                    const path = localePath(locale, "/tracking/");
                     const url = `${site}${path}?number=${encodeURIComponent(row.track_number!)}`;
                     window.open(url, "_blank", "noopener,noreferrer");
                   }}

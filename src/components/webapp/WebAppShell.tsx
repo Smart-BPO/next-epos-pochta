@@ -1,6 +1,7 @@
 "use client";
 
 import { getWebAppCopy } from "@/data/webapp-copy";
+import { locales, localeLabels } from "@/i18n/config";
 import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { WebAppTabBar } from "@/components/webapp/WebAppTabBar";
@@ -22,20 +23,16 @@ export function WebAppShell({ children }: { children: React.ReactNode }) {
             </span>
           </div>
           <div className="flex overflow-hidden rounded-full border border-black/10 text-xs font-semibold">
-            <button
-              type="button"
-              className={`px-2.5 py-1 ${locale === "uz" ? "bg-primary text-white" : "bg-white text-black/55"}`}
-              onClick={() => setLocale("uz")}
-            >
-              UZ
-            </button>
-            <button
-              type="button"
-              className={`px-2.5 py-1 ${locale === "ru" ? "bg-primary text-white" : "bg-white text-black/55"}`}
-              onClick={() => setLocale("ru")}
-            >
-              RU
-            </button>
+            {locales.map((code) => (
+              <button
+                key={code}
+                type="button"
+                className={`px-2.5 py-1 ${locale === code ? "bg-primary text-white" : "bg-white text-black/55"}`}
+                onClick={() => setLocale(code)}
+              >
+                {localeLabels[code]}
+              </button>
+            ))}
           </div>
         </div>
       </header>

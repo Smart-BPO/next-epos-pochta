@@ -1,3 +1,5 @@
+import { legalZh } from "./zh";
+
 /* Auto-generated from epos-pochta-legal-documents.md — do not hand-edit prose. */
 
 export type LegalConsentPart =
@@ -90,6 +92,8 @@ export const legalUz: LegalLocaleBundle = {
   cookieDecline: "Rad etish",
 };
 
-export function getLegalBundle(locale: "uz" | "ru"): LegalLocaleBundle {
-  return locale === "ru" ? legalRu : legalUz;
+export function getLegalBundle(locale: "uz" | "ru" | "zh"): LegalLocaleBundle {
+  if (locale === "ru") return legalRu;
+  if (locale === "zh") return legalZh;
+  return legalUz;
 }

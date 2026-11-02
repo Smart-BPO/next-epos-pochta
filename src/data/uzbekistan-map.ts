@@ -13,6 +13,7 @@ export type MapRegion = {
   slug: string;
   nameRu: string;
   nameUz: string;
+  nameZh: string;
   /** Optional hub code for /delivery/#{code} on the routes index */
   deliveryCode?: string;
 };
@@ -23,6 +24,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "andijan",
     nameRu: "Андижанская область",
     nameUz: "Andijon viloyati",
+    nameZh: "安集延州",
     deliveryCode: "azn",
   },
   {
@@ -30,6 +32,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "bukhara",
     nameRu: "Бухарская область",
     nameUz: "Buxoro viloyati",
+    nameZh: "布哈拉州",
     deliveryCode: "bhk",
   },
   {
@@ -37,6 +40,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "fergana",
     nameRu: "Ферганская область",
     nameUz: "Fargʻona viloyati",
+    nameZh: "费尔干纳州",
     deliveryCode: "feg",
   },
   {
@@ -44,6 +48,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "jizzakh",
     nameRu: "Джизакская область",
     nameUz: "Jizzax viloyati",
+    nameZh: "吉扎克州",
     deliveryCode: "jiz",
   },
   {
@@ -51,6 +56,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "namangan",
     nameRu: "Наманганская область",
     nameUz: "Namangan viloyati",
+    nameZh: "纳曼干州",
     deliveryCode: "nma",
   },
   {
@@ -58,6 +64,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "navoi",
     nameRu: "Навоийская область",
     nameUz: "Navoiy viloyati",
+    nameZh: "纳沃伊州",
     deliveryCode: "nvi",
   },
   {
@@ -65,6 +72,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "kashkadarya",
     nameRu: "Кашкадарьинская область",
     nameUz: "Qashqadaryo viloyati",
+    nameZh: "卡什卡达里亚州",
     deliveryCode: "ksq",
   },
   {
@@ -72,6 +80,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "karakalpakstan",
     nameRu: "Республика Каракалпакстан",
     nameUz: "Qoraqalpogʻiston Respublikasi",
+    nameZh: "卡拉卡尔帕克斯坦共和国",
     deliveryCode: "ncu",
   },
   {
@@ -79,6 +88,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "samarkand",
     nameRu: "Самаркандская область",
     nameUz: "Samarqand viloyati",
+    nameZh: "撒马尔罕州",
     deliveryCode: "skd",
   },
   {
@@ -86,12 +96,14 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "syrdarya",
     nameRu: "Сырдарьинская область",
     nameUz: "Sirdaryo viloyati",
+    nameZh: "锡尔河州",
   },
   {
     iso: "UZSU",
     slug: "surkhandarya",
     nameRu: "Сурхандарьинская область",
     nameUz: "Surxondaryo viloyati",
+    nameZh: "苏尔汉河州",
     deliveryCode: "tmj",
   },
   {
@@ -99,6 +111,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "tashkent_city",
     nameRu: "г. Ташкент",
     nameUz: "Toshkent shahri",
+    nameZh: "塔什干市",
     deliveryCode: "tas",
   },
   {
@@ -106,6 +119,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "tashkent",
     nameRu: "Ташкентская область",
     nameUz: "Toshkent viloyati",
+    nameZh: "塔什干州",
     deliveryCode: "tas",
   },
   {
@@ -113,6 +127,7 @@ export const MAP_REGIONS: MapRegion[] = [
     slug: "khorezm",
     nameRu: "Хорезмская область",
     nameUz: "Xorazm viloyati",
+    nameZh: "花拉子模州",
     deliveryCode: "ugc",
   },
 ];
@@ -126,7 +141,9 @@ export const MAP_REGION_BY_SLUG = Object.fromEntries(
 ) as Record<string, MapRegion>;
 
 export function mapRegionLabel(region: MapRegion, locale: Locale) {
-  return locale === "uz" ? region.nameUz : region.nameRu;
+  if (locale === "uz") return region.nameUz;
+  if (locale === "zh") return region.nameZh;
+  return region.nameRu;
 }
 
 export function isMapRegionIso(value: string): value is MapRegionIso {

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { Button } from "@/components/atoms/Button";
@@ -64,13 +65,13 @@ function serviceHref(locale: Locale, serviceId: string): {
 export function ServicesPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   const labels = {
-    audience: locale === "uz" ? "Kimlar uchun" : "Для кого",
-    how: locale === "uz" ? "Qanday ishlaydi" : "Как работает",
-    includes: locale === "uz" ? "Nima kiradi" : "Что входит",
-    accepted: locale === "uz" ? "Qanday joʻnatmalar" : "Какие отправления",
-    quote: locale === "uz" ? "Hisob uchun kerak" : "Данные для расчёта",
-    limits: locale === "uz" ? "Cheklovlar" : "Ограничения",
-    catalog: locale === "uz" ? "Xizmatlar katalogi" : "Каталог услуг",
+    audience: loc(locale, "Kimlar uchun", "Для кого", "面向谁"),
+    how: loc(locale, "Qanday ishlaydi", "Как работает", "如何运作"),
+    includes: loc(locale, "Nima kiradi", "Что входит", "包含什么"),
+    accepted: loc(locale, "Qanday joʻnatmalar", "Какие отправления", "接收哪些快件"),
+    quote: loc(locale, "Hisob uchun kerak", "Данные для расчёта", "报价所需信息"),
+    limits: loc(locale, "Cheklovlar", "Ограничения", "限制"),
+    catalog: loc(locale, "Xizmatlar katalogi", "Каталог услуг", "服务目录"),
   };
 
   return (

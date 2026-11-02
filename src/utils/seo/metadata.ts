@@ -72,8 +72,9 @@ export function createPageMetadata(
       url,
       siteName: SITE_CONFIG.name,
       locale: options?.ogLocale ?? "uz_UZ",
-      alternateLocale:
-        options?.ogLocale === "ru_UZ" ? ["uz_UZ"] : ["ru_UZ"],
+      alternateLocale: ["uz_UZ", "ru_UZ", "zh_CN"].filter(
+        (tag) => tag !== (options?.ogLocale ?? "uz_UZ"),
+      ),
       type: options?.ogType ?? "website",
       images: [
         {

@@ -1,3 +1,5 @@
+import type { Locale } from "@/i18n/config";
+
 /**
  * Delivery hubs for Aviasales-style route pages.
  * Public URLs: /delivery/{fromCode}/{toCode}/ (e.g. /delivery/tas/skd/)
@@ -874,11 +876,93 @@ export function listDeliveryCityCodes(): string[] {
   return DELIVERY_CITIES.map((city) => city.code);
 }
 
-export function cityDisplayName(city: DeliveryCity, locale: "uz" | "ru"): string {
-  return locale === "uz" ? city.nameUz : city.nameRu;
+const CITY_NAME_ZH: Record<string, string> = {
+  tas: "塔什干",
+  skd: "撒马尔罕",
+  bhk: "布哈拉",
+  nma: "纳曼干",
+  azn: "安集延",
+  feg: "费尔干纳",
+  ncu: "努库斯",
+  ksq: "卡尔希",
+  tmj: "铁尔梅兹",
+  nvi: "纳沃伊",
+  jiz: "吉扎克",
+  ugc: "乌尔根奇",
+};
+
+export function cityDisplayName(city: DeliveryCity, locale: Locale): string {
+  if (locale === "uz") return city.nameUz;
+  if (locale === "zh") return CITY_NAME_ZH[city.code] ?? city.nameEn;
+  return city.nameRu;
 }
 
 /** Public city landing path (slug, not route code). */
 export function cityPath(slug: string) {
   return `/delivery/${slug}/`;
+}
+
+export function cityLead(city: DeliveryCity, locale: Locale): string {
+  if (locale === "uz") return city.leadUz;
+  if (locale === "ru") return city.leadRu;
+  const name = cityDisplayName(city, "zh");
+  if (city.code === "tas") {
+    return "塔什干市内快递，以及从首都发往乌兹别克斯坦各地：文件、包裹、上门取件。计算器中的金额为参考价，最终价格由经理确认。";
+  }
+  return `${name}的快递与包裹配送：文件、包裹、上门取件。计算器中的金额为参考价，最终价格由经理确认。`;
+}
+
+export function cityEtaHint(city: DeliveryCity, locale: Locale): string {
+  if (locale === "uz") return city.etaHintUz;
+  if (locale === "ru") return city.etaHintRu;
+  const name = cityDisplayName(city, "zh");
+  if (city.code === "tas") return "市内通常在取件后 1–2 个工作日内送达（参考）。";
+  return `发往${name}的时效取决于线路。计算器中的天数是参考值，由经理确认。`;
+}
+
+export function cityBody(city: DeliveryCity, locale: Locale): string[] {
+  if (locale === "uz") return city.bodyUz;
+  if (locale === "ru") return city.bodyRu;
+  const name = cityDisplayName(city, "zh");
+  return [
+    `${name}是 EPOS POCHTA 网络中的配送点。可以预约快递员上门取件，在约定地点交寄，或要求送货上门。`,
+    "个人客户可寄送单次文件和包裹。网店与公司可约定定期取件、状态跟踪和单独条件，网站不公布公开价目。",
+    `在计算器中选择${name}作为出发地或目的地即可查看参考价。这不是要约：经理确认最终结果。`,
+  ];
+}
+
+export function cityFaq(
+  city: DeliveryCity,
+  locale: Locale,
+): Array<{ question: string; answer: string }> {
+  if (locale === "uz") return city.faqUz;
+  if (locale === "ru") return city.faqRu;
+  const name = cityDisplayName(city, "zh");
+  return [
+    {
+      question: `${name}有快递员吗？`,
+      answer: "有。可在已约定的区域叫快递员并配送。具体地址请在报价时确认。",
+    },
+    {
+      question: "如何查看价格参考？",
+      answer: `打开计算器，把${name}选为出发地或目的地，并填写重量和尺寸。所示金额不是要约。`,
+    },
+    {
+      question: `可以从${name}寄往其他城市吗？`,
+      answer: "可以。在网站或计算器中选择方向即可。",
+    },
+  ];
+}
+
+export function cityMetaTitle(city: DeliveryCity, locale: Locale): string {
+  if (locale === "uz") return city.metaTitleUz;
+  if (locale === "ru") return city.metaTitleRu;
+  return `${cityDisplayName(city, "zh")}快递 — 包裹与文件配送`;
+}
+
+export function cityMetaDescription(city: DeliveryCity, locale: Locale): string {
+  if (locale === "uz") return city.metaDescriptionUz;
+  if (locale === "ru") return city.metaDescriptionRu;
+  const name = cityDisplayName(city, "zh");
+  return `${name}的文件与包裹配送。在 EPOS POCHTA 计算器中查看参考价，最终价格由经理确认。`;
 }

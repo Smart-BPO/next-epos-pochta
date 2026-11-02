@@ -196,8 +196,10 @@ export function estimateQuote(
   };
 }
 
-export function formatUzs(amount: number, locale: "uz" | "ru"): string {
-  return new Intl.NumberFormat(locale === "uz" ? "uz-UZ" : "ru-RU").format(
-    amount,
-  );
+export function formatUzs(
+  amount: number,
+  locale: "uz" | "ru" | "zh" = "uz",
+): string {
+  const tag = locale === "zh" ? "zh-CN" : locale === "ru" ? "ru-RU" : "uz-UZ";
+  return new Intl.NumberFormat(tag).format(amount);
 }

@@ -3,7 +3,8 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
-import { cityDisplayName, cityPath } from "@/data/delivery-cities";
+import { cityBody, cityDisplayName, cityPath } from "@/data/delivery-cities";
+import { loc } from "@/i18n/loc";
 import {
   etaLabel,
   routeBody,
@@ -75,9 +76,8 @@ export async function DeliveryRoutePageView({
     routePath(route.to.code, route.from.code),
   );
   const fromBody =
-    (locale === "uz" ? route.from.bodyUz[0] : route.from.bodyRu[0]) ?? "";
-  const toBody =
-    (locale === "uz" ? route.to.bodyUz[0] : route.to.bodyRu[0]) ?? "";
+    cityBody(route.from, locale)[0] ?? "";
+  const toBody = cityBody(route.to, locale)[0] ?? "";
 
   const outbound = routesFrom(route.from.code).filter(
     (r) => r.to.code !== route.to.code,
@@ -123,7 +123,7 @@ export async function DeliveryRoutePageView({
         data={getBreadcrumbSchema([
           { name: copy.calculator.breadcrumbHome, path: homePath },
           {
-            name: locale === "uz" ? "Yetkazib berish" : "Доставка",
+            name: loc(locale, "Yetkazib berish", "Доставка", "配送"),
             path: listPath,
           },
           { name: fromName, path: fromHubPath },
@@ -153,7 +153,7 @@ export async function DeliveryRoutePageView({
                   href={listPath}
                   className="underline-offset-2 hover:text-primary hover:underline"
                 >
-                  {locale === "uz" ? "Yetkazib berish" : "Доставка"}
+                  {loc(locale, "Yetkazib berish", "Доставка", "配送")}
                 </Link>
               </li>
               <li aria-hidden className="text-black/30">
@@ -185,15 +185,15 @@ export async function DeliveryRoutePageView({
           <dl className="m-0 grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-black/10 bg-white p-4">
               <dt className="m-0 text-xs font-semibold uppercase tracking-wide text-black/55">
-                {locale === "uz" ? "Masofa" : "Расстояние"}
+                {loc(locale, "Masofa", "Расстояние", "距离")}
               </dt>
               <dd className="m-0 mt-1 font-display text-xl font-semibold text-black">
-                ~{route.distanceKm} km
+                ~{route.distanceKm} {loc(locale, "km", "км", "公里")}
               </dd>
             </div>
             <div className="rounded-2xl border border-black/10 bg-white p-4">
               <dt className="m-0 text-xs font-semibold uppercase tracking-wide text-black/55">
-                {locale === "uz" ? "Muddat" : "Срок"}
+                {loc(locale, "Muddat", "Срок", "时效")}
               </dt>
               <dd className="m-0 mt-1 text-sm font-medium leading-snug text-black">
                 {eta}
@@ -201,12 +201,10 @@ export async function DeliveryRoutePageView({
             </div>
             <div className="rounded-2xl border border-black/10 bg-white p-4">
               <dt className="m-0 text-xs font-semibold uppercase tracking-wide text-black/55">
-                {locale === "uz" ? "Nima yuboriladi" : "Что отправляем"}
+                {loc(locale, "Nima yuboriladi", "Что отправляем", "寄送内容")}
               </dt>
               <dd className="m-0 mt-1 text-sm font-medium leading-snug text-black">
-                {locale === "uz"
-                  ? "Hujjatlar, pochta, B2B"
-                  : "Документы, посылки, B2B"}
+                {loc(locale, "Hujjatlar, pochta, B2B", "Документы, посылки, B2B", "文件、包裹、企业件")}
               </dd>
             </div>
           </dl>
@@ -214,16 +212,19 @@ export async function DeliveryRoutePageView({
           {routeEstimate?.ok ? (
             <div className="mt-6 rounded-2xl border border-black/10 bg-white p-4 sm:p-5">
               <p className="m-0 text-xs font-semibold uppercase tracking-wide text-black/55">
-                {locale === "uz" ? "Taxminiy smeta (1 kg)" : "Ориентировочная смета (1 кг)"}
+                {loc(locale, "Taxminiy smeta (1 kg)", "Ориентировочная смета (1 кг)", "参考报价（1 公斤）")}
               </p>
               <p className="m-0 mt-1 font-display text-2xl font-semibold text-black">
                 {formatUzs(routeEstimate.estimate.amount, locale)}{" "}
                 {routeEstimate.estimate.currency}
               </p>
               <p className="m-0 mt-1 text-sm text-black/55">
-                {locale === "uz"
-                  ? `Muddat orientiri: ~${routeEstimate.estimate.etaDays} kun`
-                  : `Ориентир по сроку: ~${routeEstimate.estimate.etaDays} дн.`}
+                {loc(
+                  locale,
+                  `Muddat orientiri: ~${routeEstimate.estimate.etaDays} kun`,
+                  `Ориентир по сроку: ~${routeEstimate.estimate.etaDays} дн.`,
+                  `时效参考：约 ${routeEstimate.estimate.etaDays} 天`,
+                )}
               </p>
               <p className="m-0 mt-3 text-xs leading-relaxed text-black/55">
                 {copy.calculator.disclaimer}
@@ -232,9 +233,12 @@ export async function DeliveryRoutePageView({
           ) : null}
 
           <p className="m-0 mt-5 text-sm text-black/55">
-            {locale === "uz"
-              ? "Saytda faqat orientir. Yakuniy narx va shartlar — menejer tasdigʻidan keyin."
-              : "На сайте только ориентир. Финальная цена и условия — после подтверждения менеджера."}
+            {loc(
+              locale,
+              "Saytda faqat orientir. Yakuniy narx va shartlar — menejer tasdigʻidan keyin.",
+              "На сайте только ориентир. Финальная цена и условия — после подтверждения менеджера.",
+              "网站只显示参考价。最终价格和条件在经理确认后确定。",
+            )}
           </p>
 
           {body.length > 0 ? (
@@ -298,9 +302,12 @@ export async function DeliveryRoutePageView({
       <section className={section}>
         <PageContainer className="max-w-3xl">
           <h2 className={sectionTitle}>
-            {locale === "uz"
-              ? `${fromName} — ${toName}: savol-javoblar`
-              : `${fromName} — ${toName}: вопросы и ответы`}
+            {loc(
+              locale,
+              `${fromName} — ${toName}: savol-javoblar`,
+              `${fromName} — ${toName}: вопросы и ответы`,
+              `${fromName} — ${toName}：常见问题`,
+            )}
           </h2>
           {faq.map((item) => (
             <details key={item.question} className={faqDetails}>
@@ -315,9 +322,12 @@ export async function DeliveryRoutePageView({
         <PageContainer className="flex flex-col gap-8">
           <div>
             <h2 className={sectionTitle}>
-              {locale === "uz"
-                ? `${fromName}dan boshqa yoʻnalishlar`
-                : `Другие направления из ${fromName}`}
+              {loc(
+                locale,
+                `${fromName}dan boshqa yoʻnalishlar`,
+                `Другие направления из ${fromName}`,
+                `从${fromName}出发的其他线路`,
+              )}
             </h2>
             <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
               {outbound.map((r) => (
@@ -337,18 +347,24 @@ export async function DeliveryRoutePageView({
                 href={fromHubPath}
                 className="font-medium text-primary underline-offset-2 hover:underline"
               >
-                {locale === "uz"
-                  ? `${fromName} yoʻnalishlari`
-                  : `Направления из ${fromName}`}
+                {loc(
+                  locale,
+                  `${fromName} yoʻnalishlari`,
+                  `Направления из ${fromName}`,
+                  `${fromName}的线路`,
+                )}
               </Chip>
             </p>
           </div>
 
           <div>
             <h2 className={sectionTitle}>
-              {locale === "uz"
-                ? `${toName}ga boshqa yoʻnalishlar`
-                : `Другие направления в ${toName}`}
+              {loc(
+                locale,
+                `${toName}ga boshqa yoʻnalishlar`,
+                `Другие направления в ${toName}`,
+                `发往${toName}的其他线路`,
+              )}
             </h2>
             <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
               {inbound.map((r) => (
@@ -368,9 +384,12 @@ export async function DeliveryRoutePageView({
                 href={toHubPath}
                 className="font-medium text-primary underline-offset-2 hover:underline"
               >
-                {locale === "uz"
-                  ? `${toName} yoʻnalishlari`
-                  : `Направления в ${toName}`}
+                {loc(
+                  locale,
+                  `${toName} yoʻnalishlari`,
+                  `Направления в ${toName}`,
+                  `发往${toName}的线路`,
+                )}
               </Link>
             </p>
           </div>

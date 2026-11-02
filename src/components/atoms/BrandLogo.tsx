@@ -9,18 +9,22 @@ const SRC: Record<BrandLogoVariant, Record<Locale, string>> = {
   color: {
     uz: "/images/brand/logo-uz.svg",
     ru: "/images/brand/logo-ru.svg",
+    zh: "/images/brand/logo-uz.svg",
   },
   red: {
     uz: "/images/brand/logo-uz-red.svg",
     ru: "/images/brand/logo-ru-red.svg",
+    zh: "/images/brand/logo-uz-red.svg",
   },
   onRed: {
     uz: "/images/brand/logo-uz-color.svg",
     ru: "/images/brand/logo-ru-color.svg",
+    zh: "/images/brand/logo-uz-color.svg",
   },
   white: {
     uz: "/images/brand/logo-uz-white.svg",
     ru: "/images/brand/logo-ru-white.svg",
+    zh: "/images/brand/logo-uz-white.svg",
   },
 };
 

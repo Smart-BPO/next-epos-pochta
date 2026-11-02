@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import type { Locale } from "@/i18n/config";
+import { intlLocale, type Locale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { SITE_CONFIG } from "@/utils/consts";
@@ -45,17 +45,17 @@ type UiState =
   | "rate_limited"
   | "found";
 
-function formatDay(iso: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
+function formatDay(iso: string, locale: Locale) {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   }).format(new Date(iso));
 }
 
-function formatEventTime(iso: string) {
-  // ru-RU numeric avoids broken uz-UZ short-month output (e.g. "2026 M09 4").
-  return new Intl.DateTimeFormat("ru-RU", {
+function formatEventTime(iso: string, locale: Locale) {
+  // Numeric month avoids broken uz-UZ short-month output (e.g. "2026 M09 4").
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -255,7 +255,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                         {copy.tracking.deliveredAt}
                       </dt>
                       <dd className="m-0 font-medium text-ink">
-                        {formatEventTime(shipment.deliveredAt)}
+                        {formatEventTime(shipment.deliveredAt, locale)}
                       </dd>
                     </div>
                   ) : shipment.estimatedDeliveryAt ? (
@@ -264,7 +264,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                         {copy.tracking.estimatedDelivery}
                       </dt>
                       <dd className="m-0 font-medium text-ink">
-                        {formatDay(shipment.estimatedDeliveryAt)}
+                        {formatDay(shipment.estimatedDeliveryAt, locale)}
                       </dd>
                     </div>
                   ) : null}
@@ -298,7 +298,7 @@ export function TrackingPageView({ locale }: { locale: Locale }) {
                             <p className={trackTimelineMeta}>
                               {[
                                 event.occurredAt
-                                  ? formatEventTime(event.occurredAt)
+                                  ? formatEventTime(event.occurredAt, locale)
                                   : null,
                                 event.location ?? null,
                               ]

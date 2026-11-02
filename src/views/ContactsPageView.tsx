@@ -1,4 +1,6 @@
 import type { Locale } from "@/i18n/config";
+import { loc } from "@/i18n/loc";
+import { SITE_CONFIG } from "@/utils/consts";
 import { getContent } from "@/i18n/get-content";
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
@@ -27,13 +29,21 @@ export async function ContactsPageView({ locale }: { locale: Locale }) {
   const copy = getContent(locale);
   const site = await getRuntimeSiteConfig();
   const { lat, lng, line } = site.address;
-  const hours = site.hours.trim();
+  const hours =
+    site.hours.trim() && site.hours.trim() !== SITE_CONFIG.hours
+      ? site.hours.trim()
+      : loc(
+          locale,
+          SITE_CONFIG.hoursDisplayUz,
+          SITE_CONFIG.hoursDisplayRu,
+          SITE_CONFIG.hoursDisplayZh,
+        );
   const email = site.email.trim();
   const mapsUrl = officeMapsExternalUrl(lat, lng);
 
   return (
     <>
-      <JsonLd data={getCourierServiceSchema()} />
+      <JsonLd data={getCourierServiceSchema(locale)} />
       <section className={pageIntro}>
         <PageContainer>
           <h1 className={pageIntroTitle}>{copy.contacts.title}</h1>
@@ -89,7 +99,7 @@ export async function ContactsPageView({ locale }: { locale: Locale }) {
               {hours ? (
                 <div>
                   <p className="m-0 text-sm font-semibold uppercase tracking-wide text-black/55">
-                    {locale === "uz" ? "Ish vaqti" : "Режим работы"}
+                    {loc(locale, "Ish vaqti", "Режим работы", "营业时间")}
                   </p>
                   <p className="mt-1 m-0 text-lg text-black/70">{hours}</p>
                 </div>
@@ -100,7 +110,7 @@ export async function ContactsPageView({ locale }: { locale: Locale }) {
                   {copy.contacts.addressTitle}
                 </p>
                 <p className="mt-1 m-0 text-base leading-relaxed text-black/70">
-                  {locale === "uz" ? site.address.lineUz : line}
+                  {loc(locale, site.address.lineUz, line, site.address.lineZh)}
                 </p>
                 <p className="mt-2 m-0 text-sm text-black/55">
                   {copy.contacts.mapNote}

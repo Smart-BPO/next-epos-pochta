@@ -1,7 +1,7 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 
-export type WebAppContactLocale = "uz" | "ru";
+export type WebAppContactLocale = "uz" | "ru" | "zh";
 export type WebAppContactSource = "telegram_contact" | "manual";
 
 export type UpsertWebAppContactInput = {
@@ -52,7 +52,11 @@ function resolveLocale(
   input: UpsertWebAppContactInput,
 ): WebAppContactLocale {
   if (input.preserveExistingLocale) {
-    if (existing.locale === "ru" || existing.locale === "uz") {
+    if (
+      existing.locale === "ru" ||
+      existing.locale === "uz" ||
+      existing.locale === "zh"
+    ) {
       return existing.locale;
     }
   }

@@ -2,7 +2,9 @@ import type { NewsArticle, NewsCategory, NewsStatus } from "@/data/news/types";
 import { newsArticles as siteNewsSeed } from "@/data/news/articles";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
-import { parseStoredBody, sanitizeNewsHtml } from "@/lib/news/body-html";
+import { parseStoredBody, sanitizeNewsHtml, seedBlocksToHtml } from "@/lib/news/body-html";
+import { newsZhBySlug } from "@/data/news/zh";
+import type { NewsLocaleContent } from "@/data/news/types";
 import { cache } from "react";
 
 type ArticleRow = {
@@ -34,6 +36,35 @@ function isCategory(value: string): value is NewsCategory {
   return /^[a-z0-9][a-z0-9_-]{0,63}$/i.test(value);
 }
 
+function zhLocale(
+  slug: string,
+  row: TranslationRow | undefined,
+  fallback: NewsLocaleContent,
+): NewsLocaleContent {
+  if (row?.title?.trim()) {
+    return {
+      title: row.title,
+      excerpt: row.excerpt,
+      bodyHtml: parseStoredBody(row.body),
+      seoTitle: row.seo_title ?? "",
+      seoDescription: row.seo_description ?? "",
+      ogTitle: row.og_title ?? "",
+      ogDescription: row.og_description ?? "",
+    };
+  }
+  const seed = newsZhBySlug[slug];
+  if (!seed) return fallback;
+  return {
+    title: seed.title,
+    excerpt: seed.excerpt,
+    bodyHtml: seedBlocksToHtml(seed.body),
+    seoTitle: "",
+    seoDescription: "",
+    ogTitle: "",
+    ogDescription: "",
+  };
+}
+
 function mapRows(
   articles: ArticleRow[],
   translations: TranslationRow[],
@@ -45,6 +76,9 @@ function mapRows(
     );
     const ru = translations.find(
       (t) => t.article_id === row.id && t.locale === "ru",
+    );
+    const zh = translations.find(
+      (t) => t.article_id === row.id && t.locale === "zh",
     );
     if (!uz || !ru || !isCategory(row.category)) continue;
     mapped.push({
@@ -77,6 +111,15 @@ function mapRows(
           ogTitle: ru.og_title ?? "",
           ogDescription: ru.og_description ?? "",
         },
+        zh: zhLocale(row.slug, zh, {
+          title: ru.title,
+          excerpt: ru.excerpt,
+          bodyHtml: parseStoredBody(ru.body),
+          seoTitle: ru.seo_title ?? "",
+          seoDescription: ru.seo_description ?? "",
+          ogTitle: ru.og_title ?? "",
+          ogDescription: ru.og_description ?? "",
+        }),
       },
     });
   }
@@ -182,6 +225,7 @@ export type NewsUpsertInput = {
   locales: {
     uz: NewsArticle["locales"]["uz"];
     ru: NewsArticle["locales"]["ru"];
+    zh?: NewsArticle["locales"]["zh"];
   };
 };
 
@@ -212,8 +256,9 @@ export async function upsertNewsArticle(input: NewsUpsertInput) {
   );
   if (articleError) throw new Error(articleError.message);
 
-  for (const locale of ["uz", "ru"] as const) {
+  for (const locale of ["uz", "ru", "zh"] as const) {
     const loc = input.locales[locale];
+    if (!loc) continue;
     const { error } = await admin.from("epos_news_translations").upsert(
       {
         article_id: id,
@@ -228,7 +273,13 @@ export async function upsertNewsArticle(input: NewsUpsertInput) {
       },
       { onConflict: "article_id,locale" },
     );
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (locale === "zh" && /check constraint|locale/i.test(error.message)) {
+        console.error("[cms:news] zh locale skipped", error.message);
+        continue;
+      }
+      throw new Error(error.message);
+    }
   }
 
   return id;

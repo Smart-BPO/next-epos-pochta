@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { Button } from "@/components/atoms/Button";
 import { getWebAppCopy } from "@/data/webapp-copy";
+import { loc } from "@/i18n/loc";
 import { getSettlementById } from "@/data/settlements";
 import { fetchEstimate } from "@/lib/pricing/client";
 import { formatUzs, type QuoteEstimate } from "@/lib/pricing/estimate";
@@ -36,7 +37,12 @@ export function CalcTab() {
 
   const daysLabel =
     estimate &&
-    (locale === "uz" ? `${estimate.etaDays} kun` : `${estimate.etaDays} дн.`);
+    loc(
+      locale,
+      `${estimate.etaDays} kun`,
+      `${estimate.etaDays} дн.`,
+      `${estimate.etaDays} 天`,
+    );
 
   const onCalculate = async () => {
     setSubmitted(true);

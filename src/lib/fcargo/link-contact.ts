@@ -135,7 +135,10 @@ export async function syncShipmentMirrorFromPackage(
   const { error } = await client.from("epos_webapp_shipments").insert({
     id,
     contact_session_id: contact.session_id,
-    locale: contact.locale === "ru" ? "ru" : "uz",
+    locale:
+      contact.locale === "ru" || contact.locale === "zh"
+        ? contact.locale
+        : "uz",
     phone: contact.phone,
     telegram_user_id: contact.telegram_user_id,
     from_settlement_id: "",
