@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { CopyButton } from "@/components/dashboard/CopyButton";
+import { ContactDetailDrawer } from "@/components/dashboard/ContactDetailDrawer";
 import {
   useDashLocale,
   useDashT,
@@ -10,6 +12,7 @@ import {
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import {
   DashAvatar,
+  DashBoolIcon,
   DashCrudPage,
   DashListView,
 } from "@/components/dashboard/ds";
@@ -121,12 +124,14 @@ function ContactCard({
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="space-y-1.5 text-sm">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="group flex flex-wrap items-center gap-1">
             <span className="text-xs font-semibold uppercase tracking-wide text-black/35">
               {t.list.phone}
             </span>
-            <span className="font-medium text-ink">{row.phone || "—"}</span>
-            {row.phone ? <CopyButton value={row.phone} /> : null}
+            <span className="inline-flex items-center gap-0.5 whitespace-nowrap font-medium tabular-nums text-ink">
+              {row.phone || "—"}
+              {row.phone ? <CopyButton value={row.phone} /> : null}
+            </span>
           </div>
           <p className="m-0 font-mono text-[0.65rem] text-black/30">
             {row.session_id}
@@ -198,18 +203,26 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
   const t = useDashT();
   const { locale } = useDashLocale();
   const intlLocale = dashIntlLocale(locale);
+  const [drawerRow, setDrawerRow] = useState<WebappContactRow | null>(null);
 
   return (
     <DashCrudPage title={t.contacts.title} lead={t.contacts.lead}>
+      <ContactDetailDrawer
+        row={drawerRow}
+        open={Boolean(drawerRow)}
+        onClose={() => setDrawerRow(null)}
+      />
       <DashListView
         storageKey="webapp-contacts"
         rows={rows}
         rowKey={(r) => r.session_id}
         emptyTitle={t.contacts.emptyTitle}
         emptyLead={t.contacts.emptyLead}
-        defaultView="cards"
+        defaultView="table"
         defaultSortId="created"
         defaultSortDir="desc"
+        selectable
+        syncUrl
         filters={[
           {
             id: "source",
@@ -240,8 +253,13 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
             searchText: (r) =>
               `${contactName(r)} ${r.session_id} ${r.phone} ${r.telegram_username ?? ""} ${r.telegram_user_id ?? ""}`,
             sortValue: (r) => contactName(r),
+            sticky: true,
             cell: (row) => (
-              <div className="flex items-center gap-3">
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 rounded-lg text-left transition hover:bg-black/[0.02]"
+                onClick={() => setDrawerRow(row)}
+              >
                 <DashAvatar
                   name={contactName(row)}
                   photoUrl={row.photo_url}
@@ -250,11 +268,11 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
                 />
                 <div className="min-w-0">
                   <div className="font-medium text-ink">{contactName(row)}</div>
-                  <div className="mt-0.5 font-mono text-[0.65rem] text-black/35">
+                  <div className="mt-0.5 font-mono text-[0.65rem] tabular-nums text-black/35">
                     {row.session_id} · /{row.locale}
                   </div>
                 </div>
-              </div>
+              </button>
             ),
           },
           {
@@ -263,8 +281,8 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
             searchText: true,
             sortValue: (r) => r.phone,
             cell: (row) => (
-              <div className="flex flex-wrap items-center gap-2">
-                <span>{row.phone || "—"}</span>
+              <div className="group inline-flex max-w-full items-center gap-0.5 whitespace-nowrap">
+                <span className="tabular-nums">{row.phone || "—"}</span>
                 {row.phone ? <CopyButton value={row.phone} /> : null}
               </div>
             ),
@@ -282,7 +300,7 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
                 : "";
               const href = telegramHref(row);
               return (
-                <div className="flex flex-wrap items-center gap-2 text-sm">
+                <div className="group inline-flex max-w-full items-center gap-0.5 whitespace-nowrap text-sm">
                   {href && username ? (
                     <a
                       href={href}
@@ -339,9 +357,12 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
             hideInCard: true,
             sortValue: (r) => (r.init_data_ok ? 1 : 0),
             cell: (row) => (
-              <span className="text-xs text-black/50">
-                {row.init_data_ok ? "✓" : "—"}
-              </span>
+              <DashBoolIcon
+                value={row.init_data_ok}
+                trueTone="success"
+                trueLabel={t.contacts.verified}
+                falseLabel={t.contacts.unverified}
+              />
             ),
           },
           {
@@ -350,9 +371,12 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
             hideInCard: true,
             sortValue: (r) => (r.fcargoLinked ? 1 : 0),
             cell: (row) => (
-              <span className="text-xs text-black/50">
-                {row.fcargoLinked ? "✓" : "—"}
-              </span>
+              <DashBoolIcon
+                value={row.fcargoLinked}
+                trueTone="info"
+                trueLabel={t.contacts.fcargoLinked}
+                falseLabel={t.contacts.fcargoNotLinked}
+              />
             ),
           },
           {

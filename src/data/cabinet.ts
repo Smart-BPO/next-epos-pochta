@@ -6,9 +6,9 @@ export function cabinetCopy(locale: Locale) {
     title: loc(locale, "Kabinet", "Кабинет", "个人中心"),
     lead: loc(
       locale,
-      "FCargo hisobingizni bogʻlang — joʻnatmalarni koʻring va yangi buyurtma yarating.",
-      "Привяжите аккаунт FCargo — смотрите отправления и создавайте новые.",
-      "绑定 FCargo 账户后可查看运单并创建新订单。",
+      "Telefon orqali kabinetni ulang — joʻnatmalarni koʻring va yangi buyurtma yarating.",
+      "Подключите кабинет по телефону — смотрите отправления и создавайте новые.",
+      "用手机号连接个人中心 — 查看运单并创建新订单。",
     ),
     metaTitle: loc(
       locale,
@@ -18,9 +18,9 @@ export function cabinetCopy(locale: Locale) {
     ),
     metaDescription: loc(
       locale,
-      "EPOS POCHTA kabineti: FCargo hisobini bogʻlash, joʻnatmalar va yangi buyurtma.",
-      "Кабинет EPOS POCHTA: привязка FCargo, отправления и новый заказ.",
-      "EPOS POCHTA 个人中心：绑定 FCargo、运单与新订单。",
+      "EPOS POCHTA kabineti: hisobni ulash, joʻnatmalar va yangi buyurtma.",
+      "Кабинет EPOS POCHTA: вход по SMS, отправления и новый заказ.",
+      "EPOS POCHTA 个人中心：短信登录、运单与新订单。",
     ),
     navLabel: loc(locale, "Kabinet", "Кабинет", "个人中心"),
     phoneLabel: loc(locale, "Telefon", "Телефон", "电话"),
@@ -70,9 +70,9 @@ export function cabinetCopy(locale: Locale) {
     trackLabel: loc(locale, "Trek-raqam", "Трек-номер", "运单号"),
     noCustomer: loc(
       locale,
-      "Bu raqam hali EPOS mijozi emas. Avval buyurtma qoldiring, keyin kabinetni bogʻlang.",
-      "Этот номер ещё не является клиентом EPOS. Сначала оставьте заказ, затем привяжите кабинет.",
-      "该号码还不是 EPOS 客户。请先下单，然后再绑定个人中心。",
+      "Bu raqam hali mijoz sifatida roʻyxatda yoʻq. Avval buyurtma qoldiring, keyin kabinetni ulang.",
+      "Этот номер ещё не в базе клиентов. Сначала оставьте заказ, затем подключите кабинет.",
+      "该号码尚未登记为客户。请先下单，然后再连接个人中心。",
     ),
     contactCta: loc(locale, "Aloqa", "Контакты", "联系我们"),
     rateLimited: loc(

@@ -125,7 +125,7 @@ export async function POST(request: Request) {
     heightCm: toNumber(body.heightCm),
     comment: (body.comment ?? "").trim(),
     locale,
-    packageDescription: `EPOS Mini App ${externalId}`,
+    packageDescription: `EPOS Telegram ${externalId}`,
     source: "webapp",
     contactSessionId: sessionId,
     telegramUserId: auth.userId,

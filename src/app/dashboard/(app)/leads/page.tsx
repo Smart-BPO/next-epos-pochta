@@ -14,22 +14,31 @@ import {
 } from "@/lib/cms/inbox";
 import { updateLeadStatusAction } from "./actions";
 
-export default async function DashboardLeadsPage() {
+export default async function DashboardLeadsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const admin = await requireAccess("leads");
   if (!admin) {
     return <DashDenied section="leads" />;
   }
   const readOnly = !canMutate(admin.role, "leads");
+  const sp = (await searchParams) ?? {};
+  const statusFilter = Array.isArray(sp.status) ? sp.status[0] : sp.status;
   let rows: InboxRow[] = [];
   if (hasSupabaseAdminConfig()) {
     const client = createSupabaseAdminClient();
+    let leadsQuery = client
+      .from("epos_leads")
+      .select("id, type, locale, status, source, payload, created_at, sort_order")
+      .order("sort_order", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (statusFilter) leadsQuery = leadsQuery.eq("status", statusFilter);
+
     const [leadsRes, shipsRes] = await Promise.all([
-      client
-        .from("epos_leads")
-        .select("id, type, locale, status, source, payload, created_at, sort_order")
-        .order("sort_order", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(500),
+      leadsQuery,
       client
         .from("epos_webapp_shipments")
         .select(

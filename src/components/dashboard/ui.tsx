@@ -37,17 +37,19 @@ export function DashBreadcrumbs({
   items: Array<{ href?: string; label: string }>;
 }) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-2 text-sm text-black/45">
+    <nav aria-label="Breadcrumb" className="text-sm text-[var(--dash-muted)]">
       <ol className="m-0 flex flex-wrap items-center gap-1.5 p-0 list-none">
         {items.map((item, i) => (
           <li key={`${item.label}-${i}`} className="inline-flex items-center gap-1.5">
-            {i > 0 ? <span className="text-black/25">/</span> : null}
+            {i > 0 ? <span className="text-[var(--dash-faint)]">/</span> : null}
             {item.href ? (
               <a href={item.href} className="font-medium text-primary hover:underline">
                 {item.label}
               </a>
             ) : (
-              <span className="font-medium text-black/60">{item.label}</span>
+              <span className="font-medium text-[var(--dash-muted-strong)]">
+                {item.label}
+              </span>
             )}
           </li>
         ))}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getDashLocale } from "@/i18n/dashboard/server";
 import { DashLocaleProvider } from "@/components/dashboard/DashLocaleProvider";
+import { DashThemeProvider } from "@/components/dashboard/DashThemeProvider";
 
 export const metadata: Metadata = {
   title: "EPOS Dashboard",
@@ -14,6 +15,8 @@ export default async function DashboardRootLayout({
 }) {
   const locale = await getDashLocale();
   return (
-    <DashLocaleProvider locale={locale}>{children}</DashLocaleProvider>
+    <DashLocaleProvider locale={locale}>
+      <DashThemeProvider>{children}</DashThemeProvider>
+    </DashLocaleProvider>
   );
 }

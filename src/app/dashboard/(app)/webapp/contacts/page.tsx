@@ -2,6 +2,7 @@ import { requireAccess } from "@/lib/cms/auth";
 import { linkedTelegramSubjectIds } from "@/lib/fcargo/epos-account";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import { parseDashListQuery } from "@/lib/dashboard/list-query";
 import { DashDenied } from "@/components/dashboard/DashDenied";
 import {
   WebappContactsClient,
@@ -42,22 +43,50 @@ function buildShipmentStats(rows: ShipmentAggRow[]) {
   return map;
 }
 
-export default async function WebappContactsPage() {
+export default async function WebappContactsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const session = await requireAccess("webapp");
   if (!session) {
     return <DashDenied section="contacts" />;
   }
 
+  const params = await searchParams;
+  const query = parseDashListQuery(params, {
+    defaultPageSize: 100,
+    defaultSort: "created_at",
+    defaultDir: "desc",
+    filterKeys: ["source", "locale"],
+  });
+
   let rows: WebappContactRow[] = [];
   if (hasSupabaseAdminConfig()) {
     const admin = createSupabaseAdminClient();
-    const { data: contacts } = await admin
+    let req = admin
       .from("epos_webapp_contacts")
       .select(
         "session_id, phone, first_name, last_name, locale, source, telegram_user_id, telegram_username, photo_url, init_data_ok, created_at",
       )
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: query.dir === "asc" })
       .limit(500);
+
+    if (query.filters.source) {
+      req = req.eq("source", query.filters.source);
+    }
+    if (query.filters.locale) {
+      req = req.eq("locale", query.filters.locale);
+    }
+    if (query.q) {
+      // Phone / session exact-ish server filter; broader text search stays client-side.
+      const digits = query.q.replace(/\D/g, "");
+      if (digits.length >= 4) {
+        req = req.ilike("phone", `%${digits}%`);
+      }
+    }
+
+    const { data: contacts } = await req;
 
     const base = (contacts ?? []) as Omit<
       WebappContactRow,

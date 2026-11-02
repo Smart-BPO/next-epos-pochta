@@ -22,7 +22,8 @@ const PULL_MAX_PAGES = 4;
 const PULL_TRACKED_PHONES_MAX = 5_000;
 const lastPullByPhone = new Map<string, number>();
 
-const FALLBACK_LABEL = "FCargo";
+/** Shown when address is missing — never expose vendor brand to customers. */
+const FALLBACK_LABEL = "—";
 
 function shipmentStatusFromFcargo(
   status: string | null | undefined,
@@ -117,10 +118,7 @@ export async function syncShipmentMirrorFromPackage(
       phone: contact.phone,
       telegram_user_id: contact.telegram_user_id,
       contact_session_id: contact.session_id,
-      comment:
-        row.event_type || row.status
-          ? `FCargo ${row.event_type ?? ""} ${row.status ?? ""}`.trim()
-          : FALLBACK_LABEL,
+      comment: row.status?.trim() || "",
     };
     if (fromLabel !== FALLBACK_LABEL) update.from_label = fromLabel;
     if (toLabel !== FALLBACK_LABEL) update.to_label = toLabel;
@@ -145,7 +143,7 @@ export async function syncShipmentMirrorFromPackage(
     to_settlement_id: "",
     from_label: fromLabel,
     to_label: toLabel,
-    comment: `FCargo ${row.status ?? ""}`.trim(),
+    comment: row.status?.trim() || "",
     status,
     track_number: tracking,
     price_status: "from_fcargo",

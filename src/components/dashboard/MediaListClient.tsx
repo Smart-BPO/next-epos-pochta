@@ -145,8 +145,8 @@ export function MediaListClient({
         actions={(f) => (
           <DashRowActions
             extra={
-              <div className="inline-flex flex-nowrap items-center gap-2">
-                <CopyButton value={f.url} />
+              <div className="group inline-flex flex-nowrap items-center gap-1">
+                <CopyButton value={f.url} className="opacity-100" />
                 <a
                   href={f.url}
                   target="_blank"

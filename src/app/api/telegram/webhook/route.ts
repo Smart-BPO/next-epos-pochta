@@ -338,7 +338,12 @@ async function handleContactMessage(
   });
   await sendMessage({
     chatId,
-    text: locale === "ru" ? "Mini App →" : "Mini App →",
+    text:
+      locale === "ru"
+        ? "Готово. Откройте приложение 👇"
+        : locale === "zh"
+          ? "完成。请打开应用 👇"
+          : "Tayyor. Ilovani oching 👇",
     replyMarkup: webAppInlineKeyboard(appUrl, copy.openApp),
   });
 }

@@ -29,10 +29,12 @@ export default async function DashboardFcargoLogsPage({
 
   const sp = (await searchParams) ?? {};
   const source = parseSource(sp.source);
+  const rawLimit = Array.isArray(sp.pageSize) ? sp.pageSize[0] : sp.pageSize;
+  const limit = Math.min(200, Math.max(20, Number(rawLimit) || 50));
 
   const { t } = await getDashT();
   const rows = await listFcargoRequestLog({
-    limit: 50,
+    limit,
     source,
     includeBodies: true,
   });

@@ -113,6 +113,28 @@ export type DashCopy = {
     moreMenu: string;
     accessDenied: string;
     goOverview: string;
+    columns: string;
+    density: string;
+    densityCompact: string;
+    densityComfortable: string;
+    selectAll: string;
+    selectedCount: string;
+    exportCsv: string;
+    commandPalette: string;
+    commandPlaceholder: string;
+    commandEmpty: string;
+    commandNav: string;
+    commandActions: string;
+    breadcrumbsHome: string;
+    theme: string;
+    themeLight: string;
+    themeDark: string;
+    themeSystem: string;
+    needsAttention: string;
+    activityFeed: string;
+    vsPrevPeriod: string;
+    collapseSidebar: string;
+    expandSidebar: string;
   };
 
   badge: {
@@ -273,7 +295,9 @@ export type DashCopy = {
     verified: string;
     unverified: string;
     fcargoLinked: string;
+    fcargoNotLinked: string;
     noShipments: string;
+    drawerTitle: string;
   };
 
   shipments: {

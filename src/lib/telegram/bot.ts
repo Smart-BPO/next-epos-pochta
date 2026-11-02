@@ -233,7 +233,7 @@ export function setMyCommands(
 
 export function webAppInlineKeyboard(
   url: string,
-  label = "EPOS Mini App",
+  label = "EPOS",
 ): TelegramInlineKeyboardMarkup {
   return {
     inline_keyboard: [[{ text: label, web_app: { url } }]],

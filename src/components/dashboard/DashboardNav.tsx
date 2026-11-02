@@ -31,12 +31,17 @@ function NavLink({
   item,
   active,
   variant,
+  collapsed,
+  badge,
 }: {
   item: DashboardNavItem;
   active: boolean;
   variant: "side" | "mobile";
+  collapsed?: boolean;
+  badge?: number;
 }) {
   const label = useNavLabel(item, variant === "mobile");
+  const showBadge = typeof badge === "number" && badge > 0;
 
   if (variant === "mobile") {
     return (
@@ -46,7 +51,7 @@ function NavLink({
           "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium",
           active
             ? "border-primary/25 bg-primary-soft text-primary"
-            : "border-black/10 bg-white text-black/65",
+            : "border-[var(--dash-border-strong)] bg-[var(--dash-surface)] text-[var(--dash-muted-strong)]",
         )}
       >
         <DashNavIcon href={item.href} />
@@ -58,20 +63,35 @@ function NavLink({
   return (
     <Link
       href={item.href}
+      title={label}
+      aria-label={label}
       className={cn(
         "relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+        collapsed && "justify-center px-2",
         active
           ? "bg-primary-soft text-primary"
-          : "text-black/55 hover:bg-black/[0.03] hover:text-black",
+          : "text-[var(--dash-muted-strong)] hover:bg-black/[0.03] hover:text-[var(--dash-ink)]",
       )}
     >
-      {active ? (
+      {active && !collapsed ? (
         <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary" />
       ) : null}
-      <span className={cn(active ? "text-primary" : "text-black/40")}>
+      <span className={cn("relative", active ? "text-primary" : "text-[var(--dash-faint)]")}>
         <DashNavIcon href={item.href} />
+        {collapsed && showBadge ? (
+          <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-primary" />
+        ) : null}
       </span>
-      {label}
+      {!collapsed ? (
+        <>
+          <span className="min-w-0 flex-1 truncate">{label}</span>
+          {showBadge ? (
+            <span className="rounded-full bg-primary px-1.5 py-0.5 text-[0.65rem] font-bold text-white">
+              {badge > 99 ? "99+" : badge}
+            </span>
+          ) : null}
+        </>
+      ) : null}
     </Link>
   );
 }
@@ -79,9 +99,13 @@ function NavLink({
 export function DashboardNav({
   items,
   variant = "side",
+  collapsed = false,
+  badges,
 }: {
   items: DashboardNavItem[];
   variant?: "side" | "mobile";
+  collapsed?: boolean;
+  badges?: Partial<Record<DashboardNavItem["labelKey"], number>>;
 }) {
   const pathname = usePathname() || "/dashboard/";
   const t = useDashT();
@@ -108,9 +132,11 @@ export function DashboardNav({
         if (groupItems.length === 0) return null;
         return (
           <div key={groupId}>
-            <p className="m-0 mb-1 px-3 text-[0.65rem] font-semibold uppercase tracking-wide text-black/30">
-              {t.nav.groups[groupId]}
-            </p>
+            {!collapsed ? (
+              <p className="m-0 mb-1 px-3 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--dash-faint)]">
+                {t.nav.groups[groupId]}
+              </p>
+            ) : null}
             <div className="flex flex-col gap-0.5">
               {groupItems.map((item) => (
                 <NavLink
@@ -118,6 +144,8 @@ export function DashboardNav({
                   item={item}
                   active={isActive(pathname, item.href)}
                   variant="side"
+                  collapsed={collapsed}
+                  badge={badges?.[item.labelKey]}
                 />
               ))}
             </div>

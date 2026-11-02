@@ -125,6 +125,49 @@
   --btn-telegram-bg: var(--color-telegram);
   --btn-telegram-bg-hover: var(--color-telegram-hover);
   --btn-telegram-fg: #ffffff;
+
+  /* Dashboard shell tokens (light defaults; dark via [data-dash-theme="dark"]) */
+  --dash-bg: #f5f6f8;
+  --dash-surface: #ffffff;
+  --dash-surface-muted: rgb(0 0 0 / 0.015);
+  --dash-border: rgb(0 0 0 / 0.06);
+  --dash-border-strong: rgb(0 0 0 / 0.1);
+  --dash-ink: var(--color-ink);
+  --dash-muted: rgb(0 0 0 / 0.45);
+  --dash-muted-strong: rgb(0 0 0 / 0.55);
+  --dash-faint: rgb(0 0 0 / 0.35);
+  --dash-shadow:
+    0 1px 2px rgb(15 18 24 / 0.04), 0 8px 24px rgb(15 18 24 / 0.04);
+  --dash-shadow-modal: 0 24px 64px rgb(15 18 24 / 0.22);
+  --dash-radius: 1rem;
+  --dash-radius-sm: 0.5rem;
+  --dash-row-py: 0.875rem;
+  --dash-row-py-compact: 0.5rem;
+  --dash-focus-ring: rgb(211 2 3 / 0.25);
+}
+
+[data-dash-theme="dark"] {
+  --dash-bg: #0f1218;
+  --dash-surface: #181c24;
+  --dash-surface-muted: rgb(255 255 255 / 0.04);
+  --dash-border: rgb(255 255 255 / 0.08);
+  --dash-border-strong: rgb(255 255 255 / 0.14);
+  --dash-ink: #f3f5f8;
+  --dash-muted: rgb(255 255 255 / 0.5);
+  --dash-muted-strong: rgb(255 255 255 / 0.65);
+  --dash-faint: rgb(255 255 255 / 0.4);
+  --dash-shadow:
+    0 1px 2px rgb(0 0 0 / 0.35), 0 8px 24px rgb(0 0 0 / 0.35);
+  --dash-shadow-modal: 0 24px 64px rgb(0 0 0 / 0.55);
+  --color-surface: var(--dash-surface);
+  --color-surface-muted: #12161e;
+  --color-ink: var(--dash-ink);
+  --color-border: rgb(255 255 255 / 0.12);
+  --control-border: rgb(255 255 255 / 0.14);
+  --btn-secondary-bg: var(--dash-surface);
+  --btn-outline-bg: var(--dash-surface);
+  --btn-ghost-bg-hover: rgb(255 255 255 / 0.06);
+  color-scheme: dark;
 }
 
 @media (min-width: 640px) {

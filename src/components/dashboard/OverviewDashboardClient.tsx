@@ -16,6 +16,11 @@ import {
   IconPlus,
   IconProgress,
 } from "@/components/dashboard/icons";
+import {
+  OverviewFunnelChart,
+  OverviewLeadsAreaChart,
+} from "@/components/dashboard/OverviewCharts";
+import { DashBadge } from "@/components/dashboard/ds";
 import { DashTable, DashTd, DashTh } from "@/components/dashboard/ui";
 import { useDashLocale, useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { dashFormat, dashIntlLocale } from "@/i18n/dashboard";
@@ -309,6 +314,20 @@ export function OverviewDashboardClient({
         : 0
       : Math.round(((curSum - prevSum) / prevSum) * 100);
 
+  const chartDays = useMemo(() => {
+    const keys: string[] = [];
+    const now = new Date();
+    for (let i = 6; i >= 0; i -= 1) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      keys.push(dayKey(d.toISOString()));
+    }
+    return keys.map((k, i) => ({
+      day: k.slice(5),
+      count: last7[i] ?? 0,
+    }));
+  }, [last7]);
+
   const statusOrder = ["new", "in_progress", "done", "spam"] as const;
   const statusCounts = statusOrder.map((key) => ({
     key,
@@ -320,6 +339,68 @@ export function OverviewDashboardClient({
     1,
     statusCounts.reduce((a, b) => a + b.count, 0),
   );
+  const funnelData = statusCounts.map((s) => ({
+    label: s.label,
+    count: s.count,
+  }));
+
+  const attention = useMemo(() => {
+    const items: Array<{
+      id: string;
+      title: string;
+      href: string;
+      tone: "warn" | "danger" | "info";
+    }> = [];
+    const unassigned = scopedLeads.filter((l) => l.status === "new").length;
+    if (unassigned > 0) {
+      items.push({
+        id: "new-leads",
+        title: `${t.overview.kpiNewLeads}: ${unassigned}`,
+        href: "/dashboard/leads/?status=new",
+        tone: "danger",
+      });
+    }
+    if (pendingShipments > 0) {
+      items.push({
+        id: "pending-ship",
+        title: dashFormat(t.overview.kpiPendingWebapp, { n: pendingShipments }),
+        href: "/dashboard/webapp/shipments/?status=pending_manager",
+        tone: "warn",
+      });
+    }
+    const noTrack = shipments.filter(
+      (s) => s.status === "pending_manager" || s.status === "draft",
+    ).length;
+    if (noTrack > 0) {
+      items.push({
+        id: "no-track",
+        title: `${t.shipments.title}: ${noTrack}`,
+        href: "/dashboard/webapp/shipments/",
+        tone: "info",
+      });
+    }
+    return items;
+  }, [scopedLeads, pendingShipments, shipments, t]);
+
+  const activity = useMemo(() => {
+    const leadEvents = scopedLeads.slice(0, 6).map((l) => ({
+      id: `lead-${l.id}`,
+      title: leadClient(l),
+      meta: formatShortDate(l.created_at, intl),
+      href: `/dashboard/leads/${l.id}/`,
+      kind: "lead" as const,
+    }));
+    const shipEvents = shipments.slice(0, 4).map((s) => ({
+      id: `ship-${s.id}`,
+      title: `${s.from_label} → ${s.to_label}`,
+      meta: formatShortDate(s.created_at, intl),
+      href: "/dashboard/webapp/shipments/",
+      kind: "ship" as const,
+    }));
+    return [...leadEvents, ...shipEvents]
+      .sort((a, b) => (a.meta < b.meta ? 1 : -1))
+      .slice(0, 8);
+  }, [scopedLeads, shipments, intl]);
 
   const recent = scopedLeads.slice(0, 8);
   const routeFallbacks = {
@@ -428,65 +509,100 @@ export function OverviewDashboardClient({
         ))}
       </ul>
 
+      {(attention.length > 0 || activity.length > 0) && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <section className={dashCardPad}>
+            <h2 className={dashSectionTitle}>{t.common.needsAttention}</h2>
+            {attention.length === 0 ? (
+              <p className="m-0 mt-3 text-sm text-[var(--dash-muted)]">—</p>
+            ) : (
+              <ul className="m-0 mt-3 grid list-none gap-2 p-0">
+                {attention.map((item) => (
+                  <li key={item.id}>
+                    <Link
+                      href={item.href}
+                      className="flex items-center justify-between gap-2 rounded-xl border border-[var(--dash-border)] px-3 py-2.5 text-sm transition hover:bg-black/[0.02]"
+                    >
+                      <span className="font-medium text-[var(--dash-ink)]">
+                        {item.title}
+                      </span>
+                      <DashBadge
+                        tone={
+                          item.tone === "danger"
+                            ? "danger"
+                            : item.tone === "warn"
+                              ? "warn"
+                              : "info"
+                        }
+                      >
+                        !
+                      </DashBadge>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+          <section className={dashCardPad}>
+            <h2 className={dashSectionTitle}>{t.common.activityFeed}</h2>
+            <ul className="m-0 mt-3 grid list-none gap-2 p-0">
+              {activity.length === 0 ? (
+                <li className="text-sm text-[var(--dash-muted)]">—</li>
+              ) : (
+                activity.map((ev) => (
+                  <li key={ev.id}>
+                    <Link
+                      href={ev.href}
+                      className="flex items-center justify-between gap-3 rounded-xl px-1 py-1.5 text-sm hover:bg-black/[0.02]"
+                    >
+                      <span className="min-w-0 truncate font-medium text-[var(--dash-ink)]">
+                        {ev.title}
+                      </span>
+                      <span className="shrink-0 text-xs text-[var(--dash-muted)]">
+                        {ev.meta}
+                      </span>
+                    </Link>
+                  </li>
+                ))
+              )}
+            </ul>
+          </section>
+        </div>
+      )}
+
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)_minmax(14rem,0.7fr)]">
-        <section className={dashCardPad}>
-          <div className="flex items-center justify-between gap-3">
-            <h2 className={dashSectionTitle}>{t.overview.chartTitle}</h2>
-            <span className="rounded-lg border border-black/8 px-2.5 py-1 text-xs font-medium text-black/50">
-              7
+        <div className="space-y-3">
+          <OverviewLeadsAreaChart data={chartDays} />
+          <div className="flex flex-wrap gap-4 px-1 text-xs text-[var(--dash-muted)]">
+            <span>
+              {dashFormat(t.overview.chartCurrent7, { n: curSum })}
+              {` · ${deltaPct >= 0 ? "+" : ""}${deltaPct}% ${t.common.vsPrevPeriod}`}
             </span>
+            <span>{dashFormat(t.overview.chartPrev7, { n: prevSum })}</span>
           </div>
-          <div className="mt-2">
+          <div className="hidden">
             <Sparkline current={last7} previous={prev7} />
           </div>
-          <div className="mt-1 flex flex-wrap gap-4 text-xs text-black/45">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-0.5 w-4 rounded bg-primary" />{" "}
-              {dashFormat(t.overview.chartCurrent7, { n: curSum })}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-px w-4 border-t border-dashed border-black/35" />{" "}
-              {dashFormat(t.overview.chartPrev7, { n: prevSum })}
-            </span>
-          </div>
-        </section>
+        </div>
 
-        <section className={dashCardPad}>
-          <h2 className={dashSectionTitle}>{t.overview.statusesTitle}</h2>
-          <ul className="mt-4 space-y-3">
-            {statusCounts.map((row) => {
-              const pct = Math.round((row.count / statusTotal) * 100);
-              return (
-                <li key={row.key}>
-                  <div className="flex items-center justify-between gap-2 text-sm">
-                    <span className="inline-flex items-center gap-2 text-black/70">
-                      <span className={cn("size-2 rounded-full", row.dot)} />
-                      {row.label}
-                    </span>
-                    <span className="font-semibold text-ink">
-                      {row.count}
-                      <span className="ml-1 text-xs font-medium text-black/35">
-                        {pct}%
-                      </span>
-                    </span>
-                  </div>
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-black/[0.05]">
-                    <div
-                      className={cn("h-full rounded-full", row.bar)}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-          <p className="m-0 mt-4 border-t border-black/[0.06] pt-3 text-sm text-black/45">
+        <div className="space-y-3">
+          <OverviewFunnelChart data={funnelData} />
+          <p className="m-0 px-1 text-sm text-[var(--dash-muted)]">
             {dateFilter.active
               ? t.overview.totalInRange
               : t.overview.totalRecent}{" "}
-            <span className="font-semibold text-ink">{scopedLeads.length}</span>
+            <span className="font-semibold text-[var(--dash-ink)]">
+              {scopedLeads.length}
+            </span>
+            <span className="ml-2 text-xs">
+              (
+              {statusCounts
+                .map((row) => `${Math.round((row.count / statusTotal) * 100)}%`)
+                .join(" · ")}
+              )
+            </span>
           </p>
-        </section>
+        </div>
 
         <section className={dashCardPad}>
           <h2 className={dashSectionTitle}>{t.overview.quickActionsTitle}</h2>

@@ -12,23 +12,39 @@ import {
   refreshFcargoShipmentAction,
 } from "./actions";
 
-export default async function WebappShipmentsPage() {
+export default async function WebappShipmentsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const admin = await requireAccess("webapp");
   if (!admin) {
     return <DashDenied section="shipments" />;
   }
   const readOnly = !canMutate(admin.role, "webapp");
+  const sp = (await searchParams) ?? {};
+  const statusFilter = Array.isArray(sp.status) ? sp.status[0] : sp.status;
+  const contactFilter = Array.isArray(sp.contact) ? sp.contact[0] : sp.contact;
+  const q = (Array.isArray(sp.q) ? sp.q[0] : sp.q)?.trim() ?? "";
 
   let rows: WebappShipmentRow[] = [];
   if (hasSupabaseAdminConfig()) {
     const client = createSupabaseAdminClient();
-    const { data } = await client
+    let req = client
       .from("epos_webapp_shipments")
       .select(
         "id, contact_session_id, from_label, to_label, weight_kg, status, track_number, phone, created_at",
       )
       .order("created_at", { ascending: false })
       .limit(500);
+    if (statusFilter) req = req.eq("status", statusFilter);
+    if (contactFilter) req = req.eq("contact_session_id", contactFilter);
+    if (q) {
+      const digits = q.replace(/\D/g, "");
+      if (digits.length >= 4) req = req.ilike("phone", `%${digits}%`);
+      else if (/^PKG/i.test(q)) req = req.ilike("track_number", `%${q}%`);
+    }
+    const { data } = await req;
     rows = (data ?? []) as WebappShipmentRow[];
 
     const tracks = Array.from(

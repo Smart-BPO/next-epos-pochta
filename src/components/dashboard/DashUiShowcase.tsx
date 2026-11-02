@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import * as Yup from "yup";
+import { CopyButton } from "@/components/dashboard/CopyButton";
 import {
+  DashBadge,
+  DashBoolIcon,
   DashCheckbox,
   DashCodeInput,
   DashConfirmDialog,
@@ -10,6 +13,8 @@ import {
   DashCrudPage,
   DashDateTimeInput,
   DashForm,
+  DashIconButton,
+  DashKbd,
   DashListView,
   DashModal,
   DashOtpInput,
@@ -18,6 +23,7 @@ import {
   DashSelect,
   DashTextarea,
   DashTextInput,
+  DashTimeline,
   DashTrackCodeInput,
 } from "@/components/dashboard/ds";
 import {
@@ -129,6 +135,33 @@ export function DashUiShowcase() {
             <button type="button" className={dashBtnGhost}>
               Ghost
             </button>
+            <DashIconButton label="Icon">
+              <span className="text-[0.65rem] font-bold">i</span>
+            </DashIconButton>
+            <span className="group inline-flex items-center gap-1">
+              +998…
+              <CopyButton value="+998335460427" />
+            </span>
+            <DashKbd>⌘K</DashKbd>
+          </div>
+        </DashCrudCard>
+
+        <DashCrudCard title="Badges / bool / timeline">
+          <div className="flex flex-wrap items-center gap-2">
+            <DashBadge tone="primary">Primary</DashBadge>
+            <DashBadge tone="success">Success</DashBadge>
+            <DashBadge tone="warn">Warn</DashBadge>
+            <DashBadge tone="info">Info</DashBadge>
+            <DashBoolIcon value trueTone="success" trueLabel="Yes" falseLabel="No" />
+            <DashBoolIcon value={false} trueLabel="Yes" falseLabel="No" />
+          </div>
+          <div className="mt-4 max-w-sm">
+            <DashTimeline
+              items={[
+                { id: "1", title: "Created", meta: "today", tone: "info" },
+                { id: "2", title: "Linked", meta: "Cabinet", tone: "success" },
+              ]}
+            />
           </div>
         </DashCrudCard>
 

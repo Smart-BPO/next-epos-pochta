@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "react-toastify";
+import { CopyButton } from "@/components/dashboard/CopyButton";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { dashFormat } from "@/i18n/dashboard";
 import {
@@ -135,11 +136,7 @@ export function PricingMatrixPanel({
     });
   };
 
-  const exportCsv = () => {
-    const text = routesToCsv(routes);
-    void navigator.clipboard.writeText(text);
-    toast.success(t.common.copied);
-  };
+  const exportCsvText = routesToCsv(routes);
 
   const hubLabel = (id: string) => {
     const s = uzbekistanHubSettlements.find((h) => h.id === id);
@@ -250,9 +247,12 @@ export function PricingMatrixPanel({
           <h2 className="m-0 text-[0.95rem] font-semibold text-ink">
             {t.pricing.matrixTitle} ({routes.length})
           </h2>
-          <button type="button" className={dashBtnSecondary} onClick={exportCsv}>
-            {t.pricing.exportCsv}
-          </button>
+          <CopyButton
+            value={exportCsvText}
+            label={t.pricing.exportCsv}
+            variant="text"
+            className={dashBtnSecondary}
+          />
         </div>
         {routes.length === 0 ? (
           <p className="m-0 text-sm text-black/45">{t.pricing.matrixLead}</p>

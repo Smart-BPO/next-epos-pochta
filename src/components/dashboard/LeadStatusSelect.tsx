@@ -1,5 +1,7 @@
 "use client";
 
+import { useOptimistic, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useLeadStatusLabels } from "@/components/dashboard/DashStatusBadge";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { dashSelectSm } from "@/styles/dashboard";
@@ -19,40 +21,49 @@ export function LeadStatusSelect({
   disabled?: boolean;
 }) {
   const t = useDashT();
+  const router = useRouter();
   const labels = useLeadStatusLabels();
+  const [optimisticStatus, setOptimisticStatus] = useOptimistic(status);
+  const [, startTransition] = useTransition();
 
   if (disabled) {
     return (
-      <span className="text-xs text-black/45">
-        {labels[status] ?? status}
+      <span className="text-xs text-[var(--dash-muted)]">
+        {labels[optimisticStatus] ?? optimisticStatus}
       </span>
     );
   }
 
   return (
-    <form
-      action={async (fd) => {
-        try {
-          await action(fd);
-          toast.success(t.form.successDefault);
-        } catch {
-          toast.error(t.errors.saveFailed);
-        }
+    <select
+      name="status"
+      value={optimisticStatus}
+      disabled={disabled}
+      onChange={(e) => {
+        const next = e.target.value;
+        const fd = new FormData();
+        fd.set("id", id);
+        fd.set("status", next);
+        startTransition(async () => {
+          setOptimisticStatus(next);
+          try {
+            await action(fd);
+            toast.success(t.form.successDefault);
+            router.refresh();
+          } catch {
+            toast.error(t.errors.saveFailed);
+            router.refresh();
+          }
+        });
       }}
+      className={`${dashSelectSm} max-w-[11rem]`}
+      aria-label={t.list.status}
     >
-      <input type="hidden" name="id" value={id} />
-      <select
-        name="status"
-        defaultValue={status}
-        onChange={(e) => e.currentTarget.form?.requestSubmit()}
-        className={`${dashSelectSm} max-w-[11rem]`}
-      >
-        {STATUSES.map((s) => (
-          <option key={s} value={s}>
-            {labels[s] ?? s}
-          </option>
-        ))}
-      </select>
-    </form>
+      {STATUSES.map((s) => (
+        <option key={s} value={s}>
+          {labels[s] ?? s}
+        </option>
+      ))}
+    </select>
   );
 }
