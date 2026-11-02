@@ -126,10 +126,6 @@ export type DashCopy = {
     commandNav: string;
     commandActions: string;
     breadcrumbsHome: string;
-    theme: string;
-    themeLight: string;
-    themeDark: string;
-    themeSystem: string;
     needsAttention: string;
     activityFeed: string;
     vsPrevPeriod: string;

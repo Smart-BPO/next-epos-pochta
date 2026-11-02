@@ -1,15 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Moon, Sun, Monitor } from "lucide-react";
 import { DashPopover } from "@/components/dashboard/ds/DashPopover";
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
-import { useDashTheme, type DashTheme } from "@/components/dashboard/DashThemeProvider";
 import { IconLogout } from "@/components/dashboard/icons";
 import { logoutAction } from "@/app/dashboard/(auth)/logout/actions";
 import type { AdminUser } from "@/lib/cms/auth-shared";
-import { cn } from "@/lib/cn";
 
 function initials(admin: AdminUser) {
   const raw = (admin.displayName || admin.email || "?").trim();
@@ -30,14 +27,7 @@ export function DashProfileMenu({
   admin: AdminUser;
 }) {
   const t = useDashT();
-  const { theme, setTheme } = useDashTheme();
   const name = admin.displayName || admin.email.split("@")[0] || "Admin";
-
-  const themes: Array<{ id: DashTheme; label: string; icon: typeof Sun }> = [
-    { id: "light", label: t.common.themeLight, icon: Sun },
-    { id: "dark", label: t.common.themeDark, icon: Moon },
-    { id: "system", label: t.common.themeSystem, icon: Monitor },
-  ];
 
   return (
     <DashPopover
@@ -65,29 +55,6 @@ export function DashProfileMenu({
         <p className="m-0 mt-0.5 truncate text-xs text-black/40">{admin.email}</p>
       </div>
       <div className="space-y-0.5 p-1.5">
-        <p className="m-0 px-3 pt-1 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--dash-faint)]">
-          {t.common.theme}
-        </p>
-        <div className="mb-1 flex gap-1 px-2">
-          {themes.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              title={label}
-              aria-label={label}
-              aria-pressed={theme === id}
-              className={cn(
-                "inline-flex flex-1 items-center justify-center rounded-lg py-2 transition",
-                theme === id
-                  ? "bg-primary-soft text-primary"
-                  : "text-[var(--dash-muted)] hover:bg-black/[0.03]",
-              )}
-              onClick={() => setTheme(id)}
-            >
-              <Icon className="size-4" strokeWidth={1.75} aria-hidden />
-            </button>
-          ))}
-        </div>
         <Link
           href="/dashboard/profile/"
           onClick={() => onOpenChange(false)}

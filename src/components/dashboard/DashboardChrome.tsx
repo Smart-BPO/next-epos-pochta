@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { AdminUser } from "@/lib/cms/auth-shared";
@@ -63,6 +63,15 @@ export function DashboardChrome({
     readCollapsed,
     () => false,
   );
+
+  useEffect(() => {
+    document.documentElement.removeAttribute("data-dash-theme");
+    try {
+      window.localStorage.removeItem("dash-theme");
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const toggleCollapsed = useCallback(() => {
     try {
