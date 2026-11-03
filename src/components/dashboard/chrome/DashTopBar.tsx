@@ -1,16 +1,18 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { AdminUser } from "@/lib/cms/auth-shared";
 import type { DashNotificationsSnapshot } from "@/lib/cms/notifications";
+import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { CommandPalette } from "@/components/dashboard/CommandPalette";
 import { DashHeaderActions } from "@/components/dashboard/chrome/DashHeaderActions";
-import { useDashT } from "@/components/dashboard/DashLocaleProvider";
+import { useDashLocale, useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { DASHBOARD_NAV } from "@/components/dashboard/nav";
 import { DashBreadcrumbs } from "@/components/dashboard/ui";
 import { dashTopBar } from "@/styles/dashboard";
-import { cn } from "@/lib/cn";
+import { SITE_CONFIG } from "@/utils/consts";
 
 export function DashTopBar({
   admin,
@@ -20,6 +22,7 @@ export function DashTopBar({
   notifications: DashNotificationsSnapshot;
 }) {
   const t = useDashT();
+  const { locale } = useDashLocale();
   const pathname = usePathname() || "/dashboard/";
 
   const crumbs = useMemo(() => {
@@ -43,13 +46,13 @@ export function DashTopBar({
   return (
     <header className={dashTopBar}>
       <div className="min-w-0 flex-1">
-        <p
-          className={cn(
-            "m-0 truncate font-display text-sm font-bold text-primary lg:hidden",
-          )}
+        <Link
+          href="/dashboard/"
+          className="inline-flex h-7 items-center lg:hidden"
+          aria-label={SITE_CONFIG.name}
         >
-          {t.brand}
-        </p>
+          <BrandLogo locale={locale} variant="red" width={84} height={28} priority />
+        </Link>
         <div className="hidden lg:block">
           <DashBreadcrumbs items={crumbs} />
         </div>

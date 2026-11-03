@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { loginAction } from "@/app/dashboard/(auth)/login/actions";
-import { useDashT } from "@/components/dashboard/DashLocaleProvider";
+import { BrandLogo } from "@/components/atoms/BrandLogo";
+import { useDashLocale, useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { DashLocaleSwitcher } from "@/components/dashboard/DashLocaleSwitcher";
 import { dashBtnPrimary, dashCard, dashInput } from "@/styles/dashboard";
+import { SITE_CONFIG } from "@/utils/consts";
 
 export function DashboardLoginForm({
   initialError = "",
@@ -15,6 +17,7 @@ export function DashboardLoginForm({
   nextPath?: string;
 }) {
   const t = useDashT();
+  const { locale } = useDashLocale();
   const [state, formAction, pending] = useActionState(loginAction, null);
   const error = state?.error || initialError;
 
@@ -26,10 +29,18 @@ export function DashboardLoginForm({
       {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h1 className="m-0 font-display text-xl font-bold text-ink">
-            {t.brand}
+          <h1 className="m-0">
+            <span className="sr-only">{SITE_CONFIG.name}</span>
+            <BrandLogo
+              locale={locale}
+              variant="red"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+              priority
+            />
           </h1>
-          <p className="mt-1 text-sm text-black/50">{t.login.lead}</p>
+          <p className="mt-2 text-sm text-black/50">{t.login.lead}</p>
         </div>
         <DashLocaleSwitcher />
       </div>
