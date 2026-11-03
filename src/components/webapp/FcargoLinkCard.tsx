@@ -81,6 +81,14 @@ export function FcargoLinkCard({
   const mapError = (codeName?: string) => {
     if (codeName === "no_customer_card") return copy.fcargoNoCustomer;
     if (codeName === "rate_limited") return copy.fcargoRateLimited;
+    if (
+      codeName === "fcargo_unavailable" ||
+      codeName === "secrets_unavailable" ||
+      codeName === "link_store_failed"
+    ) {
+      return copy.fcargoUnavailable;
+    }
+    if (codeName === "relink_required") return copy.fcargoRelink;
     if (codeName === "invalid_input" || codeName === "invalid_code") {
       return copy.fcargoInvalidCode;
     }

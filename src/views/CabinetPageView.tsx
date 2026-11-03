@@ -60,6 +60,7 @@ export function CabinetPageView({ locale }: { locale: Locale }) {
       if (res.status === 401) {
         setLinked(null);
         setStep("phone");
+        setError(cabinetCopy(locale).relinkRequired);
         return;
       }
       const json = (await res.json()) as { packages?: PackageRow[] };
@@ -91,6 +92,7 @@ export function CabinetPageView({ locale }: { locale: Locale }) {
             if (pkgRes.status === 401) {
               setLinked(null);
               setStep("phone");
+              setError(cabinetCopy(locale).relinkRequired);
               return;
             }
             const pkgJson = (await pkgRes.json()) as {
@@ -115,6 +117,14 @@ export function CabinetPageView({ locale }: { locale: Locale }) {
   const mapError = (err?: string) => {
     if (err === "no_customer_card") return c.noCustomer;
     if (err === "rate_limited" || err === "resend_cooldown") return c.rateLimited;
+    if (
+      err === "fcargo_unavailable" ||
+      err === "secrets_unavailable" ||
+      err === "link_store_failed"
+    ) {
+      return c.serviceUnavailable;
+    }
+    if (err === "relink_required") return c.relinkRequired;
     if (err === "invalid_input" || err === "invalid_phone") return c.invalidCode;
     return c.genericError;
   };

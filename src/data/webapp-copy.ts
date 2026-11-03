@@ -74,6 +74,8 @@ export type WebAppCopy = {
   fcargoLinked: string;
   fcargoNoCustomer: string;
   fcargoRateLimited: string;
+  fcargoUnavailable: string;
+  fcargoRelink: string;
   fcargoInvalidCode: string;
   fcargoError: string;
   blockedTitle: string;
@@ -165,6 +167,9 @@ const uz: WebAppCopy = {
   fcargoNoCustomer:
     "Bu raqam hali mijoz sifatida roʻyxatda yoʻq. Avval joʻnatma soʻrovini yuboring, keyin kabinetni ulang.",
   fcargoRateLimited: "Juda koʻp urinish. Keyinroq qayta urinib koʻring.",
+  fcargoUnavailable:
+    "Xizmat vaqtincha ishlamayapti. Keyinroq qayta urinib koʻring.",
+  fcargoRelink: "Sessiya tugadi. Telefon orqali qayta ulaning.",
   fcargoInvalidCode: "Kod notoʻgʻri yoki muddati tugagan.",
   fcargoError: "Xatolik. Qayta urinib koʻring.",
   blockedTitle: "Faqat Telegram da",
@@ -258,6 +263,8 @@ const ru: WebAppCopy = {
   fcargoNoCustomer:
     "Этот номер ещё не в базе клиентов. Сначала оформите отправление, затем подключите кабинет.",
   fcargoRateLimited: "Слишком много попыток. Попробуйте позже.",
+  fcargoUnavailable: "Сервис временно недоступен. Попробуйте позже.",
+  fcargoRelink: "Сессия истекла. Подключите кабинет заново по телефону.",
   fcargoInvalidCode: "Неверный или просроченный код.",
   fcargoError: "Ошибка. Попробуйте ещё раз.",
   blockedTitle: "Только в Telegram",
@@ -347,6 +354,8 @@ const zh: WebAppCopy = {
   fcargoLinked: "个人中心已连接",
   fcargoNoCustomer: "该号码尚未登记为客户。请先寄件，然后再连接个人中心。",
   fcargoRateLimited: "尝试过多，请稍后再试。",
+  fcargoUnavailable: "服务暂时不可用，请稍后再试。",
+  fcargoRelink: "登录已失效，请用手机号重新连接。",
   fcargoInvalidCode: "验证码错误或已过期。",
   fcargoError: "出错了，请再试一次。",
   blockedTitle: "仅在 Telegram 中",

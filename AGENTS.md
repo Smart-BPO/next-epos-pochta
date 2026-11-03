@@ -27,6 +27,13 @@ This is a Next.js 16 App Router project. Prefer docs under `node_modules/next/di
 - Client-side **non-binding estimates** are allowed (A→B + weight/dims) with a clear “not final / manager confirms” disclaimer
 - Never publish official tariffs or present estimates as final prices / оферта
 - Final price only via manager confirmation after a lead («Запросить стоимость» / contacts on estimate)
+
+## React / hooks (dashboard)
+
+- `useSyncExternalStore` `getSnapshot` must return a **stable** value (primitive or cached reference). Returning a fresh `[]` / `{}` / `JSON.parse(...)` every call causes React #185 (max update depth) — see `DashListView` hidden-cols cache.
+- Prefer shared [`src/hooks/useIsClient.ts`](src/hooks/useIsClient.ts) (`useIsClient`, `useMediaQuery`) over local `emptySubscribe` copies.
+- When adjusting state during render from props, compare by **fingerprint/key**, not object identity (`shipmentDraftKey` for Mini App drafts).
+- Smoke: `npm run smoke` / `npm run smoke -- https://epos-pochta.uz`
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

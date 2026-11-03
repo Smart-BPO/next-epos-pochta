@@ -81,6 +81,18 @@ export function cabinetCopy(locale: Locale) {
       "Слишком много попыток. Попробуйте позже.",
       "尝试次数过多，请稍后再试。",
     ),
+    serviceUnavailable: loc(
+      locale,
+      "Xizmat vaqtincha ishlamayapti. Keyinroq qayta urinib koʻring.",
+      "Сервис временно недоступен. Попробуйте позже.",
+      "服务暂时不可用，请稍后再试。",
+    ),
+    relinkRequired: loc(
+      locale,
+      "Sessiya tugadi. Telefon orqali qayta ulaning.",
+      "Сессия истекла. Подключите кабинет заново по телефону.",
+      "登录已失效，请用手机号重新连接。",
+    ),
     invalidCode: loc(
       locale,
       "Kod notoʻgʻri yoki muddati tugagan.",
