@@ -4,37 +4,19 @@ import {
   useCallback,
   useEffect,
   useId,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
+import { useIsClient, useMediaQuery } from "@/hooks/useIsClient";
 import {
   dashBtnGhost,
   dashModalOverlay,
   dashModalPanel,
 } from "@/styles/dashboard";
 
-const emptySubscribe = () => () => {};
-
-function useIsClient() {
-  return useSyncExternalStore(emptySubscribe, () => true, () => false);
-}
-
 function useIsMobileLg() {
-  return useSyncExternalStore(
-    (onStoreChange) => {
-      if (typeof window === "undefined") return () => {};
-      const mq = window.matchMedia("(max-width: 1023px)");
-      mq.addEventListener("change", onStoreChange);
-      return () => mq.removeEventListener("change", onStoreChange);
-    },
-    () =>
-      typeof window !== "undefined"
-        ? window.matchMedia("(max-width: 1023px)").matches
-        : false,
-    () => false,
-  );
+  return useMediaQuery("(max-width: 1023px)");
 }
 
 export type DashModalSize = "sm" | "md" | "lg";

@@ -20,6 +20,19 @@ export type ShipmentDraft = {
   height: string;
 };
 
+/** Stable fingerprint for draft compare (avoid object-ref React #185 loops). */
+export function shipmentDraftKey(draft: ShipmentDraft | null | undefined): string {
+  if (!draft) return "";
+  return [
+    draft.from,
+    draft.to,
+    draft.weight,
+    draft.length,
+    draft.width,
+    draft.height,
+  ].join("\0");
+}
+
 type WebAppNavContextValue = {
   tab: WebAppTabId;
   setTab: (tab: WebAppTabId) => void;

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState } from "react";
 import { NEWS_CATEGORIES } from "@/data/news/types";
 import {
   deleteNewsAction,
@@ -23,6 +23,7 @@ import {
 import { DashStatusBadge } from "@/components/dashboard/DashStatusBadge";
 import { dashMobileActionBar } from "@/styles/dashboard";
 import { cn } from "@/lib/cn";
+import { useIsClient } from "@/hooks/useIsClient";
 
 export type NewsFormValues = {
   id?: string;
@@ -50,12 +51,6 @@ export type NewsFormValues = {
   ogTitleRu: string;
   ogDescriptionRu: string;
 };
-
-const emptySubscribe = () => () => {};
-
-function useIsClient() {
-  return useSyncExternalStore(emptySubscribe, () => true, () => false);
-}
 
 function toDatetimeLocal(iso: string) {
   if (!iso) return "";

@@ -3,19 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
-import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/cn";
 import type { DashboardNavItem } from "@/components/dashboard/nav";
 import { resolveNavLabel } from "@/components/dashboard/DashboardNav";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { IconMore } from "@/components/dashboard/icons";
 import { DashNavIcon } from "@/components/dashboard/mobile/DashNavIcon";
-
-const emptySubscribe = () => () => {};
-
-function useIsClient() {
-  return useSyncExternalStore(emptySubscribe, () => true, () => false);
-}
+import { useIsClient } from "@/hooks/useIsClient";
 
 function isActive(pathname: string, href: string) {
   const path = pathname.endsWith("/") ? pathname : `${pathname}/`;

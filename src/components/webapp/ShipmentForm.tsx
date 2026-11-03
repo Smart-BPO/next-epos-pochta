@@ -6,7 +6,10 @@ import { Button } from "@/components/atoms/Button";
 import { getWebAppCopy } from "@/data/webapp-copy";
 import { getSettlementById, settlementLabel } from "@/data/settlements";
 import type { WebAppContactSession } from "@/lib/webapp/session";
-import type { ShipmentDraft } from "@/components/webapp/WebAppNav";
+import {
+  shipmentDraftKey,
+  type ShipmentDraft,
+} from "@/components/webapp/WebAppNav";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { Input, Textarea } from "@/components/atoms/Input";
 import { isValidUzPhone, normalizePhone } from "@/lib/form/utils";
@@ -64,9 +67,10 @@ export function ShipmentForm({
     };
   }, [initData]);
 
-  const [appliedDraft, setAppliedDraft] = useState(initialDraft);
-  if (appliedDraft !== initialDraft) {
-    setAppliedDraft(initialDraft);
+  const nextDraftKey = shipmentDraftKey(initialDraft);
+  const [appliedDraftKey, setAppliedDraftKey] = useState(nextDraftKey);
+  if (appliedDraftKey !== nextDraftKey) {
+    setAppliedDraftKey(nextDraftKey);
     if (initialDraft) {
       setFrom(initialDraft.from);
       setTo(initialDraft.to);

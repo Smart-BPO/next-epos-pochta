@@ -7,17 +7,11 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
-
-const emptySubscribe = () => () => {};
-
-function useIsClient() {
-  return useSyncExternalStore(emptySubscribe, () => true, () => false);
-}
+import { useIsClient } from "@/hooks/useIsClient";
 
 type PanelPos = { top: number; left: number };
 

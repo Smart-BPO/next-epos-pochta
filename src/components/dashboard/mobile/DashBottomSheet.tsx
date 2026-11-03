@@ -6,22 +6,16 @@ import {
   useId,
   useRef,
   useState,
-  useSyncExternalStore,
   type ReactNode,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
+import { useIsClient } from "@/hooks/useIsClient";
 
 const OPEN_RATIO = 0.88;
 const DISMISS_RATIO = 0.4;
 const VELOCITY_DISMISS = 0.85;
-
-const emptySubscribe = () => () => {};
-
-function useIsClient() {
-  return useSyncExternalStore(emptySubscribe, () => true, () => false);
-}
 
 type DashBottomSheetProps = {
   open: boolean;

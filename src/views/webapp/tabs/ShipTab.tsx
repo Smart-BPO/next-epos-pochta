@@ -5,7 +5,10 @@ import { ContactGate } from "@/components/webapp/ContactGate";
 import { ShipmentForm } from "@/components/webapp/ShipmentForm";
 import { getWebAppCopy } from "@/data/webapp-copy";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
-import { useWebAppNav } from "@/components/webapp/WebAppNav";
+import {
+  shipmentDraftKey,
+  useWebAppNav,
+} from "@/components/webapp/WebAppNav";
 import { useTelegramBackButton } from "@/hooks/useTelegramBackButton";
 import type { WebAppContactSession } from "@/lib/webapp/session";
 import { Button } from "@/components/atoms/Button";
@@ -24,9 +27,10 @@ export function ShipTab({
   const [successId, setSuccessId] = useState<string | null>(null);
   const [editingContact, setEditingContact] = useState(false);
 
-  const [seenDraft, setSeenDraft] = useState(draft);
-  if (seenDraft !== draft) {
-    setSeenDraft(draft);
+  const nextDraftKey = shipmentDraftKey(draft);
+  const [seenDraftKey, setSeenDraftKey] = useState(nextDraftKey);
+  if (seenDraftKey !== nextDraftKey) {
+    setSeenDraftKey(nextDraftKey);
     setSuccessId(null);
   }
 

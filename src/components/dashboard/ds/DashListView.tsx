@@ -26,6 +26,7 @@ import {
 import { DashIconButton } from "@/components/dashboard/ds/DashIconButton";
 import { DashPopover } from "@/components/dashboard/ds/DashPopover";
 import { useDashLocale, useDashT } from "@/components/dashboard/DashLocaleProvider";
+import { useMediaQuery } from "@/hooks/useIsClient";
 import { dashFormat, dashIntlLocale } from "@/i18n/dashboard";
 import {
   dashBtnGhost,
@@ -293,19 +294,7 @@ export function DashListView<T>({
   );
   const [densityLocal, setDensityLocal] = useState<DashListDensity | null>(null);
 
-  const isMobile = useSyncExternalStore(
-    (onChange) => {
-      if (typeof window === "undefined") return () => {};
-      const mq = window.matchMedia("(max-width: 767px)");
-      mq.addEventListener("change", onChange);
-      return () => mq.removeEventListener("change", onChange);
-    },
-    () =>
-      typeof window !== "undefined"
-        ? window.matchMedia("(max-width: 767px)").matches
-        : false,
-    () => false,
-  );
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const storedHidden = useSyncExternalStore(
     (onChange) =>
