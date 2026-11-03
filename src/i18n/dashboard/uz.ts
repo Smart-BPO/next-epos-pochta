@@ -59,7 +59,7 @@ export const dashUz: DashCopy = {
     overview: "Bosh sahifa",
     overviewShort: "Asosiy",
     leads: "Arizalar",
-    contacts: "Foydalanuvchilar",
+    contacts: "Mijozlar",
     contactsShort: "Mijozlar",
     shipments: "Joʻnatmalar",
     shipmentsShort: "Yuklar",
@@ -249,12 +249,13 @@ export const dashUz: DashCopy = {
 
   login: {
     title: "Kirish",
-    lead: "Xodimlar paneli",
+    lead: "Xodimlar uchun CMS kirishi (/dashboard)",
     email: "Email",
     password: "Parol",
     submit: "Kirish",
     setupLink: "Birinchi egasini yaratish",
-    errNotAdmin: "Xodim huquqi yoʻq",
+    cabinetLink: "Mijoz kabineti →",
+    errNotAdmin: "Xodim huquqi yoʻq. Mijozlar telefon orqali kabinetga kiradi.",
     errForbidden: "Kirish taqiqlangan",
     errSetupLocked: "Dastlabki sozlash yopilgan — mavjud akkaunt bilan kiring",
     errGeneric: "Kirishda xatolik",
@@ -286,10 +287,10 @@ export const dashUz: DashCopy = {
   },
 
   contacts: {
-    title: "Foydalanuvchilar",
-    lead: "Telegram mini-ilova mijozlari.",
-    emptyTitle: "Foydalanuvchilar yoʻq",
-    emptyLead: "Birinchi kirishdan keyin shu yerda koʻrinadi.",
+    title: "Mijozlar",
+    lead: "Kabinet va Telegram mini-ilova mijozlari — CMS xodimlari emas.",
+    emptyTitle: "Mijozlar yoʻq",
+    emptyLead: "Kabinet yoki mini-ilovaga kirgandan keyin shu yerda chiqadi.",
     shipmentsTotal: "Jami",
     shipmentsPending: "Kutmoqda",
     lastShipment: "Oxirgi",
@@ -366,7 +367,7 @@ export const dashUz: DashCopy = {
 
   users: {
     title: "Xodimlar",
-    lead: "Egasi · muharrir · menejer · kuzatuvchi. Menejer — arizalar va mini-ilova; muharrir — kontent.",
+    lead: "Faqat /dashboard paneliga kirish. Egasi · muharrir · menejer · kuzatuvchi. Mijozlar kabinet orqali kiradi.",
     denied: "Faqat egasi ochishi mumkin.",
     emptyTitle: "Xodimlar yoʻq",
     add: "Qoʻshish",

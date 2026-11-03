@@ -185,10 +185,13 @@ export function LeadsKanbanBoard({
   const [columns, setColumns] = useState(() => groupByStatus(rows));
   const [activeId, setActiveId] = useState<string | null>(null);
   const columnsRef = useRef(columns);
-
-  const [groupedRows, setGroupedRows] = useState(rows);
-  if (groupedRows !== rows) {
-    setGroupedRows(rows);
+  const rowsFp = rows
+    .map((r) => `${r.kind}:${r.id}:${r.status}`)
+    .join("\0");
+  const [syncedFp, setSyncedFp] = useState(rowsFp);
+  // Adjust local board when server/filter rows change (not on every new array ref).
+  if (syncedFp !== rowsFp) {
+    setSyncedFp(rowsFp);
     setColumns(groupByStatus(rows));
   }
 

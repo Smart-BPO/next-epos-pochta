@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { loginAction } from "@/app/dashboard/(auth)/login/actions";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
@@ -69,6 +70,14 @@ export function DashboardLoginForm({
       >
         {pending ? t.common.loading : t.login.submit}
       </button>
+      <p className="mt-4 text-center text-sm text-black/50">
+        <Link
+          href="/cabinet/"
+          className="font-semibold text-primary underline-offset-2 hover:underline"
+        >
+          {t.login.cabinetLink}
+        </Link>
+      </p>
     </form>
   );
 }

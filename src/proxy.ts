@@ -99,12 +99,20 @@ export async function proxy(request: NextRequest) {
     const url = getSupabaseUrl();
     const key = getSupabasePublishableKey();
     if (url && key) {
+      type CookieToSet = {
+        name: string;
+        value: string;
+        options?: Parameters<typeof response.cookies.set>[2];
+      };
+      let pendingCookies: CookieToSet[] = [];
+
       const supabase = createServerClient(url, key, {
         cookies: {
           getAll() {
             return request.cookies.getAll();
           },
           setAll(cookiesToSet) {
+            pendingCookies = cookiesToSet;
             cookiesToSet.forEach(({ name, value }) => {
               request.cookies.set(name, value);
             });
@@ -118,25 +126,62 @@ export async function proxy(request: NextRequest) {
         },
       });
 
+      const applyPendingCookies = (target: NextResponse) => {
+        pendingCookies.forEach(({ name, value, options }) => {
+          target.cookies.set(name, value, options);
+        });
+        return target;
+      };
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
+      const isLoginPath =
+        pathname === "/dashboard/login" || pathname === "/dashboard/login/";
+      const isSetupPath =
+        pathname === "/dashboard/setup" || pathname === "/dashboard/setup/";
+
+      let isActiveAdmin = false;
+      if (user) {
+        const { data: adminRow } = await supabase
+          .from("epos_admin_users")
+          .select("user_id, is_active")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        isActiveAdmin = Boolean(
+          adminRow && adminRow.is_active !== false,
+        );
+      }
+
+      if (user && !isActiveAdmin && !isSetupPath) {
+        await supabase.auth.signOut();
+        // Avoid re-redirect loop when already on login with ?error=not-admin.
+        if (
+          isLoginPath &&
+          request.nextUrl.searchParams.get("error") === "not-admin"
+        ) {
+          return response;
+        }
+        const login = request.nextUrl.clone();
+        login.pathname = "/dashboard/login/";
+        login.search = "";
+        login.searchParams.set("error", "not-admin");
+        return applyPendingCookies(NextResponse.redirect(login));
+      }
 
       if (!user && !isPublicDashboardPath(pathname)) {
         const login = request.nextUrl.clone();
         login.pathname = "/dashboard/login/";
         login.searchParams.set("next", pathname);
-        return NextResponse.redirect(login);
+        return applyPendingCookies(NextResponse.redirect(login));
       }
 
-      if (
-        user &&
-        (pathname === "/dashboard/login" || pathname === "/dashboard/login/")
-      ) {
+      if (user && isActiveAdmin && isLoginPath) {
         const home = request.nextUrl.clone();
         home.pathname = "/dashboard/";
         home.search = "";
-        return NextResponse.redirect(home);
+        return applyPendingCookies(NextResponse.redirect(home));
       }
     } else if (!isPublicDashboardPath(pathname)) {
       const login = request.nextUrl.clone();

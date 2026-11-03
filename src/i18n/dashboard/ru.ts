@@ -59,7 +59,7 @@ export const dashRu: DashCopy = {
     overview: "Обзор",
     overviewShort: "Обзор",
     leads: "Заявки",
-    contacts: "Пользователи",
+    contacts: "Клиенты",
     contactsShort: "Клиенты",
     shipments: "Отправления",
     shipmentsShort: "Посылки",
@@ -249,12 +249,13 @@ export const dashRu: DashCopy = {
 
   login: {
     title: "Вход",
-    lead: "Панель сотрудников",
+    lead: "Вход сотрудников в CMS (/dashboard)",
     email: "Email",
     password: "Пароль",
     submit: "Войти",
     setupLink: "Создать первого владельца",
-    errNotAdmin: "Нет доступа сотрудника",
+    cabinetLink: "Клиентский кабинет →",
+    errNotAdmin: "Нет доступа сотрудника. Клиентам — кабинет по телефону.",
     errForbidden: "Доступ запрещён",
     errSetupLocked: "Первичная настройка закрыта — войдите существующим аккаунтом",
     errGeneric: "Ошибка входа",
@@ -286,10 +287,10 @@ export const dashRu: DashCopy = {
   },
 
   contacts: {
-    title: "Пользователи",
-    lead: "Клиенты мини-приложения Telegram.",
-    emptyTitle: "Нет пользователей",
-    emptyLead: "После первого входа появятся здесь.",
+    title: "Клиенты",
+    lead: "Клиенты кабинета и мини-приложения Telegram — не сотрудники CMS.",
+    emptyTitle: "Нет клиентов",
+    emptyLead: "После входа в кабинет или мини-приложение появятся здесь.",
     shipmentsTotal: "Всего",
     shipmentsPending: "Ждут",
     lastShipment: "Последнее",
@@ -366,7 +367,7 @@ export const dashRu: DashCopy = {
 
   users: {
     title: "Сотрудники",
-    lead: "Владелец · редактор · менеджер · наблюдатель. Менеджер — заявки и мини-приложение; редактор — контент.",
+    lead: "Доступ только в панель /dashboard. Владелец · редактор · менеджер · наблюдатель. Клиенты ходят через кабинет, не сюда.",
     denied: "Раздел только для владельца.",
     emptyTitle: "Нет сотрудников",
     add: "Добавить",

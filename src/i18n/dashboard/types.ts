@@ -249,6 +249,7 @@ export type DashCopy = {
     password: string;
     submit: string;
     setupLink: string;
+    cabinetLink: string;
     errNotAdmin: string;
     errForbidden: string;
     errSetupLocked: string;

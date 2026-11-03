@@ -115,8 +115,21 @@ export const getAdminSession = cache(async (): Promise<AdminUser | null> => {
 });
 
 export async function requireAdmin(): Promise<AdminUser> {
-  const admin = await getAdminSession();
-  if (!admin) redirect("/dashboard/login/");
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/dashboard/login/");
+
+  const admin = await getAdminByUserId(user.id);
+  if (!admin) {
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // session clear is best-effort
+    }
+    redirect("/dashboard/login/?error=not-admin");
+  }
   return admin;
 }
 

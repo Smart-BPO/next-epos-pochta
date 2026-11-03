@@ -105,6 +105,11 @@ function densityStorageKey(key: string) {
   return `dash-list-density:${key}`;
 }
 
+/** Stable empty snapshot — fresh `[]` from getSnapshot causes React #185. */
+const EMPTY_HIDDEN_COLS: string[] = [];
+
+const hiddenColsCache = new Map<string, { raw: string; value: string[] }>();
+
 function readStoredView(key?: string): DashListViewMode | null {
   if (!key || typeof window === "undefined") return null;
   try {
@@ -115,9 +120,49 @@ function readStoredView(key?: string): DashListViewMode | null {
   }
 }
 
-function subscribeView(key: string | undefined, onStoreChange: () => void) {
-  if (!key || typeof window === "undefined") return () => {};
-  const eventName = viewStorageKey(key);
+function readStoredHiddenCols(storageKey: string | undefined): string[] {
+  if (!storageKey || typeof window === "undefined") return EMPTY_HIDDEN_COLS;
+  const key = colsStorageKey(storageKey);
+  let raw = "";
+  try {
+    raw = window.localStorage.getItem(key) ?? "";
+  } catch {
+    return EMPTY_HIDDEN_COLS;
+  }
+  const cached = hiddenColsCache.get(key);
+  if (cached && cached.raw === raw) return cached.value;
+  if (!raw) {
+    hiddenColsCache.set(key, { raw, value: EMPTY_HIDDEN_COLS });
+    return EMPTY_HIDDEN_COLS;
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    const value = Array.isArray(parsed)
+      ? parsed.map(String)
+      : EMPTY_HIDDEN_COLS;
+    hiddenColsCache.set(key, { raw, value });
+    return value;
+  } catch {
+    hiddenColsCache.set(key, { raw, value: EMPTY_HIDDEN_COLS });
+    return EMPTY_HIDDEN_COLS;
+  }
+}
+
+function readStoredDensity(storageKey: string | undefined): DashListDensity {
+  if (!storageKey || typeof window === "undefined") return "comfortable";
+  try {
+    const dens = window.localStorage.getItem(densityStorageKey(storageKey));
+    return dens === "compact" || dens === "comfortable" ? dens : "comfortable";
+  } catch {
+    return "comfortable";
+  }
+}
+
+function subscribeStorageKey(
+  eventName: string | undefined,
+  onStoreChange: () => void,
+) {
+  if (!eventName || typeof window === "undefined") return () => {};
   const onStorage = (e: StorageEvent) => {
     if (e.key === eventName) onStoreChange();
   };
@@ -135,7 +180,11 @@ function usePersistedView(
 ): [DashListViewMode, (next: DashListViewMode) => void] {
   const [localView, setLocalView] = useState(defaultView);
   const stored = useSyncExternalStore(
-    (onChange) => subscribeView(storageKey, onChange),
+    (onChange) =>
+      subscribeStorageKey(
+        storageKey ? viewStorageKey(storageKey) : undefined,
+        onChange,
+      ),
     () => readStoredView(storageKey) ?? defaultView,
     () => defaultView,
   );
@@ -259,56 +308,22 @@ export function DashListView<T>({
   );
 
   const storedHidden = useSyncExternalStore(
-    (onChange) => {
-      if (!storageKey || typeof window === "undefined") return () => {};
-      const key = colsStorageKey(storageKey);
-      const onStorage = (e: StorageEvent) => {
-        if (e.key === key) onChange();
-      };
-      window.addEventListener("storage", onStorage);
-      window.addEventListener(key, onChange);
-      return () => {
-        window.removeEventListener("storage", onStorage);
-        window.removeEventListener(key, onChange);
-      };
-    },
-    () => {
-      if (!storageKey) return [] as string[];
-      try {
-        const raw = window.localStorage.getItem(colsStorageKey(storageKey));
-        return raw ? (JSON.parse(raw) as string[]) : [];
-      } catch {
-        return [];
-      }
-    },
-    () => [] as string[],
+    (onChange) =>
+      subscribeStorageKey(
+        storageKey ? colsStorageKey(storageKey) : undefined,
+        onChange,
+      ),
+    () => readStoredHiddenCols(storageKey),
+    () => EMPTY_HIDDEN_COLS,
   );
 
   const storedDensity = useSyncExternalStore(
-    (onChange) => {
-      if (!storageKey || typeof window === "undefined") return () => {};
-      const key = densityStorageKey(storageKey);
-      const onStorage = (e: StorageEvent) => {
-        if (e.key === key) onChange();
-      };
-      window.addEventListener("storage", onStorage);
-      window.addEventListener(key, onChange);
-      return () => {
-        window.removeEventListener("storage", onStorage);
-        window.removeEventListener(key, onChange);
-      };
-    },
-    () => {
-      if (!storageKey) return "comfortable" as DashListDensity;
-      try {
-        const dens = window.localStorage.getItem(densityStorageKey(storageKey));
-        return dens === "compact" || dens === "comfortable"
-          ? dens
-          : ("comfortable" as DashListDensity);
-      } catch {
-        return "comfortable" as DashListDensity;
-      }
-    },
+    (onChange) =>
+      subscribeStorageKey(
+        storageKey ? densityStorageKey(storageKey) : undefined,
+        onChange,
+      ),
+    () => readStoredDensity(storageKey),
     () => "comfortable" as DashListDensity,
   );
 
@@ -437,7 +452,10 @@ export function DashListView<T>({
     if (!storageKey) return;
     try {
       const key = colsStorageKey(storageKey);
-      window.localStorage.setItem(key, JSON.stringify([...next]));
+      const value = [...next];
+      const raw = JSON.stringify(value);
+      window.localStorage.setItem(key, raw);
+      hiddenColsCache.set(key, { raw, value });
       window.dispatchEvent(new Event(key));
     } catch {
       // ignore
