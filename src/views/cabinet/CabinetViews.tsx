@@ -226,16 +226,14 @@ export function CabinetCalculatorView() {
   }, []);
 
   return (
-    <div className="space-y-4">
+    <div className="flex max-w-3xl flex-col gap-4 sm:gap-5">
       <h1 className={cabPageTitle}>{c.navCalculator}</h1>
-      <div className={`max-w-3xl ${cabCard} p-5 sm:p-7`}>
-        <CalculatorForm
-          locale={locale}
-          content={copy}
-          publicUi={publicUi}
-          cabinet
-        />
-      </div>
+      <CalculatorForm
+        locale={locale}
+        content={copy}
+        publicUi={publicUi}
+        cabinet
+      />
     </div>
   );
 }
