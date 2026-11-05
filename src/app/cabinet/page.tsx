@@ -1,32 +1,3 @@
-import { Suspense } from "react";
-import type { Metadata } from "next";
-import { SiteLayout } from "@/components/templates/SiteLayout";
-import { CabinetPageView } from "@/views/CabinetPageView";
-import { cabinetCopy } from "@/data/cabinet";
-import { createPageMetadata } from "@/utils/seo/metadata";
-import { getLocalizedAlternates, localePath } from "@/i18n/paths";
-import { ogLocale } from "@/i18n/config";
+import { createCabinetPages } from "@/i18n/create-cabinet-pages";
 
-export function generateMetadata(): Metadata {
-  const copy = cabinetCopy("uz");
-  return createPageMetadata(
-    copy.metaTitle,
-    copy.metaDescription,
-    localePath("uz", "/cabinet/"),
-    {
-      alternates: getLocalizedAlternates("/cabinet/"),
-      ogLocale: ogLocale.uz,
-      noIndex: true,
-    },
-  );
-}
-
-export default function CabinetPage() {
-  return (
-    <SiteLayout locale="uz">
-      <Suspense fallback={null}>
-        <CabinetPageView locale="uz" />
-      </Suspense>
-    </SiteLayout>
-  );
-}
+export default createCabinetPages("uz").ShipmentsPage;

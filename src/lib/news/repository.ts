@@ -15,7 +15,6 @@ import {
   NEWS_PAGE_SIZE_DEFAULT,
   isNewsPageSize,
   resolveNewsPageSize,
-  type NewsPageSize,
 } from "@/lib/news/list-query";
 
 export {

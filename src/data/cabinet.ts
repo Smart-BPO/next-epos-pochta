@@ -178,5 +178,18 @@ export function cabinetCopy(locale: Locale) {
       "有关价格、配送或订单的问题，请联系经理。",
     ),
     backToList: loc(locale, "Roʻyxatga qaytish", "Назад к списку", "返回列表"),
+    trackTitle: loc(
+      locale,
+      "Trek-raqam boʻyicha kuzatish",
+      "Отслеживание по трек-номеру",
+      "按运单号追踪",
+    ),
+    trackLead: loc(
+      locale,
+      "Istalgan EPOS joʻnatmasining holatini tekshiring — oʻzingizniki yoki sizga yuborilgan.",
+      "Проверьте статус любого отправления EPOS — вашего или отправленного вам.",
+      "查询任意 EPOS 运单的状态——您寄出的或寄给您的。",
+    ),
+    shipmentTitle: loc(locale, "Joʻnatma", "Отправление", "运单"),
   };
 }

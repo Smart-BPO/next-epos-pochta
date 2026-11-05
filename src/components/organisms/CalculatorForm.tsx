@@ -545,7 +545,7 @@ export function CalculatorForm({
                 )}
               </p>
               <Button
-                href={`${localePath(locale, "/cabinet/")}?tab=new&from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&w=${encodeURIComponent(String(weight))}`}
+                href={`${localePath(locale, "/cabinet/new/")}?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&w=${encodeURIComponent(String(weight))}`}
                 variant="primary"
                 size="sm"
                 className="mt-2"
