@@ -12,6 +12,7 @@ import {
   dashInput,
   dashSectionTitle,
 } from "@/styles/dashboard";
+import { formatAppDateTime } from "@/lib/format/datetime";
 import {
   clearFcargoApiKeyAction,
   saveFcargoSettingsAction,
@@ -238,7 +239,7 @@ export function FcargoConfigClient({
             {settings.lastTestOk
               ? f.lastCheckOk
               : `${f.lastCheckFail} — ${settings.lastError ?? "?"}`}{" "}
-            · {new Date(settings.lastTestAt).toLocaleString()}
+            · {formatAppDateTime(settings.lastTestAt)}
           </p>
         ) : null}
 
@@ -315,7 +316,7 @@ export function FcargoConfigClient({
                     </td>
                     <td className="py-2 text-xs text-black/55">
                       {row.createdAt
-                        ? new Date(row.createdAt).toLocaleString()
+                        ? formatAppDateTime(row.createdAt)
                         : "—"}
                     </td>
                   </tr>

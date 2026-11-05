@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
 import type { FcargoLogRow, FcargoLogSource } from "@/lib/fcargo/log-types";
 import { dashCardPad, dashSectionTitle } from "@/styles/dashboard";
+import { formatAppDateTime } from "@/lib/format/datetime";
 
 function pickEventType(row: FcargoLogRow): string | null {
   const fromRes = row.response_body;
@@ -184,7 +185,7 @@ export function FcargoLogList({
                   ) : null}
                 </div>
                 <div className="mt-0.5 text-[11px] text-black/40">
-                  {new Date(row.created_at).toLocaleString()}
+                  {formatAppDateTime(row.created_at)}
                   {row.correlation_id
                     ? ` · ${f.logCorrelation}: ${row.correlation_id}`
                     : ""}

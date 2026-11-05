@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowRight, PackageOpen, RefreshCw, Search } from "lucide-react";
 import type { Locale } from "@/i18n/config";
-import { intlLocale } from "@/i18n/config";
 import { accountCopy } from "@/data/account-copy";
 import { Button } from "@/components/atoms/Button";
 import { AccountStatusBadge } from "@/components/account/AccountStatusBadge";
@@ -13,19 +12,11 @@ import {
   type AccountShipmentRow,
 } from "@/components/account/types";
 import { cn } from "@/lib/cn";
+import { formatAppDate } from "@/lib/format/datetime";
 
 type Filter = "all" | "active" | "done";
 
-function formatDate(iso: string | null, locale: Locale) {
-  if (!iso) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  return new Intl.DateTimeFormat(intlLocale(locale), {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(d);
-}
+
 
 export function AccountShipmentList({
   locale,
@@ -231,7 +222,7 @@ export function AccountShipmentList({
             highlightTracking &&
             row.trackingNumber.toUpperCase() ===
               highlightTracking.toUpperCase();
-          const date = formatDate(row.createdAt, locale);
+          const date = formatAppDate(row.createdAt, locale);
           const route = [row.fromLabel, row.toLabel].filter(Boolean);
           return (
             <li key={`${row.trackingNumber}-${row.packageId ?? ""}`}>

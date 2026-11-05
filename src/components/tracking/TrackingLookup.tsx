@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { intlLocale, type Locale } from "@/i18n/config";
+import { type Locale } from "@/i18n/config";
+import { formatAppDate, formatAppDateTime } from "@/lib/format/datetime";
 import { getContent } from "@/i18n/get-content";
 import { localePath } from "@/i18n/paths";
 import { SITE_CONFIG } from "@/utils/consts";
@@ -42,24 +43,6 @@ type UiState =
   | "rate_limited"
   | "found";
 
-function formatDay(iso: string, locale: Locale) {
-  return new Intl.DateTimeFormat(intlLocale(locale), {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(iso));
-}
-
-function formatEventTime(iso: string, locale: Locale) {
-  // Numeric month avoids broken uz-UZ short-month output (e.g. "2026 M09 4").
-  return new Intl.DateTimeFormat(intlLocale(locale), {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
 
 export function TrackingLookup({
   locale,
@@ -248,7 +231,7 @@ export function TrackingLookup({
                   {copy.tracking.deliveredAt}
                 </dt>
                 <dd className="m-0 font-medium text-ink">
-                  {formatEventTime(shipment.deliveredAt, locale)}
+                  {formatAppDateTime(shipment.deliveredAt, locale)}
                 </dd>
               </div>
             ) : shipment.estimatedDeliveryAt ? (
@@ -257,7 +240,7 @@ export function TrackingLookup({
                   {copy.tracking.estimatedDelivery}
                 </dt>
                 <dd className="m-0 font-medium text-ink">
-                  {formatDay(shipment.estimatedDeliveryAt, locale)}
+                  {formatAppDate(shipment.estimatedDeliveryAt, locale)}
                 </dd>
               </div>
             ) : null}
@@ -291,7 +274,7 @@ export function TrackingLookup({
                       <p className={trackTimelineMeta}>
                         {[
                           event.occurredAt
-                            ? formatEventTime(event.occurredAt, locale)
+                            ? formatAppDateTime(event.occurredAt, locale)
                             : null,
                           event.location ?? null,
                         ]

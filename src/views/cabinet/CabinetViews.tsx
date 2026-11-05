@@ -10,7 +10,6 @@ import {
   Phone,
   Send,
 } from "lucide-react";
-import { intlLocale } from "@/i18n/config";
 import { getContent } from "@/i18n/get-content";
 import { cabinetCopy } from "@/data/cabinet";
 import { accountCopy } from "@/data/account-copy";
@@ -23,6 +22,7 @@ import {
 } from "@/components/account";
 import { TrackingLookup } from "@/components/tracking/TrackingLookup";
 import { CalculatorForm } from "@/components/organisms/CalculatorForm";
+import { formatAppDateLong } from "@/lib/format/datetime";
 import { CabinetHomeView } from "@/components/cabinet/CabinetHomeView";
 import { useCabinetData } from "@/components/cabinet/CabinetData";
 import { AccountStatusBadge } from "@/components/account/AccountStatusBadge";
@@ -335,11 +335,7 @@ export function CabinetProfileView() {
   const c = cabinetCopy(locale);
   const a = accountCopy(locale);
   const linkedSince = linked.linkedAt
-    ? new Intl.DateTimeFormat(intlLocale(locale), {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }).format(new Date(linked.linkedAt))
+    ? formatAppDateLong(linked.linkedAt, locale)
     : null;
   const rows = [
     { label: c.profileName, value: linked.displayName || "—" },

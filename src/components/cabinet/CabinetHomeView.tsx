@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { cabinetCopy } from "@/data/cabinet";
-import { intlLocale } from "@/i18n/config";
 import { AccountStatusBadge } from "@/components/account/AccountStatusBadge";
 import { useCabinetSession } from "@/components/cabinet/CabinetSession";
 import { useCabinetData } from "@/components/cabinet/CabinetData";
@@ -11,6 +10,7 @@ import {
   cabinetShipmentHref,
 } from "@/components/cabinet/nav";
 import { cabCard, cabPageTitle } from "@/styles/cabinet";
+import { formatAppDate } from "@/lib/format/datetime";
 import { cn } from "@/lib/cn";
 
 export function CabinetHomeView() {
@@ -23,10 +23,6 @@ export function CabinetHomeView() {
       ? Math.round((stats.counts.delivered / stats.total) * 100)
       : null;
   const maxDaily = Math.max(1, ...stats.daily.map((d) => d.count));
-  const dateFmt = new Intl.DateTimeFormat(intlLocale(locale), {
-    day: "2-digit",
-    month: "short",
-  });
 
   const kpis = [
     { label: c.statTotal, value: stats.total, hint: null },
@@ -208,9 +204,7 @@ export function CabinetHomeView() {
                       />
                     </td>
                     <td className="px-4 py-3 text-xs text-[var(--dash-muted)] sm:px-5">
-                      {row.createdAt
-                        ? dateFmt.format(new Date(row.createdAt))
-                        : "—"}
+                      {formatAppDate(row.createdAt, locale)}
                     </td>
                   </tr>
                 ))}

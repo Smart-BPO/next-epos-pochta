@@ -26,6 +26,7 @@ import { DashTable, DashTd, DashTh } from "@/components/dashboard/ui";
 import { useDashLocale, useDashT } from "@/components/dashboard/DashLocaleProvider";
 import { dashFormat, dashIntlLocale } from "@/i18n/dashboard";
 import { isIsoInDateRange } from "@/lib/dashboard/date-range";
+import { formatAppDate } from "@/lib/format/datetime";
 import { cn } from "@/lib/cn";
 import {
   dashBtnPrimary,
@@ -102,13 +103,7 @@ function greetingFor(
 }
 
 function formatShortDate(iso: string, intlLocale: string) {
-  return new Intl.DateTimeFormat(intlLocale, {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Asia/Tashkent",
-  }).format(new Date(iso));
+  return formatAppDate(iso, intlLocale);
 }
 
 function dayKey(iso: string) {

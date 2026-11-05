@@ -25,6 +25,7 @@ import {
 } from "@/styles/dashboard";
 import { cn } from "@/lib/cn";
 import { TelegramWebhookForms } from "./TelegramWebhookForms";
+import { formatAppDateTime } from "@/lib/format/datetime";
 
 async function siteOriginFromRequest(): Promise<string> {
   const h = await headers();
@@ -38,7 +39,7 @@ async function siteOriginFromRequest(): Promise<string> {
 
 function formatTs(unix?: number) {
   if (!unix) return "—";
-  return new Date(unix * 1000).toLocaleString();
+  return formatAppDateTime(unix * 1000);
 }
 
 function StatusPill({

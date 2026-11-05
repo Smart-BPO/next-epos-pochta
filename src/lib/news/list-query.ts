@@ -6,7 +6,8 @@ import type {
   NewsListQuery,
   NewsSort,
 } from "@/data/news/types";
-import { intlLocale, type Locale } from "@/i18n/config";
+import { type Locale } from "@/i18n/config";
+import { formatAppDateLong } from "@/lib/format/datetime";
 
 /** Allowed page-size templates for the news index (`all` = 12+ / show everything). */
 export const NEWS_PAGE_SIZE_OPTIONS = [3, 6, 9, 12, "all"] as const;
@@ -113,9 +114,5 @@ export function buildNewsListSearchParams(query: {
 }
 
 export function formatNewsDate(iso: string, locale: Locale): string {
-  return new Intl.DateTimeFormat(intlLocale(locale), {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(iso));
+  return formatAppDateLong(iso, locale);
 }

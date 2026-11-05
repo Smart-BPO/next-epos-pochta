@@ -16,6 +16,7 @@ import {
   savePricingAction,
 } from "@/app/dashboard/(app)/pricing/actions";
 import type { PricingConfig } from "@/lib/pricing/types";
+import { formatAppDateTime } from "@/lib/format/datetime";
 
 type RevisionRow = {
   id: number;
@@ -162,7 +163,7 @@ export function PricingRevisionsPanel({
                     {r.label ? ` · ${r.label}` : ""}
                   </p>
                   <p className="m-0 text-xs text-black/40">
-                    {new Date(r.created_at).toLocaleString()}
+                    {formatAppDateTime(r.created_at)}
                   </p>
                 </div>
                 {canWrite ? (

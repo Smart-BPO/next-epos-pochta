@@ -1,3 +1,5 @@
+import { formatAppDateTime } from "@/lib/format/datetime";
+
 export function leadClientLabel(payload: unknown): string {
   const data =
     payload && typeof payload === "object" && "data" in payload
@@ -56,12 +58,8 @@ export function leadTypeLabel(
   return type;
 }
 
+
+/** Dashboard list timestamp — stable `DD.MM.YYYY, HH:mm` (Asia/Tashkent). */
 export function formatDashDate(iso: string, locale: string = "ru-RU") {
-  return new Intl.DateTimeFormat(locale, {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Asia/Tashkent",
-  }).format(new Date(iso));
+  return formatAppDateTime(iso, locale);
 }

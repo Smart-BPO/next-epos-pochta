@@ -1,3 +1,5 @@
+import { formatAppDate, formatAppDateLong } from "@/lib/format/datetime";
+
 export type DashDateRange = {
   from: string;
   to: string;
@@ -54,15 +56,12 @@ export function normalizeDateRange(range: DashDateRange): DashDateRange {
   return { from: range.to, to: range.from };
 }
 
-/** Long single-day label: «10 сентября 2026 г.» */
+
+/** Long single-day label: «10 sentabr 2026» / «10 сентября 2026». */
 export function formatLongDay(iso: string, locale: string): string {
   const date = parseIsoDate(iso);
   if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
+  return formatAppDateLong(date, locale);
 }
 
 export function formatDateRangeLabel(
@@ -74,11 +73,6 @@ export function formatDateRangeLabel(
     return formatLongDay(normalized.from, locale);
   }
 
-  const formatter = new Intl.DateTimeFormat(locale, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
   const from = parseIsoDate(normalized.from);
   const to = parseIsoDate(normalized.to);
 
@@ -86,7 +80,7 @@ export function formatDateRangeLabel(
     return "—";
   }
 
-  return `${formatter.format(from)} – ${formatter.format(to)}`;
+  return `${formatAppDate(from, locale)} – ${formatAppDate(to, locale)}`;
 }
 
 export function getMonthMatrix(

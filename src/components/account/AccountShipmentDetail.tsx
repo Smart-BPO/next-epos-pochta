@@ -7,6 +7,7 @@ import { localePath } from "@/i18n/paths";
 import { accountCopy } from "@/data/account-copy";
 import { Button } from "@/components/atoms/Button";
 import { AccountStatusBadge } from "@/components/account/AccountStatusBadge";
+import { formatAppDate, formatAppDateTime } from "@/lib/format/datetime";
 import {
   accountAuthBody,
   type AccountAuthMode,
@@ -92,7 +93,7 @@ export function AccountShipmentDetail({
           ? [
               {
                 label: c.createdAt,
-                value: new Date(detail.createdAt).toLocaleString(),
+                value: formatAppDateTime(detail.createdAt, locale),
               },
             ]
           : []),
@@ -100,7 +101,7 @@ export function AccountShipmentDetail({
           ? [
               {
                 label: c.eta,
-                value: new Date(detail.estimatedDeliveryAt).toLocaleDateString(),
+                value: formatAppDate(detail.estimatedDeliveryAt, locale),
               },
             ]
           : []),
@@ -108,7 +109,7 @@ export function AccountShipmentDetail({
           ? [
               {
                 label: c.deliveredAt,
-                value: new Date(detail.deliveredAt).toLocaleString(),
+                value: formatAppDateTime(detail.deliveredAt, locale),
               },
             ]
           : []),
@@ -180,7 +181,7 @@ export function AccountShipmentDetail({
                     <p className="m-0 text-xs text-black/45">
                       {[
                         ev.occurredAt
-                          ? new Date(ev.occurredAt).toLocaleString()
+                          ? formatAppDateTime(ev.occurredAt, locale)
                           : null,
                         ev.location,
                       ]
