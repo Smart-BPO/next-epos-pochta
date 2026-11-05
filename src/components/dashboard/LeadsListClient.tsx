@@ -129,14 +129,14 @@ export function LeadsListClient({
               row.kind === "lead" ? (
                 <Link
                   href={`/dashboard/leads/${row.id}/`}
-                  className="font-mono text-xs font-semibold text-primary hover:underline"
+                  className="font-mono text-xs font-semibold text-ink hover:text-primary hover:underline"
                 >
                   {row.id}
                 </Link>
               ) : (
                 <Link
                   href={`/dashboard/webapp/shipments/?id=${encodeURIComponent(row.id)}`}
-                  className="font-mono text-xs font-semibold text-primary hover:underline"
+                  className="font-mono text-xs font-semibold text-ink hover:text-primary hover:underline"
                 >
                   {row.id}
                 </Link>
@@ -194,21 +194,21 @@ export function LeadsListClient({
                   ? leadDraftStep(row.payload)
                   : null;
               return (
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
+                <div className="flex min-w-[11rem] flex-col gap-1.5">
+                  {readOnly ? (
                     <DashStatusBadge kind="lead" value={row.status} />
-                    {step ? (
-                      <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-black/40">
-                        {t.leads.draftStep.replace("{step}", String(step))}
-                      </span>
-                    ) : null}
-                  </div>
-                  <LeadStatusSelect
-                    id={row.id}
-                    status={row.status}
-                    action={updateStatusAction}
-                    disabled={readOnly}
-                  />
+                  ) : (
+                    <LeadStatusSelect
+                      id={row.id}
+                      status={row.status}
+                      action={updateStatusAction}
+                    />
+                  )}
+                  {step ? (
+                    <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-black/40">
+                      {t.leads.draftStep.replace("{step}", String(step))}
+                    </span>
+                  ) : null}
                   <FcargoStatusChip
                     code={payloadString(row.payload?.data?.fcargoStatus)}
                     trackingNumber={payloadString(

@@ -78,7 +78,7 @@ export function CabinetChrome({
                 href={cabinetHref(locale)}
                 className={cn(
                   "inline-flex h-8 items-center overflow-hidden",
-                  collapsed ? "w-8 justify-center" : "min-w-0 flex-1",
+                  collapsed ? "w-8 justify-center" : "w-[84px]",
                 )}
                 aria-label={SITE_CONFIG.name}
               >
@@ -98,7 +98,7 @@ export function CabinetChrome({
               </button>
             </div>
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2 pb-4">
               <CabinetNav locale={locale} collapsed={collapsed} />
             </div>
           </aside>

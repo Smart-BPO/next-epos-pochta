@@ -9,9 +9,9 @@ export type CabinetNavId =
   | "calculator"
   | "finance"
   | "reports"
+  | "tracking"
   | "settings"
   | "help"
-  | "tracking"
   | "new";
 
 export type CabinetNavItem = {
@@ -77,16 +77,6 @@ export function getCabinetNav(locale: Locale): CabinetNavItem[] {
       id: "tracking",
       href: cabinetHref(locale, "tracking/"),
       label: c.navTrack,
-    },
-    {
-      id: "settings",
-      href: cabinetHref(locale, "settings/"),
-      label: c.navSettings,
-    },
-    {
-      id: "help",
-      href: cabinetHref(locale, "help/"),
-      label: c.navHelp,
     },
   ];
 }
