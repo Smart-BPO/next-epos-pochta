@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { OtpCodeInput } from "@/components/account/OtpCodeInput";
 import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
@@ -157,7 +158,8 @@ export function AccountOtpLink({
     }
   };
 
-  const verify = async () => {
+  const verify = async (value = code) => {
+    if (value.length !== 6) return;
     setBusy(true);
     setError(null);
     try {
@@ -168,7 +170,7 @@ export function AccountOtpLink({
           accountAuthBody(auth, {
             phone: normalizePhone(phone),
             challenge,
-            code: code.trim(),
+            code: value,
           }),
         ),
       });
@@ -178,6 +180,7 @@ export function AccountOtpLink({
       };
       if (!res.ok || !json.linked) {
         setError(mapError(json.error));
+        setCode("");
         return;
       }
       setLinked(json.linked);
@@ -300,44 +303,51 @@ export function AccountOtpLink({
           className="space-y-3"
           onSubmit={(e) => {
             e.preventDefault();
-            if (code.length === 6) void verify();
+            void verify();
           }}
         >
           <p className="m-0 text-sm text-black/55">
             {c.codeSentTo}{" "}
-            <span className="font-semibold text-ink">{phone}</span>
+            <span className="font-medium text-ink">{phone}</span>{" "}
+            <button
+              type="button"
+              disabled={busy}
+              className="text-primary underline-offset-2 hover:underline disabled:opacity-50"
+              onClick={() => {
+                setStep("phone");
+                setCode("");
+                setChallenge("");
+                setError(null);
+              }}
+            >
+              {c.changePhone}
+            </button>
           </p>
-          <label className={`${fieldLabel} block`}>
-            {c.codeLabel}
-            <Input
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              autoFocus
-              placeholder="••••••"
-              className="mt-1.5 font-mono tracking-[0.4em]"
-            />
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <Button type="submit" disabled={busy || code.length !== 6}>
-              {c.verify}
-            </Button>
-            <Button type="button" variant="ghost" disabled={busy} onClick={resend}>
-              {c.resendCode}
-            </Button>
-          </div>
+          <OtpCodeInput
+            value={code}
+            label={c.codeLabel}
+            busy={busy}
+            invalid={Boolean(error)}
+            onChange={(next) => {
+              setCode(next);
+              if (error) setError(null);
+              if (next.length === 6) void verify(next);
+            }}
+          />
+          <Button
+            type="submit"
+            disabled={busy || code.length !== 6}
+            className="w-full"
+          >
+            {c.verify}
+          </Button>
           <button
             type="button"
             disabled={busy}
-            className="text-sm font-semibold text-black/50 underline-offset-2 hover:text-ink hover:underline"
-            onClick={() => {
-              setStep("phone");
-              setCode("");
-              setChallenge("");
-            }}
+            className="block text-sm text-black/50 underline-offset-2 hover:text-ink hover:underline disabled:opacity-50"
+            onClick={() => void resend()}
           >
-            ← {c.changePhone}
+            {c.resendCode}
           </button>
         </form>
       )}
