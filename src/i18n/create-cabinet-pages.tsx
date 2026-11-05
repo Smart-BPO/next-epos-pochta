@@ -6,7 +6,6 @@ import { ogLocale } from "@/i18n/config";
 import { getLocalizedAlternates, localePath } from "@/i18n/paths";
 import { cabinetCopy } from "@/data/cabinet";
 import { createPageMetadata } from "@/utils/seo/metadata";
-import { SiteLayout } from "@/components/templates/SiteLayout";
 import { CabinetShell } from "@/views/cabinet/CabinetShell";
 import {
   CabinetNewView,
@@ -46,11 +45,7 @@ export function createCabinetPages(locale: Locale) {
     }: {
       children: React.ReactNode;
     }) {
-      return (
-        <SiteLayout locale={locale}>
-          <CabinetShell locale={locale}>{children}</CabinetShell>
-        </SiteLayout>
-      );
+      return <CabinetShell locale={locale}>{children}</CabinetShell>;
     },
 
     ShipmentsPage: async function CabinetShipmentsPage({

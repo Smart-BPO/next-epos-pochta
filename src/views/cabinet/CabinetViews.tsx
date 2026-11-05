@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, CheckCircle2, LogOut, PackagePlus, Phone, Send } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  LogOut,
+  PackagePlus,
+  Phone,
+  Send,
+} from "lucide-react";
 import { intlLocale } from "@/i18n/config";
 import { cabinetCopy } from "@/data/cabinet";
 import { accountCopy } from "@/data/account-copy";
@@ -20,10 +27,7 @@ import {
   cabinetShipmentHref,
   useCabinet,
 } from "@/views/cabinet/CabinetShell";
-
-const card = "rounded-3xl border border-black/[0.08] bg-white p-5 sm:p-7";
-const title =
-  "m-0 font-display text-2xl font-semibold text-ink sm:text-[1.75rem]";
+import { cabCard, cabPageLead, cabPageTitle } from "@/styles/cabinet";
 
 export function CabinetShipmentsView() {
   const { locale, auth, onRelinkRequired, setTotal, createdTracking } =
@@ -34,7 +38,9 @@ export function CabinetShipmentsView() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className={title}>{c.navShipments}</h1>
+        <div>
+          <h1 className={cabPageTitle}>{c.navShipments}</h1>
+        </div>
         <div className="hidden lg:block">
           <Button href={cabinetHref(locale, "new/")} size="sm">
             <PackagePlus className="size-4" aria-hidden />
@@ -65,12 +71,12 @@ export function CabinetShipmentView({ tracking }: { tracking: string }) {
     <div className="space-y-3">
       <Link
         href={cabinetHref(locale)}
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-black/55 no-underline hover:text-ink"
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--dash-muted)] no-underline hover:text-ink"
       >
         <ArrowLeft className="size-4" aria-hidden />
         {c.backToList}
       </Link>
-      <div className={card}>
+      <div className={`${cabCard} p-5 sm:p-7`}>
         <AccountShipmentDetail
           locale={locale}
           auth={auth}
@@ -96,8 +102,8 @@ export function CabinetNewView() {
 
   return (
     <div className="space-y-4">
-      <h1 className={title}>{c.navNew}</h1>
-      <div className={`max-w-2xl ${card}`}>
+      <h1 className={cabPageTitle}>{c.navNew}</h1>
+      <div className={`max-w-2xl ${cabCard} p-5 sm:p-7`}>
         {createdTracking ? (
           <div className="flex flex-col items-center py-4 text-center">
             <CheckCircle2 className="size-12 text-emerald-600" aria-hidden />
@@ -146,12 +152,12 @@ export function CabinetTrackingView() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className={title}>{c.trackTitle}</h1>
-        <p className="mt-1 mb-0 text-sm text-black/55">{c.trackLead}</p>
+        <h1 className={cabPageTitle}>{c.trackTitle}</h1>
+        <p className={cabPageLead}>{c.trackLead}</p>
       </div>
       <TrackingLookup
         locale={locale}
-        className="border-black/[0.08] sm:border-black/[0.08]"
+        className="border-[var(--dash-border)] sm:border-[var(--dash-border)]"
       />
     </div>
   );
@@ -176,8 +182,8 @@ export function CabinetProfileView() {
 
   return (
     <div className="max-w-2xl space-y-4">
-      <h1 className={title}>{c.profileTitle}</h1>
-      <div className={card}>
+      <h1 className={cabPageTitle}>{c.profileTitle}</h1>
+      <div className={`${cabCard} p-5 sm:p-7`}>
         <dl className="m-0 divide-y divide-black/[0.06]">
           {rows.map((row) => (
             <div
@@ -204,7 +210,7 @@ export function CabinetProfileView() {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-black/[0.03] p-5 sm:p-7">
+      <div className="rounded-[var(--dash-radius)] bg-black/[0.03] p-5 sm:p-7">
         <h2 className="m-0 font-display text-lg font-semibold text-ink">
           {c.supportTitle}
         </h2>

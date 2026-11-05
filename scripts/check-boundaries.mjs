@@ -51,16 +51,20 @@ for (const file of files) {
     for (const i of imps) {
       if (
         i === "@/components/account" ||
-        i.startsWith("@/components/account/")
+        i.startsWith("@/components/account/") ||
+        i === "@/components/cabinet" ||
+        i.startsWith("@/components/cabinet/") ||
+        i.startsWith("@/views/cabinet/")
       ) {
-        errors.push(`${path} imports ${i} (dashboard → account forbidden)`);
+        errors.push(`${path} imports ${i} (dashboard → customer forbidden)`);
       }
     }
   }
 
   if (
     path.startsWith("src/components/account/") ||
-    path.startsWith("src/views/CabinetPageView") ||
+    path.startsWith("src/components/cabinet/") ||
+    path.startsWith("src/views/cabinet/") ||
     path.startsWith("src/views/webapp/") ||
     path.startsWith("src/components/webapp/")
   ) {
