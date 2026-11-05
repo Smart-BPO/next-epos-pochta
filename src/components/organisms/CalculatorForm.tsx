@@ -129,6 +129,7 @@ export function CalculatorForm({
   initialToQuery = "",
   initialCategory = "",
   publicUi,
+  cabinet = false,
 }: {
   locale: Locale;
   content: SiteCopy;
@@ -136,6 +137,7 @@ export function CalculatorForm({
   initialToQuery?: string;
   initialCategory?: string;
   publicUi?: PublicPricingUiConfig | null;
+  cabinet?: boolean;
 }) {
   const c = content.calculator;
   const fromSeed = matchCityQuery(initialFromQuery, locale);
@@ -181,6 +183,7 @@ export function CalculatorForm({
   const [requestId] = useState(() => createRequestId("calc"));
 
   useEffect(() => {
+    if (cabinet) return;
     let cancelled = false;
     void (async () => {
       try {
@@ -194,8 +197,9 @@ export function CalculatorForm({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [cabinet]);
   const quoteSeq = useRef(0);
+  const newShipmentHref = `${localePath(locale, "/cabinet/new/")}?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&w=${encodeURIComponent(String(weight))}`;
 
   const dropQuote = () => {
     quoteSeq.current += 1;
@@ -537,7 +541,20 @@ export function CalculatorForm({
             </div>
           </div>
 
-          {cabinetLinked ? (
+          {cabinet ? (
+            <div className="grid gap-3 border-t border-black/[0.06] pt-4">
+              <p className="m-0 text-xs leading-relaxed text-black/50">
+                {c.disclaimer}
+              </p>
+              <div>
+                <Button href={newShipmentHref} variant="primary" size="sm">
+                  {loc(locale, "Joʻnatma yaratish", "Оформить отправление", "创建运单")}
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          {cabinet ? null : cabinetLinked ? (
             <div className="rounded-2xl border border-primary/20 bg-primary-soft/60 px-4 py-3">
               <p className="m-0 text-sm text-ink">
                 {loc(
@@ -548,7 +565,7 @@ export function CalculatorForm({
                 )}
               </p>
               <Button
-                href={`${localePath(locale, "/cabinet/new/")}?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&w=${encodeURIComponent(String(weight))}`}
+                href={newShipmentHref}
                 variant="primary"
                 size="sm"
                 className="mt-2"
@@ -563,7 +580,7 @@ export function CalculatorForm({
             </div>
           ) : null}
 
-          {leadId ? (
+          {cabinet ? null : leadId ? (
             <div
               className="rounded-2xl border border-emerald-200/80 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-900"
               role="status"

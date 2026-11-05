@@ -235,6 +235,7 @@ export function CabinetCalculatorView() {
           locale={locale}
           content={copy}
           publicUi={publicUi}
+          cabinet
         />
       </div>
     </div>
