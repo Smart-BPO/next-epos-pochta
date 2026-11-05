@@ -11,6 +11,8 @@ import {
   fcargoListPackages,
   fcargoPackageTimeline,
 } from "@/lib/fcargo/client";
+import { toFcargoPhone } from "@/lib/fcargo/create-order";
+import { normalizeUzPhone } from "@/lib/fcargo/packages-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { fcargoStatusCopy } from "@/lib/tracking/fcargo-status";
@@ -139,7 +141,75 @@ function customerScope(link: EposClientLinkRow) {
   return { customerPhone: link.phone };
 }
 
+function phoneKey(raw: string | null | undefined): string {
+  if (!raw) return "";
+  return toFcargoPhone(raw) || normalizeUzPhone(raw) || "";
+}
+
+function linkPhoneKey(link: EposClientLinkRow): string {
+  return phoneKey(link.phone);
+}
+
+/**
+ * Cabinet ownership: linked account must be the *sender/customer*, not merely
+ * the receiver. Catalog `phones` stores both parties for CRM notify — that must
+ * not grant receiver read access in /cabinet.
+ *
+ * When `strict` is false and no ownership signals exist on the payload, trust
+ * the upstream token/customer scope (EPOS / Client API list).
+ */
+function ownedByLinkedAccount(
+  link: EposClientLinkRow,
+  meta: {
+    senderPhone?: string | null;
+    customerId?: string | number | null;
+    customerPhone?: string | null;
+  },
+  opts?: { strict?: boolean },
+): boolean {
+  const mine = linkPhoneKey(link);
+  const sender = phoneKey(meta.senderPhone);
+  const customerPhone = phoneKey(meta.customerPhone);
+  const linkCustomer = (link.fcargo_client_id ?? "").trim();
+  const pkgCustomer =
+    meta.customerId != null ? String(meta.customerId).trim() : "";
+
+  const hasSignal = Boolean(sender || customerPhone || pkgCustomer);
+  if (!hasSignal) return opts?.strict !== true;
+
+  if (mine && sender && mine === sender) return true;
+  if (mine && customerPhone && mine === customerPhone) return true;
+  if (linkCustomer && pkgCustomer && linkCustomer === pkgCustomer) return true;
+  return false;
+}
+
+function senderPhoneFromRaw(raw: Record<string, unknown> | null): string | null {
+  if (!raw) return null;
+  return (
+    pickString(raw, ["sender_phone", "customer_phone"]) ||
+    pickString(asRecord(raw.sender), ["phone"]) ||
+    null
+  );
+}
+
+function customerIdFromRaw(
+  raw: Record<string, unknown> | null,
+): string | number | null {
+  if (!raw) return null;
+  const nested = asRecord(raw.customer) ?? asRecord(raw.sender_customer);
+  const fromNested = nested
+    ? nested.id ?? nested.customer_id ?? nested.client_id
+    : null;
+  if (typeof fromNested === "number" || typeof fromNested === "string") {
+    return fromNested;
+  }
+  const direct = raw.sender_customer_id ?? raw.customer_id ?? raw.client_id;
+  if (typeof direct === "number" || typeof direct === "string") return direct;
+  return null;
+}
+
 async function listFromEpos(
+  link: EposClientLinkRow,
   token: string,
   locale: Locale,
   page: number,
@@ -150,6 +220,13 @@ async function listFromEpos(
     return null;
   }
   const items = result.data.items
+    .filter((pkg) =>
+      ownedByLinkedAccount(link, {
+        senderPhone: senderPhoneFromRaw(pkg.raw),
+        customerId: customerIdFromRaw(pkg.raw),
+        customerPhone: pickString(pkg.raw, ["customer_phone"]),
+      }),
+    )
     .map((pkg) =>
       toAccountShipment(
         {
@@ -177,7 +254,7 @@ async function listFromEpos(
     items,
     page: result.data.page,
     lastPage: result.data.lastPage,
-    total: result.data.total,
+    total: items.length,
   };
 }
 
@@ -198,6 +275,15 @@ async function listFromClientApi(
   const items = rawItems
     .map((row) => {
       const rec = row as Record<string, unknown>;
+      if (
+        !ownedByLinkedAccount(link, {
+          senderPhone: senderPhoneFromRaw(rec),
+          customerId: customerIdFromRaw(rec),
+          customerPhone: pickString(rec, ["customer_phone"]),
+        })
+      ) {
+        return null;
+      }
       const status = asRecord(rec.status);
       return toAccountShipment(
         {
@@ -232,7 +318,7 @@ async function listFromClientApi(
     items,
     page: pageData?.meta?.page ?? page,
     lastPage: pageData?.meta?.last_page ?? page,
-    total: pageData?.meta?.total ?? items.length,
+    total: items.length,
   };
 }
 
@@ -245,21 +331,39 @@ async function listFromCatalog(
     return { items: [], page: 1, lastPage: 1, total: 0 };
   }
   const admin = createSupabaseAdminClient();
-  const perPage = 50;
-  const from = (page - 1) * perPage;
-  const to = from + perPage - 1;
-  const { data, count } = await admin
+  // Fetch a wider window then keep only sender/customer-owned rows.
+  // `phones` includes receiver for CRM notify — must not grant cabinet access.
+  const fetchSize = 100;
+  const { data } = await admin
     .from("epos_fcargo_packages")
     .select(
       "id, tracking_number, status, status_raw, raw_last, created_at, external_order_id, fcargo_package_id",
-      { count: "exact" },
     )
     .contains("phones", [link.phone])
     .not("tracking_number", "is", null)
     .order("created_at", { ascending: false })
-    .range(from, to);
+    .limit(fetchSize);
 
-  const items = (data ?? [])
+  const owned = (data ?? []).filter((row) => {
+    const rawLast = asRecord(row.raw_last);
+    return ownedByLinkedAccount(
+      link,
+      {
+        senderPhone: senderPhoneFromRaw(rawLast),
+        customerId: customerIdFromRaw(rawLast),
+        customerPhone: pickString(rawLast, ["customer_phone"]),
+      },
+      { strict: true },
+    );
+  });
+
+  const perPage = 50;
+  const total = owned.length;
+  const lastPage = Math.max(1, Math.ceil(total / perPage));
+  const start = (page - 1) * perPage;
+  const slice = owned.slice(start, start + perPage);
+
+  const items = slice
     .map((row) => {
       const statusRaw = asRecord(row.status_raw);
       const rawLast = asRecord(row.raw_last);
@@ -288,8 +392,6 @@ async function listFromCatalog(
     })
     .filter((x): x is AccountShipment => Boolean(x));
 
-  const total = count ?? items.length;
-  const lastPage = Math.max(1, Math.ceil(total / perPage));
   return { items, page, lastPage, total };
 }
 
@@ -312,7 +414,7 @@ export async function listAccountShipments(
   let pageData: AccountShipmentsPage | null = null;
   if (token) {
     try {
-      pageData = await listFromEpos(token, opts.locale, page);
+      pageData = await listFromEpos(link, token, opts.locale, page);
     } catch (e) {
       if (e instanceof Error && e.message === "relink_required") {
         return { ok: false, error: "relink_required" };
