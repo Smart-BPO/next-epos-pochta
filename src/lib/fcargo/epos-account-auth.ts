@@ -130,8 +130,9 @@ export function mapFcargoAuthError(code: string, status: number) {
   if (status === 429 || code.includes("rate")) {
     return { error: "rate_limited" as const, status: 429 as const };
   }
+  // OTP start/verify 401 is not a dead cabinet session — keep generic.
   if (status === 401) {
-    return { error: "relink_required" as const, status: 401 as const };
+    return { error: "fcargo_failed" as const, status: 502 as const };
   }
   if (status === 422) {
     return { error: "invalid_input" as const, status: 422 as const };

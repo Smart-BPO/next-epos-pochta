@@ -290,20 +290,32 @@ export type DashCopy = {
     shipmentsPending: string;
     lastShipment: string;
     openShipments: string;
+    openIncoming: string;
     openTelegram: string;
     verified: string;
     unverified: string;
     fcargoLinked: string;
     fcargoNotLinked: string;
     noShipments: string;
+    noIncoming: string;
     drawerTitle: string;
   };
 
   shipments: {
     title: string;
+    titleIn: string;
     lead: string;
+    leadIn: string;
+    tabOut: string;
+    tabIn: string;
     emptyTitle: string;
     emptyLead: string;
+    emptyTitleIn: string;
+    emptyLeadIn: string;
+    inNeedsContactTitle: string;
+    inNeedsContactLead: string;
+    sender: string;
+    receiver: string;
     trackPlaceholder: string;
     saved: string;
     saveFailed: string;

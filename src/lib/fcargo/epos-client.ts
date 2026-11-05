@@ -516,3 +516,34 @@ export async function eposPackages(
   if (!result.ok) return result;
   return { ok: true, data: parsePackagesPage(result.data) };
 }
+
+/**
+ * Probe whether a customer bearer is still accepted by FCargo.
+ * Profile alone can 401 intermittently — confirm with packages before
+ * treating the session as dead (avoids false `relink_required`).
+ */
+export async function eposBearerAlive(
+  accessToken: string,
+): Promise<
+  | { alive: true; profile: EposClientProfile | null }
+  | { alive: false; status: number }
+  | { alive: "unknown"; status: number }
+> {
+  const profile = await eposProfile(accessToken);
+  if (profile.ok) {
+    return { alive: true, profile: profile.data };
+  }
+  if (profile.status !== 401) {
+    return { alive: "unknown", status: profile.status };
+  }
+
+  const packages = await eposPackages(accessToken, { page: 1 });
+  if (packages.ok) {
+    return { alive: true, profile: null };
+  }
+  if (packages.status === 401) {
+    return { alive: false, status: 401 };
+  }
+  // Profile 401 but packages failed for another reason — don't revoke yet.
+  return { alive: "unknown", status: packages.status || profile.status };
+}

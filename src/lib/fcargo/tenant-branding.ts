@@ -42,6 +42,16 @@ function pickString(
   return null;
 }
 
+/** CRM often sends `"EPOS POCHTA" MCHJ` — strip quote noise for alt/UI. */
+export function cleanTenantDisplayName(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const cleaned = raw
+    .replace(/["«»\u201C\u201D]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned || null;
+}
+
 async function resolveTenantContext(): Promise<{
   tenantDomain: string;
   apiV1Base: string;
@@ -93,8 +103,10 @@ async function fetchTenantBranding(): Promise<FcargoTenantBranding | null> {
       domain: pickString(data, ["domain"]) || ctx.tenantDomain,
       logoUrl,
       faviconUrl,
-      companyName: pickString(tenant, ["company_name", "companyName"]),
-      name: pickString(tenant, ["name"]),
+      companyName: cleanTenantDisplayName(
+        pickString(tenant, ["company_name", "companyName"]),
+      ),
+      name: cleanTenantDisplayName(pickString(tenant, ["name"])),
     };
   } catch {
     return null;

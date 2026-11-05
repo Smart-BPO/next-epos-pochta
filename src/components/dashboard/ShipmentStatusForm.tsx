@@ -44,6 +44,7 @@ export function ShipmentStatusForm({
             }}
           >
             <input type="hidden" name="id" value={id} />
+            <input type="hidden" name="track_number" value={trackNumber} />
             <button
               type="submit"
               disabled={pending}

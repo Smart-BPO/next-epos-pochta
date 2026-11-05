@@ -73,12 +73,20 @@ export function ContactDetailDrawer({
       footer={
         <div className="flex flex-wrap gap-2">
           <Link
-            href={`/dashboard/webapp/shipments/?contact=${encodeURIComponent(row.session_id)}`}
+            href={`/dashboard/webapp/shipments/?dir=out&contact=${encodeURIComponent(row.session_id)}`}
             className={dashBtnRowSecondary}
             onClick={onClose}
           >
             {t.contacts.openShipments}
             {row.shipmentTotal > 0 ? ` · ${row.shipmentTotal}` : ""}
+          </Link>
+          <Link
+            href={`/dashboard/webapp/shipments/?dir=in&contact=${encodeURIComponent(row.session_id)}`}
+            className={dashBtnRowSecondary}
+            onClick={onClose}
+          >
+            {t.contacts.openIncoming}
+            {row.incomingTotal > 0 ? ` · ${row.incomingTotal}` : ""}
           </Link>
           {tgHref ? (
             <a
@@ -156,6 +164,43 @@ export function ContactDetailDrawer({
           <p className="m-0 font-mono text-[0.65rem] text-[var(--dash-faint)]">
             {row.session_id}
           </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <Link
+            href={`/dashboard/webapp/shipments/?dir=out&contact=${encodeURIComponent(row.session_id)}`}
+            onClick={onClose}
+            className="rounded-xl border border-[var(--dash-border)] p-3 no-underline transition-colors hover:border-primary/30 hover:bg-primary-soft/40"
+          >
+            <p className="m-0 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--dash-faint)]">
+              {t.shipments.tabOut}
+            </p>
+            <p className="m-0 mt-1 font-display text-xl font-bold text-[var(--dash-ink)]">
+              {row.shipmentTotal}
+            </p>
+            <p className="m-0 mt-1 text-xs text-[var(--dash-faint)]">
+              {row.shipmentTotal > 0
+                ? t.contacts.openShipments
+                : t.contacts.noShipments}
+            </p>
+          </Link>
+          <Link
+            href={`/dashboard/webapp/shipments/?dir=in&contact=${encodeURIComponent(row.session_id)}`}
+            onClick={onClose}
+            className="rounded-xl border border-[var(--dash-border)] p-3 no-underline transition-colors hover:border-primary/30 hover:bg-primary-soft/40"
+          >
+            <p className="m-0 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--dash-faint)]">
+              {t.shipments.tabIn}
+            </p>
+            <p className="m-0 mt-1 font-display text-xl font-bold text-[var(--dash-ink)]">
+              {row.incomingTotal}
+            </p>
+            <p className="m-0 mt-1 text-xs text-[var(--dash-faint)]">
+              {row.incomingTotal > 0
+                ? t.contacts.openIncoming
+                : t.contacts.noIncoming}
+            </p>
+          </Link>
         </div>
 
         <div>

@@ -216,7 +216,8 @@ async function listFromEpos(
 ): Promise<AccountShipmentsPage | null> {
   const result = await eposPackages(token, { page });
   if (!result.ok) {
-    if (result.status === 401) throw Object.assign(new Error("relink_required"), { status: 401 });
+    // Dead OTP bearer → fall through to Client API / catalog. Do not force
+    // relink_required here; local epos_acct session stays valid.
     return null;
   }
   const items = result.data.items
@@ -413,14 +414,7 @@ export async function listAccountShipments(
 
   let pageData: AccountShipmentsPage | null = null;
   if (token) {
-    try {
-      pageData = await listFromEpos(link, token, opts.locale, page);
-    } catch (e) {
-      if (e instanceof Error && e.message === "relink_required") {
-        return { ok: false, error: "relink_required" };
-      }
-      throw e;
-    }
+    pageData = await listFromEpos(link, token, opts.locale, page);
   }
   if (!pageData) {
     pageData = await listFromClientApi(link, opts.locale, page);

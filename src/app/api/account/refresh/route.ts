@@ -1,21 +1,13 @@
 import { NextResponse } from "next/server";
-import {
-  markLinkValidated,
-  refreshWebAccountSession,
-  revokeLinkSession,
-  toPublicLink,
-} from "@/lib/fcargo/epos-account";
 import { requireLinkedAccount } from "@/lib/fcargo/epos-account-auth";
-import { eposProfile } from "@/lib/fcargo/epos-client";
+import { continueAccountSession } from "@/lib/fcargo/epos-account-session";
 
 /**
  * Explicit cabinet session refresh.
  *
- * FCargo Client API (`/api/client/v1`) has no auth/refresh — only X-API-Key scopes.
- * Customer OTP tokens are long-lived with no refresh_token. This endpoint:
- * 1) probes GET /web/clients/epos/profile with the stored bearer
- * 2) on 401 → revoke link + clear cookie → `relink_required`
- * 3) on OK → slide idle `session_expires_at` and re-issue `epos_acct`
+ * FCargo Client API has no auth/refresh; OTP bearer has no refresh_token.
+ * This endpoint slides the local idle `epos_acct` session and only rarely
+ * probes FCargo. A dead bearer does **not** force OTP — local session stays.
  */
 export async function POST(request: Request) {
   let body: Record<string, unknown> = {};
@@ -28,36 +20,24 @@ export async function POST(request: Request) {
   const linked = await requireLinkedAccount(request, body);
   if (!linked.ok) return linked.response;
 
-  const profile = await eposProfile(linked.token);
-  if (!profile.ok && profile.status === 401) {
-    await revokeLinkSession(linked.link);
-    return NextResponse.json(
-      { error: "relink_required", linked: null, refreshed: false },
-      { status: 401 },
-    );
-  }
-
-  if (profile.ok) {
-    await markLinkValidated(linked.link, {
-      displayName: profile.data.name,
-      phone: profile.data.phone,
-      fcargoClientId: profile.data.id,
-    });
-  }
-
-  const sessionExpiresAt = await refreshWebAccountSession(linked.link);
+  const continued = await continueAccountSession({
+    link: linked.link,
+    token: linked.token,
+  });
 
   return NextResponse.json({
     ok: true,
     refreshed: true,
-    linked: toPublicLink(linked.link),
-    sessionExpiresAt,
-    profile: profile.ok
+    linked: continued.linked,
+    sessionExpiresAt: continued.sessionExpiresAt,
+    bearerProbed: continued.bearerAlive !== null,
+    bearerAlive: continued.bearerAlive,
+    profile: continued.profile
       ? {
-          name: profile.data.name,
-          phone: profile.data.phone,
-          email: profile.data.email,
-          id: profile.data.id,
+          name: continued.profile.name,
+          phone: continued.profile.phone,
+          email: continued.profile.email,
+          id: continued.profile.id,
         }
       : null,
   });

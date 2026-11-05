@@ -80,25 +80,40 @@ export async function attachFcargoTrackAction(formData: FormData) {
   revalidateShipments();
 }
 
-/** Refresh FCargo status for a shipment trek. */
+/** Refresh FCargo status for a shipment trek (webapp id or catalog pkg:uuid). */
 export async function refreshFcargoShipmentAction(formData: FormData) {
   await requireMutation("webapp");
 
   const id = String(formData.get("id") ?? "").trim();
-  if (!id) return;
+  const trackFromForm = String(formData.get("track_number") ?? "")
+    .trim()
+    .toUpperCase();
+  if (!id && !trackFromForm) return;
 
   const client = createSupabaseAdminClient();
-  const { data: shipment } = await client
-    .from("epos_webapp_shipments")
-    .select("id, track_number")
-    .eq("id", id)
-    .maybeSingle();
-  const trackNumber = shipment?.track_number?.trim();
+  let trackNumber = trackFromForm;
+
+  if (!trackNumber && id.startsWith("pkg:")) {
+    const pkgId = id.slice(4);
+    const { data: pkg } = await client
+      .from("epos_fcargo_packages")
+      .select("tracking_number")
+      .eq("id", pkgId)
+      .maybeSingle();
+    trackNumber = pkg?.tracking_number?.trim().toUpperCase() ?? "";
+  } else if (!trackNumber) {
+    const { data: shipment } = await client
+      .from("epos_webapp_shipments")
+      .select("id, track_number")
+      .eq("id", id)
+      .maybeSingle();
+    trackNumber = shipment?.track_number?.trim().toUpperCase() ?? "";
+  }
   if (!trackNumber) return;
 
   const track = await fcargoTrackPackage(trackNumber);
   if (!track.ok || !track.data) {
-    console.warn("[shipment:fcargo-refresh]", id, "unavailable");
+    console.warn("[shipment:fcargo-refresh]", id || trackNumber, "unavailable");
     return;
   }
 

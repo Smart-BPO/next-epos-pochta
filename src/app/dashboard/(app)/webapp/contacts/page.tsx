@@ -1,5 +1,6 @@
 import { requireAccess } from "@/lib/cms/auth";
 import { linkedTelegramSubjectIds } from "@/lib/fcargo/epos-account";
+import { normalizeUzPhone } from "@/lib/fcargo/packages-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 import { parseDashListQuery } from "@/lib/dashboard/list-query";
@@ -14,34 +15,6 @@ type ShipmentAggRow = {
   status: string;
   created_at: string;
 };
-
-function buildShipmentStats(rows: ShipmentAggRow[]) {
-  const map = new Map<
-    string,
-    { shipmentTotal: number; shipmentPending: number; lastShipmentAt: string | null }
-  >();
-
-  for (const row of rows) {
-    const sessionId = row.contact_session_id;
-    if (!sessionId) continue;
-    const current = map.get(sessionId) ?? {
-      shipmentTotal: 0,
-      shipmentPending: 0,
-      lastShipmentAt: null as string | null,
-    };
-    current.shipmentTotal += 1;
-    if (row.status === "pending_manager") current.shipmentPending += 1;
-    if (
-      !current.lastShipmentAt ||
-      row.created_at > current.lastShipmentAt
-    ) {
-      current.lastShipmentAt = row.created_at;
-    }
-    map.set(sessionId, current);
-  }
-
-  return map;
-}
 
 export default async function WebappContactsPage({
   searchParams,
@@ -79,7 +52,6 @@ export default async function WebappContactsPage({
       req = req.eq("locale", query.filters.locale);
     }
     if (query.q) {
-      // Phone / session exact-ish server filter; broader text search stays client-side.
       const digits = query.q.replace(/\D/g, "");
       if (digits.length >= 4) {
         req = req.ilike("phone", `%${digits}%`);
@@ -92,22 +64,78 @@ export default async function WebappContactsPage({
       WebappContactRow,
       | "shipmentTotal"
       | "shipmentPending"
+      | "incomingTotal"
       | "lastShipmentAt"
       | "fcargoLinked"
     >[];
 
     const sessionIds = base.map((c) => c.session_id);
-    let stats = new Map<
-      string,
-      { shipmentTotal: number; shipmentPending: number; lastShipmentAt: string | null }
-    >();
+    const phones = Array.from(
+      new Set(
+        base
+          .map((c) => normalizeUzPhone(c.phone) || c.phone)
+          .filter(Boolean),
+      ),
+    );
 
+    const pendingBySession = new Map<string, number>();
+    const lastBySession = new Map<string, string>();
     if (sessionIds.length > 0) {
       const { data: shipments } = await admin
         .from("epos_webapp_shipments")
         .select("contact_session_id, status, created_at")
         .in("contact_session_id", sessionIds);
-      stats = buildShipmentStats((shipments ?? []) as ShipmentAggRow[]);
+      for (const row of (shipments ?? []) as ShipmentAggRow[]) {
+        const sid = row.contact_session_id;
+        if (!sid) continue;
+        if (row.status === "pending_manager") {
+          pendingBySession.set(sid, (pendingBySession.get(sid) ?? 0) + 1);
+        }
+        const prev = lastBySession.get(sid);
+        if (!prev || row.created_at > prev) lastBySession.set(sid, row.created_at);
+      }
+    }
+
+    const outByPhone = new Map<string, number>();
+    const inByPhone = new Map<string, number>();
+    const lastByPhone = new Map<string, string>();
+    if (phones.length > 0) {
+      const chunks: string[][] = [];
+      for (let i = 0; i < phones.length; i += 80) {
+        chunks.push(phones.slice(i, i + 80));
+      }
+      for (const chunk of chunks) {
+        const [{ data: outs }, { data: inns }] = await Promise.all([
+          admin
+            .from("epos_fcargo_packages")
+            .select("sender_phone, last_event_at")
+            .in("sender_phone", chunk),
+          admin
+            .from("epos_fcargo_packages")
+            .select("receiver_phone, last_event_at")
+            .in("receiver_phone", chunk),
+        ]);
+        for (const p of outs ?? []) {
+          const phone = p.sender_phone as string;
+          if (!phone) continue;
+          outByPhone.set(phone, (outByPhone.get(phone) ?? 0) + 1);
+          const at = p.last_event_at as string | null;
+          if (at) {
+            const prev = lastByPhone.get(phone);
+            if (!prev || at > prev) lastByPhone.set(phone, at);
+          }
+        }
+        for (const p of inns ?? []) {
+          const phone = p.receiver_phone as string;
+          if (!phone) continue;
+          inByPhone.set(phone, (inByPhone.get(phone) ?? 0) + 1);
+          const at = p.last_event_at as string | null;
+          if (at) {
+            const prev = lastByPhone.get(phone);
+            if (!prev || at > prev) lastByPhone.set(phone, at);
+          }
+        }
+      }
     }
 
     const linkedTg = await linkedTelegramSubjectIds(
@@ -117,12 +145,23 @@ export default async function WebappContactsPage({
     );
 
     rows = base.map((c) => {
-      const s = stats.get(c.session_id);
+      const phone = normalizeUzPhone(c.phone) || c.phone;
+      const out = outByPhone.get(phone) ?? 0;
+      const incoming = inByPhone.get(phone) ?? 0;
+      const lastPkg = lastByPhone.get(phone) ?? null;
+      const lastShip = lastBySession.get(c.session_id) ?? null;
+      const lastShipmentAt =
+        lastPkg && lastShip
+          ? lastPkg > lastShip
+            ? lastPkg
+            : lastShip
+          : (lastPkg ?? lastShip);
       return {
         ...c,
-        shipmentTotal: s?.shipmentTotal ?? 0,
-        shipmentPending: s?.shipmentPending ?? 0,
-        lastShipmentAt: s?.lastShipmentAt ?? null,
+        shipmentTotal: out,
+        shipmentPending: pendingBySession.get(c.session_id) ?? 0,
+        incomingTotal: incoming,
+        lastShipmentAt,
         fcargoLinked:
           c.telegram_user_id != null &&
           linkedTg.has(String(c.telegram_user_id)),

@@ -42,8 +42,10 @@ export function useCabinetSession() {
   return ctx;
 }
 
-/** How often the open cabinet re-validates FCargo bearer + slides idle cookie. */
+/** Slide local idle cookie while cabinet tab stays open. */
 const CABINET_REFRESH_MS = 15 * 60_000;
+/** Ignore rapid tab focus churn — still slide on the interval. */
+const CABINET_VISIBILITY_REFRESH_MIN_MS = 2 * 60_000;
 
 export function useCabinetSessionProbe(locale: Locale) {
   const a = accountCopy(locale);
@@ -79,11 +81,7 @@ export function useCabinetSessionProbe(locale: Locale) {
         setSession(
           json.linked
             ? { state: "linked", linked: json.linked }
-            : {
-                state: "guest",
-                error:
-                  json.error === "relink_required" ? a.relinkRequired : null,
-              },
+            : { state: "guest" },
         );
       } catch {
         if (!cancelled) setSession({ state: "guest" });
@@ -92,13 +90,22 @@ export function useCabinetSessionProbe(locale: Locale) {
     return () => {
       cancelled = true;
     };
-  }, [a.relinkRequired]);
+  }, []);
 
   useEffect(() => {
     if (session.state !== "linked") return;
 
     let cancelled = false;
-    const refresh = async () => {
+    let lastRefreshAt = 0;
+    const refresh = async (reason: "interval" | "visible") => {
+      const now = Date.now();
+      if (
+        reason === "visible" &&
+        now - lastRefreshAt < CABINET_VISIBILITY_REFRESH_MIN_MS
+      ) {
+        return;
+      }
+      lastRefreshAt = now;
       try {
         const res = await fetch("/api/account/refresh/", {
           method: "POST",
@@ -111,8 +118,19 @@ export function useCabinetSessionProbe(locale: Locale) {
           error?: string;
         };
         if (cancelled) return;
-        if (!res.ok || json.error === "relink_required" || !json.linked) {
-          onRelinkRequired();
+        // Refresh no longer revokes on dead FCargo bearer. Only drop the
+        // UI session when the local cookie/link is truly gone.
+        if (json.error === "not_linked" || res.status === 401) {
+          if (json.error === "relink_required") {
+            onRelinkRequired();
+            return;
+          }
+          setSession({ state: "guest" });
+          resetLocal();
+          return;
+        }
+        if (!res.ok || !json.linked) {
+          // Transient failure — keep current linked UI.
           return;
         }
         setSession({ state: "linked", linked: json.linked });
@@ -122,17 +140,20 @@ export function useCabinetSessionProbe(locale: Locale) {
     };
 
     const onVisible = () => {
-      if (document.visibilityState === "visible") void refresh();
+      if (document.visibilityState === "visible") void refresh("visible");
     };
 
-    const timer = window.setInterval(() => void refresh(), CABINET_REFRESH_MS);
+    const timer = window.setInterval(
+      () => void refresh("interval"),
+      CABINET_REFRESH_MS,
+    );
     document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [session.state, onRelinkRequired]);
+  }, [session.state, onRelinkRequired, resetLocal]);
 
   const logout = useCallback(async () => {
     setLoggingOut(true);

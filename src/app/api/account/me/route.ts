@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 import {
-  markLinkValidated,
-  refreshWebAccountSession,
-  revokeLinkSession,
-  toPublicLink,
-} from "@/lib/fcargo/epos-account";
-import {
   requireLinkedAccount,
   resolveAccountCaller,
 } from "@/lib/fcargo/epos-account-auth";
-import { eposProfile } from "@/lib/fcargo/epos-client";
+import { continueAccountSession } from "@/lib/fcargo/epos-account-session";
 
 async function linkedMeResponse(
   request: Request,
@@ -18,35 +12,21 @@ async function linkedMeResponse(
   const linked = await requireLinkedAccount(request, body);
   if (!linked.ok) return null;
 
-  const profile = await eposProfile(linked.token);
-  if (!profile.ok && profile.status === 401) {
-    await revokeLinkSession(linked.link);
-    return NextResponse.json(
-      { error: "relink_required", linked: null },
-      { status: 401 },
-    );
-  }
-
-  if (profile.ok) {
-    await markLinkValidated(linked.link, {
-      displayName: profile.data.name,
-      phone: profile.data.phone,
-      fcargoClientId: profile.data.id,
-    });
-  }
-
-  const sessionExpiresAt = await refreshWebAccountSession(linked.link);
+  const continued = await continueAccountSession({
+    link: linked.link,
+    token: linked.token,
+  });
 
   return NextResponse.json({
     ok: true,
-    linked: toPublicLink(linked.link),
-    sessionExpiresAt,
-    profile: profile.ok
+    linked: continued.linked,
+    sessionExpiresAt: continued.sessionExpiresAt,
+    profile: continued.profile
       ? {
-          name: profile.data.name,
-          phone: profile.data.phone,
-          email: profile.data.email,
-          id: profile.data.id,
+          name: continued.profile.name,
+          phone: continued.profile.phone,
+          email: continued.profile.email,
+          id: continued.profile.id,
         }
       : null,
   });

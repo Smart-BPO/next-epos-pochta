@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  markLinkValidated,
-  revokeLinkSession,
-} from "@/lib/fcargo/epos-account";
+import { markLinkValidated } from "@/lib/fcargo/epos-account";
 import { requireLinkedAccount } from "@/lib/fcargo/epos-account-auth";
 import { listAccountShipments } from "@/lib/fcargo/account-shipments";
 import { isLocale } from "@/i18n/config";
@@ -23,10 +20,6 @@ async function handle(request: Request, body: Record<string, unknown>) {
   });
 
   if (!result.ok) {
-    if (result.error === "relink_required") {
-      await revokeLinkSession(linked.link);
-      return NextResponse.json({ error: "relink_required" }, { status: 401 });
-    }
     return NextResponse.json(
       { error: "fcargo_failed", message: result.message },
       { status: 502 },

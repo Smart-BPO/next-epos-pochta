@@ -6,7 +6,7 @@ import {
   markLinkValidated,
   revokeLink,
 } from "@/lib/fcargo/epos-account";
-import { eposProfile } from "@/lib/fcargo/epos-client";
+import { eposBearerAlive } from "@/lib/fcargo/epos-client";
 
 export type ValidateHotLinksResult = {
   checked: number;
@@ -17,8 +17,9 @@ export type ValidateHotLinksResult = {
 
 /**
  * Periodic health check for recently-used client links.
- * Client API has no auth/refresh; customer OTP has no refresh_token.
- * We probe GET /profile and revoke on 401 (cabinet also uses POST /api/account/refresh/).
+ * Updates last_validated_at on success. Never revokes on FCargo 401 —
+ * local cabinet sessions must not force OTP from background probes.
+ * (Decrypt failure still revokes — secrets/key corruption.)
  */
 export async function validateHotClientLinks(opts?: {
   limit?: number;
@@ -36,23 +37,23 @@ export async function validateHotClientLinks(opts?: {
       continue;
     }
 
-    const profile = await eposProfile(token);
-    if (profile.ok) {
-      await markLinkValidated(link, {
-        displayName: profile.data.name,
-        phone: profile.data.phone,
-        fcargoClientId: profile.data.id,
-      });
+    const probe = await eposBearerAlive(token);
+    if (probe.alive === true) {
+      await markLinkValidated(
+        link,
+        probe.profile
+          ? {
+              displayName: probe.profile.name,
+              phone: probe.profile.phone,
+              fcargoClientId: probe.profile.id,
+            }
+          : undefined,
+      );
       validated += 1;
       continue;
     }
 
-    if (profile.status === 401) {
-      await revokeLink(link);
-      revoked += 1;
-      continue;
-    }
-
+    // Dead or unknown bearer: keep the local link, try again later.
     skipped += 1;
   }
 

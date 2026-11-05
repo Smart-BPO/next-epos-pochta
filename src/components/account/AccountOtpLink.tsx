@@ -94,10 +94,16 @@ export function AccountOtpLink({
           error?: string;
         };
         if (cancelled) return;
-        if (json.error === "relink_required" || res.status === 401) {
+        if (json.error === "relink_required") {
           setLinked(null);
           setStep("phone");
           setError(c.relinkRequired);
+          onLinkedChange?.(null);
+          return;
+        }
+        if (res.status === 401) {
+          setLinked(null);
+          setStep("phone");
           onLinkedChange?.(null);
           return;
         }

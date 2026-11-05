@@ -14,6 +14,8 @@ export type FcargoPackageRow = {
   status_raw: Record<string, unknown>;
   event_type: string | null;
   phones: string[];
+  sender_phone?: string | null;
+  receiver_phone?: string | null;
   external_order_id: string | null;
   lead_id: string | null;
   contact_session_id: string | null;
@@ -31,6 +33,47 @@ export function normalizeUzPhone(phone: string): string {
   if (digits.length === 9) return `+998${digits}`;
   if (phone.startsWith("+") && digits.length >= 10) return `+${digits}`;
   return "";
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+/** Extract normalized sender/receiver phones from FCargo raw payload. */
+export function partyPhonesFromRaw(
+  raw: Record<string, unknown> | null | undefined,
+): { senderPhone: string | null; receiverPhone: string | null } {
+  if (!raw) return { senderPhone: null, receiverPhone: null };
+  const data = asRecord(raw.data) ?? raw;
+  const pkg = asRecord(data.package) ?? data;
+  const sender = asRecord(pkg.sender) ?? asRecord(data.sender);
+  const receiver = asRecord(pkg.receiver) ?? asRecord(data.receiver);
+
+  const pick = (...vals: unknown[]): string | null => {
+    for (const v of vals) {
+      if (typeof v !== "string") continue;
+      const n = normalizeUzPhone(v);
+      if (n) return n;
+    }
+    return null;
+  };
+
+  return {
+    senderPhone: pick(
+      sender?.phone,
+      data.sender_phone,
+      raw.sender_phone,
+      pkg.sender_phone,
+    ),
+    receiverPhone: pick(
+      receiver?.phone,
+      data.receiver_phone,
+      raw.receiver_phone,
+      pkg.receiver_phone,
+    ),
+  };
 }
 
 export async function findFcargoPackage(params: {
@@ -85,6 +128,8 @@ export async function upsertFcargoPackage(input: {
   statusRaw?: unknown;
   eventType?: string | null;
   phones?: string[];
+  senderPhone?: string | null;
+  receiverPhone?: string | null;
   externalOrderId?: string | null;
   leadId?: string | null;
   contactSessionId?: string | null;
@@ -122,6 +167,22 @@ export async function upsertFcargoPackage(input: {
       ? (input.rawLast as Record<string, unknown>)
       : (existing?.raw_last ?? {});
 
+  const fromRaw = partyPhonesFromRaw(rawLast);
+  const senderPhone =
+    (input.senderPhone ? normalizeUzPhone(input.senderPhone) : "") ||
+    fromRaw.senderPhone ||
+    existing?.sender_phone ||
+    null;
+  const receiverPhone =
+    (input.receiverPhone ? normalizeUzPhone(input.receiverPhone) : "") ||
+    fromRaw.receiverPhone ||
+    existing?.receiver_phone ||
+    null;
+  if (senderPhone && !phones.includes(senderPhone)) phones.push(senderPhone);
+  if (receiverPhone && !phones.includes(receiverPhone)) {
+    phones.push(receiverPhone);
+  }
+
   const row = {
     fcargo_order_id:
       input.fcargoOrderId?.trim() || existing?.fcargo_order_id || null,
@@ -134,6 +195,8 @@ export async function upsertFcargoPackage(input: {
     status_raw: statusRaw,
     event_type: input.eventType?.trim() || existing?.event_type || null,
     phones,
+    sender_phone: senderPhone,
+    receiver_phone: receiverPhone,
     external_order_id:
       input.externalOrderId?.trim() || existing?.external_order_id || null,
     lead_id: input.leadId?.trim() || existing?.lead_id || null,
@@ -184,9 +247,17 @@ export async function upsertFcargoPackage(input: {
   let { data, error } = await write(extended);
   if (
     error &&
-    /from_soato|to_soato|telegram_user_id|\bsource\b/i.test(error.message)
+    /from_soato|to_soato|telegram_user_id|\bsource\b|sender_phone|receiver_phone/i.test(
+      error.message,
+    )
   ) {
     ({ data, error } = await write(row));
+  }
+  if (error && /sender_phone|receiver_phone/i.test(error.message)) {
+    const { sender_phone: _s, receiver_phone: _r, ...withoutParty } = row;
+    void _s;
+    void _r;
+    ({ data, error } = await write(withoutParty));
   }
   if (error) {
     console.warn(

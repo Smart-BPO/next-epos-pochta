@@ -69,9 +69,7 @@ export function CabinetBrandLogo({
   }, []);
 
   const alt =
-    branding?.companyName?.replace(/^"|"$/g, "") ||
-    branding?.name ||
-    SITE_CONFIG.name;
+    branding?.companyName || branding?.name || SITE_CONFIG.name;
 
   if (branding?.logoUrl && !failed) {
     return (

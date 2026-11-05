@@ -35,6 +35,7 @@ export type WebappContactRow = {
   created_at: string;
   shipmentTotal: number;
   shipmentPending: number;
+  incomingTotal: number;
   lastShipmentAt: string | null;
   fcargoLinked: boolean;
 };
@@ -141,47 +142,39 @@ function ContactCard({
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 rounded-xl border border-black/[0.06] bg-black/[0.015] p-2.5">
+        <div className="grid grid-cols-2 gap-2 rounded-xl border border-black/[0.06] bg-black/[0.015] p-2.5">
           <div className="min-w-0 text-center">
             <p className="m-0 text-[0.65rem] font-semibold uppercase tracking-wide text-black/35">
-              {t.contacts.shipmentsTotal}
+              {t.shipments.tabOut}
             </p>
             <p className="m-0 mt-1 font-display text-lg font-bold text-ink">
               {row.shipmentTotal}
             </p>
           </div>
-          <div className="min-w-0 border-x border-black/[0.06] text-center">
+          <div className="min-w-0 border-l border-black/[0.06] text-center">
             <p className="m-0 text-[0.65rem] font-semibold uppercase tracking-wide text-black/35">
-              {t.contacts.shipmentsPending}
+              {t.shipments.tabIn}
             </p>
-            <p
-              className={cn(
-                "m-0 mt-1 font-display text-lg font-bold",
-                row.shipmentPending > 0 ? "text-amber-700" : "text-ink",
-              )}
-            >
-              {row.shipmentPending}
-            </p>
-          </div>
-          <div className="min-w-0 text-center">
-            <p className="m-0 text-[0.65rem] font-semibold uppercase tracking-wide text-black/35">
-              {t.contacts.lastShipment}
-            </p>
-            <p className="m-0 mt-1 text-xs font-semibold leading-snug text-ink">
-              {row.lastShipmentAt
-                ? formatDashDate(row.lastShipmentAt, intlLocale)
-                : "—"}
+            <p className="m-0 mt-1 font-display text-lg font-bold text-ink">
+              {row.incomingTotal}
             </p>
           </div>
         </div>
 
         <div className="mt-auto flex flex-wrap gap-2 border-t border-black/[0.06] pt-3">
           <Link
-            href={`/dashboard/webapp/shipments/?contact=${encodeURIComponent(row.session_id)}`}
+            href={`/dashboard/webapp/shipments/?dir=out&contact=${encodeURIComponent(row.session_id)}`}
             className={dashBtnRowSecondary}
           >
             {t.contacts.openShipments}
             {row.shipmentTotal > 0 ? ` · ${row.shipmentTotal}` : ""}
+          </Link>
+          <Link
+            href={`/dashboard/webapp/shipments/?dir=in&contact=${encodeURIComponent(row.session_id)}`}
+            className={dashBtnRowSecondary}
+          >
+            {t.contacts.openIncoming}
+            {row.incomingTotal > 0 ? ` · ${row.incomingTotal}` : ""}
           </Link>
           {tgLink ? (
             <a
@@ -321,26 +314,32 @@ export function WebappContactsClient({ rows }: { rows: WebappContactRow[] }) {
           {
             id: "shipments",
             header: t.contacts.openShipments,
-            sortValue: (r) => r.shipmentTotal,
+            sortValue: (r) => r.shipmentTotal + r.incomingTotal,
             cell: (row) => (
-              <Link
-                href={`/dashboard/webapp/shipments/?contact=${encodeURIComponent(row.session_id)}`}
-                className="inline-flex flex-col gap-0.5 text-sm hover:text-primary"
-              >
-                <span className="font-semibold text-ink">
-                  {row.shipmentTotal}
+              <div className="inline-flex flex-col gap-0.5 text-sm">
+                <Link
+                  href={`/dashboard/webapp/shipments/?dir=out&contact=${encodeURIComponent(row.session_id)}`}
+                  className="font-semibold text-ink hover:text-primary"
+                >
+                  {t.shipments.tabOut} · {row.shipmentTotal}
                   {row.shipmentPending > 0 ? (
                     <span className="ml-1 text-xs font-semibold text-amber-700">
                       · {row.shipmentPending} {t.contacts.shipmentsPending.toLowerCase()}
                     </span>
                   ) : null}
-                </span>
+                </Link>
+                <Link
+                  href={`/dashboard/webapp/shipments/?dir=in&contact=${encodeURIComponent(row.session_id)}`}
+                  className="text-[0.75rem] text-black/55 hover:text-primary"
+                >
+                  {t.shipments.tabIn} · {row.incomingTotal}
+                </Link>
                 <span className="text-[0.65rem] text-black/40">
                   {row.lastShipmentAt
                     ? formatDashDate(row.lastShipmentAt, intlLocale)
                     : t.contacts.noShipments}
                 </span>
-              </Link>
+              </div>
             ),
           },
           {

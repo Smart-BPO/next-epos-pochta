@@ -269,6 +269,8 @@ export async function createFcargoOrder(
       status: order.status,
       eventType: "order.created",
       phones,
+      senderPhone: sender.phone,
+      receiverPhone: receiver.phone,
       externalOrderId: input.externalId,
       leadId: input.leadId ?? null,
       contactSessionId: input.contactSessionId ?? null,
