@@ -68,7 +68,7 @@ export function CabinetNav({
         <div className="px-2 pb-2">
           <Link
             href={cabinetHref(locale, "new/")}
-            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-white no-underline shadow-[0_4px_14px_rgb(211_2_3/0.22)] transition hover:bg-primary-hover"
+            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-white no-underline transition hover:bg-primary-hover"
           >
             <PackagePlus className="size-4" aria-hidden />
             {c.navNew}
@@ -146,30 +146,24 @@ export function CabinetNav({
       </nav>
 
       {!collapsed ? (
-        <div className="mt-auto px-2 pb-3 pt-4">
-          <div className="rounded-2xl bg-ink p-3 text-white">
-            <p className="m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45">
-              {c.managerTitle}
-            </p>
-            <p className="m-0 mt-1 text-sm font-semibold">EPOS POCHTA</p>
-            <p className="m-0 mt-0.5 text-xs text-white/55">{c.managerHours}</p>
-            <div className="mt-3 grid grid-cols-2 gap-1.5">
-              <a
-                href={`tel:${SITE_CONFIG.phone}`}
-                className="inline-flex h-8 items-center justify-center rounded-lg bg-white/10 text-[11px] font-semibold text-white no-underline hover:bg-white/15"
-              >
-                {c.managerCall}
-              </a>
-              <a
-                href={SITE_CONFIG.telegramUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-8 items-center justify-center rounded-lg bg-primary text-[11px] font-semibold text-white no-underline hover:bg-primary-hover"
-              >
-                {c.managerTelegram}
-              </a>
-            </div>
-          </div>
+        <div className="mt-auto space-y-1 px-5 pb-4 pt-6 text-xs text-[var(--dash-muted)]">
+          <p className="m-0">{c.managerHours}</p>
+          <p className="m-0 flex gap-3">
+            <a
+              href={`tel:${SITE_CONFIG.phone}`}
+              className="text-ink no-underline hover:text-primary"
+            >
+              {SITE_CONFIG.phoneDisplay}
+            </a>
+            <a
+              href={SITE_CONFIG.telegramUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-ink no-underline hover:text-primary"
+            >
+              Telegram
+            </a>
+          </p>
         </div>
       ) : null}
     </div>

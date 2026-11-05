@@ -10,7 +10,6 @@ import { CabinetTopBar } from "@/components/cabinet/CabinetTopBar";
 import { CabinetMobileNav } from "@/components/cabinet/CabinetMobileNav";
 import { CabinetDataProvider } from "@/components/cabinet/CabinetData";
 import { cabinetHref } from "@/components/cabinet/nav";
-import { cabinetCopy } from "@/data/cabinet";
 import {
   cabAside,
   cabMainColumn,
@@ -51,7 +50,6 @@ export function CabinetChrome({
   locale: Locale;
   children: React.ReactNode;
 }) {
-  const c = cabinetCopy(locale);
   const collapsed = useSyncExternalStore(
     subscribeCollapsed,
     readCollapsed,
@@ -85,11 +83,6 @@ export function CabinetChrome({
                 aria-label={SITE_CONFIG.name}
               >
                 <BrandLogo locale={locale} priority />
-                {!collapsed ? (
-                  <span className="ml-2 truncate text-[10px] font-semibold uppercase tracking-wide text-[var(--dash-faint)]">
-                    {c.brandTag}
-                  </span>
-                ) : null}
               </Link>
               <button
                 type="button"

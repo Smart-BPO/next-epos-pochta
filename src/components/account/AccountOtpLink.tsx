@@ -259,11 +259,6 @@ export function AccountOtpLink({
     );
   }
 
-  const steps = [
-    { id: "phone", label: c.stepPhone },
-    { id: "code", label: c.stepCode },
-  ] as const;
-
   return (
     <div className="space-y-4">
       {hideIntro ? null : !compact ? (
@@ -276,32 +271,6 @@ export function AccountOtpLink({
       ) : (
         <p className="m-0 text-sm text-black/55">{c.linkHint}</p>
       )}
-
-      <ol className="m-0 flex list-none items-center gap-2 p-0 text-xs font-semibold">
-        {steps.map((s, i) => {
-          const active = step === s.id;
-          const done = s.id === "phone" && step === "code";
-          return (
-            <li key={s.id} className="flex items-center gap-2">
-              {i > 0 ? (
-                <span className="h-px w-6 bg-black/15" aria-hidden />
-              ) : null}
-              <span
-                className={
-                  active || done
-                    ? "inline-flex size-5 items-center justify-center rounded-full bg-primary text-[10px] text-white"
-                    : "inline-flex size-5 items-center justify-center rounded-full bg-black/[0.07] text-[10px] text-black/45"
-                }
-              >
-                {done ? "✓" : i + 1}
-              </span>
-              <span className={active ? "text-ink" : "text-black/45"}>
-                {s.label}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
 
       {step === "phone" ? (
         <form
