@@ -1,6 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
+import {
+  FileText,
+  MapPinned,
+  Package,
+} from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import { accountCopy } from "@/data/account-copy";
 import { Button } from "@/components/atoms/Button";
@@ -8,7 +13,8 @@ import { Input, Textarea } from "@/components/atoms/Input";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { getSettlementById, settlementLabel } from "@/data/settlements";
 import { createRequestId, isValidUzPhone, normalizePhone } from "@/lib/form/utils";
-import { fieldLabel } from "@/styles/ui";
+import { cn } from "@/lib/cn";
+import { controlCheckbox, fieldLabel } from "@/styles/ui";
 import {
   accountAuthBody,
   type AccountAuthMode,
@@ -22,6 +28,41 @@ export type AccountShipmentPrefill = {
   width?: string;
   height?: string;
 };
+
+const card =
+  "rounded-[var(--dash-radius,1rem)] border border-[var(--dash-border,rgb(0_0_0/0.08))] bg-[var(--dash-surface,#fff)] shadow-[var(--dash-shadow,0_1px_2px_rgb(0_0_0/0.04))]";
+
+function SectionTitle({
+  icon: Icon,
+  children,
+}: {
+  icon: typeof MapPinned;
+  children: React.ReactNode;
+}) {
+  return (
+    <h2 className="m-0 mb-4 flex items-center gap-2 text-sm font-semibold text-ink">
+      <Icon className="size-4 text-primary" strokeWidth={1.75} aria-hidden />
+      {children}
+    </h2>
+  );
+}
+
+function Field({
+  label,
+  children,
+  className,
+}: {
+  label: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <label className={cn(fieldLabel, "block", className)}>
+      {label}
+      <div className="mt-1.5">{children}</div>
+    </label>
+  );
+}
 
 export function AccountShipmentForm({
   locale,
@@ -126,125 +167,171 @@ export function AccountShipmentForm({
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <label className={fieldLabel}>
-        {c.fromLabel}
-        <div className="mt-1.5">
-          <SettlementSelect
-            instanceId="account-from"
-            locale={locale}
-            value={from}
-            onChange={setFrom}
-            placeholder={c.fromLabel}
-          />
-        </div>
-      </label>
-      <label className={fieldLabel}>
-        {c.toLabel}
-        <div className="mt-1.5">
-          <SettlementSelect
-            instanceId="account-to"
-            locale={locale}
-            value={to}
-            onChange={setTo}
-            placeholder={c.toLabel}
-          />
-        </div>
-      </label>
-      <label className={fieldLabel}>
-        {c.receiverName}
-        <Input
-          className="mt-1.5"
-          value={receiverName}
-          onChange={(e) => setReceiverName(e.target.value)}
-          autoComplete="name"
-        />
-      </label>
-      <label className={fieldLabel}>
-        {c.receiverPhone}
-        <Input
-          className="mt-1.5"
-          value={receiverPhone}
-          onChange={(e) => setReceiverPhone(e.target.value)}
-          inputMode="tel"
-          autoComplete="tel"
-          placeholder="+998"
-        />
-      </label>
-      <label className={fieldLabel}>
-        {c.weightLabel}
-        <Input
-          className="mt-1.5"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-          inputMode="decimal"
-        />
-      </label>
-      <fieldset className="m-0 border-0 p-0">
-        <legend className={fieldLabel}>{c.dimsLabel}</legend>
-        <div className="mt-1.5 grid grid-cols-3 gap-2">
-          <Input value={length} onChange={(e) => setLength(e.target.value)} inputMode="decimal" aria-label="L" />
-          <Input value={width} onChange={(e) => setWidth(e.target.value)} inputMode="decimal" aria-label="W" />
-          <Input value={height} onChange={(e) => setHeight(e.target.value)} inputMode="decimal" aria-label="H" />
-        </div>
-      </fieldset>
-      <label className={fieldLabel}>
-        {c.declaredValue}
-        <Input
-          className="mt-1.5"
-          value={declaredValue}
-          onChange={(e) => setDeclaredValue(e.target.value)}
-          inputMode="decimal"
-        />
-      </label>
-      <label className="flex items-center gap-2 text-sm text-ink">
-        <input
-          type="checkbox"
-          checked={fragile}
-          onChange={(e) => setFragile(e.target.checked)}
-        />
-        {c.fragile}
-      </label>
-      <fieldset className="m-0 border-0 p-0">
-        <div className="flex flex-wrap gap-3 text-sm">
-          <label className="inline-flex items-center gap-2">
-            <input
-              type="radio"
-              name="payer"
-              checked={payerType === "sender"}
-              onChange={() => setPayerType("sender")}
+    <form onSubmit={onSubmit} className="flex flex-col gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
+        <section className={`${card} p-4 sm:p-5`}>
+          <SectionTitle icon={MapPinned}>{c.sectionRoute}</SectionTitle>
+          <div className="grid gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label={c.fromLabel}>
+                <SettlementSelect
+                  instanceId="account-from"
+                  locale={locale}
+                  value={from}
+                  onChange={setFrom}
+                  placeholder={c.settlementPlaceholder}
+                />
+              </Field>
+              <Field label={c.toLabel}>
+                <SettlementSelect
+                  instanceId="account-to"
+                  locale={locale}
+                  value={to}
+                  onChange={setTo}
+                  placeholder={c.settlementPlaceholder}
+                />
+              </Field>
+            </div>
+            <Field label={c.receiverName}>
+              <Input
+                value={receiverName}
+                onChange={(e) => setReceiverName(e.target.value)}
+                autoComplete="name"
+                placeholder={c.receiverNamePlaceholder}
+              />
+            </Field>
+            <Field label={c.receiverPhone}>
+              <Input
+                value={receiverPhone}
+                onChange={(e) => setReceiverPhone(e.target.value)}
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder={c.receiverPhonePlaceholder}
+              />
+            </Field>
+          </div>
+        </section>
+
+        <section className={`${card} p-4 sm:p-5`}>
+          <SectionTitle icon={Package}>{c.sectionParcel}</SectionTitle>
+          <div className="grid gap-4">
+            <Field label={c.weightLabel}>
+              <Input
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                inputMode="decimal"
+              />
+            </Field>
+            <fieldset className="m-0 border-0 p-0">
+              <legend className={fieldLabel}>{c.dimsLabel}</legend>
+              <div className="mt-1.5 grid grid-cols-3 gap-2">
+                {(
+                  [
+                    [length, setLength, c.dimLength],
+                    [width, setWidth, c.dimWidth],
+                    [height, setHeight, c.dimHeight],
+                  ] as const
+                ).map(([value, setValue, label]) => (
+                  <label key={label} className="block text-[0.7rem] text-black/45">
+                    {label}
+                    <Input
+                      className="mt-1"
+                      value={value}
+                      onChange={(e) => setValue(e.target.value)}
+                      inputMode="decimal"
+                      aria-label={label}
+                    />
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <Field label={c.declaredValue}>
+              <div className="relative">
+                <Input
+                  value={declaredValue}
+                  onChange={(e) => setDeclaredValue(e.target.value)}
+                  inputMode="decimal"
+                  className="pr-14"
+                />
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-black/40">
+                  {c.currencySuffix}
+                </span>
+              </div>
+            </Field>
+            <label className="inline-flex items-center gap-2.5 text-sm text-ink">
+              <input
+                type="checkbox"
+                checked={fragile}
+                onChange={(e) => setFragile(e.target.checked)}
+                className={controlCheckbox}
+              />
+              {c.fragile}
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <section className={`${card} p-4 sm:p-5`}>
+        <SectionTitle icon={FileText}>{c.sectionPayment}</SectionTitle>
+        <div className="grid gap-4">
+          <fieldset className="m-0 border-0 p-0">
+            <legend className={fieldLabel}>{c.payerQuestion}</legend>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              {(
+                [
+                  ["sender", c.payerSender],
+                  ["receiver", c.payerReceiver],
+                ] as const
+              ).map(([value, label]) => {
+                const active = payerType === value;
+                return (
+                  <label
+                    key={value}
+                    className={cn(
+                      "flex cursor-pointer items-center gap-2.5 rounded-xl border px-3.5 py-3 text-sm transition",
+                      active
+                        ? "border-primary/40 bg-primary-soft/50 text-ink"
+                        : "border-black/10 bg-white text-black/70 hover:border-black/20",
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="payer"
+                      className="accent-[var(--color-primary)]"
+                      checked={active}
+                      onChange={() => setPayerType(value)}
+                    />
+                    {label}
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+          <Field label={c.commentLabel}>
+            <Textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={3}
+              placeholder={c.commentPlaceholder}
             />
-            {c.payerSender}
-          </label>
-          <label className="inline-flex items-center gap-2">
-            <input
-              type="radio"
-              name="payer"
-              checked={payerType === "receiver"}
-              onChange={() => setPayerType("receiver")}
-            />
-            {c.payerReceiver}
-          </label>
+          </Field>
         </div>
-      </fieldset>
-      <label className={fieldLabel}>
-        {c.commentLabel}
-        <Textarea
-          className="mt-1.5"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          rows={3}
-        />
-      </label>
-      <p className="m-0 text-xs text-black/45">{c.disclaimer}</p>
+      </section>
+
       {error ? (
         <p className="m-0 text-sm text-primary" role="alert">
           {error}
         </p>
       ) : null}
-      <Button type="submit" disabled={busy}>
-        {c.submitShipment}
-      </Button>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="m-0 max-w-md text-xs leading-relaxed text-black/45">
+          {c.disclaimer}
+        </p>
+        <Button type="submit" disabled={busy} className="w-full sm:w-auto">
+          {c.submitShipment}
+        </Button>
+      </div>
     </form>
   );
 }

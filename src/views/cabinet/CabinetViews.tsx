@@ -155,46 +155,44 @@ export function CabinetNewView() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 sm:gap-5">
       <h1 className={cabPageTitle}>{c.navNew}</h1>
-      <div className={`max-w-2xl ${cabCard} p-5 sm:p-7`}>
-        {createdTracking ? (
-          <div className="flex flex-col items-center py-4 text-center">
-            <CheckCircle2 className="size-12 text-emerald-600" aria-hidden />
-            <h2 className="mt-3 mb-0 font-display text-xl font-semibold text-ink">
-              {a.successTitle}
-            </h2>
-            <p className="mt-2 mb-0 text-sm text-black/55">{a.trackLabel}</p>
-            <p className="m-0 font-mono text-lg font-semibold text-ink">
-              {createdTracking}
-            </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-2">
-              <Button
-                type="button"
-                onClick={() =>
-                  router.push(cabinetShipmentHref(locale, createdTracking))
-                }
-              >
-                {a.openShipment}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setCreatedTracking(null)}
-              >
-                {a.anotherShipment}
-              </Button>
-            </div>
+      {createdTracking ? (
+        <div className={`${cabCard} flex flex-col items-center px-5 py-10 text-center sm:px-7`}>
+          <CheckCircle2 className="size-12 text-emerald-600" aria-hidden />
+          <h2 className="mt-3 mb-0 font-display text-xl font-semibold text-ink">
+            {a.successTitle}
+          </h2>
+          <p className="mt-2 mb-0 text-sm text-black/55">{a.trackLabel}</p>
+          <p className="m-0 font-mono text-lg font-semibold text-ink">
+            {createdTracking}
+          </p>
+          <div className="mt-5 flex flex-wrap justify-center gap-2">
+            <Button
+              type="button"
+              onClick={() =>
+                router.push(cabinetShipmentHref(locale, createdTracking))
+              }
+            >
+              {a.openShipment}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setCreatedTracking(null)}
+            >
+              {a.anotherShipment}
+            </Button>
           </div>
-        ) : (
-          <AccountShipmentForm
-            locale={locale}
-            auth={auth}
-            prefill={prefill}
-            onSuccess={(tracking) => setCreatedTracking(tracking)}
-          />
-        )}
-      </div>
+        </div>
+      ) : (
+        <AccountShipmentForm
+          locale={locale}
+          auth={auth}
+          prefill={prefill}
+          onSuccess={(tracking) => setCreatedTracking(tracking)}
+        />
+      )}
     </div>
   );
 }
