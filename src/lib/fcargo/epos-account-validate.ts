@@ -17,7 +17,8 @@ export type ValidateHotLinksResult = {
 
 /**
  * Periodic health check for recently-used client links.
- * FCargo has no refresh_token — we probe GET /profile and revoke on 401.
+ * Client API has no auth/refresh; customer OTP has no refresh_token.
+ * We probe GET /profile and revoke on 401 (cabinet also uses POST /api/account/refresh/).
  */
 export async function validateHotClientLinks(opts?: {
   limit?: number;

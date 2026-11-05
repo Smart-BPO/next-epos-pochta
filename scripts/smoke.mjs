@@ -125,6 +125,23 @@ async function main() {
     pass("account/me JSON", JSON.stringify(me.json).slice(0, 120));
   }
 
+  const refresh = await expectStatus(
+    "POST /api/account/refresh/ (unlinked)",
+    "/api/account/refresh/",
+    [401],
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: "{}",
+    },
+  );
+  if (refresh?.json?.error === "not_linked" || refresh?.status === 401) {
+    pass(
+      "account/refresh unlinked",
+      String(refresh.json?.error || refresh.status),
+    );
+  }
+
   const shipments = await expectStatus(
     "POST /api/account/shipments/ (unlinked)",
     "/api/account/shipments/",

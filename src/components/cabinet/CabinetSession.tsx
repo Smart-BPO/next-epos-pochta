@@ -42,6 +42,9 @@ export function useCabinetSession() {
   return ctx;
 }
 
+/** How often the open cabinet re-validates FCargo bearer + slides idle cookie. */
+const CABINET_REFRESH_MS = 15 * 60_000;
+
 export function useCabinetSessionProbe(locale: Locale) {
   const a = accountCopy(locale);
   const router = useRouter();
@@ -52,6 +55,16 @@ export function useCabinetSessionProbe(locale: Locale) {
   const [total, setTotal] = useState<number | null>(null);
   const [createdTracking, setCreatedTracking] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  const resetLocal = useCallback(() => {
+    setTotal(null);
+    setCreatedTracking(null);
+  }, []);
+
+  const onRelinkRequired = useCallback(() => {
+    setSession({ state: "guest", error: a.relinkRequired });
+    resetLocal();
+  }, [a.relinkRequired, resetLocal]);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,15 +94,45 @@ export function useCabinetSessionProbe(locale: Locale) {
     };
   }, [a.relinkRequired]);
 
-  const resetLocal = useCallback(() => {
-    setTotal(null);
-    setCreatedTracking(null);
-  }, []);
+  useEffect(() => {
+    if (session.state !== "linked") return;
 
-  const onRelinkRequired = useCallback(() => {
-    setSession({ state: "guest", error: a.relinkRequired });
-    resetLocal();
-  }, [a.relinkRequired, resetLocal]);
+    let cancelled = false;
+    const refresh = async () => {
+      try {
+        const res = await fetch("/api/account/refresh/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+          cache: "no-store",
+        });
+        const json = (await res.json()) as {
+          linked?: AccountLinked | null;
+          error?: string;
+        };
+        if (cancelled) return;
+        if (!res.ok || json.error === "relink_required" || !json.linked) {
+          onRelinkRequired();
+          return;
+        }
+        setSession({ state: "linked", linked: json.linked });
+      } catch {
+        // keep current session on transient network errors
+      }
+    };
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+
+    const timer = window.setInterval(() => void refresh(), CABINET_REFRESH_MS);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [session.state, onRelinkRequired]);
 
   const logout = useCallback(async () => {
     setLoggingOut(true);

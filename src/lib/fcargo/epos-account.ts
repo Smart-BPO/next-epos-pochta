@@ -242,16 +242,33 @@ export async function revokeLinkSession(
   }
 }
 
-export async function touchLink(row: EposClientLinkRow): Promise<void> {
-  if (!hasSupabaseAdminConfig()) return;
+/** Slide the idle window; returns the new `session_expires_at` ISO. */
+export async function touchLink(row: EposClientLinkRow): Promise<string> {
+  const sessionExpires = sessionExpiresAtFrom();
+  if (!hasSupabaseAdminConfig()) return sessionExpires;
   const admin = createSupabaseAdminClient();
   await admin
     .from("epos_fcargo_client_links")
     .update({
       last_used_at: new Date().toISOString(),
-      session_expires_at: sessionExpiresAtFrom(),
+      session_expires_at: sessionExpires,
     })
     .eq("id", row.id);
+  return sessionExpires;
+}
+
+/**
+ * Cabinet/session refresh: extend idle expiry and re-issue the httpOnly cookie
+ * (FCargo Client API has no token refresh — only OTP + long-lived bearer).
+ */
+export async function refreshWebAccountSession(
+  row: EposClientLinkRow,
+): Promise<string> {
+  const sessionExpires = await touchLink(row);
+  if (row.subject_type === "web") {
+    await setWebAccountCookie(row.session_token);
+  }
+  return sessionExpires;
 }
 
 export async function markLinkValidated(
