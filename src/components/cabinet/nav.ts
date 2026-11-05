@@ -2,12 +2,25 @@ import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import { cabinetCopy } from "@/data/cabinet";
 
-export type CabinetNavId = "shipments" | "new" | "tracking" | "profile";
+export type CabinetNavId =
+  | "home"
+  | "orders"
+  | "returns"
+  | "calculator"
+  | "finance"
+  | "reports"
+  | "settings"
+  | "help"
+  | "tracking"
+  | "new";
 
 export type CabinetNavItem = {
   id: CabinetNavId;
   href: string;
   label: string;
+  badgeKey?: "orders" | "returns" | "attention";
+  /** Primary tabs on mobile. */
+  mobile?: boolean;
 };
 
 export function cabinetHref(locale: Locale, sub = "") {
@@ -15,23 +28,65 @@ export function cabinetHref(locale: Locale, sub = "") {
 }
 
 export function cabinetShipmentHref(locale: Locale, tracking: string) {
-  return cabinetHref(locale, `shipments/${encodeURIComponent(tracking)}/`);
+  return cabinetHref(
+    locale,
+    `shipments/${encodeURIComponent(tracking)}/`,
+  );
 }
 
 export function getCabinetNav(locale: Locale): CabinetNavItem[] {
   const c = cabinetCopy(locale);
   return [
-    { id: "shipments", href: cabinetHref(locale), label: c.navShipments },
-    { id: "new", href: cabinetHref(locale, "new/"), label: c.navNew },
+    {
+      id: "home",
+      href: cabinetHref(locale),
+      label: c.navHome,
+      mobile: true,
+    },
+    {
+      id: "orders",
+      href: cabinetHref(locale, "orders/"),
+      label: c.navOrders,
+      badgeKey: "orders",
+      mobile: true,
+    },
+    {
+      id: "returns",
+      href: cabinetHref(locale, "returns/"),
+      label: c.navReturns,
+      badgeKey: "returns",
+      mobile: true,
+    },
+    {
+      id: "calculator",
+      href: cabinetHref(locale, "calculator/"),
+      label: c.navCalculator,
+      mobile: true,
+    },
+    {
+      id: "finance",
+      href: cabinetHref(locale, "finance/"),
+      label: c.navFinance,
+    },
+    {
+      id: "reports",
+      href: cabinetHref(locale, "reports/"),
+      label: c.navReports,
+    },
     {
       id: "tracking",
       href: cabinetHref(locale, "tracking/"),
       label: c.navTrack,
     },
     {
-      id: "profile",
-      href: cabinetHref(locale, "profile/"),
-      label: c.navProfile,
+      id: "settings",
+      href: cabinetHref(locale, "settings/"),
+      label: c.navSettings,
+    },
+    {
+      id: "help",
+      href: cabinetHref(locale, "help/"),
+      label: c.navHelp,
     },
   ];
 }
@@ -47,8 +102,15 @@ export function isCabinetNavActive(
 ) {
   const path = stripSlash(pathname);
   const root = stripSlash(cabinetHref(locale));
-  if (item.id === "shipments") {
-    return path === root || path.startsWith(`${root}/shipments`);
+  if (item.id === "home") {
+    return path === root;
   }
-  return path === stripSlash(item.href);
+  if (item.id === "orders") {
+    return (
+      path === stripSlash(item.href) ||
+      path.startsWith(`${root}/shipments`) ||
+      path.startsWith(`${root}/orders`)
+    );
+  }
+  return path === stripSlash(item.href) || path.startsWith(`${stripSlash(item.href)}/`);
 }

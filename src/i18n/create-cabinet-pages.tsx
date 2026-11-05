@@ -8,8 +8,14 @@ import { cabinetCopy } from "@/data/cabinet";
 import { createPageMetadata } from "@/utils/seo/metadata";
 import { CabinetShell } from "@/views/cabinet/CabinetShell";
 import {
+  CabinetCalculatorView,
+  CabinetFinanceView,
+  CabinetHelpView,
+  CabinetHomePageView,
   CabinetNewView,
   CabinetProfileView,
+  CabinetReportsView,
+  CabinetReturnsView,
   CabinetShipmentView,
   CabinetShipmentsView,
   CabinetTrackingView,
@@ -19,7 +25,8 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 const LEGACY_TABS: Record<string, string> = {
   new: "new/",
-  profile: "profile/",
+  profile: "settings/",
+  shipments: "orders/",
 };
 
 export function createCabinetPages(locale: Locale) {
@@ -48,7 +55,7 @@ export function createCabinetPages(locale: Locale) {
       return <CabinetShell locale={locale}>{children}</CabinetShell>;
     },
 
-    ShipmentsPage: async function CabinetShipmentsPage({
+    HomePage: async function CabinetHomePage({
       searchParams,
     }: {
       searchParams: SearchParams;
@@ -63,7 +70,19 @@ export function createCabinetPages(locale: Locale) {
         const qs = rest.toString();
         redirect(`${href(tab)}${qs ? `?${qs}` : ""}`);
       }
-      return <CabinetShipmentsView />;
+      return <CabinetHomePageView />;
+    },
+
+    OrdersPage: function CabinetOrdersPage() {
+      return (
+        <Suspense fallback={null}>
+          <CabinetShipmentsView />
+        </Suspense>
+      );
+    },
+
+    ReturnsPage: function CabinetReturnsPage() {
+      return <CabinetReturnsView />;
     },
 
     ShipmentPage: async function CabinetShipmentPage({
@@ -91,8 +110,29 @@ export function createCabinetPages(locale: Locale) {
       );
     },
 
-    ProfilePage: function CabinetProfilePage() {
+    CalculatorPage: function CabinetCalculatorPage() {
+      return <CabinetCalculatorView />;
+    },
+
+    FinancePage: function CabinetFinancePage() {
+      return <CabinetFinanceView />;
+    },
+
+    ReportsPage: function CabinetReportsPage() {
+      return <CabinetReportsView />;
+    },
+
+    HelpPage: function CabinetHelpPage() {
+      return <CabinetHelpView />;
+    },
+
+    SettingsPage: function CabinetSettingsPage() {
       return <CabinetProfileView />;
+    },
+
+    /** Legacy `/cabinet/profile/` → settings. */
+    ProfileRedirect: function CabinetProfileRedirect() {
+      redirect(href("settings/"));
     },
   };
 }

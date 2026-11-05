@@ -1,3 +1,3 @@
 import { createCabinetPages } from "@/i18n/create-cabinet-pages";
 
-export default createCabinetPages("ru").ProfilePage;
+export default createCabinetPages("ru").ProfileRedirect;

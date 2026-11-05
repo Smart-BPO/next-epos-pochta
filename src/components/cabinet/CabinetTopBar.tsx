@@ -1,25 +1,27 @@
 "use client";
 
+import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, LogOut, Search } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { accountCopy } from "@/data/account-copy";
 import { cabinetCopy } from "@/data/cabinet";
 import {
+  cabinetHref,
   getCabinetNav,
   isCabinetNavActive,
 } from "@/components/cabinet/nav";
 import { useCabinetSession } from "@/components/cabinet/CabinetSession";
+import { useCabinetData } from "@/components/cabinet/CabinetData";
 import { cabTopBar } from "@/styles/cabinet";
 import { SITE_CONFIG } from "@/utils/consts";
 import { cn } from "@/lib/cn";
 
 const LOCALES: Locale[] = ["uz", "ru", "zh"];
 
-/** Strip locale prefix so we can re-prefix for the language switcher. */
 function barePath(pathname: string): string {
   const stripped = pathname.replace(/^\/(ru|zh)(?=\/|$)/, "");
   return stripped.startsWith("/") ? stripped : `/${stripped}`;
@@ -27,9 +29,12 @@ function barePath(pathname: string): string {
 
 export function CabinetTopBar({ locale }: { locale: Locale }) {
   const pathname = usePathname() || "/cabinet/";
-  const { linked, logout, loggingOut, total } = useCabinetSession();
+  const router = useRouter();
+  const { linked, logout, loggingOut } = useCabinetSession();
+  const stats = useCabinetData();
   const c = cabinetCopy(locale);
   const a = accountCopy(locale);
+  const [q, setQ] = useState("");
   const items = getCabinetNav(locale);
   const current =
     items.find((item) => isCabinetNavActive(pathname, item, locale)) ??
@@ -48,12 +53,27 @@ export function CabinetTopBar({ locale }: { locale: Locale }) {
     return linked.phone.replace(/\D/g, "").slice(-2);
   })();
 
+  const onSearch = (e: FormEvent) => {
+    e.preventDefault();
+    const value = q.trim();
+    if (!value) return;
+    if (/^PKG/i.test(value) || value.length >= 8) {
+      router.push(
+        `${cabinetHref(locale, "tracking/")}?number=${encodeURIComponent(value)}`,
+      );
+      return;
+    }
+    router.push(
+      `${cabinetHref(locale, "orders/")}?q=${encodeURIComponent(value)}`,
+    );
+  };
+
   return (
     <header className={cabTopBar}>
-      <div className="min-w-0 flex-1">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
         <Link
-          href={localePath(locale, "/cabinet/")}
-          className="inline-flex h-7 items-center lg:hidden"
+          href={cabinetHref(locale)}
+          className="inline-flex h-7 shrink-0 items-center lg:hidden"
           aria-label={SITE_CONFIG.name}
         >
           <BrandLogo
@@ -64,19 +84,27 @@ export function CabinetTopBar({ locale }: { locale: Locale }) {
             priority
           />
         </Link>
-        <div className="hidden min-w-0 lg:block">
-          <p className="m-0 text-xs font-semibold uppercase tracking-wide text-[var(--dash-faint)]">
-            {c.title}
+        <div className="hidden shrink-0 lg:block">
+          <p className="m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--dash-faint)]">
+            {c.brandTag}
           </p>
-          <p className="m-0 truncate text-sm font-semibold text-[var(--dash-ink)]">
-            {current.label}
-            {total != null && current.id === "shipments" ? (
-              <span className="ml-2 font-normal text-[var(--dash-muted)]">
-                · {total}
-              </span>
-            ) : null}
-          </p>
+          <p className="m-0 text-sm font-semibold text-ink">{current.label}</p>
         </div>
+        <form
+          onSubmit={onSearch}
+          className="relative hidden min-w-0 flex-1 md:block"
+        >
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-black/35"
+            aria-hidden
+          />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={c.searchPlaceholder}
+            className="h-10 w-full max-w-xl rounded-xl border border-black/10 bg-white py-0 pl-9 pr-3 text-sm text-ink outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+          />
+        </form>
       </div>
 
       <div className="flex items-center gap-1.5 sm:gap-2">
@@ -101,14 +129,30 @@ export function CabinetTopBar({ locale }: { locale: Locale }) {
           ))}
         </div>
 
-        <div className="hidden items-center gap-2 rounded-xl border border-black/10 bg-white py-1 pl-1 pr-2.5 sm:inline-flex">
+        <Link
+          href={cabinetHref(locale, "orders/")}
+          className="relative inline-flex size-9 items-center justify-center rounded-xl border border-black/10 bg-white text-black/55 transition hover:text-ink"
+          aria-label={c.attentionTitle}
+        >
+          <Bell className="size-4" aria-hidden />
+          {stats.attention.length > 0 ? (
+            <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+              {stats.attention.length}
+            </span>
+          ) : null}
+        </Link>
+
+        <Link
+          href={cabinetHref(locale, "settings/")}
+          className="hidden items-center gap-2 rounded-xl border border-black/10 bg-white py-1 pl-1 pr-2.5 no-underline sm:inline-flex"
+        >
           <span className="inline-flex size-8 items-center justify-center rounded-lg bg-primary text-xs font-semibold text-white">
             {initials}
           </span>
           <span className="max-w-[9rem] truncate text-xs font-semibold text-ink">
             {linked.displayName || linked.phone}
           </span>
-        </div>
+        </Link>
 
         <button
           type="button"
@@ -118,7 +162,6 @@ export function CabinetTopBar({ locale }: { locale: Locale }) {
           aria-label={a.logout}
         >
           <LogOut className="size-3.5" aria-hidden />
-          <span className="hidden sm:inline">{a.logout}</span>
         </button>
       </div>
     </header>

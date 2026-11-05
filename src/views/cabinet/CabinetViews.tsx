@@ -11,6 +11,7 @@ import {
   Send,
 } from "lucide-react";
 import { intlLocale } from "@/i18n/config";
+import { getContent } from "@/i18n/get-content";
 import { cabinetCopy } from "@/data/cabinet";
 import { accountCopy } from "@/data/account-copy";
 import { Button } from "@/components/atoms/Button";
@@ -21,6 +22,10 @@ import {
   type AccountShipmentRow,
 } from "@/components/account";
 import { TrackingLookup } from "@/components/tracking/TrackingLookup";
+import { CalculatorForm } from "@/components/organisms/CalculatorForm";
+import { CabinetHomeView } from "@/components/cabinet/CabinetHomeView";
+import { useCabinetData } from "@/components/cabinet/CabinetData";
+import { AccountStatusBadge } from "@/components/account/AccountStatusBadge";
 import { SITE_CONFIG } from "@/utils/consts";
 import {
   cabinetHref,
@@ -28,26 +33,36 @@ import {
   useCabinet,
 } from "@/views/cabinet/CabinetShell";
 import { cabCard, cabPageLead, cabPageTitle } from "@/styles/cabinet";
+import { useEffect, useState } from "react";
+import { fetchPublicPricingUi } from "@/lib/pricing/client";
+import type { PublicPricingUiConfig } from "@/lib/pricing/types";
+
+export function CabinetHomePageView() {
+  return <CabinetHomeView />;
+}
 
 export function CabinetShipmentsView() {
   const { locale, auth, onRelinkRequired, setTotal, createdTracking } =
     useCabinet();
   const c = cabinetCopy(locale);
   const router = useRouter();
+  const search = useSearchParams();
+  const q = search.get("q") ?? "";
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className={cabPageTitle}>{c.navShipments}</h1>
-        </div>
-        <div className="hidden lg:block">
-          <Button href={cabinetHref(locale, "new/")} size="sm">
-            <PackagePlus className="size-4" aria-hidden />
-            {c.navNew}
-          </Button>
-        </div>
+        <h1 className={cabPageTitle}>{c.navOrders}</h1>
+        <Button href={cabinetHref(locale, "new/")} size="sm">
+          <PackagePlus className="size-4" aria-hidden />
+          {c.navNew}
+        </Button>
       </div>
+      {q ? (
+        <p className="m-0 text-sm text-[var(--dash-muted)]">
+          «{q}»
+        </p>
+      ) : null}
       <AccountShipmentList
         locale={locale}
         auth={auth}
@@ -63,6 +78,45 @@ export function CabinetShipmentsView() {
   );
 }
 
+export function CabinetReturnsView() {
+  const { locale } = useCabinet();
+  const stats = useCabinetData();
+  const c = cabinetCopy(locale);
+  const rows = stats.items.filter(
+    (r) => r.stage === "returned" || r.stage === "cancelled",
+  );
+
+  return (
+    <div className="space-y-4">
+      <h1 className={cabPageTitle}>{c.navReturns}</h1>
+      <div className={`${cabCard} divide-y divide-black/[0.06]`}>
+        {stats.loaded && rows.length === 0 ? (
+          <p className="m-0 p-6 text-sm text-[var(--dash-muted)]">
+            {c.returnsEmpty}
+          </p>
+        ) : null}
+        {rows.map((row) => (
+          <Link
+            key={row.trackingNumber}
+            href={cabinetShipmentHref(locale, row.trackingNumber)}
+            className="flex items-center justify-between gap-3 px-4 py-3 no-underline hover:bg-black/[0.02]"
+          >
+            <div className="min-w-0">
+              <p className="m-0 font-mono text-sm font-semibold text-ink">
+                {row.trackingNumber}
+              </p>
+              <p className="m-0 truncate text-xs text-[var(--dash-muted)]">
+                {[row.fromLabel, row.toLabel].filter(Boolean).join(" → ")}
+              </p>
+            </div>
+            <AccountStatusBadge stage={row.stage} label={row.statusLabel} />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function CabinetShipmentView({ tracking }: { tracking: string }) {
   const { locale, auth, onRelinkRequired } = useCabinet();
   const c = cabinetCopy(locale);
@@ -70,7 +124,7 @@ export function CabinetShipmentView({ tracking }: { tracking: string }) {
   return (
     <div className="space-y-3">
       <Link
-        href={cabinetHref(locale)}
+        href={cabinetHref(locale, "orders/")}
         className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--dash-muted)] no-underline hover:text-ink"
       >
         <ArrowLeft className="size-4" aria-hidden />
@@ -163,6 +217,122 @@ export function CabinetTrackingView() {
   );
 }
 
+export function CabinetCalculatorView() {
+  const { locale } = useCabinet();
+  const c = cabinetCopy(locale);
+  const copy = getContent(locale);
+  const [publicUi, setPublicUi] = useState<PublicPricingUiConfig | null>(null);
+
+  useEffect(() => {
+    void fetchPublicPricingUi().then(setPublicUi);
+  }, []);
+
+  return (
+    <div className="space-y-4">
+      <h1 className={cabPageTitle}>{c.navCalculator}</h1>
+      <div className={`max-w-3xl ${cabCard} p-5 sm:p-7`}>
+        <CalculatorForm
+          locale={locale}
+          content={copy}
+          publicUi={publicUi}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function CabinetFinanceView() {
+  const { locale } = useCabinet();
+  const c = cabinetCopy(locale);
+
+  return (
+    <div className="max-w-2xl space-y-4">
+      <h1 className={cabPageTitle}>{c.financeTitle}</h1>
+      <div className={`${cabCard} p-5 sm:p-7`}>
+        <p className="m-0 text-sm leading-relaxed text-[var(--dash-muted)]">
+          {c.financeLead}
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Button href={`tel:${SITE_CONFIG.phone}`} size="sm">
+            <Phone className="size-4" aria-hidden />
+            {c.managerCall}
+          </Button>
+          <Button
+            href={SITE_CONFIG.telegramUrl}
+            variant="secondary"
+            size="sm"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Send className="size-4" aria-hidden />
+            {c.financeCta}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CabinetReportsView() {
+  const { locale } = useCabinet();
+  const stats = useCabinetData();
+  const c = cabinetCopy(locale);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className={cabPageTitle}>{c.reportsTitle}</h1>
+        <p className={cabPageLead}>{c.reportsLead}</p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {[
+          { label: c.statTotal, value: stats.total },
+          { label: c.kpiDelivered, value: stats.counts.delivered },
+          { label: c.kpiReturns, value: stats.returns },
+        ].map((x) => (
+          <div key={x.label} className={`${cabCard} p-4`}>
+            <p className="m-0 text-xs text-[var(--dash-muted)]">{x.label}</p>
+            <p className="m-0 font-display text-2xl font-bold">{x.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function CabinetHelpView() {
+  const { locale } = useCabinet();
+  const c = cabinetCopy(locale);
+
+  return (
+    <div className="max-w-2xl space-y-4">
+      <h1 className={cabPageTitle}>{c.helpTitle}</h1>
+      <div className={`${cabCard} p-5 sm:p-7`}>
+        <p className="m-0 text-sm text-[var(--dash-muted)]">{c.supportLead}</p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Button
+            href={SITE_CONFIG.telegramUrl}
+            variant="telegram"
+            size="sm"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Send className="size-4" aria-hidden />
+            Telegram
+          </Button>
+          <Button href={`tel:${SITE_CONFIG.phone}`} variant="outline" size="sm">
+            <Phone className="size-4" aria-hidden />
+            {SITE_CONFIG.phoneDisplay}
+          </Button>
+        </div>
+        <p className="mt-4 mb-0 text-xs text-[var(--dash-faint)]">
+          {c.managerHours}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function CabinetProfileView() {
   const { locale, linked, logout, loggingOut } = useCabinet();
   const c = cabinetCopy(locale);
@@ -206,29 +376,6 @@ export function CabinetProfileView() {
           >
             <LogOut className="size-4" aria-hidden />
             {a.logout}
-          </Button>
-        </div>
-      </div>
-
-      <div className="rounded-[var(--dash-radius)] bg-black/[0.03] p-5 sm:p-7">
-        <h2 className="m-0 font-display text-lg font-semibold text-ink">
-          {c.supportTitle}
-        </h2>
-        <p className="mt-1 mb-4 text-sm text-black/55">{c.supportLead}</p>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            href={SITE_CONFIG.telegramUrl}
-            variant="telegram"
-            size="sm"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Send className="size-4" aria-hidden />
-            Telegram
-          </Button>
-          <Button href={`tel:${SITE_CONFIG.phone}`} variant="outline" size="sm">
-            <Phone className="size-4" aria-hidden />
-            {SITE_CONFIG.phoneDisplay}
           </Button>
         </div>
       </div>
