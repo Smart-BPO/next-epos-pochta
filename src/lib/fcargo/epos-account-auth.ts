@@ -2,11 +2,12 @@ import "server-only";
 
 import { NextResponse } from "next/server";
 import {
+  clearWebAccountCookie,
   decryptLinkToken,
   findActiveLinkBySession,
   findActiveLinkBySubject,
   readWebAccountCookie,
-  revokeLink,
+  revokeLinkSession,
   touchLink,
   type EposClientLinkRow,
   type EposLinkSubjectType,
@@ -28,6 +29,7 @@ export type ResolvedAccount =
 /**
  * Resolve who is calling: Telegram initData (Mini App) or web cookie.
  * Body may include `initData` for Mini App.
+ * Stale `epos_acct` cookies (no active link) are cleared.
  */
 export async function resolveAccountCaller(
   request: Request,
@@ -55,6 +57,8 @@ export async function resolveAccountCaller(
         link,
       };
     }
+    // Cookie present but link gone / idle-expired — drop stale cookie.
+    await clearWebAccountCookie();
   }
 
   // Anonymous web caller — subject id assigned at verify time.
@@ -65,11 +69,12 @@ export async function resolveAccountCaller(
   };
 }
 
-export async function requireLinkedAccount(
+/** Active app session only — bearer decrypt not required. */
+export async function requireActiveLink(
   request: Request,
   body?: Record<string, unknown> | null,
 ): Promise<
-  | { ok: true; subject: AccountSubject; link: EposClientLinkRow; token: string }
+  | { ok: true; subject: AccountSubject; link: EposClientLinkRow }
   | { ok: false; response: NextResponse }
 > {
   const resolved = await resolveAccountCaller(request, body);
@@ -80,9 +85,28 @@ export async function requireLinkedAccount(
       response: NextResponse.json({ error: "not_linked" }, { status: 401 }),
     };
   }
-  const token = await decryptLinkToken(resolved.link);
+  void touchLink(resolved.link);
+  return {
+    ok: true,
+    subject: resolved.subject,
+    link: resolved.link,
+  };
+}
+
+/** Active session + decryptable FCargo customer bearer. */
+export async function requireLinkedAccount(
+  request: Request,
+  body?: Record<string, unknown> | null,
+): Promise<
+  | { ok: true; subject: AccountSubject; link: EposClientLinkRow; token: string }
+  | { ok: false; response: NextResponse }
+> {
+  const active = await requireActiveLink(request, body);
+  if (!active.ok) return active;
+
+  const token = await decryptLinkToken(active.link);
   if (!token) {
-    await revokeLink(resolved.link);
+    await revokeLinkSession(active.link);
     return {
       ok: false,
       response: NextResponse.json(
@@ -91,11 +115,10 @@ export async function requireLinkedAccount(
       ),
     };
   }
-  void touchLink(resolved.link);
   return {
     ok: true,
-    subject: resolved.subject,
-    link: resolved.link,
+    subject: active.subject,
+    link: active.link,
     token,
   };
 }

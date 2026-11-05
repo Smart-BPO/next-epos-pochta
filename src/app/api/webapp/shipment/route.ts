@@ -148,7 +148,6 @@ export async function POST(request: Request) {
     ok: true,
     id: created.order.trackingNumber,
     trackingNumber: created.order.trackingNumber,
-    orderId: created.order.orderId,
     status: created.order.status,
     duplicate: created.order.duplicate,
   });

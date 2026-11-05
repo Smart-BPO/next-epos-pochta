@@ -1,3 +1,4 @@
+import "server-only";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   decryptJson,
@@ -6,8 +7,12 @@ import {
   last4,
   maskSecret,
 } from "@/lib/crypto/secrets";
+import type {
+  MessagingProviderId,
+  ProviderPublicView,
+} from "@/lib/messaging/providers-types";
 
-export type MessagingProviderId = "playmobile" | "eskiz" | "resend";
+export type { MessagingProviderId, ProviderPublicView } from "@/lib/messaging/providers-types";
 
 export type ProviderRow = {
   id: MessagingProviderId;
@@ -19,19 +24,6 @@ export type ProviderRow = {
   last_test_at: string | null;
   last_test_ok: boolean | null;
   last_error: string | null;
-};
-
-export type ProviderPublicView = {
-  id: MessagingProviderId;
-  enabled: boolean;
-  isPrimarySms: boolean;
-  config: Record<string, string>;
-  hasSecrets: boolean;
-  secretsHint: string;
-  masterKeyOk: boolean;
-  lastTestAt: string | null;
-  lastTestOk: boolean | null;
-  lastError: string | null;
 };
 
 function asRecord(value: unknown): Record<string, string> {

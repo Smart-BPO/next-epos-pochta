@@ -42,7 +42,10 @@ function statusOf(v: unknown): { code?: string; name?: string } {
 }
 
 /** Timeline items are not in the OpenAPI schema — accept common shapes. */
-function mapEvent(item: unknown, locale: Locale): TrackingEvent | null {
+export function mapFcargoTrackEvent(
+  item: unknown,
+  locale: Locale,
+): TrackingEvent | null {
   const o = rec(item);
   if (!o) return null;
   const st = statusOf(o.status ?? o.status_code ?? o.code);
@@ -76,7 +79,7 @@ function toShipment(
   const deliveredAt = isoOrUndefined(data.delivered_at);
 
   const events = (Array.isArray(data.timeline) ? data.timeline : [])
-    .map((item) => mapEvent(item, locale))
+    .map((item) => mapFcargoTrackEvent(item, locale))
     .filter((e): e is TrackingEvent => Boolean(e))
     .sort((a, b) => (a.occurredAt ?? "").localeCompare(b.occurredAt ?? ""));
 

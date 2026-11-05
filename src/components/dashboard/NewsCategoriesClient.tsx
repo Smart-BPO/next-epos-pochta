@@ -19,7 +19,7 @@ import { dashFormat } from "@/i18n/dashboard";
 import { slugCodeSchema } from "@/lib/dashboard/schemas";
 import { toast } from "react-toastify";
 import { dashBtnPrimary, dashBtnRowSecondary, dashBtnSecondary } from "@/styles/dashboard";
-import type { NewsCategoryRow } from "@/lib/cms/news-categories";
+import type { NewsCategoryRow } from "@/lib/cms/news-categories-types";
 
 type CategoryValues = {
   id: string;

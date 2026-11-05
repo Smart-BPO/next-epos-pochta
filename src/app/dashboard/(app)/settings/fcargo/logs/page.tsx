@@ -1,4 +1,4 @@
-import { requireAccess } from "@/lib/cms/auth";
+import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { getDashT } from "@/i18n/dashboard/server";
 import { DashDenied } from "@/components/dashboard/DashDenied";
 import {
@@ -27,6 +27,7 @@ export default async function DashboardFcargoLogsPage({
   const admin = await requireAccess("settings");
   if (!admin) return <DashDenied section="settings" />;
 
+  const canViewBodies = canMutate(admin.role, "fcargo_secrets");
   const sp = (await searchParams) ?? {};
   const source = parseSource(sp.source);
   const rawLimit = Array.isArray(sp.pageSize) ? sp.pageSize[0] : sp.pageSize;
@@ -36,7 +37,7 @@ export default async function DashboardFcargoLogsPage({
   const rows = await listFcargoRequestLog({
     limit,
     source,
-    includeBodies: true,
+    includeBodies: canViewBodies,
   });
 
   return (
@@ -47,6 +48,7 @@ export default async function DashboardFcargoLogsPage({
       lead={t.fcargo.logsLead}
       sourceFilter={source}
       filterHrefBase="/dashboard/settings/fcargo/logs"
+      showBodies={canViewBodies}
     />
   );
 }

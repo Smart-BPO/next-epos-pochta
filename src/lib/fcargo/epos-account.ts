@@ -13,6 +13,9 @@ import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 
 export const EPOS_ACCT_COOKIE = "epos_acct";
 export const EPOS_ACCT_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30d
+export const EPOS_SESSION_IDLE_MS = EPOS_ACCT_COOKIE_MAX_AGE * 1000;
+/** Default OTP challenge TTL when FCargo omits expires_at. */
+export const EPOS_OTP_CHALLENGE_DEFAULT_TTL_MS = 5 * 60_000;
 
 export type EposLinkSubjectType = "web" | "telegram";
 
@@ -27,6 +30,8 @@ export type EposClientLinkRow = {
   session_token: string;
   linked_at: string;
   last_used_at: string | null;
+  last_validated_at: string | null;
+  session_expires_at: string | null;
   revoked_at: string | null;
 };
 
@@ -34,9 +39,19 @@ export type EposLinkPublic = {
   id: string;
   phone: string;
   displayName: string | null;
-  fcargoClientId: string | null;
   linkedAt: string;
   subjectType: EposLinkSubjectType;
+};
+
+export type EposOtpChallengeRow = {
+  id: string;
+  phone: string;
+  challenge_hash: string;
+  subject_type: EposLinkSubjectType | null;
+  subject_id: string | null;
+  ip: string | null;
+  expires_at: string;
+  consumed_at: string | null;
 };
 
 function newSessionToken() {
@@ -45,6 +60,16 @@ function newSessionToken() {
 
 function hashChallenge(challenge: string) {
   return createHash("sha256").update(challenge).digest("hex").slice(0, 32);
+}
+
+function sessionExpiresAtFrom(now = Date.now()) {
+  return new Date(now + EPOS_SESSION_IDLE_MS).toISOString();
+}
+
+function isSessionExpired(row: EposClientLinkRow, now = Date.now()) {
+  if (!row.session_expires_at) return false;
+  const ms = Date.parse(row.session_expires_at);
+  return Number.isFinite(ms) && ms <= now;
 }
 
 export function normalizeAccountPhone(raw: string): string | null {
@@ -56,7 +81,6 @@ export function toPublicLink(row: EposClientLinkRow): EposLinkPublic {
     id: row.id,
     phone: row.phone,
     displayName: row.display_name,
-    fcargoClientId: row.fcargo_client_id,
     linkedAt: row.linked_at,
     subjectType: row.subject_type,
   };
@@ -75,6 +99,14 @@ export async function decryptLinkToken(
   }
 }
 
+async function enforceSessionFreshness(
+  row: EposClientLinkRow,
+): Promise<EposClientLinkRow | null> {
+  if (!isSessionExpired(row)) return row;
+  await revokeLink(row);
+  return null;
+}
+
 export async function findActiveLinkBySession(
   sessionToken: string,
 ): Promise<EposClientLinkRow | null> {
@@ -86,7 +118,9 @@ export async function findActiveLinkBySession(
     .eq("session_token", sessionToken)
     .is("revoked_at", null)
     .maybeSingle();
-  return (data as EposClientLinkRow | null) ?? null;
+  const row = (data as EposClientLinkRow | null) ?? null;
+  if (!row) return null;
+  return enforceSessionFreshness(row);
 }
 
 export async function findActiveLinkBySubject(
@@ -102,7 +136,9 @@ export async function findActiveLinkBySubject(
     .eq("subject_id", subjectId)
     .is("revoked_at", null)
     .maybeSingle();
-  return (data as EposClientLinkRow | null) ?? null;
+  const row = (data as EposClientLinkRow | null) ?? null;
+  if (!row) return null;
+  return enforceSessionFreshness(row);
 }
 
 export async function upsertClientLink(params: {
@@ -122,10 +158,13 @@ export async function upsertClientLink(params: {
     params.subjectType,
     params.subjectId,
   );
-  const sessionToken = existing?.session_token ?? newSessionToken();
+  // Always rotate session on (re)OTP so old cookies die.
+  const sessionToken = newSessionToken();
   const tokenCipher = encryptJson({ access_token: params.accessToken });
   const clientId =
     params.fcargoClientId != null ? String(params.fcargoClientId) : null;
+  const nowIso = new Date().toISOString();
+  const sessionExpires = sessionExpiresAtFrom();
 
   if (existing) {
     const { data, error } = await admin
@@ -135,8 +174,12 @@ export async function upsertClientLink(params: {
         fcargo_client_id: clientId ?? existing.fcargo_client_id,
         display_name: params.displayName ?? existing.display_name,
         token_cipher: tokenCipher,
-        last_used_at: new Date().toISOString(),
+        session_token: sessionToken,
+        last_used_at: nowIso,
+        last_validated_at: nowIso,
+        session_expires_at: sessionExpires,
         revoked_at: null,
+        linked_at: nowIso,
       })
       .eq("id", existing.id)
       .select("*")
@@ -151,7 +194,7 @@ export async function upsertClientLink(params: {
   // Revoke any previous links for this subject (safety if unique index lags).
   await admin
     .from("epos_fcargo_client_links")
-    .update({ revoked_at: new Date().toISOString() })
+    .update({ revoked_at: nowIso })
     .eq("subject_type", params.subjectType)
     .eq("subject_id", params.subjectId)
     .is("revoked_at", null);
@@ -166,7 +209,9 @@ export async function upsertClientLink(params: {
       display_name: params.displayName ?? null,
       token_cipher: tokenCipher,
       session_token: sessionToken,
-      last_used_at: new Date().toISOString(),
+      last_used_at: nowIso,
+      last_validated_at: nowIso,
+      session_expires_at: sessionExpires,
     })
     .select("*")
     .maybeSingle();
@@ -187,13 +232,192 @@ export async function revokeLink(row: EposClientLinkRow): Promise<void> {
     .is("revoked_at", null);
 }
 
+/** Revoke DB link and clear web cookie when the subject is web. */
+export async function revokeLinkSession(
+  row: EposClientLinkRow,
+): Promise<void> {
+  await revokeLink(row);
+  if (row.subject_type === "web") {
+    await clearWebAccountCookie();
+  }
+}
+
 export async function touchLink(row: EposClientLinkRow): Promise<void> {
   if (!hasSupabaseAdminConfig()) return;
   const admin = createSupabaseAdminClient();
   await admin
     .from("epos_fcargo_client_links")
-    .update({ last_used_at: new Date().toISOString() })
+    .update({
+      last_used_at: new Date().toISOString(),
+      session_expires_at: sessionExpiresAtFrom(),
+    })
     .eq("id", row.id);
+}
+
+export async function markLinkValidated(
+  row: EposClientLinkRow,
+  patch?: {
+    displayName?: string | null;
+    phone?: string | null;
+    fcargoClientId?: string | number | null;
+  },
+): Promise<void> {
+  if (!hasSupabaseAdminConfig()) return;
+  const admin = createSupabaseAdminClient();
+  const update: Record<string, unknown> = {
+    last_validated_at: new Date().toISOString(),
+  };
+  if (patch?.displayName) update.display_name = patch.displayName;
+  if (patch?.phone) {
+    const phone = normalizeAccountPhone(patch.phone);
+    if (phone) update.phone = phone;
+  }
+  if (patch?.fcargoClientId != null) {
+    update.fcargo_client_id = String(patch.fcargoClientId);
+  }
+  await admin
+    .from("epos_fcargo_client_links")
+    .update(update)
+    .eq("id", row.id)
+    .is("revoked_at", null);
+}
+
+export async function storeOtpChallenge(params: {
+  phone: string;
+  challenge: string;
+  expiresAt?: string | null;
+  expiresInSec?: number | null;
+  subjectType?: EposLinkSubjectType | null;
+  subjectId?: string | null;
+  ip?: string | null;
+}): Promise<void> {
+  if (!hasSupabaseAdminConfig()) return;
+  const phone = normalizeAccountPhone(params.phone);
+  if (!phone || params.challenge.length < 16) return;
+
+  let expiresAt: string | null = null;
+  if (params.expiresAt && Number.isFinite(Date.parse(params.expiresAt))) {
+    expiresAt = new Date(params.expiresAt).toISOString();
+  } else if (
+    typeof params.expiresInSec === "number" &&
+    params.expiresInSec > 0
+  ) {
+    expiresAt = new Date(
+      Date.now() + params.expiresInSec * 1000,
+    ).toISOString();
+  } else {
+    expiresAt = new Date(
+      Date.now() + EPOS_OTP_CHALLENGE_DEFAULT_TTL_MS,
+    ).toISOString();
+  }
+
+  const admin = createSupabaseAdminClient();
+  const hash = hashChallenge(params.challenge);
+
+  // Drop prior open challenges for this phone (one active flow).
+  await admin
+    .from("epos_fcargo_otp_challenges")
+    .update({ consumed_at: new Date().toISOString() })
+    .eq("phone", phone)
+    .is("consumed_at", null);
+
+  const { error } = await admin.from("epos_fcargo_otp_challenges").insert({
+    phone,
+    challenge_hash: hash,
+    subject_type: params.subjectType ?? null,
+    subject_id: params.subjectId || null,
+    ip: params.ip ?? null,
+    expires_at: expiresAt,
+  });
+  if (error) {
+    console.warn("[epos-account] store challenge", error.message);
+  }
+}
+
+export async function findValidOtpChallenge(params: {
+  phone: string;
+  challenge: string;
+}): Promise<
+  | { ok: true; row: EposOtpChallengeRow }
+  | { ok: false; error: "invalid_challenge" | "expired_challenge" }
+> {
+  if (!hasSupabaseAdminConfig()) {
+    return { ok: false, error: "invalid_challenge" };
+  }
+  const phone = normalizeAccountPhone(params.phone);
+  if (!phone || params.challenge.length < 16) {
+    return { ok: false, error: "invalid_challenge" };
+  }
+
+  const admin = createSupabaseAdminClient();
+  const hash = hashChallenge(params.challenge);
+  const { data } = await admin
+    .from("epos_fcargo_otp_challenges")
+    .select("*")
+    .eq("phone", phone)
+    .eq("challenge_hash", hash)
+    .is("consumed_at", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const row = data as EposOtpChallengeRow | null;
+  if (!row) return { ok: false, error: "invalid_challenge" };
+
+  const expiresMs = Date.parse(row.expires_at);
+  if (!Number.isFinite(expiresMs) || expiresMs <= Date.now()) {
+    await admin
+      .from("epos_fcargo_otp_challenges")
+      .update({ consumed_at: new Date().toISOString() })
+      .eq("id", row.id);
+    return { ok: false, error: "expired_challenge" };
+  }
+
+  return { ok: true, row };
+}
+
+export async function consumeOtpChallengeRow(
+  row: EposOtpChallengeRow,
+): Promise<void> {
+  if (!hasSupabaseAdminConfig()) return;
+  const admin = createSupabaseAdminClient();
+  await admin
+    .from("epos_fcargo_otp_challenges")
+    .update({ consumed_at: new Date().toISOString() })
+    .eq("id", row.id)
+    .is("consumed_at", null);
+}
+
+/** List hot links that need a FCargo /profile health check. */
+export async function listLinksNeedingValidation(limit = 20): Promise<
+  EposClientLinkRow[]
+> {
+  if (!hasSupabaseAdminConfig()) return [];
+  const admin = createSupabaseAdminClient();
+  const usedSince = new Date(Date.now() - 14 * 24 * 60 * 60_000).toISOString();
+  const staleBeforeMs = Date.now() - 12 * 60 * 60_000;
+  const capped = Math.max(1, Math.min(50, limit));
+
+  const { data, error } = await admin
+    .from("epos_fcargo_client_links")
+    .select("*")
+    .is("revoked_at", null)
+    .gte("last_used_at", usedSince)
+    .order("last_validated_at", { ascending: true, nullsFirst: true })
+    .limit(capped * 3);
+
+  if (error) {
+    console.warn("[epos-account] list validate", error.message);
+    return [];
+  }
+
+  return ((data as EposClientLinkRow[]) ?? [])
+    .filter((row) => {
+      if (!row.last_validated_at) return true;
+      const ms = Date.parse(row.last_validated_at);
+      return !Number.isFinite(ms) || ms < staleBeforeMs;
+    })
+    .slice(0, capped);
 }
 
 export async function logOtpAttempt(params: {

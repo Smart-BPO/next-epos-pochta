@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
-import { toPublicLink } from "@/lib/fcargo/epos-account";
+import {
+  markLinkValidated,
+  revokeLinkSession,
+  toPublicLink,
+} from "@/lib/fcargo/epos-account";
 import {
   requireLinkedAccount,
   resolveAccountCaller,
 } from "@/lib/fcargo/epos-account-auth";
 import { eposProfile } from "@/lib/fcargo/epos-client";
-import { revokeLink } from "@/lib/fcargo/epos-account";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -21,11 +24,19 @@ export async function GET(request: Request) {
 
   const profile = await eposProfile(linked.token);
   if (!profile.ok && profile.status === 401) {
-    await revokeLink(linked.link);
+    await revokeLinkSession(linked.link);
     return NextResponse.json(
       { error: "relink_required", linked: null },
       { status: 401 },
     );
+  }
+
+  if (profile.ok) {
+    await markLinkValidated(linked.link, {
+      displayName: profile.data.name,
+      phone: profile.data.phone,
+      fcargoClientId: profile.data.id,
+    });
   }
 
   return NextResponse.json({
@@ -57,11 +68,19 @@ export async function POST(request: Request) {
 
   const profile = await eposProfile(linked.token);
   if (!profile.ok && profile.status === 401) {
-    await revokeLink(linked.link);
+    await revokeLinkSession(linked.link);
     return NextResponse.json(
       { error: "relink_required", linked: null },
       { status: 401 },
     );
+  }
+
+  if (profile.ok) {
+    await markLinkValidated(linked.link, {
+      displayName: profile.data.name,
+      phone: profile.data.phone,
+      fcargoClientId: profile.data.id,
+    });
   }
 
   return NextResponse.json({

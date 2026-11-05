@@ -176,7 +176,24 @@ export function CalculatorForm({
   const [leadSubmitting, setLeadSubmitting] = useState(false);
   const [leadId, setLeadId] = useState<string | null>(null);
   const [leadTracking, setLeadTracking] = useState<string | null>(null);
+  const [cabinetLinked, setCabinetLinked] = useState(false);
   const [requestId] = useState(() => createRequestId("calc"));
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/account/me/", { cache: "no-store" });
+        const json = (await res.json()) as { linked?: unknown };
+        if (!cancelled) setCabinetLinked(Boolean(json.linked));
+      } catch {
+        if (!cancelled) setCabinetLinked(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const quoteSeq = useRef(0);
 
   const dropQuote = () => {
@@ -516,6 +533,32 @@ export function CalculatorForm({
               <p className="m-0 mt-1 text-lg font-medium text-black">{daysLabel}</p>
             </div>
           </div>
+
+          {cabinetLinked ? (
+            <div className="rounded-2xl border border-primary/20 bg-primary-soft/60 px-4 py-3">
+              <p className="m-0 text-sm text-ink">
+                {loc(
+                  locale,
+                  "Kabinet ulangan — joʻnatmani shu yerda rasmiylashtiring.",
+                  "Кабинет подключён — оформите отправление в кабинете.",
+                  "个人中心已连接 — 可直接在个人中心下单。",
+                )}
+              </p>
+              <Button
+                href={`${localePath(locale, "/cabinet/")}?tab=new&from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&w=${encodeURIComponent(String(weight))}`}
+                variant="primary"
+                size="sm"
+                className="mt-2"
+              >
+                {loc(
+                  locale,
+                  "Joʻnatma yaratish",
+                  "Оформить отправление",
+                  "创建运单",
+                )}
+              </Button>
+            </div>
+          ) : null}
 
           {leadId ? (
             <div

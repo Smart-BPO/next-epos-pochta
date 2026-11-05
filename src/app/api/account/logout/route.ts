@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import {
   clearWebAccountCookie,
-  revokeLink,
+  decryptLinkToken,
+  revokeLinkSession,
 } from "@/lib/fcargo/epos-account";
-import { requireLinkedAccount } from "@/lib/fcargo/epos-account-auth";
+import { requireActiveLink } from "@/lib/fcargo/epos-account-auth";
 import { eposLogout } from "@/lib/fcargo/epos-client";
 
 export async function POST(request: Request) {
@@ -14,21 +15,21 @@ export async function POST(request: Request) {
     body = {};
   }
 
-  const linked = await requireLinkedAccount(request, body);
+  const linked = await requireActiveLink(request, body);
   if (!linked.ok) {
     await clearWebAccountCookie();
     return NextResponse.json({ ok: true });
   }
 
-  try {
-    await eposLogout(linked.token);
-  } catch {
-    // still revoke locally
+  const token = await decryptLinkToken(linked.link);
+  if (token) {
+    try {
+      await eposLogout(token);
+    } catch {
+      // still revoke locally
+    }
   }
-  await revokeLink(linked.link);
-  if (linked.subject.type === "web") {
-    await clearWebAccountCookie();
-  }
+  await revokeLinkSession(linked.link);
 
   return NextResponse.json({ ok: true });
 }

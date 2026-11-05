@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "smoke": "node scripts/smoke.mjs",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
     "check:geo": "node --env-file=.env.local scripts/sync-fcargo-locations.mjs --check",
     "sync:geo": "node --env-file=.env.local scripts/sync-fcargo-locations.mjs"
   },

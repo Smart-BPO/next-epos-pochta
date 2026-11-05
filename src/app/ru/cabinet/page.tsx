@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { SiteLayout } from "@/components/templates/SiteLayout";
 import { CabinetPageView } from "@/views/CabinetPageView";
@@ -23,7 +24,9 @@ export function generateMetadata(): Metadata {
 export default function CabinetPageRu() {
   return (
     <SiteLayout locale="ru">
-      <CabinetPageView locale="ru" />
+      <Suspense fallback={null}>
+        <CabinetPageView locale="ru" />
+      </Suspense>
     </SiteLayout>
   );
 }

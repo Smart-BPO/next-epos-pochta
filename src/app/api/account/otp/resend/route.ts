@@ -4,6 +4,7 @@ import {
   countRecentOtpAttempts,
   logOtpAttempt,
   normalizeAccountPhone,
+  storeOtpChallenge,
 } from "@/lib/fcargo/epos-account";
 import {
   mapFcargoAuthError,
@@ -78,6 +79,16 @@ export async function POST(request: Request) {
     );
   }
 
+  await storeOtpChallenge({
+    phone,
+    challenge: result.data.challenge,
+    expiresAt: result.data.expiresAt,
+    expiresInSec: result.data.expiresInSec,
+    subjectType: caller.subject.type,
+    subjectId: caller.subject.id || null,
+    ip,
+  });
+
   await logOtpAttempt({
     phone,
     challenge: result.data.challenge,
@@ -91,7 +102,9 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     challenge: result.data.challenge,
+    expiresAt: result.data.expiresAt,
     expiresInSec: result.data.expiresInSec,
+    resendAfterSeconds: result.data.resendAfterSeconds,
     phone,
   });
 }

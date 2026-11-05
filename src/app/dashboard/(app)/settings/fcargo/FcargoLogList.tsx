@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
-import type { FcargoLogRow, FcargoLogSource } from "@/lib/fcargo/log";
+import type { FcargoLogRow, FcargoLogSource } from "@/lib/fcargo/log-types";
 import { dashCardPad, dashSectionTitle } from "@/styles/dashboard";
 
 function pickEventType(row: FcargoLogRow): string | null {
@@ -71,6 +71,7 @@ export function FcargoLogList({
   lead,
   sourceFilter,
   filterHrefBase,
+  showBodies = false,
 }: {
   rows: FcargoLogRow[];
   variant: "api" | "webhook";
@@ -78,6 +79,8 @@ export function FcargoLogList({
   lead: string;
   sourceFilter?: string | null;
   filterHrefBase?: string;
+  /** Owner (`fcargo_secrets`) only — editors see path/status/time metadata. */
+  showBodies?: boolean;
 }) {
   const t = useDashT();
   const f = t.fcargo;
@@ -139,12 +142,13 @@ export function FcargoLogList({
               variant === "webhook" ? pickEventType(row) : null;
             const expanded = openId === row.id;
             const hasDetail =
-              row.request_headers != null ||
-              row.response_headers != null ||
-              row.request_body != null ||
-              row.response_body != null ||
-              Boolean(row.url) ||
-              Boolean(row.correlation_id);
+              showBodies &&
+              (row.request_headers != null ||
+                row.response_headers != null ||
+                row.request_body != null ||
+                row.response_body != null ||
+                Boolean(row.url) ||
+                Boolean(row.correlation_id));
             const badge = sourceLabel(
               row.source,
               sourceLabels,

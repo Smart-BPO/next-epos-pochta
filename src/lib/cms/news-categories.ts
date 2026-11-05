@@ -5,14 +5,9 @@ import {
   NEWS_CATEGORIES as NEWS_CATEGORIES_SEED,
   type NewsCategory,
 } from "@/data/news/types";
+import type { NewsCategoryRow } from "@/lib/cms/news-categories-types";
 
-export type NewsCategoryRow = {
-  id: string;
-  labelUz: string;
-  labelRu: string;
-  sortOrder: number;
-  isActive: boolean;
-};
+export type { NewsCategoryRow } from "@/lib/cms/news-categories-types";
 
 const SEED_LABELS: Record<
   (typeof NEWS_CATEGORIES_SEED)[number],

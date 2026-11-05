@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { Button } from "@/components/atoms/Button";
 import { getWebAppCopy } from "@/data/webapp-copy";
+import { accountCopy } from "@/data/account-copy";
 import { getSettlementById, settlementLabel } from "@/data/settlements";
 import type { WebAppContactSession } from "@/lib/webapp/session";
 import {
@@ -30,6 +31,7 @@ export function ShipmentForm({
 }: ShipmentFormProps) {
   const { locale, user, webApp, initData } = useTelegram();
   const copy = getWebAppCopy(locale);
+  const acct = accountCopy(locale);
   const [from, setFrom] = useState(initialDraft?.from ?? "");
   const [to, setTo] = useState(initialDraft?.to ?? "");
   const [weight, setWeight] = useState(initialDraft?.weight ?? "");
@@ -138,7 +140,13 @@ export function ShipmentForm({
       };
       const successId = json.trackingNumber || json.id;
       if (!res.ok || !successId) {
-        throw new Error(json.error || "submit_failed");
+        if (json.error === "phone_unverified") {
+          setError(copy.contactRequired);
+          return;
+        }
+        setError(copy.submitError);
+        webApp?.HapticFeedback?.notificationOccurred("error");
+        return;
       }
       webApp?.HapticFeedback?.notificationOccurred("success");
       onSuccess(successId);
@@ -177,6 +185,9 @@ export function ShipmentForm({
         <p className="m-0 text-sm leading-relaxed text-black/60">
           {copy.shipmentLead}
         </p>
+        {!fcargoLinked ? (
+          <p className="m-0 text-xs text-black/45">{acct.linkHint}</p>
+        ) : null}
       </div>
 
       <form className="flex flex-col gap-3" onSubmit={onSubmit}>

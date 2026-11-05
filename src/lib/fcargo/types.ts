@@ -165,7 +165,12 @@ export type FcargoResult<T> =
  */
 export type EposOtpStartResult = {
   challenge: string;
+  /** Absolute expiry from FCargo `expires_at` when present. */
+  expiresAt: string | null;
+  /** Seconds until expiry (derived from expires_at or expires_in/ttl). */
   expiresInSec: number | null;
+  /** FCargo `resend_after_seconds` cooldown hint. */
+  resendAfterSeconds: number | null;
   message: string | null;
 };
 
@@ -175,6 +180,7 @@ export type EposOtpVerifyResult = {
   clientId: string | number | null;
   name: string | null;
   phone: string | null;
+  email: string | null;
   raw: Record<string, unknown>;
 };
 
@@ -191,10 +197,25 @@ export type EposClientPackage = {
   trackingNumber: string | null;
   statusCode: string | null;
   statusName: string | null;
+  isTerminal: boolean;
   fromLabel: string | null;
   toLabel: string | null;
   createdAt: string | null;
+  estimatedDeliveryAt: string | null;
+  deliveredAt: string | null;
+  creationSource: string | null;
+  externalOrderId: string | null;
+  seats: number | null;
+  weight: number | null;
   raw: Record<string, unknown>;
+};
+
+export type EposPackagesPage = {
+  items: EposClientPackage[];
+  page: number;
+  lastPage: number;
+  total: number;
+  perPage: number;
 };
 
 /** CMS settings view (safe for Client Components — no secrets). */

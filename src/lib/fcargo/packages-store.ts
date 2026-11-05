@@ -91,7 +91,7 @@ export async function upsertFcargoPackage(input: {
   rawLast?: unknown;
   fromSoato?: string | null;
   toSoato?: string | null;
-  source?: "lead" | "webapp" | "pull" | "webhook" | null;
+  source?: "lead" | "webapp" | "pull" | "webhook" | "cabinet" | null;
   telegramUserId?: number | null;
 }): Promise<FcargoPackageRow | null> {
   if (!hasSupabaseAdminConfig()) return null;

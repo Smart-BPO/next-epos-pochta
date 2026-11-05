@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashT } from "@/components/dashboard/DashLocaleProvider";
-import type { ProviderPublicView } from "@/lib/messaging/providers";
+import type { ProviderPublicView } from "@/lib/messaging/providers-types";
 import { dashBtnPrimary, dashBtnSecondary, dashCardPad, dashInput } from "@/styles/dashboard";
 import {
   saveProviderAction,

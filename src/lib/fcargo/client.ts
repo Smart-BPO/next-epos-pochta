@@ -254,6 +254,8 @@ export type FcargoListFilters = FcargoCustomerScope & {
   externalOrderId?: string;
   trackingNumber?: string;
   status?: string;
+  /** Orders default sent; packages default all (OpenAPI). */
+  direction?: "sent" | "incoming" | "all";
   page?: number;
   perPage?: number;
 };
@@ -271,6 +273,7 @@ function customerQuery(
   if (scope.externalOrderId) q.set("external_order_id", scope.externalOrderId);
   if (scope.trackingNumber) q.set("tracking_number", scope.trackingNumber);
   if (scope.status) q.set("status", scope.status);
+  if (scope.direction) q.set("direction", scope.direction);
   if (scope.page) q.set("page", String(scope.page));
   if (scope.perPage) q.set("per_page", String(scope.perPage));
   const s = q.toString();

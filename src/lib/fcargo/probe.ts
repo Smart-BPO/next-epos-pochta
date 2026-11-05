@@ -106,9 +106,17 @@ export async function runFcargoDebugProbe(
   const probe = String(formData.get("probe") ?? "").trim();
   const customerPhone =
     normalizeUzPhone(String(formData.get("customer_phone") ?? "")) || null;
-  const scope = customerPhone ? { customerPhone } : undefined;
+  const customerIdRaw = String(formData.get("customer_id") ?? "").trim();
+  const customerId = customerIdRaw || null;
+  const scope =
+    customerId || customerPhone
+      ? {
+          ...(customerId ? { customerId } : {}),
+          ...(customerPhone ? { customerPhone } : {}),
+        }
+      : undefined;
   const needsCustomer = (name: string) =>
-    fail(name, "customer phone required (FCargo: customer_phone or customer_id)");
+    fail(name, "customer phone or customer_id required (FCargo selector)");
 
   switch (probe) {
     case "health":
@@ -126,7 +134,14 @@ export async function runFcargoDebugProbe(
       return withProbe("GET /orders", () => fcargoListOrders(scope));
     case "packages":
       if (!scope) return needsCustomer("GET /packages");
-      return withProbe("GET /packages", () => fcargoListPackages(scope));
+      return withProbe("GET /packages?direction=all&per_page=1", () =>
+        fcargoListPackages({
+          ...scope,
+          direction: "all",
+          page: 1,
+          perPage: 1,
+        }),
+      );
     case "pricing": {
       const from = String(formData.get("from_region_id") ?? "").trim();
       const to = String(formData.get("to_region_id") ?? "").trim();

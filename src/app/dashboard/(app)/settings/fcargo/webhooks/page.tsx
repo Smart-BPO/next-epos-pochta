@@ -1,4 +1,4 @@
-import { requireAccess } from "@/lib/cms/auth";
+import { requireAccess, canMutate } from "@/lib/cms/auth";
 import { getDashT } from "@/i18n/dashboard/server";
 import { DashDenied } from "@/components/dashboard/DashDenied";
 import {
@@ -29,6 +29,7 @@ export default async function DashboardFcargoWebhooksPage({
   const admin = await requireAccess("settings");
   if (!admin) return <DashDenied section="settings" />;
 
+  const canViewBodies = canMutate(admin.role, "fcargo_secrets");
   const sp = (await searchParams) ?? {};
   const source = parseSource(sp.source);
 
@@ -37,7 +38,7 @@ export default async function DashboardFcargoWebhooksPage({
     listFcargoRequestLog({
       limit: 50,
       source,
-      includeBodies: true,
+      includeBodies: canViewBodies,
     }),
     resolveFcargoSiteOrigin(),
   ]);
@@ -64,6 +65,7 @@ export default async function DashboardFcargoWebhooksPage({
         lead=""
         sourceFilter={source}
         filterHrefBase="/dashboard/settings/fcargo/webhooks"
+        showBodies={canViewBodies}
       />
     </div>
   );

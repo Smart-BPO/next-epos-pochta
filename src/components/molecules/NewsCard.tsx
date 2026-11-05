@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import type { LocalizedNewsArticle } from "@/data/news/types";
-import { formatNewsDate } from "@/lib/news/repository";
+import { formatNewsDate } from "@/lib/news/list-query";
 import { getContent } from "@/i18n/get-content";
 
 export function NewsCard({

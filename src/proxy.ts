@@ -22,6 +22,11 @@ function isDashboardPath(pathname: string) {
   return pathname === "/dashboard" || pathname.startsWith("/dashboard/");
 }
 
+/** Staff API routes — same session gate as /dashboard pages (defense-in-depth). */
+function isDashboardApiPath(pathname: string) {
+  return pathname === "/api/dashboard" || pathname.startsWith("/api/dashboard/");
+}
+
 /**
  * 1. Canonical URL 308
  * 2. Legacy /uz → unprefixed
@@ -95,9 +100,10 @@ export async function proxy(request: NextRequest) {
     request: { headers: requestHeaders },
   });
 
-  if (isDashboardPath(pathname)) {
+  if (isDashboardPath(pathname) || isDashboardApiPath(pathname)) {
     const url = getSupabaseUrl();
     const key = getSupabasePublishableKey();
+    const isApi = isDashboardApiPath(pathname);
     if (url && key) {
       type CookieToSet = {
         name: string;
@@ -133,6 +139,11 @@ export async function proxy(request: NextRequest) {
         return target;
       };
 
+      const unauthorizedApi = () =>
+        applyPendingCookies(
+          NextResponse.json({ error: "unauthorized" }, { status: 401 }),
+        );
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -152,6 +163,13 @@ export async function proxy(request: NextRequest) {
         isActiveAdmin = Boolean(
           adminRow && adminRow.is_active !== false,
         );
+      }
+
+      if (isApi) {
+        if (!user || !isActiveAdmin) {
+          return unauthorizedApi();
+        }
+        return response;
       }
 
       if (user && !isActiveAdmin && !isSetupPath) {
@@ -183,6 +201,8 @@ export async function proxy(request: NextRequest) {
         home.search = "";
         return applyPendingCookies(NextResponse.redirect(home));
       }
+    } else if (isApi) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     } else if (!isPublicDashboardPath(pathname)) {
       const login = request.nextUrl.clone();
       login.pathname = "/dashboard/login/";

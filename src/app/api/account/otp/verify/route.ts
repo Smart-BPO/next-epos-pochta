@@ -2,7 +2,9 @@ import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import {
   clientIp,
+  consumeOtpChallengeRow,
   countRecentOtpAttempts,
+  findValidOtpChallenge,
   logOtpAttempt,
   normalizeAccountPhone,
   setWebAccountCookie,
@@ -13,7 +15,7 @@ import {
   mapFcargoAuthError,
   resolveAccountCaller,
 } from "@/lib/fcargo/epos-account-auth";
-import { eposOtpVerify, eposProfile } from "@/lib/fcargo/epos-client";
+import { eposOtpVerify } from "@/lib/fcargo/epos-client";
 import { hasMessagingSecretsKey } from "@/lib/crypto/secrets";
 
 const VERIFY_WINDOW_MS = 15 * 60_000;
@@ -54,6 +56,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
+  const bound = await findValidOtpChallenge({ phone, challenge });
+  if (!bound.ok) {
+    await logOtpAttempt({
+      phone,
+      challenge,
+      ip,
+      subjectType: caller.subject.type,
+      subjectId: caller.subject.id || null,
+      kind: "verify_fail",
+      ok: false,
+      errorCode: bound.error,
+    });
+    return NextResponse.json(
+      { error: bound.error },
+      { status: bound.error === "expired_challenge" ? 410 : 400 },
+    );
+  }
+
   const result = await eposOtpVerify(challenge, code);
   if (!result.ok) {
     await logOtpAttempt({
@@ -73,22 +93,18 @@ export async function POST(request: Request) {
     );
   }
 
+  await consumeOtpChallengeRow(bound.row);
+
   const subjectType = caller.subject.type;
   let subjectId = caller.subject.id;
   if (subjectType === "web" && !subjectId) {
     subjectId = `web_${randomBytes(16).toString("hex")}`;
   }
 
-  let displayName = result.data.name;
-  let clientId = result.data.clientId;
-  let profilePhone = result.data.phone || phone;
-
-  const profile = await eposProfile(result.data.accessToken);
-  if (profile.ok) {
-    displayName = profile.data.name || displayName;
-    clientId = profile.data.id ?? clientId;
-    profilePhone = normalizeAccountPhone(profile.data.phone || "") || profilePhone;
-  }
+  const displayName = result.data.name;
+  const clientId = result.data.clientId;
+  const profilePhone =
+    normalizeAccountPhone(result.data.phone || "") || phone;
 
   const link = await upsertClientLink({
     subjectType,

@@ -2,58 +2,19 @@ import "server-only";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
+import type {
+  FcargoLogDirection,
+  FcargoLogEntry,
+  FcargoLogRow,
+  FcargoLogSource,
+} from "@/lib/fcargo/log-types";
 
-export type FcargoLogDirection = "out" | "in";
-
-export type FcargoLogSource =
-  | "out_api"
-  | "in_webhook"
-  | "in_sync"
-  | "in_drain"
-  | "inbox_worker";
-
-export type FcargoLogEntry = {
-  direction: FcargoLogDirection;
-  source: FcargoLogSource;
-  correlationId?: string | null;
-  method?: string;
-  path?: string;
-  url?: string | null;
-  httpStatus?: number | null;
-  durationMs?: number | null;
-  ok?: boolean | null;
-  leadId?: string | null;
-  orderId?: string | null;
-  trackingNumber?: string | null;
-  requestHeaders?: Record<string, string> | null;
-  responseHeaders?: Record<string, string> | null;
-  requestBody?: unknown;
-  responseBody?: unknown;
-  errorCode?: string | null;
-  errorMessage?: string | null;
-};
-
-export type FcargoLogRow = {
-  id: string;
-  direction: string;
-  source?: string | null;
-  correlation_id?: string | null;
-  method: string;
-  path: string;
-  url?: string | null;
-  http_status: number | null;
-  duration_ms: number | null;
-  ok: boolean | null;
-  lead_id: string | null;
-  order_id: string | null;
-  tracking_number: string | null;
-  error_message: string | null;
-  created_at: string;
-  request_headers?: Record<string, string> | null;
-  response_headers?: Record<string, string> | null;
-  request_body?: unknown;
-  response_body?: unknown;
-};
+export type {
+  FcargoLogDirection,
+  FcargoLogEntry,
+  FcargoLogRow,
+  FcargoLogSource,
+} from "@/lib/fcargo/log-types";
 
 const SENSITIVE_HEADER =
   /^(authorization|x-api-key|x-fcargo-webhook-secret|cookie|set-cookie)$/i;
@@ -61,13 +22,8 @@ const SENSITIVE_HEADER =
 function maskSecretValue(value: string): string {
   const v = value.trim();
   if (!v) return "";
-  if (/^Bearer\s+/i.test(v)) {
-    const token = v.replace(/^Bearer\s+/i, "").trim();
-    if (token.length <= 4) return "Bearer ••••";
-    return `Bearer ••••${token.slice(-4)}`;
-  }
-  if (v.length <= 4) return "••••";
-  return `••••${v.slice(-4)}`;
+  if (/^Bearer\s+/i.test(v)) return "Bearer ••••";
+  return "••••";
 }
 
 /** Redact secrets; keep structure readable for CMS debugging. */
@@ -90,10 +46,9 @@ export function sanitizeFcargoHeaders(
       continue;
     }
     if (/^x-fcargo-signature$/i.test(key)) {
-      // Keep t= and d=, mask hex signatures
-      out[key] = value.replace(/(v\d+)=([0-9a-f]+)/gi, (_, k, hex: string) => {
-        const h = String(hex);
-        return `${k}=••••${h.slice(-6)}`;
+      // Keep t= and d=, fully mask hex signatures (no last-n leak)
+      out[key] = value.replace(/(v\d+)=([0-9a-f]+)/gi, (_m, k: string) => {
+        return `${k}=••••`;
       });
       continue;
     }

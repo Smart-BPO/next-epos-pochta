@@ -1,11 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getWebAppCopy } from "@/data/webapp-copy";
+import { accountCopy } from "@/data/account-copy";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
 import { useWebAppNav } from "@/components/webapp/WebAppNav";
 import { Button } from "@/components/atoms/Button";
 import { Chip } from "@/components/atoms/Chip";
+import {
+  AccountShipmentDetail,
+  AccountShipmentList,
+  type AccountShipmentRow,
+} from "@/components/account";
 import { cn } from "@/lib/cn";
 import { fcargoStatusCopy } from "@/lib/tracking/fcargo-status";
 import { localePath } from "@/i18n/paths";
@@ -24,7 +30,6 @@ type ShipmentRow = {
 
 type Filter = "all" | "active" | "done";
 
-/** `null` on any failure — the caller shows the generic error. */
 async function fetchShipmentList(initData: string): Promise<ShipmentRow[] | null> {
   try {
     const res = await fetch("/api/webapp/shipments/list/", {
@@ -39,46 +44,6 @@ async function fetchShipmentList(initData: string): Promise<ShipmentRow[] | null
   }
 }
 
-/** Prefer FCargo account packages when linked; fall back to phone catalog. */
-async function fetchAccountOrShipments(
-  initData: string,
-  locale: string,
-): Promise<ShipmentRow[] | null> {
-  try {
-    const res = await fetch("/api/account/packages/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ initData, locale }),
-    });
-    if (res.ok) {
-      const json = (await res.json()) as {
-        packages?: Array<{
-          id: string | number;
-          trackingNumber: string | null;
-          statusCode: string | null;
-          statusLabel: string;
-          fromLabel: string | null;
-          toLabel: string | null;
-          createdAt: string | null;
-        }>;
-      };
-      return (json.packages ?? []).map((pkg) => ({
-        id: String(pkg.id),
-        from_label: pkg.fromLabel || "—",
-        to_label: pkg.toLabel || "—",
-        status: "confirmed",
-        track_number: pkg.trackingNumber,
-        fcargo_status: pkg.statusCode,
-        weight_kg: null,
-        created_at: pkg.createdAt || new Date().toISOString(),
-      }));
-    }
-  } catch {
-    // fall through
-  }
-  return fetchShipmentList(initData);
-}
-
 function statusLabel(copy: ReturnType<typeof getWebAppCopy>, status: string) {
   if (status === "confirmed") return copy.statusConfirmed;
   if (status === "cancelled") return copy.statusCancelled;
@@ -90,6 +55,17 @@ export function TrackTab() {
   const { locale, initData } = useTelegram();
   const { highlightShipmentId, setHighlightShipmentId, setTab } = useWebAppNav();
   const copy = getWebAppCopy(locale);
+  const a = accountCopy(locale);
+  const auth = useMemo(
+    () =>
+      initData
+        ? ({ kind: "telegram" as const, initData })
+        : ({ kind: "cookie" as const }),
+    [initData],
+  );
+
+  const [linked, setLinked] = useState<boolean | null>(null);
+  const [detailTracking, setDetailTracking] = useState<string | null>(null);
   const [rows, setRows] = useState<ShipmentRow[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [loading, setLoading] = useState(true);
@@ -97,33 +73,88 @@ export function TrackTab() {
 
   useEffect(() => {
     let cancelled = false;
-    const load = () =>
-      fetchAccountOrShipments(initData, locale).then((items) => {
-        if (cancelled) return;
-        if (items) {
-          setRows(items);
-          setError("");
-        } else {
-          setError(copy.submitError);
-        }
+    void (async () => {
+      if (!initData) {
+        setLinked(false);
         setLoading(false);
-      });
-    const onVisible = () => {
-      if (document.visibilityState === "visible") void load();
-    };
-    void load();
-    document.addEventListener("visibilitychange", onVisible);
+        return;
+      }
+      try {
+        const res = await fetch("/api/account/me/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData }),
+        });
+        const json = (await res.json()) as { linked?: unknown };
+        if (cancelled) return;
+        const isLinked = Boolean(json.linked);
+        setLinked(isLinked);
+        if (isLinked) {
+          setLoading(false);
+          return;
+        }
+      } catch {
+        if (!cancelled) setLinked(false);
+      }
+
+      const items = await fetchShipmentList(initData);
+      if (cancelled) return;
+      if (items) {
+        setRows(items);
+        setError("");
+      } else {
+        setError(copy.submitError);
+      }
+      setLoading(false);
+    })();
     return () => {
       cancelled = true;
-      document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [initData, locale, copy.submitError]);
+  }, [initData, copy.submitError]);
 
   useEffect(() => {
     if (!highlightShipmentId) return;
     const t = window.setTimeout(() => setHighlightShipmentId(null), 8000);
     return () => window.clearTimeout(t);
   }, [highlightShipmentId, setHighlightShipmentId]);
+
+  if (linked) {
+    return (
+      <section className="flex flex-col gap-4">
+        <div>
+          <h1 className="m-0 font-display text-2xl font-semibold uppercase tracking-[-0.03em] text-black">
+            {copy.trackTitle}
+          </h1>
+          <p className="m-0 mt-1 text-sm text-black/55">{copy.trackLead}</p>
+        </div>
+
+        {detailTracking ? (
+          <div className="rounded-3xl border border-black/10 bg-white p-4">
+            <AccountShipmentDetail
+              locale={locale}
+              auth={auth}
+              trackingNumber={detailTracking}
+              onClose={() => setDetailTracking(null)}
+              onRelinkRequired={() => {
+                setLinked(false);
+                setDetailTracking(null);
+              }}
+            />
+          </div>
+        ) : (
+          <AccountShipmentList
+            locale={locale}
+            auth={auth}
+            highlightTracking={highlightShipmentId}
+            onOpen={(row: AccountShipmentRow) =>
+              setDetailTracking(row.trackingNumber)
+            }
+            onRelinkRequired={() => setLinked(false)}
+          />
+        )}
+      </section>
+    );
+  }
 
   const filtered = rows.filter((row) => {
     const stage = row.fcargo_status
@@ -151,6 +182,7 @@ export function TrackTab() {
           {copy.trackTitle}
         </h1>
         <p className="m-0 mt-1 text-sm text-black/55">{copy.trackLead}</p>
+        <p className="m-0 mt-2 text-xs text-black/45">{a.linkHint}</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -197,7 +229,10 @@ export function TrackTab() {
 
       <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
         {filtered.map((row) => {
-          const hot = row.id === highlightShipmentId;
+          const hot =
+            (row.track_number &&
+              row.track_number === highlightShipmentId) ||
+            row.id === highlightShipmentId;
           return (
             <li
               key={row.id}
@@ -217,24 +252,16 @@ export function TrackTab() {
                     {row.from_label} → {row.to_label}
                   </p>
                   <p className="m-0 mt-0.5 font-mono text-[0.7rem] text-black/40">
-                    {row.id}
+                    {row.track_number || row.id}
                     {row.weight_kg != null ? ` · ${row.weight_kg} kg` : ""}
                   </p>
                 </div>
                 <span className="shrink-0 rounded-lg bg-black/[0.05] px-2 py-0.5 text-[0.65rem] font-semibold text-black/55">
-                  {statusLabel(copy, row.status)}
+                  {row.fcargo_status
+                    ? fcargoStatusCopy(row.fcargo_status, locale).label
+                    : statusLabel(copy, row.status)}
                 </span>
               </div>
-              <p className="m-0 mt-2 text-xs text-black/45">
-                {row.track_number
-                  ? `Trek: ${row.track_number}`
-                  : copy.trackWaiting}
-              </p>
-              {row.fcargo_status ? (
-                <p className="m-0 mt-1 text-xs font-medium text-ink">
-                  {fcargoStatusCopy(row.fcargo_status, locale).label}
-                </p>
-              ) : null}
               {row.track_number ? (
                 <button
                   type="button"

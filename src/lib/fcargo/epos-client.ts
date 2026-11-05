@@ -17,6 +17,7 @@ import type {
   EposClientProfile,
   EposOtpStartResult,
   EposOtpVerifyResult,
+  EposPackagesPage,
   FcargoResult,
 } from "@/lib/fcargo/types";
 
@@ -210,14 +211,32 @@ function parseOtpStart(raw: unknown): EposOtpStartResult | null {
     "challengeId",
   ]);
   if (!challenge || challenge.length < 16) return null;
+
+  const expiresAt = pickString(data, ["expires_at", "expiresAt"]);
   const expiresRaw = data?.expires_in ?? data?.expiresIn ?? data?.ttl;
-  const expiresInSec =
+  let expiresInSec: number | null =
     typeof expiresRaw === "number" && expiresRaw > 0
       ? Math.round(expiresRaw)
       : null;
+  if (expiresInSec == null && expiresAt) {
+    const ms = Date.parse(expiresAt);
+    if (Number.isFinite(ms)) {
+      expiresInSec = Math.max(0, Math.round((ms - Date.now()) / 1000));
+    }
+  }
+
+  const resendRaw =
+    data?.resend_after_seconds ?? data?.resendAfterSeconds ?? data?.resend_after;
+  const resendAfterSeconds =
+    typeof resendRaw === "number" && resendRaw >= 0
+      ? Math.round(resendRaw)
+      : null;
+
   return {
     challenge,
+    expiresAt,
     expiresInSec,
+    resendAfterSeconds,
     message: pickString(root, ["message"]),
   };
 }
@@ -231,7 +250,9 @@ function parseOtpVerify(raw: unknown): EposOtpVerifyResult | null {
     "accessToken",
   ]);
   if (!accessToken) return null;
+  // Live FCargo shape: { token, profile: { id, name, phone, email } }
   const client =
+    asRecord(data?.profile) ??
     asRecord(data?.client) ??
     asRecord(data?.user) ??
     asRecord(data?.customer) ??
@@ -242,6 +263,7 @@ function parseOtpVerify(raw: unknown): EposOtpVerifyResult | null {
     clientId: pickId(client, ["id", "client_id", "customer_id"]),
     name: pickString(client, ["name", "full_name", "fullName"]),
     phone: pickString(client, ["phone", "phone_number", "phoneNumber"]),
+    email: pickString(client, ["email"]),
     raw: root ?? {},
   };
 }
@@ -271,12 +293,52 @@ function partyLabel(party: Record<string, unknown> | null): string | null {
   return parts.length ? parts.join(", ") : region || district || address;
 }
 
+/** Live EPOS packages use flat sender_* / receiver_* fields. */
+function flatPartyLabel(
+  row: Record<string, unknown>,
+  prefix: "sender" | "receiver",
+): string | null {
+  const nested = partyLabel(asRecord(row[prefix]));
+  if (nested) return nested;
+  const branch = asRecord(row[`${prefix}_branch`]);
+  const district =
+    pickString(row, [`${prefix}_district_name`, `${prefix}_district`]) ||
+    pickString(asRecord(row[`${prefix}_district`]), ["name", "title"]);
+  const region =
+    pickString(row, [`${prefix}_region_name`, `${prefix}_region`]) ||
+    pickString(asRecord(row[`${prefix}_region`]), ["name", "title"]);
+  const address = pickString(row, [`${prefix}_address`, `${prefix}_full_address`]);
+  const branchName = pickString(branch, ["name", "title", "localized_name"]);
+  const place = district || region || branchName;
+  const parts = [place, address].filter(Boolean);
+  return parts.length ? parts.join(", ") : place || address;
+}
+
+function pickNumber(
+  obj: Record<string, unknown>,
+  keys: string[],
+): number | null {
+  for (const key of keys) {
+    const v = obj[key];
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+    if (typeof v === "string" && v.trim()) {
+      const n = Number(v);
+      if (Number.isFinite(n)) return n;
+    }
+  }
+  return null;
+}
+
 function parsePackage(item: unknown): EposClientPackage | null {
   const row = asRecord(item);
   if (!row) return null;
   const id = pickId(row, ["id", "package_id"]);
   if (id == null) return null;
   const status = asRecord(row.status);
+  const isTerminal =
+    row.is_terminal === true ||
+    status?.is_terminal === true ||
+    status?.isTerminal === true;
   return {
     id,
     trackingNumber: pickString(row, [
@@ -290,25 +352,62 @@ function parsePackage(item: unknown): EposClientPackage | null {
       pickString(status, ["code"]),
     statusName:
       pickString(row, ["status_name", "statusName"]) ||
-      pickString(status, ["localized_name", "name"]),
-    fromLabel: partyLabel(asRecord(row.sender)),
-    toLabel: partyLabel(asRecord(row.receiver)),
+      pickString(status, ["localized_name", "name", "name_ru", "name_uz"]),
+    isTerminal,
+    fromLabel: flatPartyLabel(row, "sender"),
+    toLabel: flatPartyLabel(row, "receiver"),
     createdAt: pickString(row, ["created_at", "createdAt"]),
+    estimatedDeliveryAt: pickString(row, [
+      "estimated_delivery_at",
+      "estimatedDeliveryAt",
+    ]),
+    deliveredAt: pickString(row, ["delivered_at", "deliveredAt"]),
+    creationSource: pickString(row, ["creation_source", "creationSource"]),
+    externalOrderId: pickString(row, [
+      "external_order_id",
+      "externalOrderId",
+    ]),
+    seats: pickNumber(row, ["seats"]),
+    weight: pickNumber(row, ["weight"]),
     raw: row,
   };
 }
 
-function parsePackages(raw: unknown): EposClientPackage[] {
+function parsePackagesPage(raw: unknown): EposPackagesPage {
   const root = asRecord(raw);
-  const data = root?.data;
-  const list = Array.isArray(data)
-    ? data
-    : Array.isArray(asRecord(data)?.items)
-      ? (asRecord(data)!.items as unknown[])
-      : Array.isArray(root?.items)
-        ? (root!.items as unknown[])
-        : [];
-  return list.map(parsePackage).filter((x): x is EposClientPackage => Boolean(x));
+  const data = asRecord(root?.data) ?? root;
+  // Laravel paginator: { data: { data: [...], current_page, last_page, total, per_page } }
+  // Also tolerate Client-API style { data: { items, meta } } and bare arrays.
+  const list = Array.isArray(data?.data)
+    ? (data!.data as unknown[])
+    : Array.isArray(data?.items)
+      ? (data!.items as unknown[])
+      : Array.isArray(root?.data)
+        ? (root!.data as unknown[])
+        : Array.isArray(root?.items)
+          ? (root!.items as unknown[])
+          : [];
+
+  const meta = asRecord(data?.meta) ?? data;
+  const page =
+    pickNumber(meta ?? {}, ["current_page", "currentPage", "page"]) ?? 1;
+  const lastPage =
+    pickNumber(meta ?? {}, ["last_page", "lastPage"]) ?? page;
+  const total =
+    pickNumber(meta ?? {}, ["total"]) ?? list.length;
+  const perPage =
+    pickNumber(meta ?? {}, ["per_page", "perPage"]) ??
+    (list.length > 0 ? list.length : 15);
+
+  return {
+    items: list
+      .map(parsePackage)
+      .filter((x): x is EposClientPackage => Boolean(x)),
+    page,
+    lastPage,
+    total,
+    perPage,
+  };
 }
 
 export async function eposOtpStart(
@@ -345,7 +444,9 @@ export async function eposOtpResend(
   if (!result.ok) return result;
   const parsed = parseOtpStart(result.data) ?? {
     challenge,
+    expiresAt: null,
     expiresInSec: null,
+    resendAfterSeconds: null,
     message: pickString(asRecord(result.data), ["message"]),
   };
   return { ok: true, data: parsed };
@@ -401,11 +502,17 @@ export async function eposProfile(
 
 export async function eposPackages(
   accessToken: string,
-): Promise<FcargoResult<EposClientPackage[]>> {
-  const result = await eposFetch<unknown>("/web/clients/epos/packages", {
+  opts?: { page?: number },
+): Promise<FcargoResult<EposPackagesPage>> {
+  const page = opts?.page && opts.page > 0 ? Math.floor(opts.page) : 1;
+  const path =
+    page > 1
+      ? `/web/clients/epos/packages?page=${page}`
+      : "/web/clients/epos/packages";
+  const result = await eposFetch<unknown>(path, {
     method: "GET",
     accessToken,
   });
   if (!result.ok) return result;
-  return { ok: true, data: parsePackages(result.data) };
+  return { ok: true, data: parsePackagesPage(result.data) };
 }

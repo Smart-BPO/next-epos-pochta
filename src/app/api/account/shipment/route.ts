@@ -2,7 +2,10 @@ import { createHash, randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { isLocale } from "@/i18n/config";
 import { createFcargoOrder } from "@/lib/fcargo/create-order";
-import { requireLinkedAccount } from "@/lib/fcargo/epos-account-auth";
+import { requireActiveLink } from "@/lib/fcargo/epos-account-auth";
+import { logFcargoRequest } from "@/lib/fcargo/log";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { hasSupabaseAdminConfig } from "@/lib/supabase/env";
 
 type ShipmentBody = {
   initData?: string;
@@ -19,6 +22,9 @@ type ShipmentBody = {
   receiverName?: string;
   receiverPhone?: string;
   requestId?: string;
+  declaredValue?: number | string;
+  isFragile?: boolean;
+  payerType?: string;
 };
 
 function toNumber(value: unknown) {
@@ -36,6 +42,25 @@ function externalIdFor(linkId: string, requestId: string) {
   return `AC-${digest}`;
 }
 
+async function resolveWebappSessionId(
+  telegramUserId: string,
+): Promise<string | null> {
+  if (!hasSupabaseAdminConfig() || !telegramUserId) return null;
+  const admin = createSupabaseAdminClient();
+  const tgId = Number(telegramUserId);
+  if (!Number.isFinite(tgId)) return null;
+  const { data } = await admin
+    .from("epos_webapp_contacts")
+    .select("session_id")
+    .eq("telegram_user_id", tgId)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const sessionId =
+    typeof data?.session_id === "string" ? data.session_id.trim() : "";
+  return sessionId || null;
+}
+
 export async function POST(request: Request) {
   let body: ShipmentBody;
   try {
@@ -44,7 +69,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const linked = await requireLinkedAccount(
+  // Orders use CMS Client API key + sender from link row — live bearer not required.
+  const linked = await requireActiveLink(
     request,
     body as Record<string, unknown>,
   );
@@ -71,6 +97,20 @@ export async function POST(request: Request) {
   const senderName =
     (linked.link.display_name ?? "").trim() || "EPOS customer";
 
+  const isTelegram = linked.subject.type === "telegram";
+  const contactSessionId = isTelegram
+    ? await resolveWebappSessionId(linked.subject.id)
+    : null;
+  const telegramUserId = isTelegram
+    ? Number(linked.subject.id) || null
+    : null;
+
+  const payerRaw = (body.payerType ?? "").trim();
+  const payerType =
+    payerRaw === "receiver" || payerRaw === "third_party"
+      ? payerRaw
+      : "sender";
+
   const created = await createFcargoOrder({
     externalId,
     idempotencyKey: `epos-account-${externalId}`,
@@ -90,16 +130,15 @@ export async function POST(request: Request) {
     lengthCm: toNumber(body.lengthCm),
     widthCm: toNumber(body.widthCm),
     heightCm: toNumber(body.heightCm),
+    declaredValue: toNumber(body.declaredValue),
+    isFragile: body.isFragile === true,
+    payerType,
     comment: (body.comment ?? "").trim(),
     locale,
-    packageDescription: `EPOS Cabinet ${externalId}`,
-    source: linked.subject.type === "telegram" ? "webapp" : "lead",
-    contactSessionId:
-      linked.subject.type === "telegram" ? linked.subject.id : null,
-    telegramUserId:
-      linked.subject.type === "telegram"
-        ? Number(linked.subject.id) || null
-        : null,
+    packageDescription: `EPOS ${isTelegram ? "WebApp" : "Cabinet"} ${externalId}`,
+    source: isTelegram ? "webapp" : "cabinet",
+    contactSessionId,
+    telegramUserId,
   });
 
   if (!created.ok) {
@@ -115,12 +154,36 @@ export async function POST(request: Request) {
     );
   }
 
+  const linkedCustomerId = (linked.link.fcargo_client_id ?? "").trim();
+  if (
+    created.order.customerId != null &&
+    linkedCustomerId &&
+    String(created.order.customerId) !== linkedCustomerId
+  ) {
+    logFcargoRequest({
+      direction: "out",
+      source: "out_api",
+      method: "POST",
+      path: "/orders",
+      ok: true,
+      httpStatus: 201,
+      orderId: created.order.orderId,
+      trackingNumber: created.order.trackingNumber,
+      errorCode: "sender_customer_mismatch",
+      errorMessage: `order sender_customer_id=${created.order.customerId} != link.fcargo_client_id=${linkedCustomerId}`,
+      requestBody: {
+        linked_customer_id: linkedCustomerId,
+        sender_customer_id: created.order.customerId,
+        phone: linked.link.phone,
+      },
+    });
+  }
+
   const trackingNumber = created.order.trackingNumber;
   return NextResponse.json({
     ok: true,
-    id: trackingNumber || created.order.orderId || externalId,
+    id: trackingNumber || externalId,
     trackingNumber,
-    orderId: created.order.orderId,
     status: created.order.status,
     duplicate: created.order.duplicate,
   });

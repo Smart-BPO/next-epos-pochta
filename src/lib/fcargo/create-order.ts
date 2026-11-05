@@ -32,8 +32,11 @@ export type CreateFcargoOrderInput = {
   comment?: string;
   locale?: string;
   packageDescription?: string;
+  declaredValue?: number | null;
+  isFragile?: boolean;
+  payerType?: "sender" | "receiver" | "third_party";
   /** Source tag stored on catalog row. */
-  source?: "lead" | "webapp" | "pull" | "webhook";
+  source?: "lead" | "webapp" | "pull" | "webhook" | "cabinet";
   leadId?: string | null;
   contactSessionId?: string | null;
   telegramUserId?: number | null;
@@ -122,6 +125,10 @@ function buildPackage(input: CreateFcargoOrderInput) {
     pkg.height = input.heightCm!;
   }
   if (!pkg.weight && !hasDims) pkg.weight = 1;
+  if (input.declaredValue != null && input.declaredValue > 0) {
+    pkg.declared_value = input.declaredValue;
+  }
+  if (input.isFragile) pkg.is_fragile = true;
   return pkg;
 }
 
@@ -209,7 +216,11 @@ export async function createFcargoOrder(
       address: receiver.label,
     },
     package: buildPackage(input),
-    payment: { payer_type: "sender" },
+    payment: {
+      payer_type: input.payerType === "receiver" || input.payerType === "third_party"
+        ? input.payerType
+        : "sender",
+    },
     comment: input.comment?.trim() || `EPOS ${input.externalId}`,
   };
 
@@ -268,6 +279,7 @@ export async function createFcargoOrder(
       rawLast: {
         sender: body.sender,
         receiver: body.receiver,
+        sender_customer_id: order.customerId,
       },
     });
     if (catalog) {

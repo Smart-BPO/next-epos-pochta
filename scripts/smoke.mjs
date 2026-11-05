@@ -125,6 +125,26 @@ async function main() {
     pass("account/me JSON", JSON.stringify(me.json).slice(0, 120));
   }
 
+  const shipments = await expectStatus(
+    "POST /api/account/shipments/ (unlinked)",
+    "/api/account/shipments/",
+    [401],
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ locale: "uz", page: 1, filter: "all" }),
+    },
+  );
+  if (shipments?.json?.error === "not_linked" || shipments?.status === 401) {
+    pass("account/shipments unlinked", String(shipments.json?.error || shipments.status));
+  }
+
+  await expectStatus("GET /cabinet/?tab=shipments", "/cabinet/?tab=shipments", [
+    200,
+  ]);
+  await expectStatus("GET /ru/cabinet/?tab=new", "/ru/cabinet/?tab=new", [200]);
+  await expectStatus("GET /zh/cabinet/", "/zh/cabinet/", [200]);
+
   await expectStatus(
     "POST /api/webapp/session/ (no initData)",
     "/api/webapp/session/",
@@ -147,6 +167,38 @@ async function main() {
       body: JSON.stringify({ type: "webhook.test" }),
     },
   );
+
+  await expectStatus("GET /dashboard/login/", "/dashboard/login/", [200]);
+
+  await expectStatus(
+    "POST /api/dashboard/fcargo/probe/ (no admin)",
+    "/api/dashboard/fcargo/probe/",
+    [401],
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({}),
+    },
+  );
+
+  await expectStatus(
+    "GET /api/dashboard/telegram-avatar/1 (no admin)",
+    "/api/dashboard/telegram-avatar/1/",
+    [401],
+  );
+
+  if (me?.json && typeof me.json === "object") {
+    const blob = JSON.stringify(me.json);
+    if (
+      /token_cipher|api_key|X-API-Key|secrets_cipher|fcargoClientId|"orderId"/i.test(
+        blob,
+      )
+    ) {
+      fail("account/me no secrets", blob.slice(0, 200));
+    } else {
+      pass("account/me no secrets", "clean");
+    }
+  }
 
   const failed = results.filter((r) => !r.ok);
   console.log(

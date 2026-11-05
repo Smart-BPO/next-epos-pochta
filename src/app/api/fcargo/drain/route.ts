@@ -6,6 +6,7 @@ import {
 import { processFcargoWebhookInbox } from "@/lib/fcargo/webhook-inbox";
 import { logFcargoHttpExchange } from "@/lib/fcargo/log-http";
 import { pruneFcargoRequestLog } from "@/lib/fcargo/log";
+import { validateHotClientLinks } from "@/lib/fcargo/epos-account-validate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,7 +78,16 @@ export async function POST(request: Request) {
 
   const result = await processFcargoWebhookInbox({ limit });
   const pruned = await pruneFcargoRequestLog(30, 5000);
-  const resBody = { ok: true, ...result, pruned };
+  const links = await validateHotClientLinks({ limit: Math.min(20, limit) });
+  const resBody = {
+    ok: true,
+    ...result,
+    pruned,
+    linksValidated: links.validated,
+    linksRevoked: links.revoked,
+    linksChecked: links.checked,
+    linksSkipped: links.skipped,
+  };
   logFcargoHttpExchange({
     source: "in_drain",
     request,

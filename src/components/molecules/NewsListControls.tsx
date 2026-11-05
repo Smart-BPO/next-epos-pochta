@@ -14,7 +14,7 @@ import {
   NEWS_PAGE_SIZE_DEFAULT,
   NEWS_PAGE_SIZE_OPTIONS,
   type NewsPageSize,
-} from "@/lib/news/repository";
+} from "@/lib/news/list-query";
 import { cn } from "@/lib/cn";
 import { Input, Select } from "@/components/atoms/Input";
 import {

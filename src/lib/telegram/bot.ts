@@ -2,6 +2,7 @@
  * Telegram Bot API helpers (server-only).
  * Token stays in env — never expose to the browser.
  */
+import "server-only";
 
 export type TelegramApiResult<T> =
   | { ok: true; result: T }

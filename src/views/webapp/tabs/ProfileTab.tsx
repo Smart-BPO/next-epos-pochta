@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ContactGate } from "@/components/webapp/ContactGate";
-import { FcargoLinkCard } from "@/components/webapp/FcargoLinkCard";
+import { AccountOtpLink } from "@/components/account";
 import { getWebAppCopy } from "@/data/webapp-copy";
 import { localeLabels, locales } from "@/i18n/config";
 import { useTelegram } from "@/components/webapp/TelegramProvider";
@@ -19,9 +19,16 @@ export function ProfileTab({
   onContactLinked: (session: WebAppContactSession) => void;
   onContactCleared?: () => void;
 }) {
-  const { locale, setLocale, user, webApp } = useTelegram();
+  const { locale, setLocale, user, webApp, initData } = useTelegram();
   const copy = getWebAppCopy(locale);
   const [editing, setEditing] = useState(false);
+  const auth = useMemo(
+    () =>
+      initData
+        ? ({ kind: "telegram" as const, initData })
+        : ({ kind: "cookie" as const }),
+    [initData],
+  );
 
   useTelegramBackButton(Boolean(editing && contact), () => setEditing(false));
 
@@ -98,7 +105,14 @@ export function ProfileTab({
         </Button>
       </div>
 
-      <FcargoLinkCard contact={contact} />
+      <div className="rounded-3xl border border-black/10 bg-white p-4 shadow-[0_8px_28px_rgb(15_18_24/0.05)]">
+        <AccountOtpLink
+          locale={locale}
+          auth={auth}
+          initialPhone={contact.phone}
+          compact
+        />
+      </div>
 
       <div className="rounded-3xl border border-black/10 bg-white p-4">
         <p className="m-0 text-sm text-black/55">{copy.profileAbout}</p>
