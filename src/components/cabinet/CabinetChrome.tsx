@@ -4,7 +4,7 @@ import { useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { Locale } from "@/i18n/config";
-import { BrandLogo } from "@/components/atoms/BrandLogo";
+import { CabinetBrandLogo } from "@/components/cabinet/CabinetBrandLogo";
 import { CabinetNav } from "@/components/cabinet/CabinetNav";
 import { CabinetTopBar } from "@/components/cabinet/CabinetTopBar";
 import { CabinetMobileNav } from "@/components/cabinet/CabinetMobileNav";
@@ -82,7 +82,7 @@ export function CabinetChrome({
                 )}
                 aria-label={SITE_CONFIG.name}
               >
-                <BrandLogo locale={locale} priority />
+                <CabinetBrandLogo locale={locale} priority />
               </Link>
               <button
                 type="button"

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import type { Locale } from "@/i18n/config";
-import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { cabinetCopy } from "@/data/cabinet";
+import { CabinetBrandLogo } from "@/components/cabinet/CabinetBrandLogo";
 import { CabinetHeaderActions } from "@/components/cabinet/CabinetHeaderActions";
 import {
   cabinetHref,
@@ -60,7 +60,7 @@ export function CabinetTopBar({ locale }: { locale: Locale }) {
           className="inline-flex h-7 items-center lg:hidden"
           aria-label={SITE_CONFIG.name}
         >
-          <BrandLogo locale={locale} variant="red" width={84} height={28} priority />
+          <CabinetBrandLogo locale={locale} width={84} height={28} priority />
         </Link>
         <nav
           aria-label="Breadcrumb"

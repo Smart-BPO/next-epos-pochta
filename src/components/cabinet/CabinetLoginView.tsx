@@ -3,8 +3,8 @@
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
-import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { AccountOtpLink, type AccountLinked } from "@/components/account";
+import { CabinetBrandLogo } from "@/components/cabinet/CabinetBrandLogo";
 import { cabinetCopy } from "@/data/cabinet";
 
 export function CabinetLoginView({
@@ -28,7 +28,7 @@ export function CabinetLoginView({
           className="mb-8 inline-flex h-9 self-start"
           aria-label="EPOS POCHTA"
         >
-          <BrandLogo locale={locale} priority />
+          <CabinetBrandLogo locale={locale} priority />
         </Link>
 
         <h1 className="m-0 text-xl font-semibold text-ink">{c.loginTitle}</h1>

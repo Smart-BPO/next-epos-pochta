@@ -117,6 +117,20 @@ async function main() {
     pass("tracking not_found shape", "not_found");
   }
 
+  const branding = await expectStatus(
+    "GET /api/account/branding/",
+    "/api/account/branding/",
+    [200],
+  );
+  if (branding?.json && typeof branding.json === "object") {
+    pass(
+      "account/branding JSON",
+      branding.json.logoUrl
+        ? String(branding.json.logoUrl).slice(0, 80)
+        : "no logo (fallback)",
+    );
+  }
+
   const me = await expectStatus("GET /api/account/me/", "/api/account/me/", [
     200,
     401,
