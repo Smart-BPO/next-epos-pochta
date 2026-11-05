@@ -1,5 +1,6 @@
 "use client";
 
+import { etaHoursLabel } from "@/data/delivery-routes";
 import { useState } from "react";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { Button } from "@/components/atoms/Button";
@@ -37,12 +38,14 @@ export function CalcTab() {
 
   const daysLabel =
     estimate &&
-    loc(
-      locale,
-      `${estimate.etaDays} kun`,
-      `${estimate.etaDays} дн.`,
-      `${estimate.etaDays} 天`,
-    );
+    (estimate.etaHours
+      ? etaHoursLabel(locale, estimate.etaHours)
+      : loc(
+          locale,
+          `${estimate.etaDays} kun`,
+          `${estimate.etaDays} дн.`,
+          `${estimate.etaDays} 天`,
+        ));
 
   const onCalculate = async () => {
     setSubmitted(true);

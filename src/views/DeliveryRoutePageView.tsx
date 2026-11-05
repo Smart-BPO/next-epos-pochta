@@ -19,9 +19,8 @@ import {
 import { Button } from "@/components/atoms/Button";
 import { PageContainer } from "@/components/atoms/PageContainer";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getSettlementById } from "@/data/settlements";
-import { formatUzs } from "@/lib/pricing/estimate";
-import { runEstimate } from "@/lib/pricing/settings";
+import { RoutePriceCard } from "@/components/molecules/RoutePriceCard";
+import { getRouteQuote } from "@/lib/pricing/route-quotes";
 import {
   getBreadcrumbSchema,
   getDeliveryRouteSchema,
@@ -86,36 +85,10 @@ export async function DeliveryRoutePageView({
     (r) => r.from.code !== route.from.code,
   );
 
-  const fromSettlement = route.from.settlementId
-    ? getSettlementById(route.from.settlementId)
-    : null;
-  const toSettlement = route.to.settlementId
-    ? getSettlementById(route.to.settlementId)
-    : null;
-
-  let routeEstimate: Awaited<ReturnType<typeof runEstimate>> | null = null;
-  if (fromSettlement && toSettlement) {
-    try {
-      routeEstimate = await runEstimate({
-        fromRegionId: fromSettlement.regionId,
-        fromCityId: fromSettlement.id,
-        toRegionId: toSettlement.regionId,
-        toCityId: toSettlement.id,
-        weightKg: 1,
-        lengthCm: 20,
-        widthCm: 15,
-        heightCm: 10,
-        unknownDims: false,
-        pickup: false,
-        doorDelivery: false,
-        places: 1,
-        urgent: false,
-        category: "parcel",
-      });
-    } catch {
-      routeEstimate = null;
-    }
-  }
+  const fromId = route.from.settlementId;
+  const toId = route.to.settlementId;
+  const routeQuote =
+    fromId && toId ? await getRouteQuote(fromId, toId).catch(() => null) : null;
 
   return (
     <>
@@ -209,27 +182,14 @@ export async function DeliveryRoutePageView({
             </div>
           </dl>
 
-          {routeEstimate?.ok ? (
-            <div className="mt-6 rounded-2xl border border-black/10 bg-white p-4 sm:p-5">
-              <p className="m-0 text-xs font-semibold uppercase tracking-wide text-black/55">
-                {loc(locale, "Taxminiy smeta (1 kg)", "Ориентировочная смета (1 кг)", "参考报价（1 公斤）")}
-              </p>
-              <p className="m-0 mt-1 font-display text-2xl font-semibold text-black">
-                {formatUzs(routeEstimate.estimate.amount, locale)}{" "}
-                {routeEstimate.estimate.currency}
-              </p>
-              <p className="m-0 mt-1 text-sm text-black/55">
-                {loc(
-                  locale,
-                  `Muddat orientiri: ~${routeEstimate.estimate.etaDays} kun`,
-                  `Ориентир по сроку: ~${routeEstimate.estimate.etaDays} дн.`,
-                  `时效参考：约 ${routeEstimate.estimate.etaDays} 天`,
-                )}
-              </p>
-              <p className="m-0 mt-3 text-xs leading-relaxed text-black/55">
-                {copy.calculator.disclaimer}
-              </p>
-            </div>
+          {fromId && toId ? (
+            <RoutePriceCard
+              locale={locale}
+              fromId={fromId}
+              toId={toId}
+              initial={routeQuote}
+              disclaimer={copy.calculator.disclaimer}
+            />
           ) : null}
 
           <p className="m-0 mt-5 text-sm text-black/55">

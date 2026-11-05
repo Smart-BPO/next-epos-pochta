@@ -160,12 +160,12 @@ export const uzCopy: SiteCopy = {
     benefitsTitle: "Afzalliklar",
     benefits: [
       {
-        title: "1 kunda yetkazish",
+        title: "48 soatgacha yetkazish",
         text: "Toshkent viloyati, Andijon, Namangan, Fargʻona, Samarqand, Sirdaryo va Jizzaxga.",
       },
       {
         title: "Butun Oʻzbekiston boʻylab",
-        text: "Boshqa viloyatlarga 2 kungacha.",
+        text: "Boshqa viloyatlarga — 72 soatgacha.",
       },
       {
         title: "Eshikdan eshikkacha",

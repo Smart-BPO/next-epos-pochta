@@ -149,12 +149,12 @@ export const zhCopy: SiteCopy = {
     benefitsTitle: "优势",
     benefits: [
       {
-        title: "1 日送达",
+        title: "48 小时内送达",
         text: "塔什干州、安集延、纳曼干、费尔干纳、撒马尔罕、锡尔河与吉扎克。",
       },
       {
         title: "覆盖乌兹别克斯坦",
-        text: "其余地区最长 2 日。",
+        text: "其余地区最长 72 小时。",
       },
       {
         title: "门到门",

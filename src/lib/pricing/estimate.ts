@@ -46,6 +46,8 @@ export interface QuoteEstimate {
   etaDaysMin: number;
   /** @deprecated use etaDays */
   etaDaysMax: number;
+  /** Customer-facing ETA: 48 h for short corridors, 72 h for long ones. */
+  etaHours?: number;
   zone: EstimateZone;
   billableKg: number;
   formulaVersion: string;

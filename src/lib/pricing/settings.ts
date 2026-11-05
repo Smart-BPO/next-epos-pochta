@@ -7,6 +7,7 @@ import {
   type QuoteEstimate,
 } from "@/lib/pricing/estimate";
 import { listPricingRoutes, replacePricingRoutes } from "@/lib/pricing/routes";
+import { etaHoursForSettlements } from "@/data/delivery-routes";
 import {
   DEFAULT_PRICING_CONFIG,
   ESTIMATE_FORMULA_VERSION,
@@ -155,7 +156,7 @@ export async function runEstimate(
       try {
         const { estimateViaFcargo } = await import("@/lib/fcargo/estimate");
         const remote = await estimateViaFcargo(input);
-        if (remote) return { ok: true, estimate: remote };
+        if (remote) return { ok: true, estimate: withEtaHours(remote, input) };
         return { ok: false, error: "fcargo_estimate_failed" };
       } catch (e) {
         console.warn(
@@ -169,12 +170,17 @@ export async function runEstimate(
 
   return {
     ok: true,
-    estimate: estimateQuote(
+    estimate: withEtaHours(
+      estimateQuote(input, loaded.config, loaded.formulaVersion, loaded.routes),
       input,
-      loaded.config,
-      loaded.formulaVersion,
-      loaded.routes,
     ),
+  };
+}
+
+function withEtaHours(estimate: QuoteEstimate, input: EstimateInput): QuoteEstimate {
+  return {
+    ...estimate,
+    etaHours: etaHoursForSettlements(input.fromCityId, input.toCityId),
   };
 }
 

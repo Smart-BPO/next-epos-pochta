@@ -1,5 +1,6 @@
 "use client";
 
+import { etaHoursLabel } from "@/data/delivery-routes";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import { loc } from "@/i18n/loc";
@@ -232,12 +233,14 @@ export function CalculatorForm({
 
   const daysLabel =
     estimate &&
-    loc(
-      locale,
-      `${estimate.etaDays} kun`,
-      `${estimate.etaDays} дн.`,
-      `${estimate.etaDays} 天`,
-    );
+    (estimate.etaHours
+      ? etaHoursLabel(locale, estimate.etaHours)
+      : loc(
+          locale,
+          `${estimate.etaDays} kun`,
+          `${estimate.etaDays} дн.`,
+          `${estimate.etaDays} 天`,
+        ));
 
   const phoneError =
     leadAttempted && !isValidUzPhone(phone) ? c.errors.phone : undefined;

@@ -36,8 +36,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Ташкент",
     nameUz: "Toshkent",
     settlementId: "1726",
-    etaHintRu: "По городу ориентир чаще всего в пределах 1–2 рабочих дней после забора.",
-    etaHintUz: "Shahar ichida odatda olib ketishdan keyin 1–2 ish kuni ichida yetkaziladi.",
+    etaHintRu: "По Ташкенту и в соседние области — до 48 часов после забора, в дальние регионы — до 72 часов.",
+    etaHintUz: "Toshkent ichida va qoʻshni viloyatlarga — olib ketishdan keyin 48 soatgacha, uzoq hududlarga — 72 soatgacha.",
     leadRu:
       "Курьер в Ташкенте и доставка из столицы по Узбекистану: документы, посылки, забор курьером. Ориентир в калькуляторе — итог подтверждает менеджер.",
     leadUz:
@@ -110,8 +110,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Самарканд",
     nameUz: "Samarqand",
     settlementId: "1718401",
-    etaHintRu: "Межрегиональные отправления в Самарканд обычно занимают несколько рабочих дней — точный срок подтвердит менеджер.",
-    etaHintUz: "Samarqandga viloyatlararo joʻnatmalar odatda bir necha ish kunini oladi — aniq muddatni menejer tasdiqlaydi.",
+    etaHintRu: "Из Ташкента в Самарканд — до 48 часов, из дальних регионов — до 72 часов.",
+    etaHintUz: "Toshkentdan Samarqandga — 48 soatgacha, uzoq hududlardan — 72 soatgacha.",
     leadRu:
       "Доставка в Самарканд: посылки, документы и курьер из Ташкента и других городов. Ориентир в калькуляторе — итог подтверждает менеджер.",
     leadUz:
@@ -184,8 +184,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Бухара",
     nameUz: "Buxoro",
     settlementId: "1706401",
-    etaHintRu: "Срок до Бухары зависит от пункта отправления — ориентир в калькуляторе, подтверждение у менеджера.",
-    etaHintUz: "Buxorogacha muddat joʻnatish punktiga bogʻliq — orientir kalkulyatorda, tasdiq menejerda.",
+    etaHintRu: "Из Ташкента в Бухару — до 72 часов, из соседних областей — до 48 часов.",
+    etaHintUz: "Toshkentdan Buxoroga — 72 soatgacha, qoʻshni viloyatlardan — 48 soatgacha.",
     leadRu:
       "Доставка в Бухару: посылки, документы и курьер из Ташкента. Ориентир онлайн — финал после менеджера.",
     leadUz:
@@ -258,8 +258,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Наманган",
     nameUz: "Namangan",
     settlementId: "1714401",
-    etaHintRu: "Доставка в Наманган — межрегиональный маршрут; срок уточняется при расчёте.",
-    etaHintUz: "Namanganga yetkazib berish — viloyatlararo yoʻnalish; muddat hisobda aniqlanadi.",
+    etaHintRu: "Из Ташкента в Наманган — до 48 часов, из дальних регионов — до 72 часов.",
+    etaHintUz: "Toshkentdan Namanganga — 48 soatgacha, uzoq hududlardan — 72 soatgacha.",
     leadRu:
       "Доставка в Наманган: посылки и документы по Ферганской долине. Ориентир в калькуляторе EPOS POCHTA.",
     leadUz:
@@ -332,8 +332,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Андижан",
     nameUz: "Andijon",
     settlementId: "1703401",
-    etaHintRu: "Андижан — направление Ферганской долины; ориентировочный срок смотрите в калькуляторе.",
-    etaHintUz: "Andijon — Fargʻona vodiysi yoʻnalishi; taxminiy muddatni kalkulyatorda koʻring.",
+    etaHintRu: "Из Ташкента в Андижан — до 48 часов, из дальних регионов — до 72 часов.",
+    etaHintUz: "Toshkentdan Andijonga — 48 soatgacha, uzoq hududlardan — 72 soatgacha.",
     leadRu:
       "Доставка в Андижан: посылки, документы и курьер по долине. Ориентир по весу — в калькуляторе.",
     leadUz:
@@ -406,8 +406,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Фергана",
     nameUz: "Fargʻona",
     settlementId: "1730401",
-    etaHintRu: "Фергана связана межрегиональными рейсами; точный ETA подтверждает менеджер.",
-    etaHintUz: "Fargʻona viloyatlararo reyslar bilan bogʻlangan; aniq ETA ni menejer tasdiqlaydi.",
+    etaHintRu: "Из Ташкента в Фергану — до 48 часов, из дальних регионов — до 72 часов.",
+    etaHintUz: "Toshkentdan Fargʻonaga — 48 soatgacha, uzoq hududlardan — 72 soatgacha.",
     leadRu:
       "Доставка в Фергану: посылки, документы и курьер по долине. Ориентир в калькуляторе — без оферты.",
     leadUz:
@@ -480,8 +480,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Нукус",
     nameUz: "Nukus",
     settlementId: "1735401",
-    etaHintRu: "Нукус — дальнее направление; заложите запас по сроку и уточните у менеджера.",
-    etaHintUz: "Nukus — uzoq yoʻnalish; muddatga zaxira qoʻying va menejer bilan aniqlang.",
+    etaHintRu: "Из Ташкента в Нукус — до 72 часов, из соседних областей — до 48 часов.",
+    etaHintUz: "Toshkentdan Nukusga — 72 soatgacha, qoʻshni viloyatlardan — 48 soatgacha.",
     leadRu:
       "Доставка в Нукус с EPOS POCHTA. Межрегиональные отправления документов и посылок с подтверждением срока менеджером.",
     leadUz:
@@ -544,8 +544,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Карши",
     nameUz: "Qarshi",
     settlementId: "1710401",
-    etaHintRu: "Карши обслуживается межрегионально; срок зависит от города отправления.",
-    etaHintUz: "Qarshi viloyatlararo xizmat qilinadi; muddat joʻnatish shahriga bogʻliq.",
+    etaHintRu: "Из Ташкента в Карши — до 72 часов, из соседних областей — до 48 часов.",
+    etaHintUz: "Toshkentdan Qarshiga — 72 soatgacha, qoʻshni viloyatlardan — 48 soatgacha.",
     leadRu:
       "Доставка в Карши (Қарши) с EPOS POCHTA — документы, посылки и бизнес-отправления по согласованию.",
     leadUz:
@@ -608,8 +608,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Термез",
     nameUz: "Termiz",
     settlementId: "1722401",
-    etaHintRu: "Термез — южное направление; срок согласуйте заранее с менеджером.",
-    etaHintUz: "Termiz — janubiy yoʻnalish; muddatni oldindan menejer bilan kelishing.",
+    etaHintRu: "Из Ташкента в Термез — до 72 часов, из соседних областей — до 48 часов.",
+    etaHintUz: "Toshkentdan Termizga — 72 soatgacha, qoʻshni viloyatlardan — 48 soatgacha.",
     leadRu:
       "Доставка в Термез с EPOS POCHTA. Межрегиональная логистика документов и посылок по Узбекистану.",
     leadUz:
@@ -672,8 +672,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Навои",
     nameUz: "Navoiy",
     settlementId: "1712401",
-    etaHintRu: "Навои обслуживается в межрегиональной сети; ETA зависит от пары городов.",
-    etaHintUz: "Navoiy viloyatlararo tarmoqda xizmat qilinadi; ETA shaharlar juftligiga bogʻliq.",
+    etaHintRu: "Из Ташкента в Навои — до 72 часов, из соседних областей — до 48 часов.",
+    etaHintUz: "Toshkentdan Navoiyga — 72 soatgacha, qoʻshni viloyatlardan — 48 soatgacha.",
     leadRu:
       "Доставка в Навои с EPOS POCHTA — для частных клиентов и компаний. Ориентир онлайн, итог с менеджером.",
     leadUz:
@@ -736,8 +736,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Джизак",
     nameUz: "Jizzax",
     settlementId: "1708401",
-    etaHintRu: "Джизак — межрегиональное направление с ориентиром срока в калькуляторе.",
-    etaHintUz: "Jizzax — kalkulyatorda muddat orientiri boʻlgan viloyatlararo yoʻnalish.",
+    etaHintRu: "Из Ташкента в Джизак — до 48 часов, из дальних регионов — до 72 часов.",
+    etaHintUz: "Toshkentdan Jizzaxga — 48 soatgacha, uzoq hududlardan — 72 soatgacha.",
     leadRu:
       "Доставка в Джизак с EPOS POCHTA. Документы и посылки по Узбекистану с прозрачными статусами.",
     leadUz:
@@ -800,8 +800,8 @@ export const DELIVERY_CITIES: DeliveryCity[] = [
     nameRu: "Ургенч",
     nameUz: "Urganch",
     settlementId: "1733401",
-    etaHintRu: "Ургенч — западное направление; срок подтверждается при индивидуальном расчёте.",
-    etaHintUz: "Urganch — gʻarbiy yoʻnalish; muddat individual hisobda tasdiqlanadi.",
+    etaHintRu: "Из Ташкента в Ургенч — до 72 часов, из соседних областей — до 48 часов.",
+    etaHintUz: "Toshkentdan Urganchga — 72 soatgacha, qoʻshni viloyatlardan — 48 soatgacha.",
     leadRu:
       "Доставка в Ургенч с EPOS POCHTA. Межрегиональные отправления с ориентиром в калькуляторе.",
     leadUz:
@@ -916,8 +916,8 @@ export function cityEtaHint(city: DeliveryCity, locale: Locale): string {
   if (locale === "uz") return city.etaHintUz;
   if (locale === "ru") return city.etaHintRu;
   const name = cityDisplayName(city, "zh");
-  if (city.code === "tas") return "市内通常在取件后 1–2 个工作日内送达（参考）。";
-  return `发往${name}的时效取决于线路。计算器中的天数是参考值，由经理确认。`;
+  if (city.code === "tas") return "塔什干市内及邻近州 48 小时内送达，偏远地区 72 小时内。";
+  return `发往${name}：近距离线路 48 小时内，远距离线路 72 小时内。`;
 }
 
 export function cityBody(city: DeliveryCity, locale: Locale): string[] {

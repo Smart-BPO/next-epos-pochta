@@ -57,7 +57,12 @@ function pairKey(a: string, b: string) {
   return [a, b].sort().join("-");
 }
 
-export type EtaBand = "near" | "mid" | "far";
+export type EtaBand = "short" | "long";
+
+/** Road distance up to which a corridor counts as short (48 h); longer → 72 h. */
+export const SHORT_ROUTE_MAX_KM = 360;
+
+export const ETA_HOURS: Record<EtaBand, number> = { short: 48, long: 72 };
 
 export type DeliveryRoute = {
   from: DeliveryCity;
@@ -74,9 +79,33 @@ export function getDistanceKm(fromCode: string, toCode: string): number {
 }
 
 export function etaBandForDistance(km: number): EtaBand {
-  if (km < 250) return "near";
-  if (km < 550) return "mid";
-  return "far";
+  return km <= SHORT_ROUTE_MAX_KM ? "short" : "long";
+}
+
+const HUB_BY_REGION = new Map<string, string>(
+  DELIVERY_CITIES.flatMap((c) => {
+    if (!c.settlementId) return [];
+    const region = c.settlementId.slice(0, 4);
+    // Tashkent city (1726) also serves Tashkent region (1727).
+    return region === "1726"
+      ? [[region, c.code] as const, ["1727", c.code] as const]
+      : [[region, c.code] as const];
+  }),
+);
+
+/** ETA band between two FCargo SOATO settlements/regions (same region → short). */
+export function etaBandForSettlements(fromId: string, toId: string): EtaBand {
+  const fromRegion = fromId.slice(0, 4);
+  const toRegion = toId.slice(0, 4);
+  const fromHub = HUB_BY_REGION.get(fromRegion);
+  const toHub = HUB_BY_REGION.get(toRegion);
+  if (fromRegion === toRegion || (fromHub && fromHub === toHub)) return "short";
+  if (!fromHub || !toHub) return "long";
+  return etaBandForDistance(getDistanceKm(fromHub, toHub));
+}
+
+export function etaHoursForSettlements(fromId: string, toId: string): number {
+  return ETA_HOURS[etaBandForSettlements(fromId, toId)];
 }
 
 export function getDeliveryRoute(
@@ -150,20 +179,22 @@ export function routePath(fromCode: string, toCode: string) {
   return `/delivery/${fromCode.toLowerCase()}/${toCode.toLowerCase()}/`;
 }
 
+export function etaHoursLabel(locale: Locale, hours: number): string {
+  if (locale === "uz") return `${hours} soatgacha`;
+  if (locale === "zh") return `${hours} 小时内`;
+  return `до ${hours} часов`;
+}
+
 export function etaLabel(locale: Locale, band: EtaBand): string {
-  if (locale === "uz") {
-    if (band === "near") return "Odatda 1–2 ish kuni (orientir)";
-    if (band === "mid") return "Odatda 2–4 ish kuni (orientir)";
-    return "Odatda 3–5 ish kuni (orientir)";
-  }
-  if (locale === "zh") {
-    if (band === "near") return "通常 1–2 个工作日（参考）";
-    if (band === "mid") return "通常 2–4 个工作日（参考）";
-    return "通常 3–5 个工作日（参考）";
-  }
-  if (band === "near") return "Обычно 1–2 рабочих дня (ориентир)";
-  if (band === "mid") return "Обычно 2–4 рабочих дня (ориентир)";
-  return "Обычно 3–5 рабочих дней (ориентир)";
+  return etaHoursLabel(locale, ETA_HOURS[band]);
+}
+
+/** Sentence-initial form, e.g. «Доставка до 48 часов». */
+export function etaSentence(locale: Locale, band: EtaBand): string {
+  const hours = ETA_HOURS[band];
+  if (locale === "uz") return `Yetkazish ${hours} soatgacha`;
+  if (locale === "zh") return `${hours} 小时内送达`;
+  return `Доставка до ${hours} часов`;
 }
 
 /** Genitive forms for «из {city}» in route titles / meta. */
@@ -233,7 +264,7 @@ export function routeMetaDescription(
   route: DeliveryRoute,
 ): string {
   const to = cityDisplayName(route.to, locale);
-  const eta = etaLabel(locale, route.etaBand);
+  const eta = etaSentence(locale, route.etaBand);
   if (locale === "uz") {
     const from = cityDisplayName(route.from, locale);
     return `${from}dan ${to}ga pochta va kuryer (~${route.distanceKm} km). ${eta}. Kalkulyatorda orientir, yakuniy narx — menejer. Oferta emas.`;
@@ -315,7 +346,7 @@ export function routeFaq(
 ): Array<{ question: string; answer: string }> {
   const from = cityDisplayName(route.from, locale);
   const to = cityDisplayName(route.to, locale);
-  const eta = etaLabel(locale, route.etaBand);
+  const eta = etaSentence(locale, route.etaBand);
   const fromCityFaq =
     locale === "zh" ? undefined : locale === "uz" ? route.from.faqUz[0] : route.from.faqRu[0];
   const toCityFaq =
