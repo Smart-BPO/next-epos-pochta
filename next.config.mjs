@@ -161,10 +161,10 @@ const nextConfig = {
         source: "/images/:path*",
         headers: [...securityHeaders, publicFramingHeader, longCache],
       },
-      {
-        source: "/_next/static/:path*",
-        headers: [longCache],
-      },
+      // Dev chunk names are reused across edits; immutable caching serves stale CSS/JS.
+      ...(process.env.NODE_ENV === "production"
+        ? [{ source: "/_next/static/:path*", headers: [longCache] }]
+        : []),
       {
         source: "/favicon.svg",
         headers: [...securityHeaders, publicFramingHeader, longCache],

@@ -6,6 +6,7 @@ import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import { accountCopy } from "@/data/account-copy";
 import { Button } from "@/components/atoms/Button";
+import { AccountStatusBadge } from "@/components/account/AccountStatusBadge";
 import {
   accountAuthBody,
   type AccountAuthMode,
@@ -83,25 +84,68 @@ export function AccountShipmentDetail({
     `/tracking/?number=${encodeURIComponent(trackingNumber)}`,
   );
 
+  const facts: Array<{ label: string; value: string }> = detail
+    ? [
+        { label: c.fromLabel, value: detail.fromLabel || "—" },
+        { label: c.toLabel, value: detail.toLabel || "—" },
+        ...(detail.createdAt
+          ? [
+              {
+                label: c.createdAt,
+                value: new Date(detail.createdAt).toLocaleString(),
+              },
+            ]
+          : []),
+        ...(detail.estimatedDeliveryAt
+          ? [
+              {
+                label: c.eta,
+                value: new Date(detail.estimatedDeliveryAt).toLocaleDateString(),
+              },
+            ]
+          : []),
+        ...(detail.deliveredAt
+          ? [
+              {
+                label: c.deliveredAt,
+                value: new Date(detail.deliveredAt).toLocaleString(),
+              },
+            ]
+          : []),
+      ]
+    : [];
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="m-0 font-mono text-lg font-semibold text-ink">
+        <div className="min-w-0">
+          <p className="m-0 text-xs font-semibold uppercase tracking-wide text-black/40">
+            {c.trackLabel}
+          </p>
+          <p className="mt-0.5 mb-0 break-all font-mono text-lg font-semibold text-ink">
             {trackingNumber}
           </p>
           {detail ? (
-            <p className="mt-1 m-0 text-sm text-black/55">{detail.statusLabel}</p>
+            <AccountStatusBadge
+              stage={detail.stage}
+              label={detail.statusLabel}
+              className="mt-2"
+            />
           ) : null}
         </div>
         {onClose ? (
-          <Button type="button" variant="ghost" onClick={onClose}>
+          <Button type="button" variant="ghost" onClick={onClose} aria-label="Close">
             ✕
           </Button>
         ) : null}
       </div>
 
-      {busy ? <p className="m-0 text-sm text-black/45">{c.refresh}…</p> : null}
+      {busy ? (
+        <div className="space-y-2" aria-busy>
+          <div className="h-16 animate-pulse rounded-xl bg-black/[0.04]" />
+          <div className="h-24 animate-pulse rounded-xl bg-black/[0.04]" />
+        </div>
+      ) : null}
       {error ? (
         <p className="m-0 text-sm text-primary" role="alert">
           {error}
@@ -110,29 +154,16 @@ export function AccountShipmentDetail({
 
       {detail ? (
         <>
-          <div className="space-y-1 text-sm text-black/65">
-            <p className="m-0">
-              {[detail.fromLabel, detail.toLabel].filter(Boolean).join(" → ") ||
-                "—"}
-            </p>
-            {detail.createdAt ? (
-              <p className="m-0">
-                {c.createdAt}: {new Date(detail.createdAt).toLocaleString()}
-              </p>
-            ) : null}
-            {detail.estimatedDeliveryAt ? (
-              <p className="m-0">
-                {c.eta}:{" "}
-                {new Date(detail.estimatedDeliveryAt).toLocaleDateString()}
-              </p>
-            ) : null}
-            {detail.deliveredAt ? (
-              <p className="m-0">
-                {c.deliveredAt}:{" "}
-                {new Date(detail.deliveredAt).toLocaleString()}
-              </p>
-            ) : null}
-          </div>
+          <dl className="m-0 grid gap-x-6 gap-y-3 rounded-2xl bg-black/[0.025] p-4 sm:grid-cols-2">
+            {facts.map((f) => (
+              <div key={f.label} className="min-w-0">
+                <dt className="text-xs text-black/45">{f.label}</dt>
+                <dd className="m-0 mt-0.5 text-sm font-medium text-ink">
+                  {f.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
 
           <div>
             <h3 className="m-0 mb-2 font-display text-base font-semibold text-ink">

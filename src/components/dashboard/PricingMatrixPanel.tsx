@@ -22,7 +22,7 @@ import {
   importRoutesCsvAction,
   upsertRouteAction,
 } from "@/app/dashboard/(app)/pricing/actions";
-import { routesToCsv } from "@/lib/pricing/routes";
+import { routesToCsv } from "@/lib/pricing/routes-csv";
 
 export function PricingMatrixPanel({
   initialRoutes,

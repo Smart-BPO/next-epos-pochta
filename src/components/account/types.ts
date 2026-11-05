@@ -2,6 +2,7 @@ export type AccountLinked = {
   id: string;
   phone: string;
   displayName: string | null;
+  linkedAt?: string;
 };
 
 export type AccountShipmentRow = {

@@ -179,6 +179,33 @@ export function accountCopy(locale: Locale) {
       "请先通过 Telegram 验证手机号。",
     ),
     fcargoCardId: loc(locale, "Mijoz ID", "ID клиента", "客户 ID"),
+    searchPlaceholder: loc(
+      locale,
+      "Trek-raqam yoki shahar boʻyicha qidirish",
+      "Поиск по трек-номеру или городу",
+      "按运单号或城市搜索",
+    ),
+    noMatches: loc(
+      locale,
+      "Hech narsa topilmadi.",
+      "Ничего не найдено.",
+      "未找到结果。",
+    ),
+    emptyLead: loc(
+      locale,
+      "Birinchi joʻnatmani yarating — u shu yerda paydo boʻladi.",
+      "Создайте первое отправление — оно появится здесь.",
+      "创建第一个运单后会显示在这里。",
+    ),
+    stepPhone: loc(locale, "Telefon raqam", "Номер телефона", "手机号"),
+    stepCode: loc(locale, "SMS kod", "Код из SMS", "短信验证码"),
+    codeSentTo: loc(
+      locale,
+      "Kod yuborildi:",
+      "Код отправлен на",
+      "验证码已发送至",
+    ),
+    changePhone: loc(locale, "Raqamni oʻzgartirish", "Изменить номер", "更换号码"),
   };
 }
 

@@ -23,21 +23,28 @@ export function AccountOtpLink({
   initialPhone = "",
   onLinkedChange,
   compact = false,
+  probe = true,
+  hideIntro = false,
+  initialError = null,
 }: {
   locale: Locale;
   auth: AccountAuthMode;
   initialPhone?: string;
   onLinkedChange?: (linked: AccountLinked | null) => void;
   compact?: boolean;
+  /** When false, the parent already checked the session — start at the phone step. */
+  probe?: boolean;
+  hideIntro?: boolean;
+  initialError?: string | null;
 }) {
   const c = accountCopy(locale);
-  const [step, setStep] = useState<Step>("loading");
+  const [step, setStep] = useState<Step>(probe ? "loading" : "phone");
   const [phone, setPhone] = useState(initialPhone);
   const [challenge, setChallenge] = useState("");
   const [code, setCode] = useState("");
   const [linked, setLinked] = useState<AccountLinked | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
   const [contactUrl, setContactUrl] = useState<string | null>(null);
 
   const mapError = (codeName?: string) => {
@@ -65,6 +72,7 @@ export function AccountOtpLink({
   };
 
   useEffect(() => {
+    if (!probe) return;
     let cancelled = false;
     void (async () => {
       try {
@@ -112,7 +120,7 @@ export function AccountOtpLink({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth.kind, auth.kind === "telegram" ? auth.initData : "cookie"]);
+  }, [probe, auth.kind, auth.kind === "telegram" ? auth.initData : "cookie"]);
 
   const startOtp = async () => {
     if (!isValidUzPhone(phone)) {
@@ -251,9 +259,14 @@ export function AccountOtpLink({
     );
   }
 
+  const steps = [
+    { id: "phone", label: c.stepPhone },
+    { id: "code", label: c.stepCode },
+  ] as const;
+
   return (
-    <div className="space-y-3">
-      {!compact ? (
+    <div className="space-y-4">
+      {hideIntro ? null : !compact ? (
         <div>
           <h2 className="m-0 font-display text-xl font-bold text-ink">
             {c.linkTitle}
@@ -264,56 +277,100 @@ export function AccountOtpLink({
         <p className="m-0 text-sm text-black/55">{c.linkHint}</p>
       )}
 
+      <ol className="m-0 flex list-none items-center gap-2 p-0 text-xs font-semibold">
+        {steps.map((s, i) => {
+          const active = step === s.id;
+          const done = s.id === "phone" && step === "code";
+          return (
+            <li key={s.id} className="flex items-center gap-2">
+              {i > 0 ? (
+                <span className="h-px w-6 bg-black/15" aria-hidden />
+              ) : null}
+              <span
+                className={
+                  active || done
+                    ? "inline-flex size-5 items-center justify-center rounded-full bg-primary text-[10px] text-white"
+                    : "inline-flex size-5 items-center justify-center rounded-full bg-black/[0.07] text-[10px] text-black/45"
+                }
+              >
+                {done ? "✓" : i + 1}
+              </span>
+              <span className={active ? "text-ink" : "text-black/45"}>
+                {s.label}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+
       {step === "phone" ? (
-        <>
-          <label className={fieldLabel}>
+        <form
+          className="space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void startOtp();
+          }}
+        >
+          <label className={`${fieldLabel} block`}>
             {c.phoneLabel}
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               inputMode="tel"
               autoComplete="tel"
-              placeholder="+998"
+              placeholder="+998 XX XXX XX XX"
               className="mt-1.5"
             />
           </label>
-          <Button type="button" disabled={busy} onClick={startOtp}>
+          <Button type="submit" disabled={busy} className="w-full sm:w-auto">
             {c.sendCode}
           </Button>
-        </>
+        </form>
       ) : (
-        <>
-          <label className={fieldLabel}>
+        <form
+          className="space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (code.length === 6) void verify();
+          }}
+        >
+          <p className="m-0 text-sm text-black/55">
+            {c.codeSentTo}{" "}
+            <span className="font-semibold text-ink">{phone}</span>
+          </p>
+          <label className={`${fieldLabel} block`}>
             {c.codeLabel}
             <Input
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
               inputMode="numeric"
               autoComplete="one-time-code"
-              className="mt-1.5"
+              autoFocus
+              placeholder="••••••"
+              className="mt-1.5 font-mono tracking-[0.4em]"
             />
           </label>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" disabled={busy || code.length !== 6} onClick={verify}>
+            <Button type="submit" disabled={busy || code.length !== 6}>
               {c.verify}
             </Button>
             <Button type="button" variant="ghost" disabled={busy} onClick={resend}>
               {c.resendCode}
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={busy}
-              onClick={() => {
-                setStep("phone");
-                setCode("");
-                setChallenge("");
-              }}
-            >
-              ←
-            </Button>
           </div>
-        </>
+          <button
+            type="button"
+            disabled={busy}
+            className="text-sm font-semibold text-black/50 underline-offset-2 hover:text-ink hover:underline"
+            onClick={() => {
+              setStep("phone");
+              setCode("");
+              setChallenge("");
+            }}
+          >
+            ← {c.changePhone}
+          </button>
+        </form>
       )}
 
       {error ? (
