@@ -542,15 +542,10 @@ export function CalculatorForm({
           </div>
 
           {cabinet ? (
-            <div className="grid gap-3 border-t border-black/[0.06] pt-4">
-              <p className="m-0 text-xs leading-relaxed text-black/50">
-                {c.disclaimer}
-              </p>
-              <div>
-                <Button href={newShipmentHref} variant="primary" size="sm">
-                  {loc(locale, "Joʻnatma yaratish", "Оформить отправление", "创建运单")}
-                </Button>
-              </div>
+            <div className="border-t border-black/[0.06] pt-4">
+              <Button href={newShipmentHref} variant="primary" size="sm">
+                {loc(locale, "Joʻnatma yaratish", "Оформить отправление", "创建运单")}
+              </Button>
             </div>
           ) : null}
 

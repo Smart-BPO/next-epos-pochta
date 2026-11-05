@@ -155,7 +155,7 @@ export function CabinetNewView() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 sm:gap-5">
+    <div className="flex w-full flex-col gap-4 sm:gap-5">
       <h1 className={cabPageTitle}>{c.navNew}</h1>
       {createdTracking ? (
         <div className={`${cabCard} flex flex-col items-center px-5 py-10 text-center sm:px-7`}>

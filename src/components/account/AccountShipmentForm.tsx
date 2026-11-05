@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FileText,
   MapPinned,
@@ -8,11 +8,17 @@ import {
 } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import { accountCopy } from "@/data/account-copy";
+import { etaHoursLabel } from "@/data/delivery-routes";
 import { Button } from "@/components/atoms/Button";
 import { Input, Textarea } from "@/components/atoms/Input";
 import { SettlementSelect } from "@/components/atoms/SettlementSelect";
 import { getSettlementById, settlementLabel } from "@/data/settlements";
 import { createRequestId, isValidUzPhone, normalizePhone } from "@/lib/form/utils";
+import { fetchEstimate } from "@/lib/pricing/client";
+import {
+  formatUzs,
+  type QuoteEstimate,
+} from "@/lib/pricing/estimate";
 import { cn } from "@/lib/cn";
 import { controlCheckbox, fieldLabel } from "@/styles/ui";
 import {
@@ -64,6 +70,11 @@ function Field({
   );
 }
 
+function parsePositive(raw: string): number | null {
+  const n = Number(String(raw).replace(",", "."));
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
 export function AccountShipmentForm({
   locale,
   auth,
@@ -76,8 +87,14 @@ export function AccountShipmentForm({
   onSuccess: (trackingNumber: string) => void;
 }) {
   const c = accountCopy(locale);
-  const [from, setFrom] = useState(prefill?.from ?? "");
-  const [to, setTo] = useState(prefill?.to ?? "");
+  const [from, setFrom] = useState(() => {
+    const raw = prefill?.from ?? "";
+    return raw ? (getSettlementById(raw)?.id ?? raw) : "";
+  });
+  const [to, setTo] = useState(() => {
+    const raw = prefill?.to ?? "";
+    return raw ? (getSettlementById(raw)?.id ?? raw) : "";
+  });
   const [receiverName, setReceiverName] = useState("");
   const [receiverPhone, setReceiverPhone] = useState("");
   const [weight, setWeight] = useState(prefill?.weight ?? "1");
@@ -90,7 +107,77 @@ export function AccountShipmentForm({
   const [payerType, setPayerType] = useState<"sender" | "receiver">("sender");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [estimate, setEstimate] = useState<QuoteEstimate | null>(null);
+  const [estimating, setEstimating] = useState(false);
+  const [estimateError, setEstimateError] = useState(false);
   const requestIdRef = useRef<string | null>(null);
+  const quoteSeq = useRef(0);
+
+  const weightKg = parsePositive(weight);
+  const lengthCm = parsePositive(length);
+  const widthCm = parsePositive(width);
+  const heightCm = parsePositive(height);
+  const fromMeta = from ? getSettlementById(from) : undefined;
+  const toMeta = to ? getSettlementById(to) : undefined;
+  const canEstimate = Boolean(
+    fromMeta && toMeta && fromMeta.id !== toMeta.id && weightKg,
+  );
+
+  useEffect(() => {
+    if (!canEstimate || !fromMeta || !toMeta || !weightKg) {
+      quoteSeq.current += 1;
+      setEstimate(null);
+      setEstimating(false);
+      setEstimateError(false);
+      return;
+    }
+
+    const fromRegionId = fromMeta.regionId;
+    const fromCityId = fromMeta.id;
+    const toRegionId = toMeta.regionId;
+    const toCityId = toMeta.id;
+    const seq = ++quoteSeq.current;
+    setEstimating(true);
+    setEstimateError(false);
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        const next = await fetchEstimate({
+          fromRegionId,
+          fromCityId,
+          toRegionId,
+          toCityId,
+          weightKg,
+          lengthCm,
+          widthCm,
+          heightCm,
+          unknownDims: !(lengthCm && widthCm && heightCm),
+          pickup: false,
+          doorDelivery: false,
+          places: 1,
+          urgent: false,
+        });
+        if (seq !== quoteSeq.current) return;
+        setEstimating(false);
+        if (!next) {
+          setEstimate(null);
+          setEstimateError(true);
+          return;
+        }
+        setEstimate(next);
+        setEstimateError(false);
+      })();
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [canEstimate, from, to, weightKg, lengthCm, widthCm, heightCm, fromMeta, toMeta]);
+
+  const etaLabel = estimate
+    ? estimate.etaHours
+      ? etaHoursLabel(locale, estimate.etaHours)
+      : `${estimate.etaDays} ${locale === "ru" ? "дн." : locale === "zh" ? "天" : "kun"}`
+    : null;
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -117,8 +204,6 @@ export function AccountShipmentForm({
       if (!requestIdRef.current) {
         requestIdRef.current = createRequestId("acct");
       }
-      const fromMeta = getSettlementById(from);
-      const toMeta = getSettlementById(to);
       const res = await fetch("/api/account/shipment/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -167,7 +252,7 @@ export function AccountShipmentForm({
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4 sm:gap-5">
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4 sm:gap-5">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
         <section className={`${card} p-4 sm:p-5`}>
           <SectionTitle icon={MapPinned}>{c.sectionRoute}</SectionTitle>
@@ -273,48 +358,79 @@ export function AccountShipmentForm({
 
       <section className={`${card} p-4 sm:p-5`}>
         <SectionTitle icon={FileText}>{c.sectionPayment}</SectionTitle>
-        <div className="grid gap-4">
-          <fieldset className="m-0 border-0 p-0">
-            <legend className={fieldLabel}>{c.payerQuestion}</legend>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {(
-                [
-                  ["sender", c.payerSender],
-                  ["receiver", c.payerReceiver],
-                ] as const
-              ).map(([value, label]) => {
-                const active = payerType === value;
-                return (
-                  <label
-                    key={value}
-                    className={cn(
-                      "flex cursor-pointer items-center gap-2.5 rounded-xl border px-3.5 py-3 text-sm transition",
-                      active
-                        ? "border-primary/40 bg-primary-soft/50 text-ink"
-                        : "border-black/10 bg-white text-black/70 hover:border-black/20",
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      name="payer"
-                      className="accent-[var(--color-primary)]"
-                      checked={active}
-                      onChange={() => setPayerType(value)}
-                    />
-                    {label}
-                  </label>
-                );
-              })}
-            </div>
-          </fieldset>
-          <Field label={c.commentLabel}>
-            <Textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows={3}
-              placeholder={c.commentPlaceholder}
-            />
-          </Field>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:items-start">
+          <div className="grid gap-4">
+            <fieldset className="m-0 border-0 p-0">
+              <legend className={fieldLabel}>{c.payerQuestion}</legend>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {(
+                  [
+                    ["sender", c.payerSender],
+                    ["receiver", c.payerReceiver],
+                  ] as const
+                ).map(([value, label]) => {
+                  const active = payerType === value;
+                  return (
+                    <label
+                      key={value}
+                      className={cn(
+                        "flex cursor-pointer items-center gap-2.5 rounded-xl border px-3.5 py-3 text-sm transition",
+                        active
+                          ? "border-primary/40 bg-primary-soft/50 text-ink"
+                          : "border-black/10 bg-white text-black/70 hover:border-black/20",
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name="payer"
+                        className="accent-[var(--color-primary)]"
+                        checked={active}
+                        onChange={() => setPayerType(value)}
+                      />
+                      {label}
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+            <Field label={c.commentLabel}>
+              <Textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                rows={3}
+                placeholder={c.commentPlaceholder}
+              />
+            </Field>
+          </div>
+
+          <div className="rounded-xl border border-black/[0.08] bg-black/[0.02] px-4 py-3.5">
+            <p className="m-0 text-[0.7rem] font-semibold uppercase tracking-wide text-black/45">
+              {c.estimateLabel}
+            </p>
+            {!canEstimate ? (
+              <p className="mt-2 mb-0 text-sm text-black/50">{c.estimateHint}</p>
+            ) : estimating ? (
+              <p className="mt-2 mb-0 text-sm text-black/50">{c.estimateLoading}</p>
+            ) : estimateError ? (
+              <p className="mt-2 mb-0 text-sm text-primary">{c.estimateFailed}</p>
+            ) : estimate ? (
+              <div className="mt-2">
+                <p className="m-0 font-display text-2xl font-semibold tabular-nums text-ink">
+                  {formatUzs(estimate.amount, locale)}{" "}
+                  <span className="text-base font-medium text-black/50">
+                    {c.currencySuffix}
+                  </span>
+                </p>
+                {etaLabel ? (
+                  <p className="mt-1 mb-0 text-sm text-black/55">
+                    {c.estimateEta}: {etaLabel}
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              <p className="mt-2 mb-0 text-sm text-black/50">{c.estimateHint}</p>
+            )}
+          </div>
         </div>
       </section>
 
@@ -324,10 +440,7 @@ export function AccountShipmentForm({
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="m-0 max-w-md text-xs leading-relaxed text-black/45">
-          {c.disclaimer}
-        </p>
+      <div className="flex justify-end">
         <Button type="submit" disabled={busy} className="w-full sm:w-auto">
           {c.submitShipment}
         </Button>
