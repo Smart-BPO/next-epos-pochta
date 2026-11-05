@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, CircleHelp, LogOut, Settings } from "lucide-react";
+import { Bell, CircleHelp, Globe, LogOut, Settings } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import { localePath } from "@/i18n/paths";
 import { accountCopy } from "@/data/account-copy";
@@ -67,9 +67,10 @@ export function CabinetHeaderActions({ locale }: { locale: Locale }) {
             ref={ref as React.RefCallback<HTMLButtonElement>}
             onClick={onClick}
             {...a11y}
-            className="inline-flex h-9 min-w-9 items-center justify-center rounded-xl border border-black/10 bg-white px-2.5 text-xs font-bold text-ink transition hover:bg-black/[0.03]"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-white px-2.5 text-xs font-bold text-ink transition hover:bg-black/[0.03]"
             aria-label="Language"
           >
+            <Globe className="size-3.5 text-black/45" strokeWidth={1.75} aria-hidden />
             {locale.toUpperCase()}
           </button>
         )}
