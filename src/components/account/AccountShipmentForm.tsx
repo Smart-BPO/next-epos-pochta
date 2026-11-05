@@ -119,9 +119,7 @@ export function AccountShipmentForm({
   const heightCm = parsePositive(height);
   const fromMeta = from ? getSettlementById(from) : undefined;
   const toMeta = to ? getSettlementById(to) : undefined;
-  const canEstimate = Boolean(
-    fromMeta && toMeta && fromMeta.id !== toMeta.id && weightKg,
-  );
+  const canEstimate = Boolean(fromMeta && toMeta && weightKg);
 
   useEffect(() => {
     if (!canEstimate || !fromMeta || !toMeta || !weightKg) {
@@ -185,10 +183,6 @@ export function AccountShipmentForm({
       setError(c.required);
       return;
     }
-    if (from === to) {
-      setError(c.sameRoute);
-      return;
-    }
     if (!receiverName.trim()) {
       setError(c.required);
       return;
@@ -236,9 +230,7 @@ export function AccountShipmentForm({
         setError(
           json.error === "receiver_required" || json.error === "route_required"
             ? c.required
-            : json.error === "same_route"
-              ? c.sameRoute
-              : c.genericError,
+            : c.genericError,
         );
         return;
       }

@@ -26,6 +26,7 @@ export type EposClientLinkRow = {
   phone: string;
   fcargo_client_id: string | null;
   display_name: string | null;
+  avatar_url?: string | null;
   token_cipher: string;
   session_token: string;
   linked_at: string;
@@ -39,6 +40,7 @@ export type EposLinkPublic = {
   id: string;
   phone: string;
   displayName: string | null;
+  avatarUrl: string | null;
   linkedAt: string;
   subjectType: EposLinkSubjectType;
 };
@@ -81,6 +83,7 @@ export function toPublicLink(row: EposClientLinkRow): EposLinkPublic {
     id: row.id,
     phone: row.phone,
     displayName: row.display_name,
+    avatarUrl: row.avatar_url?.trim() || null,
     linkedAt: row.linked_at,
     subjectType: row.subject_type,
   };
@@ -148,6 +151,7 @@ export async function upsertClientLink(params: {
   accessToken: string;
   fcargoClientId?: string | number | null;
   displayName?: string | null;
+  avatarUrl?: string | null;
 }): Promise<EposClientLinkRow | null> {
   if (!hasSupabaseAdminConfig() || !hasMessagingSecretsKey()) return null;
   const phone = normalizeAccountPhone(params.phone);
@@ -163,27 +167,40 @@ export async function upsertClientLink(params: {
   const tokenCipher = encryptJson({ access_token: params.accessToken });
   const clientId =
     params.fcargoClientId != null ? String(params.fcargoClientId) : null;
+  const avatarUrl = params.avatarUrl?.trim() || null;
   const nowIso = new Date().toISOString();
   const sessionExpires = sessionExpiresAtFrom();
 
   if (existing) {
-    const { data, error } = await admin
+    const patch = {
+      phone,
+      fcargo_client_id: clientId ?? existing.fcargo_client_id,
+      display_name: params.displayName ?? existing.display_name,
+      avatar_url: avatarUrl ?? existing.avatar_url ?? null,
+      token_cipher: tokenCipher,
+      session_token: sessionToken,
+      last_used_at: nowIso,
+      last_validated_at: nowIso,
+      session_expires_at: sessionExpires,
+      revoked_at: null,
+      linked_at: nowIso,
+    };
+    let { data, error } = await admin
       .from("epos_fcargo_client_links")
-      .update({
-        phone,
-        fcargo_client_id: clientId ?? existing.fcargo_client_id,
-        display_name: params.displayName ?? existing.display_name,
-        token_cipher: tokenCipher,
-        session_token: sessionToken,
-        last_used_at: nowIso,
-        last_validated_at: nowIso,
-        session_expires_at: sessionExpires,
-        revoked_at: null,
-        linked_at: nowIso,
-      })
+      .update(patch)
       .eq("id", existing.id)
       .select("*")
       .maybeSingle();
+    if (error && /avatar_url/i.test(error.message)) {
+      const { avatar_url: _a, ...withoutAvatar } = patch;
+      void _a;
+      ({ data, error } = await admin
+        .from("epos_fcargo_client_links")
+        .update(withoutAvatar)
+        .eq("id", existing.id)
+        .select("*")
+        .maybeSingle());
+    }
     if (error) {
       console.warn("[epos-account] update link", error.message);
       return null;
@@ -199,22 +216,33 @@ export async function upsertClientLink(params: {
     .eq("subject_id", params.subjectId)
     .is("revoked_at", null);
 
-  const { data, error } = await admin
+  const insertRow = {
+    subject_type: params.subjectType,
+    subject_id: params.subjectId,
+    phone,
+    fcargo_client_id: clientId,
+    display_name: params.displayName ?? null,
+    avatar_url: avatarUrl,
+    token_cipher: tokenCipher,
+    session_token: sessionToken,
+    last_used_at: nowIso,
+    last_validated_at: nowIso,
+    session_expires_at: sessionExpires,
+  };
+  let { data, error } = await admin
     .from("epos_fcargo_client_links")
-    .insert({
-      subject_type: params.subjectType,
-      subject_id: params.subjectId,
-      phone,
-      fcargo_client_id: clientId,
-      display_name: params.displayName ?? null,
-      token_cipher: tokenCipher,
-      session_token: sessionToken,
-      last_used_at: nowIso,
-      last_validated_at: nowIso,
-      session_expires_at: sessionExpires,
-    })
+    .insert(insertRow)
     .select("*")
     .maybeSingle();
+  if (error && /avatar_url/i.test(error.message)) {
+    const { avatar_url: _a, ...withoutAvatar } = insertRow;
+    void _a;
+    ({ data, error } = await admin
+      .from("epos_fcargo_client_links")
+      .insert(withoutAvatar)
+      .select("*")
+      .maybeSingle());
+  }
   if (error) {
     console.warn("[epos-account] insert link", error.message);
     return null;
@@ -277,6 +305,7 @@ export async function markLinkValidated(
     displayName?: string | null;
     phone?: string | null;
     fcargoClientId?: string | number | null;
+    avatarUrl?: string | null;
   },
 ): Promise<void> {
   if (!hasSupabaseAdminConfig()) return;
@@ -292,11 +321,26 @@ export async function markLinkValidated(
   if (patch?.fcargoClientId != null) {
     update.fcargo_client_id = String(patch.fcargoClientId);
   }
-  await admin
+  if (patch?.avatarUrl !== undefined) {
+    update.avatar_url = patch.avatarUrl?.trim() || null;
+  }
+  let { error } = await admin
     .from("epos_fcargo_client_links")
     .update(update)
     .eq("id", row.id)
     .is("revoked_at", null);
+  if (error && /avatar_url/i.test(error.message)) {
+    const { avatar_url: _a, ...withoutAvatar } = update;
+    void _a;
+    ({ error } = await admin
+      .from("epos_fcargo_client_links")
+      .update(withoutAvatar)
+      .eq("id", row.id)
+      .is("revoked_at", null));
+  }
+  if (error) {
+    console.warn("[epos-account] mark validated", error.message);
+  }
 }
 
 export async function storeOtpChallenge(params: {

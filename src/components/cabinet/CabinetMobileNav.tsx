@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import {
   Calculator,
   ClipboardList,
   Home,
+  Inbox,
   PackagePlus,
-  RotateCcw,
 } from "lucide-react";
 import { cabinetCopy } from "@/data/cabinet";
 import type { Locale } from "@/i18n/config";
@@ -23,14 +23,16 @@ import { cn } from "@/lib/cn";
 
 const ICONS: Partial<Record<CabinetNavId, typeof Home>> = {
   home: Home,
-  orders: ClipboardList,
-  returns: RotateCcw,
+  outgoing: ClipboardList,
+  incoming: Inbox,
   calculator: Calculator,
   new: PackagePlus,
 };
 
 export function CabinetMobileNav({ locale }: { locale: Locale }) {
   const pathname = usePathname() || "/cabinet/";
+  const searchParams = useSearchParams();
+  const dir = searchParams.get("dir");
   const isClient = useIsClient();
   const c = cabinetCopy(locale);
   const primary = [
@@ -60,7 +62,7 @@ export function CabinetMobileNav({ locale }: { locale: Locale }) {
         }}
       >
         {primary.map((item) => {
-          const active = isCabinetNavActive(pathname, item, locale);
+          const active = isCabinetNavActive(pathname, item, locale, dir);
           const Icon = ICONS[item.id] ?? Home;
           const isNew = item.id === "new";
           return (

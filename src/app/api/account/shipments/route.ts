@@ -12,6 +12,10 @@ function parseFilter(raw: unknown): AccountShipmentFilter {
   return "all";
 }
 
+function parseDirection(raw: unknown): "out" | "in" {
+  return raw === "in" ? "in" : "out";
+}
+
 async function handle(request: Request, body: Record<string, unknown>) {
   const linked = await requireLinkedAccount(request, body);
   if (!linked.ok) return linked.response;
@@ -26,11 +30,13 @@ async function handle(request: Request, body: Record<string, unknown>) {
         ? Number(body.page)
         : 1;
   const filter = parseFilter(body.filter);
+  const direction = parseDirection(body.direction);
 
   const result = await listAccountShipments(linked.link, {
     locale,
     page: Number.isFinite(page) ? page : 1,
     filter,
+    direction,
   });
 
   if (!result.ok) {
@@ -57,11 +63,13 @@ export async function GET(request: Request) {
   const locale = url.searchParams.get("locale") || "uz";
   const page = url.searchParams.get("page") || "1";
   const filter = url.searchParams.get("filter") || "all";
+  const direction = url.searchParams.get("direction") || "out";
   return handle(request, {
     ...(initData ? { initData } : {}),
     locale,
     page,
     filter,
+    direction,
   });
 }
 

@@ -17,6 +17,37 @@ import { useCabinetSession } from "@/components/cabinet/CabinetSession";
 import { useCabinetData } from "@/components/cabinet/CabinetData";
 import { cn } from "@/lib/cn";
 
+function UserAvatar({
+  name,
+  phone,
+  avatarUrl,
+}: {
+  name: string;
+  phone: string;
+  avatarUrl?: string | null;
+}) {
+  const [failed, setFailed] = useState(false);
+  const src = avatarUrl?.trim() || "";
+  if (src && !failed) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- remote FCargo avatar URL
+      <img
+        src={src}
+        alt=""
+        width={36}
+        height={36}
+        onError={() => setFailed(true)}
+        className="size-9 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <span className="inline-flex size-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+      {initials(name, phone)}
+    </span>
+  );
+}
+
 type MenuId = "locale" | "attention" | "profile" | null;
 
 const LOCALES: Locale[] = ["uz", "ru", "zh"];
@@ -160,16 +191,29 @@ export function CabinetHeaderActions({ locale }: { locale: Locale }) {
             ref={ref as React.RefCallback<HTMLButtonElement>}
             onClick={onClick}
             {...a11y}
-            className="inline-flex size-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-white transition hover:bg-primary-hover"
+            className="inline-flex size-9 items-center justify-center overflow-hidden rounded-full transition hover:opacity-90"
             aria-label={name}
           >
-            {initials(linked.displayName || "", linked.phone)}
+            <UserAvatar
+              name={linked.displayName || ""}
+              phone={linked.phone}
+              avatarUrl={linked.avatarUrl}
+            />
           </button>
         )}
       >
-        <div className="border-b border-black/[0.06] px-3.5 py-3">
-          <p className="m-0 truncate text-sm font-semibold text-ink">{name}</p>
-          <p className="m-0 mt-0.5 truncate text-xs text-black/40">{linked.phone}</p>
+        <div className="flex items-center gap-3 border-b border-black/[0.06] px-3.5 py-3">
+          <UserAvatar
+            name={linked.displayName || ""}
+            phone={linked.phone}
+            avatarUrl={linked.avatarUrl}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="m-0 truncate text-sm font-semibold text-ink">{name}</p>
+            <p className="m-0 mt-0.5 truncate text-xs text-black/40">
+              {linked.phone}
+            </p>
+          </div>
         </div>
         <div className="space-y-0.5 p-1.5">
           <Link

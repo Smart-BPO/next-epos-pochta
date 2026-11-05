@@ -181,6 +181,7 @@ export type EposOtpVerifyResult = {
   name: string | null;
   phone: string | null;
   email: string | null;
+  avatarUrl: string | null;
   raw: Record<string, unknown>;
 };
 
@@ -189,6 +190,7 @@ export type EposClientProfile = {
   name: string | null;
   phone: string | null;
   email: string | null;
+  avatarUrl: string | null;
   raw: Record<string, unknown>;
 };
 

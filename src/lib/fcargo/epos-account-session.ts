@@ -52,21 +52,32 @@ export async function continueAccountSession(params: {
   let profile: EposClientProfile | null = null;
   let bearerAlive: boolean | null = null;
 
+  let nextLink = link;
+
   if (shouldProbe) {
     const probe = await eposBearerAlive(token);
     if (probe.alive === true) {
       bearerAlive = true;
       profile = probe.profile;
-      await markLinkValidated(
-        link,
-        profile
-          ? {
-              displayName: profile.name,
-              phone: profile.phone,
-              fcargoClientId: profile.id,
-            }
-          : undefined,
-      );
+      if (profile) {
+        await markLinkValidated(link, {
+          displayName: profile.name,
+          phone: profile.phone,
+          fcargoClientId: profile.id,
+          avatarUrl: profile.avatarUrl,
+        });
+        nextLink = {
+          ...link,
+          display_name: profile.name?.trim() || link.display_name,
+          avatar_url: profile.avatarUrl?.trim() || link.avatar_url || null,
+          fcargo_client_id:
+            profile.id != null
+              ? String(profile.id)
+              : link.fcargo_client_id,
+        };
+      } else {
+        await markLinkValidated(link);
+      }
     } else if (probe.alive === false) {
       bearerAlive = false;
       // Keep local session — do not revoke. Next data call uses fallbacks.
@@ -81,9 +92,9 @@ export async function continueAccountSession(params: {
     }
   }
 
-  const sessionExpiresAt = await refreshWebAccountSession(link);
+  const sessionExpiresAt = await refreshWebAccountSession(nextLink);
   return {
-    linked: toPublicLink(link),
+    linked: toPublicLink(nextLink),
     sessionExpiresAt,
     profile,
     bearerAlive,

@@ -264,6 +264,7 @@ function parseOtpVerify(raw: unknown): EposOtpVerifyResult | null {
     name: pickString(client, ["name", "full_name", "fullName"]),
     phone: pickString(client, ["phone", "phone_number", "phoneNumber"]),
     email: pickString(client, ["email"]),
+    avatarUrl: pickString(client, ["avatar", "avatar_url", "avatarUrl", "photo"]),
     raw: root ?? {},
   };
 }
@@ -276,6 +277,7 @@ function parseProfile(raw: unknown): EposClientProfile {
     name: pickString(data, ["name", "full_name", "fullName"]),
     phone: pickString(data, ["phone", "phone_number", "phoneNumber"]),
     email: pickString(data, ["email"]),
+    avatarUrl: pickString(data, ["avatar", "avatar_url", "avatarUrl", "photo"]),
     raw: data,
   };
 }

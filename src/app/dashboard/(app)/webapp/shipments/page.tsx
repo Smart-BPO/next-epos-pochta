@@ -106,7 +106,6 @@ export default async function WebappShipmentsPage({
     qDigits.length >= 9 ? normalizeUzPhone(qDigits) || null : null;
 
   let rows: WebappShipmentRow[] = [];
-  let needsContactForIn = false;
 
   if (hasSupabaseAdminConfig()) {
     const client = createSupabaseAdminClient();
@@ -138,26 +137,30 @@ export default async function WebappShipmentsPage({
     }
 
     if (dir === "in") {
-      if (!contactPhone) {
-        needsContactForIn = true;
-        rows = [];
-      } else {
-        const { data: pkgs } = await client
-          .from("epos_fcargo_packages")
-          .select(
-            "id, tracking_number, status, last_event_at, sender_phone, receiver_phone, contact_session_id, from_soato, to_soato, raw_last, created_at",
-          )
-          .eq("receiver_phone", contactPhone)
-          .order("last_event_at", { ascending: false })
-          .limit(500);
-        rows = ((pkgs ?? []) as CatalogPkg[]).map((pkg) =>
-          catalogToRow(pkg, {
-            phone: contactPhone!,
-            contact_session_id: contactSession ?? pkg.contact_session_id ?? "",
-            direction: "in",
-          }),
-        );
+      // Incoming: catalog by receiver_phone (contact/phone filter optional).
+      let inReq = client
+        .from("epos_fcargo_packages")
+        .select(
+          "id, tracking_number, status, last_event_at, sender_phone, receiver_phone, contact_session_id, from_soato, to_soato, raw_last, created_at",
+        )
+        .not("receiver_phone", "is", null)
+        .order("last_event_at", { ascending: false })
+        .limit(500);
+      if (contactPhone) {
+        inReq = inReq.eq("receiver_phone", contactPhone);
+      } else if (q && /^PKG/i.test(q)) {
+        inReq = inReq.ilike("tracking_number", `%${q}%`);
+      } else if (qDigits.length >= 4) {
+        inReq = inReq.ilike("receiver_phone", `%${qDigits}%`);
       }
+      const { data: pkgs } = await inReq;
+      rows = ((pkgs ?? []) as CatalogPkg[]).map((pkg) =>
+        catalogToRow(pkg, {
+          phone: contactPhone ?? pkg.receiver_phone ?? "",
+          contact_session_id: contactSession ?? pkg.contact_session_id ?? "",
+          direction: "in",
+        }),
+      );
     } else if (contactPhone) {
       // Outbound for a specific contact/phone: catalog by sender.
       const { data: pkgs } = await client
@@ -319,7 +322,6 @@ export default async function WebappShipmentsPage({
         rows={rows}
         readOnly={readOnly}
         direction={dir}
-        needsContactForIn={needsContactForIn}
         attachAction={attachFcargoTrackAction}
         refreshAction={refreshFcargoShipmentAction}
       />

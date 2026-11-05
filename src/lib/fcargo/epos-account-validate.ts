@@ -46,6 +46,7 @@ export async function validateHotClientLinks(opts?: {
               displayName: probe.profile.name,
               phone: probe.profile.phone,
               fcargoClientId: probe.profile.id,
+              avatarUrl: probe.profile.avatarUrl,
             }
           : undefined,
       );

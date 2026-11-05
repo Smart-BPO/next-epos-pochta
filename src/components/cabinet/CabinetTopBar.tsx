@@ -2,11 +2,11 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import { cabinetCopy } from "@/data/cabinet";
-import { CabinetBrandLogo } from "@/components/cabinet/CabinetBrandLogo";
+import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { CabinetHeaderActions } from "@/components/cabinet/CabinetHeaderActions";
 import {
   cabinetHref,
@@ -18,6 +18,8 @@ import { SITE_CONFIG } from "@/utils/consts";
 
 export function CabinetTopBar({ locale }: { locale: Locale }) {
   const pathname = usePathname() || cabinetHref(locale);
+  const searchParams = useSearchParams();
+  const dir = searchParams.get("dir");
   const router = useRouter();
   const c = cabinetCopy(locale);
   const [q, setQ] = useState("");
@@ -27,12 +29,12 @@ export function CabinetTopBar({ locale }: { locale: Locale }) {
       { href: cabinetHref(locale), label: c.navHome },
     ];
     const match = getCabinetNav(locale).find((item) =>
-      isCabinetNavActive(pathname, item, locale),
+      isCabinetNavActive(pathname, item, locale, dir),
     );
     if (match && match.id !== "home") {
       items.push({ label: match.label });
     } else if (pathname.includes("/shipments/")) {
-      items.push({ label: c.navOrders });
+      items.push({ label: c.navOutgoing });
     } else if (pathname.includes("/settings")) {
       items.push({ label: c.navSettings });
     } else if (pathname.includes("/help")) {
@@ -41,7 +43,7 @@ export function CabinetTopBar({ locale }: { locale: Locale }) {
       items.push({ label: c.navNew });
     }
     return items;
-  }, [pathname, locale, c]);
+  }, [pathname, dir, locale, c]);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -60,7 +62,7 @@ export function CabinetTopBar({ locale }: { locale: Locale }) {
           className="inline-flex h-7 items-center lg:hidden"
           aria-label={SITE_CONFIG.name}
         >
-          <CabinetBrandLogo locale={locale} width={84} height={28} priority />
+          <BrandLogo locale={locale} width={84} height={28} priority />
         </Link>
         <nav
           aria-label="Breadcrumb"

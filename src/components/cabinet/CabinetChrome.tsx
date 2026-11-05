@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { Suspense, useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { Locale } from "@/i18n/config";
-import { CabinetBrandLogo } from "@/components/cabinet/CabinetBrandLogo";
+import { BrandLogo } from "@/components/atoms/BrandLogo";
 import { CabinetNav } from "@/components/cabinet/CabinetNav";
 import { CabinetTopBar } from "@/components/cabinet/CabinetTopBar";
 import { CabinetMobileNav } from "@/components/cabinet/CabinetMobileNav";
@@ -82,7 +82,7 @@ export function CabinetChrome({
                 )}
                 aria-label={SITE_CONFIG.name}
               >
-                <CabinetBrandLogo locale={locale} priority />
+                <BrandLogo locale={locale} priority className="h-full w-auto" />
               </Link>
               <button
                 type="button"
@@ -99,16 +99,22 @@ export function CabinetChrome({
             </div>
 
             <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2 pb-4">
-              <CabinetNav locale={locale} collapsed={collapsed} />
+              <Suspense fallback={null}>
+                <CabinetNav locale={locale} collapsed={collapsed} />
+              </Suspense>
             </div>
           </aside>
 
           <div className={cabMainColumn}>
-            <CabinetTopBar locale={locale} />
+            <Suspense fallback={null}>
+              <CabinetTopBar locale={locale} />
+            </Suspense>
             <main className={cn("min-w-0 p-4 sm:p-5 lg:p-6", cabMainMobilePad)}>
               {children}
             </main>
-            <CabinetMobileNav locale={locale} />
+            <Suspense fallback={null}>
+              <CabinetMobileNav locale={locale} />
+            </Suspense>
           </div>
         </div>
       </div>

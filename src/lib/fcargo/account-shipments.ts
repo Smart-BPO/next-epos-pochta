@@ -192,6 +192,24 @@ function senderPhoneFromRaw(raw: Record<string, unknown> | null): string | null 
   );
 }
 
+function receiverPhoneFromRaw(raw: Record<string, unknown> | null): string | null {
+  if (!raw) return null;
+  return (
+    pickString(raw, ["receiver_phone"]) ||
+    pickString(asRecord(raw.receiver), ["phone"]) ||
+    null
+  );
+}
+
+function receivedByLinkedAccount(
+  link: EposClientLinkRow,
+  meta: { receiverPhone?: string | null },
+): boolean {
+  const mine = linkPhoneKey(link);
+  const receiver = phoneKey(meta.receiverPhone);
+  return Boolean(mine && receiver && mine === receiver);
+}
+
 function customerIdFromRaw(
   raw: Record<string, unknown> | null,
 ): string | number | null {
@@ -323,6 +341,50 @@ async function listFromClientApi(
   };
 }
 
+function catalogRowsToPage(
+  rows: Array<Record<string, unknown>>,
+  locale: Locale,
+  page: number,
+): AccountShipmentsPage {
+  const perPage = 50;
+  const total = rows.length;
+  const lastPage = Math.max(1, Math.ceil(total / perPage));
+  const start = (page - 1) * perPage;
+  const slice = rows.slice(start, start + perPage);
+
+  const items = slice
+    .map((row) => {
+      const statusRaw = asRecord(row.status_raw);
+      const rawLast = asRecord(row.raw_last);
+      const sender = asRecord(rawLast?.sender);
+      const receiver = asRecord(rawLast?.receiver);
+      return toAccountShipment(
+        {
+          trackingNumber: row.tracking_number as string | null,
+          packageId:
+            (row.fcargo_package_id as string | null) ?? (row.id as string),
+          statusCode:
+            (row.status as string | null) ||
+            pickString(statusRaw, ["code", "status"]),
+          statusName: pickString(statusRaw, ["name", "localized_name"]),
+          fromLabel:
+            pickString(sender, ["address"]) ||
+            pickString(rawLast, ["from_label"]),
+          toLabel:
+            pickString(receiver, ["address"]) ||
+            pickString(rawLast, ["to_label"]),
+          createdAt: row.created_at as string | null,
+          origin: "catalog",
+          externalOrderId: row.external_order_id as string | null,
+        },
+        locale,
+      );
+    })
+    .filter((x): x is AccountShipment => Boolean(x));
+
+  return { items, page, lastPage, total };
+}
+
 async function listFromCatalog(
   link: EposClientLinkRow,
   locale: Locale,
@@ -358,42 +420,43 @@ async function listFromCatalog(
     );
   });
 
-  const perPage = 50;
-  const total = owned.length;
-  const lastPage = Math.max(1, Math.ceil(total / perPage));
-  const start = (page - 1) * perPage;
-  const slice = owned.slice(start, start + perPage);
+  return catalogRowsToPage(owned as Array<Record<string, unknown>>, locale, page);
+}
 
-  const items = slice
-    .map((row) => {
-      const statusRaw = asRecord(row.status_raw);
-      const rawLast = asRecord(row.raw_last);
-      const sender = asRecord(rawLast?.sender);
-      const receiver = asRecord(rawLast?.receiver);
-      return toAccountShipment(
-        {
-          trackingNumber: row.tracking_number as string | null,
-          packageId: (row.fcargo_package_id as string | null) ?? (row.id as string),
-          statusCode:
-            (row.status as string | null) ||
-            pickString(statusRaw, ["code", "status"]),
-          statusName: pickString(statusRaw, ["name", "localized_name"]),
-          fromLabel:
-            pickString(sender, ["address"]) ||
-            pickString(rawLast, ["from_label"]),
-          toLabel:
-            pickString(receiver, ["address"]) ||
-            pickString(rawLast, ["to_label"]),
-          createdAt: row.created_at as string | null,
-          origin: "catalog",
-          externalOrderId: row.external_order_id as string | null,
-        },
-        locale,
-      );
-    })
-    .filter((x): x is AccountShipment => Boolean(x));
+/** Incoming for cabinet: packages where linked phone is the receiver. */
+async function listIncomingFromCatalog(
+  link: EposClientLinkRow,
+  locale: Locale,
+  page: number,
+): Promise<AccountShipmentsPage> {
+  if (!hasSupabaseAdminConfig()) {
+    return { items: [], page: 1, lastPage: 1, total: 0 };
+  }
+  const phone = normalizeUzPhone(link.phone) || link.phone;
+  if (!phone) {
+    return { items: [], page: 1, lastPage: 1, total: 0 };
+  }
+  const admin = createSupabaseAdminClient();
+  const { data } = await admin
+    .from("epos_fcargo_packages")
+    .select(
+      "id, tracking_number, status, status_raw, raw_last, created_at, external_order_id, fcargo_package_id, receiver_phone",
+    )
+    .eq("receiver_phone", phone)
+    .not("tracking_number", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(100);
 
-  return { items, page, lastPage, total };
+  const rows = (data ?? []).filter((row) => {
+    const rawLast = asRecord(row.raw_last);
+    return receivedByLinkedAccount(link, {
+      receiverPhone:
+        (row.receiver_phone as string | null) ||
+        receiverPhoneFromRaw(rawLast),
+    });
+  });
+
+  return catalogRowsToPage(rows as Array<Record<string, unknown>>, locale, page);
 }
 
 export type ListAccountShipmentsResult =
@@ -406,21 +469,27 @@ export async function listAccountShipments(
     locale: Locale;
     page?: number;
     filter?: AccountShipmentFilter;
+    direction?: "out" | "in";
   },
 ): Promise<ListAccountShipmentsResult> {
   const page = opts.page && opts.page > 0 ? Math.floor(opts.page) : 1;
   const filter = opts.filter ?? "all";
-  const token = await decryptLinkToken(link);
+  const direction = opts.direction === "in" ? "in" : "out";
 
   let pageData: AccountShipmentsPage | null = null;
-  if (token) {
-    pageData = await listFromEpos(link, token, opts.locale, page);
-  }
-  if (!pageData) {
-    pageData = await listFromClientApi(link, opts.locale, page);
-  }
-  if (!pageData) {
-    pageData = await listFromCatalog(link, opts.locale, page);
+  if (direction === "in") {
+    pageData = await listIncomingFromCatalog(link, opts.locale, page);
+  } else {
+    const token = await decryptLinkToken(link);
+    if (token) {
+      pageData = await listFromEpos(link, token, opts.locale, page);
+    }
+    if (!pageData) {
+      pageData = await listFromClientApi(link, opts.locale, page);
+    }
+    if (!pageData) {
+      pageData = await listFromCatalog(link, opts.locale, page);
+    }
   }
 
   const items = pageData.items.filter((item) => matchesFilter(item, filter));
@@ -449,33 +518,38 @@ export async function getAccountShipment(
   const code = tracking.trim();
   if (!code) return null;
 
-  // Prefer EPOS list match (covers CRM + API) then Client API detail/timeline for API pkgs.
-  const listed = await listAccountShipments(link, {
-    locale,
-    page: 1,
-    filter: "all",
-  });
-  if (!listed.ok) return null;
-  let hit =
-    listed.page.items.find(
-      (item) => item.trackingNumber.toUpperCase() === code.toUpperCase(),
-    ) ?? null;
-
-  // Scan more EPOS pages if needed (first page miss).
-  if (!hit && listed.page.lastPage > 1) {
-    for (let p = 2; p <= Math.min(listed.page.lastPage, 5); p += 1) {
-      const more = await listAccountShipments(link, {
-        locale,
-        page: p,
-        filter: "all",
-      });
-      if (!more.ok) break;
-      hit =
-        more.page.items.find(
-          (item) => item.trackingNumber.toUpperCase() === code.toUpperCase(),
-        ) ?? null;
-      if (hit) break;
+  // Prefer outbound list, then incoming (receiver) catalog.
+  let hit: AccountShipment | null = null;
+  for (const direction of ["out", "in"] as const) {
+    const listed = await listAccountShipments(link, {
+      locale,
+      page: 1,
+      filter: "all",
+      direction,
+    });
+    if (!listed.ok) continue;
+    hit =
+      listed.page.items.find(
+        (item) => item.trackingNumber.toUpperCase() === code.toUpperCase(),
+      ) ?? null;
+    if (!hit && listed.page.lastPage > 1) {
+      for (let p = 2; p <= Math.min(listed.page.lastPage, 5); p += 1) {
+        const more = await listAccountShipments(link, {
+          locale,
+          page: p,
+          filter: "all",
+          direction,
+        });
+        if (!more.ok) break;
+        hit =
+          more.page.items.find(
+            (item) =>
+              item.trackingNumber.toUpperCase() === code.toUpperCase(),
+          ) ?? null;
+        if (hit) break;
+      }
     }
+    if (hit) break;
   }
 
   if (!hit) return null;

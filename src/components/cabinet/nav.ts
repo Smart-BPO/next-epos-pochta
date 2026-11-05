@@ -4,7 +4,8 @@ import { cabinetCopy } from "@/data/cabinet";
 
 export type CabinetNavId =
   | "home"
-  | "orders"
+  | "outgoing"
+  | "incoming"
   | "returns"
   | "calculator"
   | "finance"
@@ -13,6 +14,8 @@ export type CabinetNavId =
   | "settings"
   | "help"
   | "new";
+
+export type CabinetShipmentDir = "out" | "in";
 
 export type CabinetNavItem = {
   id: CabinetNavId;
@@ -34,6 +37,14 @@ export function cabinetShipmentHref(locale: Locale, tracking: string) {
   );
 }
 
+export function cabinetOrdersHref(
+  locale: Locale,
+  dir: CabinetShipmentDir = "out",
+) {
+  const base = cabinetHref(locale, "orders/");
+  return dir === "in" ? `${base}?dir=in` : base;
+}
+
 export function getCabinetNav(locale: Locale): CabinetNavItem[] {
   const c = cabinetCopy(locale);
   return [
@@ -44,10 +55,16 @@ export function getCabinetNav(locale: Locale): CabinetNavItem[] {
       mobile: true,
     },
     {
-      id: "orders",
-      href: cabinetHref(locale, "orders/"),
-      label: c.navOrders,
+      id: "outgoing",
+      href: cabinetOrdersHref(locale, "out"),
+      label: c.navOutgoing,
       badgeKey: "orders",
+      mobile: true,
+    },
+    {
+      id: "incoming",
+      href: cabinetOrdersHref(locale, "in"),
+      label: c.navIncoming,
       mobile: true,
     },
     {
@@ -55,7 +72,6 @@ export function getCabinetNav(locale: Locale): CabinetNavItem[] {
       href: cabinetHref(locale, "returns/"),
       label: c.navReturns,
       badgeKey: "returns",
-      mobile: true,
     },
     {
       id: "calculator",
@@ -89,18 +105,20 @@ export function isCabinetNavActive(
   pathname: string,
   item: CabinetNavItem,
   locale: Locale,
+  dir?: string | null,
 ) {
   const path = stripSlash(pathname);
   const root = stripSlash(cabinetHref(locale));
   if (item.id === "home") {
     return path === root;
   }
-  if (item.id === "orders") {
-    return (
-      path === stripSlash(item.href) ||
-      path.startsWith(`${root}/shipments`) ||
-      path.startsWith(`${root}/orders`)
-    );
+  if (item.id === "outgoing") {
+    if (path.startsWith(`${root}/shipments`)) return true;
+    if (path.startsWith(`${root}/orders`)) return dir !== "in";
+    return false;
+  }
+  if (item.id === "incoming") {
+    return path.startsWith(`${root}/orders`) && dir === "in";
   }
   return path === stripSlash(item.href) || path.startsWith(`${stripSlash(item.href)}/`);
 }

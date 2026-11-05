@@ -21,14 +21,18 @@ type Filter = "all" | "active" | "done";
 export function AccountShipmentList({
   locale,
   auth,
+  direction = "out",
   highlightTracking,
   onOpen,
   onRelinkRequired,
   onTotal,
   onCreate,
+  emptyTitle,
 }: {
   locale: Locale;
   auth: AccountAuthMode;
+  /** out = sender-owned; in = receiver-owned catalog. */
+  direction?: "out" | "in";
   highlightTracking?: string | null;
   onOpen: (row: AccountShipmentRow) => void;
   onRelinkRequired?: () => void;
@@ -36,6 +40,7 @@ export function AccountShipmentList({
   onTotal?: (total: number) => void;
   /** Shows a CTA in the empty state. */
   onCreate?: () => void;
+  emptyTitle?: string;
 }) {
   const c = accountCopy(locale);
   const [filter, setFilter] = useState<Filter>("all");
@@ -60,6 +65,7 @@ export function AccountShipmentList({
               locale,
               page: nextPage,
               filter,
+              direction,
             }),
           ),
           cache: "no-store",
@@ -93,7 +99,7 @@ export function AccountShipmentList({
         setLoaded(true);
       }
     },
-    [auth, c.genericError, filter, locale, onRelinkRequired, onTotal],
+    [auth, c.genericError, direction, filter, locale, onRelinkRequired, onTotal],
   );
 
   useEffect(() => {
@@ -197,7 +203,7 @@ export function AccountShipmentList({
         <div className="flex flex-col items-center rounded-2xl border border-dashed border-black/12 bg-white px-6 py-10 text-center">
           <PackageOpen className="size-10 text-black/25" aria-hidden />
           <p className="mt-3 mb-0 font-display text-base font-semibold text-ink">
-            {c.emptyPackages}
+            {emptyTitle ?? c.emptyPackages}
           </p>
           <p className="mt-1 mb-0 max-w-xs text-sm text-black/50">
             {c.emptyLead}

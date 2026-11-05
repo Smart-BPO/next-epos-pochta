@@ -113,6 +113,7 @@ export async function POST(request: Request) {
     accessToken: result.data.accessToken,
     fcargoClientId: clientId,
     displayName,
+    avatarUrl: result.data.avatarUrl,
   });
   if (!link) {
     return NextResponse.json({ error: "link_store_failed" }, { status: 503 });

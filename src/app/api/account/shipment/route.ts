@@ -79,9 +79,6 @@ export async function POST(request: Request) {
   if (!body.fromSettlementId || !body.toSettlementId) {
     return NextResponse.json({ error: "route_required" }, { status: 400 });
   }
-  if (body.fromSettlementId === body.toSettlementId) {
-    return NextResponse.json({ error: "same_route" }, { status: 400 });
-  }
 
   const receiverName = (body.receiverName ?? "").trim();
   const receiverPhone = (body.receiverPhone ?? "").trim();

@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Calculator,
   ClipboardList,
   Home,
+  Inbox,
   MapPinned,
   PackagePlus,
   PieChart,
@@ -25,7 +26,8 @@ import { cn } from "@/lib/cn";
 
 const ICONS: Partial<Record<CabinetNavId, typeof Home>> = {
   home: Home,
-  orders: ClipboardList,
+  outgoing: ClipboardList,
+  incoming: Inbox,
   returns: RotateCcw,
   calculator: Calculator,
   finance: Wallet,
@@ -42,6 +44,8 @@ export function CabinetNav({
   collapsed?: boolean;
 }) {
   const pathname = usePathname() || cabinetHref(locale);
+  const searchParams = useSearchParams();
+  const dir = searchParams.get("dir");
   const items = getCabinetNav(locale);
   const stats = useCabinetData();
   const c = cabinetCopy(locale);
@@ -69,7 +73,7 @@ export function CabinetNav({
 
       <nav className="flex flex-col gap-0.5 px-2" aria-label="Cabinet">
         {items.map((item) => {
-          const active = isCabinetNavActive(pathname, item, locale);
+          const active = isCabinetNavActive(pathname, item, locale, dir);
           const Icon = ICONS[item.id] ?? Home;
           const badge = item.badgeKey ? badges[item.badgeKey] : 0;
           return (

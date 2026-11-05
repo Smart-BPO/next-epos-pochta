@@ -33,6 +33,7 @@ import {
   useCabinet,
 } from "@/views/cabinet/CabinetShell";
 import { cabCard, cabPageLead, cabPageTitle } from "@/styles/cabinet";
+import { cn } from "@/lib/cn";
 import { useEffect, useState } from "react";
 import { fetchPublicPricingUi } from "@/lib/pricing/client";
 import type { PublicPricingUiConfig } from "@/lib/pricing/types";
@@ -48,15 +49,47 @@ export function CabinetShipmentsView() {
   const router = useRouter();
   const search = useSearchParams();
   const q = search.get("q") ?? "";
+  const direction = search.get("dir") === "in" ? "in" : "out";
+
+  const tabClass = (active: boolean) =>
+    cn(
+      "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors no-underline",
+      active
+        ? "bg-primary text-white"
+        : "bg-black/[0.04] text-black/55 hover:bg-black/[0.07] hover:text-ink",
+    );
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className={cabPageTitle}>{c.navOrders}</h1>
-        <Button href={cabinetHref(locale, "new/")} size="sm">
-          <PackagePlus className="size-4" aria-hidden />
-          {c.navNew}
-        </Button>
+        <div>
+          <h1 className={cabPageTitle}>
+            {direction === "in" ? c.navIncoming : c.navOutgoing}
+          </h1>
+          <p className={`${cabPageLead} mt-1`}>
+            {direction === "in" ? c.leadIncoming : c.leadOutgoing}
+          </p>
+        </div>
+        {direction === "out" ? (
+          <Button href={cabinetHref(locale, "new/")} size="sm">
+            <PackagePlus className="size-4" aria-hidden />
+            {c.navNew}
+          </Button>
+        ) : null}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Link
+          href={cabinetHref(locale, "orders/")}
+          className={tabClass(direction === "out")}
+        >
+          {c.navOutgoing}
+        </Link>
+        <Link
+          href={`${cabinetHref(locale, "orders/")}?dir=in`}
+          className={tabClass(direction === "in")}
+        >
+          {c.navIncoming}
+        </Link>
       </div>
       {q ? (
         <p className="m-0 text-sm text-[var(--dash-muted)]">
@@ -66,13 +99,19 @@ export function CabinetShipmentsView() {
       <AccountShipmentList
         locale={locale}
         auth={auth}
+        direction={direction}
         highlightTracking={createdTracking}
         onOpen={(row: AccountShipmentRow) =>
           router.push(cabinetShipmentHref(locale, row.trackingNumber))
         }
         onRelinkRequired={onRelinkRequired}
-        onTotal={setTotal}
-        onCreate={() => router.push(cabinetHref(locale, "new/"))}
+        onTotal={direction === "out" ? setTotal : undefined}
+        onCreate={
+          direction === "out"
+            ? () => router.push(cabinetHref(locale, "new/"))
+            : undefined
+        }
+        emptyTitle={direction === "in" ? c.emptyIncoming : undefined}
       />
     </div>
   );
